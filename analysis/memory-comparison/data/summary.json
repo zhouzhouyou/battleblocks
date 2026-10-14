@@ -1,0 +1,496 @@
+[
+  {
+    "case": "std_idle",
+    "label": "Rust 无窗口休眠",
+    "rss_mean_mib": 1.65625,
+    "footprint_mean_mib": 1.203125,
+    "rss_range_mib": [
+      1.65625,
+      1.65625
+    ],
+    "footprint_range_mib": [
+      1.203125,
+      1.203125
+    ],
+    "binary_bytes": 285952,
+    "display_logs": [
+      "",
+      ""
+    ]
+  },
+  {
+    "case": "cocoa_window",
+    "label": "原生 Cocoa 空窗口",
+    "rss_mean_mib": 74.03125,
+    "footprint_mean_mib": 13.8,
+    "rss_range_mib": [
+      73.53125,
+      74.53125
+    ],
+    "footprint_range_mib": [
+      13.4,
+      14.2
+    ],
+    "binary_bytes": 51040,
+    "display_logs": [
+      "",
+      ""
+    ]
+  },
+  {
+    "case": "miniquad_gl",
+    "label": "Miniquad / OpenGL 空窗口",
+    "rss_mean_mib": 81.1484375,
+    "footprint_mean_mib": 50.7,
+    "rss_range_mib": [
+      79.71875,
+      82.578125
+    ],
+    "footprint_range_mib": [
+      46.8,
+      54.6
+    ],
+    "binary_bytes": 438144,
+    "display_logs": [
+      "DISPLAY (1024.0, 720.0) dpi 1",
+      "DISPLAY (1024.0, 720.0) dpi 1"
+    ]
+  },
+  {
+    "case": "miniquad_metal",
+    "label": "Miniquad / Metal（实际 2× 像素）",
+    "rss_mean_mib": 83.71875,
+    "footprint_mean_mib": 72.80000000000001,
+    "rss_range_mib": [
+      81.28125,
+      86.15625
+    ],
+    "footprint_range_mib": [
+      65.7,
+      79.9
+    ],
+    "binary_bytes": 438144,
+    "display_logs": [
+      "DISPLAY (2048.0, 1440.0) dpi 2",
+      "DISPLAY (2048.0, 1440.0) dpi 2"
+    ]
+  },
+  {
+    "case": "macro_noaudio_gl",
+    "label": "Macroquad 无音频 / OpenGL 空窗口",
+    "rss_mean_mib": 89.6328125,
+    "footprint_mean_mib": 59.3,
+    "rss_range_mib": [
+      88.015625,
+      91.25
+    ],
+    "footprint_range_mib": [
+      56.1,
+      62.5
+    ],
+    "binary_bytes": 736016,
+    "display_logs": [
+      "DISPLAY (1024.0, 720.0) dpi 1",
+      "DISPLAY (1024.0, 720.0) dpi 1"
+    ]
+  },
+  {
+    "case": "macro_noaudio_metal",
+    "label": "Macroquad 无音频 / Metal（实际 2× 像素）",
+    "rss_mean_mib": 95.0234375,
+    "footprint_mean_mib": 94.25,
+    "rss_range_mib": [
+      94.609375,
+      95.4375
+    ],
+    "footprint_range_mib": [
+      88.9,
+      99.6
+    ],
+    "binary_bytes": 736016,
+    "display_logs": [
+      "DISPLAY (2048.0, 1440.0) dpi 2",
+      "DISPLAY (2048.0, 1440.0) dpi 2"
+    ]
+  },
+  {
+    "case": "macro_audio_empty",
+    "label": "Macroquad 有音频、无文件 / OpenGL",
+    "rss_mean_mib": 95.875,
+    "footprint_mean_mib": 60.25,
+    "rss_range_mib": [
+      95.734375,
+      96.015625
+    ],
+    "footprint_range_mib": [
+      58.5,
+      62.0
+    ],
+    "binary_bytes": 1017520,
+    "display_logs": [
+      "DISPLAY (1024.0, 720.0) dpi 1",
+      "DISPLAY (1024.0, 720.0) dpi 1"
+    ]
+  },
+  {
+    "case": "macro_font_loaded",
+    "label": "无音频，仅加载字体，不绘制",
+    "rss_mean_mib": 94.5,
+    "footprint_mean_mib": 58.3,
+    "rss_range_mib": [
+      94.4375,
+      94.5625
+    ],
+    "footprint_range_mib": [
+      58.2,
+      58.4
+    ],
+    "binary_bytes": 736016,
+    "display_logs": [
+      "DISPLAY (1024.0, 720.0) dpi 1",
+      "DISPLAY (1024.0, 720.0) dpi 1"
+    ]
+  },
+  {
+    "case": "macro_font_drawn",
+    "label": "无音频，加载并绘制文字",
+    "rss_mean_mib": 102.640625,
+    "footprint_mean_mib": 67.95,
+    "rss_range_mib": [
+      102.546875,
+      102.734375
+    ],
+    "footprint_range_mib": [
+      67.5,
+      68.4
+    ],
+    "binary_bytes": 736016,
+    "display_logs": [
+      "DISPLAY (1024.0, 720.0) dpi 1",
+      "DISPLAY (1024.0, 720.0) dpi 1"
+    ]
+  },
+  {
+    "case": "macro_music_loaded",
+    "label": "有音频，仅加载音乐，不播放",
+    "rss_mean_mib": 106.2734375,
+    "footprint_mean_mib": 69.55,
+    "rss_range_mib": [
+      106.125,
+      106.421875
+    ],
+    "footprint_range_mib": [
+      69.0,
+      70.1
+    ],
+    "binary_bytes": 1017520,
+    "display_logs": [
+      "DISPLAY (1024.0, 720.0) dpi 1",
+      "DISPLAY (1024.0, 720.0) dpi 1"
+    ]
+  },
+  {
+    "case": "macro_font_music",
+    "label": "默认缓冲区，文字 + 音乐播放",
+    "rss_mean_mib": 644.390625,
+    "footprint_mean_mib": 628.8,
+    "rss_range_mib": [
+      643.125,
+      645.65625
+    ],
+    "footprint_range_mib": [
+      624.4,
+      633.2
+    ],
+    "binary_bytes": 1017520,
+    "display_logs": [
+      "DISPLAY (1024.0, 720.0) dpi 1",
+      "DISPLAY (1024.0, 720.0) dpi 1"
+    ]
+  },
+  {
+    "case": "game_original",
+    "label": "旧游戏绘制，只加载音乐",
+    "rss_mean_mib": 133.265625,
+    "footprint_mean_mib": 157.25,
+    "rss_range_mib": [
+      129.78125,
+      136.75
+    ],
+    "footprint_range_mib": [
+      150.1,
+      164.4
+    ],
+    "binary_bytes": 1381280,
+    "display_logs": [
+      "",
+      ""
+    ]
+  },
+  {
+    "case": "game_optimized",
+    "label": "优化游戏绘制，只加载音乐",
+    "rss_mean_mib": 128.78125,
+    "footprint_mean_mib": 92.7,
+    "rss_range_mib": [
+      127.59375,
+      129.96875
+    ],
+    "footprint_range_mib": [
+      89.9,
+      95.5
+    ],
+    "binary_bytes": 1381280,
+    "display_logs": [
+      "",
+      ""
+    ]
+  },
+  {
+    "case": "miniquad_metal_1x",
+    "label": "Miniquad / Metal，归一化渲染像素",
+    "rss_mean_mib": 83.3828125,
+    "footprint_mean_mib": 39.35,
+    "rss_range_mib": [
+      81.34375,
+      85.421875
+    ],
+    "footprint_range_mib": [
+      35.5,
+      43.2
+    ],
+    "binary_bytes": 438144,
+    "display_logs": [
+      "DISPLAY (1024.0, 720.0) dpi 2",
+      "DISPLAY (1024.0, 720.0) dpi 2"
+    ]
+  },
+  {
+    "case": "macro_noaudio_metal_1x",
+    "label": "Macroquad 无音频 / Metal，归一化像素",
+    "rss_mean_mib": 93.0390625,
+    "footprint_mean_mib": 47.45,
+    "rss_range_mib": [
+      91.140625,
+      94.9375
+    ],
+    "footprint_range_mib": [
+      45.1,
+      49.8
+    ],
+    "binary_bytes": 736016,
+    "display_logs": [
+      "DISPLAY (1024.0, 720.0) dpi 2",
+      "DISPLAY (1024.0, 720.0) dpi 2"
+    ]
+  },
+  {
+    "case": "macro_audio_metal_1x",
+    "label": "Macroquad 有音频 / Metal，归一化像素",
+    "rss_mean_mib": 97.328125,
+    "footprint_mean_mib": 50.95,
+    "rss_range_mib": [
+      95.203125,
+      99.453125
+    ],
+    "footprint_range_mib": [
+      47.0,
+      54.9
+    ],
+    "binary_bytes": 1017520,
+    "display_logs": [
+      "DISPLAY (1024.0, 720.0) dpi 2",
+      "DISPLAY (1024.0, 720.0) dpi 2"
+    ]
+  },
+  {
+    "case": "audio_font_loaded",
+    "label": "启用音频，仅加载字体",
+    "rss_mean_mib": 97.53125,
+    "footprint_mean_mib": 64.55,
+    "rss_range_mib": [
+      95.828125,
+      99.234375
+    ],
+    "footprint_range_mib": [
+      60.9,
+      68.2
+    ],
+    "binary_bytes": 1017520,
+    "display_logs": [
+      "DISPLAY (1024.0, 720.0) dpi 1",
+      "DISPLAY (1024.0, 720.0) dpi 1"
+    ]
+  },
+  {
+    "case": "audio_font_drawn",
+    "label": "启用音频，绘制文字，无音频文件",
+    "rss_mean_mib": 369.3984375,
+    "footprint_mean_mib": 346.45,
+    "rss_range_mib": [
+      106.65625,
+      632.140625
+    ],
+    "footprint_range_mib": [
+      70.5,
+      622.4
+    ],
+    "binary_bytes": 1017520,
+    "display_logs": [
+      "DISPLAY (1024.0, 720.0) dpi 1",
+      "DISPLAY (1024.0, 720.0) dpi 1"
+    ]
+  },
+  {
+    "case": "music_play_no_text",
+    "label": "播放音乐，不加载/绘制文字",
+    "rss_mean_mib": 104.578125,
+    "footprint_mean_mib": 71.55,
+    "rss_range_mib": [
+      103.171875,
+      105.984375
+    ],
+    "footprint_range_mib": [
+      67.6,
+      75.5
+    ],
+    "binary_bytes": 1017520,
+    "display_logs": [
+      "DISPLAY (1024.0, 720.0) dpi 1",
+      "DISPLAY (1024.0, 720.0) dpi 1"
+    ]
+  },
+  {
+    "case": "font_music_no_play",
+    "label": "文字 + 加载音乐，但不播放",
+    "rss_mean_mib": 116.71875,
+    "footprint_mean_mib": 82.85,
+    "rss_range_mib": [
+      116.265625,
+      117.171875
+    ],
+    "footprint_range_mib": [
+      79.0,
+      86.7
+    ],
+    "binary_bytes": 1017520,
+    "display_logs": [
+      "DISPLAY (1024.0, 720.0) dpi 1",
+      "DISPLAY (1024.0, 720.0) dpi 1"
+    ]
+  },
+  {
+    "case": "font_music_prewarm",
+    "label": "预热字形，文字 + 音乐，默认缓冲区",
+    "rss_mean_mib": 141.5703125,
+    "footprint_mean_mib": 113.1,
+    "rss_range_mib": [
+      117.421875,
+      165.71875
+    ],
+    "footprint_range_mib": [
+      79.6,
+      146.6
+    ],
+    "binary_bytes": 1017520,
+    "display_logs": [
+      "DISPLAY (1024.0, 720.0) dpi 1",
+      "DISPLAY (1024.0, 720.0) dpi 1"
+    ]
+  },
+  {
+    "case": "audio_font_small",
+    "label": "文字，小缓冲区，启用音频但无文件",
+    "rss_mean_mib": 108.3671875,
+    "footprint_mean_mib": 70.9,
+    "rss_range_mib": [
+      106.5625,
+      110.171875
+    ],
+    "footprint_range_mib": [
+      69.5,
+      72.3
+    ],
+    "binary_bytes": 1017520,
+    "display_logs": [
+      "DISPLAY (1024.0, 720.0) dpi 1",
+      "DISPLAY (1024.0, 720.0) dpi 1"
+    ]
+  },
+  {
+    "case": "font_music_small",
+    "label": "文字 + 音乐播放，小缓冲区",
+    "rss_mean_mib": 114.8359375,
+    "footprint_mean_mib": 81.15,
+    "rss_range_mib": [
+      114.578125,
+      115.09375
+    ],
+    "footprint_range_mib": [
+      79.5,
+      82.8
+    ],
+    "binary_bytes": 1017520,
+    "display_logs": [
+      "DISPLAY (1024.0, 720.0) dpi 1",
+      "DISPLAY (1024.0, 720.0) dpi 1"
+    ]
+  },
+  {
+    "case": "font_music_prewarm_small",
+    "label": "预热字形，文字 + 音乐，小缓冲区",
+    "rss_mean_mib": 115.4140625,
+    "footprint_mean_mib": 82.2,
+    "rss_range_mib": [
+      115.28125,
+      115.546875
+    ],
+    "footprint_range_mib": [
+      80.5,
+      83.9
+    ],
+    "binary_bytes": 1017520,
+    "display_logs": [
+      "DISPLAY (1024.0, 720.0) dpi 1",
+      "DISPLAY (1024.0, 720.0) dpi 1"
+    ]
+  },
+  {
+    "case": "game_play_original",
+    "label": "旧游戏绘制，实际播放音乐",
+    "rss_mean_mib": 132.609375,
+    "footprint_mean_mib": 150.35000000000002,
+    "rss_range_mib": [
+      132.421875,
+      132.796875
+    ],
+    "footprint_range_mib": [
+      150.3,
+      150.4
+    ],
+    "binary_bytes": 1381280,
+    "display_logs": [
+      "",
+      ""
+    ]
+  },
+  {
+    "case": "game_play_optimized",
+    "label": "优化游戏绘制，实际播放音乐",
+    "rss_mean_mib": 129.078125,
+    "footprint_mean_mib": 96.45,
+    "rss_range_mib": [
+      128.390625,
+      129.765625
+    ],
+    "footprint_range_mib": [
+      94.0,
+      98.9
+    ],
+    "binary_bytes": 1381280,
+    "display_logs": [
+      "",
+      ""
+    ]
+  }
+]

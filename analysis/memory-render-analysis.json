@@ -1,0 +1,110 @@
+[
+  {
+    "scenario": "baseline",
+    "repeat": 0,
+    "flags": "",
+    "rss_median_bytes": 137936896.0,
+    "rss_max_bytes": 137936896,
+    "vmmap_exit": 0,
+    "footprint_mib": 149.5
+  },
+  {
+    "scenario": "batched",
+    "repeat": 0,
+    "flags": "batched",
+    "rss_median_bytes": 136822784.0,
+    "rss_max_bytes": 136855552,
+    "vmmap_exit": 0,
+    "footprint_mib": 101.3
+  },
+  {
+    "scenario": "small_buffers",
+    "repeat": 0,
+    "flags": "small_buffers",
+    "rss_median_bytes": 138567680.0,
+    "rss_max_bytes": 138625024,
+    "vmmap_exit": 0,
+    "footprint_mib": 102.2
+  },
+  {
+    "scenario": "batched_small_buffers",
+    "repeat": 0,
+    "flags": "batched,small_buffers",
+    "rss_median_bytes": 134807552.0,
+    "rss_max_bytes": 134807552,
+    "vmmap_exit": 0,
+    "footprint_mib": 91.1
+  },
+  {
+    "scenario": "procedural_batched_small",
+    "repeat": 0,
+    "flags": "procedural,batched,small_buffers",
+    "rss_median_bytes": 127926272.0,
+    "rss_max_bytes": 127942656,
+    "vmmap_exit": 0,
+    "footprint_mib": 84.6
+  },
+  {
+    "scenario": "hidpi_no_text",
+    "repeat": 0,
+    "flags": "hidpi,no_text",
+    "rss_median_bytes": 134742016.0,
+    "rss_max_bytes": 134742016,
+    "vmmap_exit": 0,
+    "footprint_mib": 201.5
+  },
+  {
+    "scenario": "hidpi_no_text",
+    "repeat": 1,
+    "flags": "hidpi,no_text",
+    "rss_median_bytes": 132333568.0,
+    "rss_max_bytes": 132349952,
+    "vmmap_exit": 0,
+    "footprint_mib": 199.6
+  },
+  {
+    "scenario": "procedural_batched_small",
+    "repeat": 1,
+    "flags": "procedural,batched,small_buffers",
+    "rss_median_bytes": 128548864.0,
+    "rss_max_bytes": 128548864,
+    "vmmap_exit": 0,
+    "footprint_mib": 85.4
+  },
+  {
+    "scenario": "batched_small_buffers",
+    "repeat": 1,
+    "flags": "batched,small_buffers",
+    "rss_median_bytes": 134537216.0,
+    "rss_max_bytes": 134545408,
+    "vmmap_exit": 0,
+    "footprint_mib": 91.9
+  },
+  {
+    "scenario": "small_buffers",
+    "repeat": 1,
+    "flags": "small_buffers",
+    "rss_median_bytes": 138264576.0,
+    "rss_max_bytes": 138264576,
+    "vmmap_exit": 0,
+    "footprint_mib": 99.6
+  },
+  {
+    "scenario": "batched",
+    "repeat": 1,
+    "flags": "batched",
+    "rss_median_bytes": 136085504.0,
+    "rss_max_bytes": 136085504,
+    "vmmap_exit": 0,
+    "footprint_mib": 99.2
+  },
+  {
+    "scenario": "baseline",
+    "repeat": 1,
+    "flags": "",
+    "rss_median_bytes": 136757248.0,
+    "rss_max_bytes": 136790016,
+    "vmmap_exit": 0,
+    "footprint_mib": 148.3
+  }
+]

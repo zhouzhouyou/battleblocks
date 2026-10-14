@@ -1,0 +1,37 @@
+{
+  "build": {
+    "macroquad": "0.4.16",
+    "native_target": "aarch64-apple-darwin",
+    "wasm_bytes": 690287,
+    "web_startup_gzip_bytes": 431825,
+    "web_bgm_bytes": 169994,
+    "web_zip_bytes": 719785,
+    "native_executable_bytes": 1449280,
+    "native_package_bytes": 1850260,
+    "native_zip_bytes": 1024865,
+    "native_zip": "macos-arm64.zip"
+  },
+  "validation": {
+    "automatic_tests_passed": 15,
+    "hardware_audio_test_passed": true,
+    "hardware_audio_test_seconds": 16.37,
+    "audio_underrun_frames": 0,
+    "native_release_built": true,
+    "wasm_release_built": true,
+    "web_checked": [
+      "role switching",
+      "animated selected hero",
+      "skill effect preview",
+      "Chinese/English",
+      "enter battle",
+      "stream music playing",
+      "pause/resume",
+      "mute"
+    ],
+    "not_verified": [
+      "Windows runtime/build",
+      "Linux runtime/build",
+      "every hero full playthrough"
+    ]
+  }
+}

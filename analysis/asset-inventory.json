@@ -1,0 +1,240 @@
+[
+  {
+    "file": "balanced.png",
+    "width": 64,
+    "height": 64,
+    "png_bytes": 4464,
+    "rgba_bytes": 16384,
+    "lossless_integer_scale": 1,
+    "downscaled_rgba_bytes": 16384,
+    "exact_rectangles_per_unique_frame": [
+      1122
+    ]
+  },
+  {
+    "file": "big_demon_ro.png",
+    "width": 1280,
+    "height": 435,
+    "png_bytes": 24941,
+    "rgba_bytes": 2227200,
+    "lossless_integer_scale": 1,
+    "downscaled_rgba_bytes": 2227200,
+    "exact_rectangles_per_unique_frame": [
+      3461,
+      3370,
+      2969,
+      3066
+    ]
+  },
+  {
+    "file": "big_zombie.png",
+    "width": 1072,
+    "height": 360,
+    "png_bytes": 4007,
+    "rgba_bytes": 1543680,
+    "lossless_integer_scale": 1,
+    "downscaled_rgba_bytes": 1543680,
+    "exact_rectangles_per_unique_frame": [
+      107,
+      100,
+      100,
+      93
+    ]
+  },
+  {
+    "file": "board_bg.png",
+    "width": 1120,
+    "height": 1120,
+    "png_bytes": 10133,
+    "rgba_bytes": 5017600,
+    "lossless_integer_scale": 1,
+    "downscaled_rgba_bytes": 5017600,
+    "exact_rectangles_per_unique_frame": [
+      316
+    ]
+  },
+  {
+    "file": "cell_bg.png",
+    "width": 64,
+    "height": 64,
+    "png_bytes": 4387,
+    "rgba_bytes": 16384,
+    "lossless_integer_scale": 2,
+    "downscaled_rgba_bytes": 4096,
+    "exact_rectangles_per_unique_frame": [
+      77
+    ]
+  },
+  {
+    "file": "chort.png",
+    "width": 880,
+    "height": 420,
+    "png_bytes": 3097,
+    "rgba_bytes": 1478400,
+    "lossless_integer_scale": 20,
+    "downscaled_rgba_bytes": 3696,
+    "exact_rectangles_per_unique_frame": [
+      55,
+      51,
+      54,
+      60
+    ]
+  },
+  {
+    "file": "damage.png",
+    "width": 64,
+    "height": 64,
+    "png_bytes": 5686,
+    "rgba_bytes": 16384,
+    "lossless_integer_scale": 1,
+    "downscaled_rgba_bytes": 16384,
+    "exact_rectangles_per_unique_frame": [
+      1466
+    ]
+  },
+  {
+    "file": "defeat.png",
+    "width": 256,
+    "height": 260,
+    "png_bytes": 5986,
+    "rgba_bytes": 266240,
+    "lossless_integer_scale": 1,
+    "downscaled_rgba_bytes": 266240,
+    "exact_rectangles_per_unique_frame": [
+      927
+    ]
+  },
+  {
+    "file": "dm.png",
+    "width": 64,
+    "height": 64,
+    "png_bytes": 3678,
+    "rgba_bytes": 16384,
+    "lossless_integer_scale": 1,
+    "downscaled_rgba_bytes": 16384,
+    "exact_rectangles_per_unique_frame": [
+      1125
+    ]
+  },
+  {
+    "file": "elf.png",
+    "width": 1280,
+    "height": 320,
+    "png_bytes": 3361,
+    "rgba_bytes": 1638400,
+    "lossless_integer_scale": 20,
+    "downscaled_rgba_bytes": 4096,
+    "exact_rectangles_per_unique_frame": [
+      57,
+      53,
+      55,
+      56
+    ]
+  },
+  {
+    "file": "goblin.png",
+    "width": 600,
+    "height": 200,
+    "png_bytes": 1212,
+    "rgba_bytes": 480000,
+    "lossless_integer_scale": 20,
+    "downscaled_rgba_bytes": 1200,
+    "exact_rectangles_per_unique_frame": [
+      29,
+      24,
+      19
+    ]
+  },
+  {
+    "file": "hd.png",
+    "width": 64,
+    "height": 64,
+    "png_bytes": 4763,
+    "rgba_bytes": 16384,
+    "lossless_integer_scale": 1,
+    "downscaled_rgba_bytes": 16384,
+    "exact_rectangles_per_unique_frame": [
+      1247
+    ]
+  },
+  {
+    "file": "hm.png",
+    "width": 64,
+    "height": 64,
+    "png_bytes": 4504,
+    "rgba_bytes": 16384,
+    "lossless_integer_scale": 1,
+    "downscaled_rgba_bytes": 16384,
+    "exact_rectangles_per_unique_frame": [
+      1097
+    ]
+  },
+  {
+    "file": "hp.png",
+    "width": 64,
+    "height": 64,
+    "png_bytes": 4850,
+    "rgba_bytes": 16384,
+    "lossless_integer_scale": 1,
+    "downscaled_rgba_bytes": 16384,
+    "exact_rectangles_per_unique_frame": [
+      1334
+    ]
+  },
+  {
+    "file": "imp.png",
+    "width": 603,
+    "height": 240,
+    "png_bytes": 1459,
+    "rgba_bytes": 578880,
+    "lossless_integer_scale": 1,
+    "downscaled_rgba_bytes": 578880,
+    "exact_rectangles_per_unique_frame": [
+      35,
+      30,
+      26
+    ]
+  },
+  {
+    "file": "knight.png",
+    "width": 1200,
+    "height": 400,
+    "png_bytes": 3641,
+    "rgba_bytes": 1920000,
+    "lossless_integer_scale": 20,
+    "downscaled_rgba_bytes": 4800,
+    "exact_rectangles_per_unique_frame": [
+      57,
+      50,
+      54,
+      55
+    ]
+  },
+  {
+    "file": "mp.png",
+    "width": 64,
+    "height": 64,
+    "png_bytes": 4168,
+    "rgba_bytes": 16384,
+    "lossless_integer_scale": 1,
+    "downscaled_rgba_bytes": 16384,
+    "exact_rectangles_per_unique_frame": [
+      1080
+    ]
+  },
+  {
+    "file": "wizzard.png",
+    "width": 1200,
+    "height": 400,
+    "png_bytes": 3868,
+    "rgba_bytes": 1920000,
+    "lossless_integer_scale": 20,
+    "downscaled_rgba_bytes": 4800,
+    "exact_rectangles_per_unique_frame": [
+      60,
+      61,
+      60,
+      56
+    ]
+  }
+]

@@ -1,0 +1,319 @@
+{
+  "binary_bytes": 719024,
+  "binary_sha256": "1fadcd16cbed0d9dff36742ad0e81a165357635ccdc3d9b3847bc4d12413110a",
+  "scenario": "Release macOS; shared CPAL output backend; gain zero still performs all sample generation/decoding; 16 seconds per process, reverse repeat order.",
+  "rows": [
+    {
+      "mode": "idle",
+      "repeat": 0,
+      "samples": [
+        {
+          "seconds": 5,
+          "rss_mib": 16.859375,
+          "cpu_percent": 0.0,
+          "footprint_mib": 4.7978515625
+        },
+        {
+          "seconds": 10,
+          "rss_mib": 16.8125,
+          "cpu_percent": 0.1,
+          "footprint_mib": 4.7353515625
+        },
+        {
+          "seconds": 14,
+          "rss_mib": 16.8125,
+          "cpu_percent": 0.0,
+          "footprint_mib": 4.7353515625
+        }
+      ],
+      "output": [
+        {
+          "channels": 2,
+          "gain": 0.0,
+          "mode": "idle",
+          "pcm_capacity_bytes": 0,
+          "rate": 48000,
+          "ring_capacity_bytes": 0
+        },
+        {
+          "decoder_failed": false,
+          "loops": 0,
+          "underrun_frames": 0
+        }
+      ]
+    },
+    {
+      "mode": "buffer",
+      "repeat": 0,
+      "samples": [
+        {
+          "seconds": 5,
+          "rss_mib": 28.546875,
+          "cpu_percent": 0.0,
+          "footprint_mib": 16.3
+        },
+        {
+          "seconds": 10,
+          "rss_mib": 28.46875,
+          "cpu_percent": 0.0,
+          "footprint_mib": 16.2
+        },
+        {
+          "seconds": 14,
+          "rss_mib": 28.53125,
+          "cpu_percent": 0.0,
+          "footprint_mib": 16.3
+        }
+      ],
+      "output": [
+        {
+          "channels": 2,
+          "gain": 0.0,
+          "mode": "buffer",
+          "pcm_capacity_bytes": 4608000,
+          "rate": 48000,
+          "ring_capacity_bytes": 0
+        },
+        {
+          "decoder_failed": false,
+          "loops": 1,
+          "underrun_frames": 0
+        }
+      ]
+    },
+    {
+      "mode": "stream",
+      "repeat": 0,
+      "samples": [
+        {
+          "seconds": 5,
+          "rss_mib": 17.75,
+          "cpu_percent": 1.9,
+          "footprint_mib": 5.4853515625
+        },
+        {
+          "seconds": 10,
+          "rss_mib": 17.78125,
+          "cpu_percent": 1.9,
+          "footprint_mib": 5.4853515625
+        },
+        {
+          "seconds": 14,
+          "rss_mib": 18.390625,
+          "cpu_percent": 1.0,
+          "footprint_mib": 6.0947265625
+        }
+      ],
+      "output": [
+        {
+          "channels": 2,
+          "gain": 0.0,
+          "mode": "stream",
+          "pcm_capacity_bytes": 0,
+          "rate": 48000,
+          "ring_capacity_bytes": 131072
+        },
+        {
+          "decoder_failed": false,
+          "loops": 1,
+          "underrun_frames": 0
+        }
+      ]
+    },
+    {
+      "mode": "synth",
+      "repeat": 0,
+      "samples": [
+        {
+          "seconds": 5,
+          "rss_mib": 16.765625,
+          "cpu_percent": 0.0,
+          "footprint_mib": 4.6572265625
+        },
+        {
+          "seconds": 10,
+          "rss_mib": 16.71875,
+          "cpu_percent": 0.0,
+          "footprint_mib": 4.6259765625
+        },
+        {
+          "seconds": 14,
+          "rss_mib": 16.71875,
+          "cpu_percent": 0.0,
+          "footprint_mib": 4.6259765625
+        }
+      ],
+      "output": [
+        {
+          "channels": 2,
+          "gain": 0.0,
+          "mode": "synth",
+          "pcm_capacity_bytes": 0,
+          "rate": 48000,
+          "ring_capacity_bytes": 0
+        },
+        {
+          "decoder_failed": false,
+          "loops": 0,
+          "underrun_frames": 0
+        }
+      ]
+    },
+    {
+      "mode": "synth",
+      "repeat": 1,
+      "samples": [
+        {
+          "seconds": 5,
+          "rss_mib": 16.8125,
+          "cpu_percent": 0.3,
+          "footprint_mib": 4.7041015625
+        },
+        {
+          "seconds": 10,
+          "rss_mib": 16.765625,
+          "cpu_percent": 0.6,
+          "footprint_mib": 4.6728515625
+        },
+        {
+          "seconds": 14,
+          "rss_mib": 16.765625,
+          "cpu_percent": 0.7,
+          "footprint_mib": 4.6728515625
+        }
+      ],
+      "output": [
+        {
+          "channels": 2,
+          "gain": 0.0,
+          "mode": "synth",
+          "pcm_capacity_bytes": 0,
+          "rate": 48000,
+          "ring_capacity_bytes": 0
+        },
+        {
+          "decoder_failed": false,
+          "loops": 0,
+          "underrun_frames": 0
+        }
+      ]
+    },
+    {
+      "mode": "stream",
+      "repeat": 1,
+      "samples": [
+        {
+          "seconds": 5,
+          "rss_mib": 17.71875,
+          "cpu_percent": 1.8,
+          "footprint_mib": 5.4697265625
+        },
+        {
+          "seconds": 10,
+          "rss_mib": 17.71875,
+          "cpu_percent": 1.9,
+          "footprint_mib": 5.4384765625
+        },
+        {
+          "seconds": 14,
+          "rss_mib": 18.234375,
+          "cpu_percent": 1.8,
+          "footprint_mib": 5.9697265625
+        }
+      ],
+      "output": [
+        {
+          "channels": 2,
+          "gain": 0.0,
+          "mode": "stream",
+          "pcm_capacity_bytes": 0,
+          "rate": 48000,
+          "ring_capacity_bytes": 131072
+        },
+        {
+          "decoder_failed": false,
+          "loops": 1,
+          "underrun_frames": 0
+        }
+      ]
+    },
+    {
+      "mode": "buffer",
+      "repeat": 1,
+      "samples": [
+        {
+          "seconds": 5,
+          "rss_mib": 28.53125,
+          "cpu_percent": 0.0,
+          "footprint_mib": 16.2
+        },
+        {
+          "seconds": 10,
+          "rss_mib": 28.453125,
+          "cpu_percent": 0.0,
+          "footprint_mib": 16.2
+        },
+        {
+          "seconds": 14,
+          "rss_mib": 28.453125,
+          "cpu_percent": 0.0,
+          "footprint_mib": 16.2
+        }
+      ],
+      "output": [
+        {
+          "channels": 2,
+          "gain": 0.0,
+          "mode": "buffer",
+          "pcm_capacity_bytes": 4608000,
+          "rate": 48000,
+          "ring_capacity_bytes": 0
+        },
+        {
+          "decoder_failed": false,
+          "loops": 1,
+          "underrun_frames": 0
+        }
+      ]
+    },
+    {
+      "mode": "idle",
+      "repeat": 1,
+      "samples": [
+        {
+          "seconds": 5,
+          "rss_mib": 16.78125,
+          "cpu_percent": 0.0,
+          "footprint_mib": 4.6572265625
+        },
+        {
+          "seconds": 10,
+          "rss_mib": 16.734375,
+          "cpu_percent": 0.0,
+          "footprint_mib": 4.6103515625
+        },
+        {
+          "seconds": 14,
+          "rss_mib": 16.734375,
+          "cpu_percent": 0.0,
+          "footprint_mib": 4.6103515625
+        }
+      ],
+      "output": [
+        {
+          "channels": 2,
+          "gain": 0.0,
+          "mode": "idle",
+          "pcm_capacity_bytes": 0,
+          "rate": 48000,
+          "ring_capacity_bytes": 0
+        },
+        {
+          "decoder_failed": false,
+          "loops": 0,
+          "underrun_frames": 0
+        }
+      ]
+    }
+  ]
+}

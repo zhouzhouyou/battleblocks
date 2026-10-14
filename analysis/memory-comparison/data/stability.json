@@ -1,0 +1,50 @@
+[
+  {
+    "case": "macro_noaudio_gl",
+    "seconds": 5,
+    "rss_mib": 91.15625,
+    "footprint_mib": 58.4
+  },
+  {
+    "case": "macro_noaudio_gl",
+    "seconds": 15,
+    "rss_mib": 91.109375,
+    "footprint_mib": 58.3
+  },
+  {
+    "case": "macro_noaudio_gl",
+    "seconds": 30,
+    "rss_mib": 91.1875,
+    "footprint_mib": 56.1
+  },
+  {
+    "case": "macro_noaudio_gl",
+    "seconds": 60,
+    "rss_mib": 91.265625,
+    "footprint_mib": 56.1
+  },
+  {
+    "case": "game_play_optimized",
+    "seconds": 5,
+    "rss_mib": 127.875,
+    "footprint_mib": 90.2
+  },
+  {
+    "case": "game_play_optimized",
+    "seconds": 15,
+    "rss_mib": 128.09375,
+    "footprint_mib": 92.8
+  },
+  {
+    "case": "game_play_optimized",
+    "seconds": 30,
+    "rss_mib": 118.453125,
+    "footprint_mib": 76.8
+  },
+  {
+    "case": "game_play_optimized",
+    "seconds": 60,
+    "rss_mib": 118.609375,
+    "footprint_mib": 79.2
+  }
+]

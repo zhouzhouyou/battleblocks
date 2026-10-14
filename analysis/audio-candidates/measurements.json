@@ -1,0 +1,80 @@
+[
+  {
+    "file": "assets/bgm.ogg",
+    "bytes": 169994,
+    "duration": 12.0,
+    "stream": {
+      "codec_name": "vorbis",
+      "sample_rate": "48000",
+      "channels": 2,
+      "bits_per_sample": 0
+    },
+    "native_pcm_bytes_estimate": 4233600,
+    "web_pcm_48k_bytes_estimate": 4608000
+  },
+  {
+    "file": "assets/crush.wav",
+    "bytes": 150688,
+    "duration": 1.707982,
+    "stream": {
+      "codec_name": "pcm_s16le",
+      "sample_rate": "44100",
+      "channels": 1,
+      "bits_per_sample": 16
+    },
+    "native_pcm_bytes_estimate": 602576,
+    "web_pcm_48k_bytes_estimate": 327933
+  },
+  {
+    "file": "analysis/audio-candidates/bgm-mono.wav",
+    "bytes": 1058512,
+    "duration": 12.0,
+    "stream": {
+      "codec_name": "pcm_s16le",
+      "sample_rate": "44100",
+      "channels": 1,
+      "bits_per_sample": 16
+    },
+    "native_pcm_bytes_estimate": 4233600,
+    "web_pcm_48k_bytes_estimate": 2304000
+  },
+  {
+    "file": "analysis/audio-candidates/bgm-bitcrushed.ogg",
+    "bytes": 110511,
+    "duration": 12.000363,
+    "stream": {
+      "codec_name": "vorbis",
+      "sample_rate": "44100",
+      "channels": 2,
+      "bits_per_sample": 0
+    },
+    "native_pcm_bytes_estimate": 4233728,
+    "web_pcm_48k_bytes_estimate": 4608139
+  },
+  {
+    "file": "analysis/audio-candidates/bgm-u8.wav",
+    "bytes": 264712,
+    "duration": 12.0,
+    "stream": {
+      "codec_name": "pcm_u8",
+      "sample_rate": "22050",
+      "channels": 1,
+      "bits_per_sample": 8
+    },
+    "native_pcm_bytes_estimate": 4233600,
+    "web_pcm_48k_bytes_estimate": 2304000
+  },
+  {
+    "file": "analysis/audio-candidates/crush.ogg",
+    "bytes": 30369,
+    "duration": 1.708118,
+    "stream": {
+      "codec_name": "vorbis",
+      "sample_rate": "44100",
+      "channels": 2,
+      "bits_per_sample": 0
+    },
+    "native_pcm_bytes_estimate": 602624,
+    "web_pcm_48k_bytes_estimate": 655917
+  }
+]
