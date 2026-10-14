@@ -1,0 +1,182 @@
+[
+  {
+    "scenario": "baseline",
+    "repeat": 0,
+    "flags": "",
+    "rss_median_bytes": 137936896.0,
+    "rss_max_bytes": 137936896,
+    "vmmap_exit": 0,
+    "footprint_mib": 149.5
+  },
+  {
+    "scenario": "no_music",
+    "repeat": 0,
+    "flags": "no_music",
+    "rss_median_bytes": 133660672.0,
+    "rss_max_bytes": 133660672,
+    "vmmap_exit": 0,
+    "footprint_mib": 145.3
+  },
+  {
+    "scenario": "procedural",
+    "repeat": 0,
+    "flags": "procedural",
+    "rss_median_bytes": 131883008.0,
+    "rss_max_bytes": 131973120,
+    "vmmap_exit": 0,
+    "footprint_mib": 143.7
+  },
+  {
+    "scenario": "no_actors",
+    "repeat": 0,
+    "flags": "no_actors",
+    "rss_median_bytes": 129335296.0,
+    "rss_max_bytes": 129335296,
+    "vmmap_exit": 0,
+    "footprint_mib": 140.1
+  },
+  {
+    "scenario": "no_text",
+    "repeat": 0,
+    "flags": "no_text",
+    "rss_median_bytes": 134037504.0,
+    "rss_max_bytes": 134053888,
+    "vmmap_exit": 0,
+    "footprint_mib": 144.4
+  },
+  {
+    "scenario": "no_sound",
+    "repeat": 0,
+    "flags": "no_sound",
+    "rss_median_bytes": 136200192.0,
+    "rss_max_bytes": 136200192,
+    "vmmap_exit": 0,
+    "footprint_mib": 147.8
+  },
+  {
+    "scenario": "combined",
+    "repeat": 0,
+    "flags": "no_music,no_sound,no_actors,no_text,procedural",
+    "rss_median_bytes": 104169472.0,
+    "rss_max_bytes": 104169472,
+    "vmmap_exit": 0,
+    "footprint_mib": 113.8
+  },
+  {
+    "scenario": "small_window",
+    "repeat": 0,
+    "flags": "small_window",
+    "rss_median_bytes": 138461184.0,
+    "rss_max_bytes": 138461184,
+    "vmmap_exit": 0,
+    "footprint_mib": 135.9
+  },
+  {
+    "scenario": "hidpi",
+    "repeat": 0,
+    "flags": "hidpi",
+    "rss_median_bytes": 429867008.0,
+    "rss_max_bytes": 429883392,
+    "vmmap_exit": 0,
+    "footprint_mib": 502.5
+  },
+  {
+    "scenario": "empty_window",
+    "repeat": 0,
+    "flags": "",
+    "rss_median_bytes": 100147200.0,
+    "rss_max_bytes": 100155392,
+    "vmmap_exit": 0,
+    "footprint_mib": 57.3
+  },
+  {
+    "scenario": "empty_window",
+    "repeat": 1,
+    "flags": "",
+    "rss_median_bytes": 100122624.0,
+    "rss_max_bytes": 100122624,
+    "vmmap_exit": 0,
+    "footprint_mib": 58.4
+  },
+  {
+    "scenario": "hidpi",
+    "repeat": 1,
+    "flags": "hidpi",
+    "rss_median_bytes": 213770240.0,
+    "rss_max_bytes": 213778432,
+    "vmmap_exit": 0,
+    "footprint_mib": 298.4
+  },
+  {
+    "scenario": "small_window",
+    "repeat": 1,
+    "flags": "small_window",
+    "rss_median_bytes": 138395648.0,
+    "rss_max_bytes": 138412032,
+    "vmmap_exit": 0,
+    "footprint_mib": 136.0
+  },
+  {
+    "scenario": "combined",
+    "repeat": 1,
+    "flags": "no_music,no_sound,no_actors,no_text,procedural",
+    "rss_median_bytes": 103497728.0,
+    "rss_max_bytes": 103497728,
+    "vmmap_exit": 0,
+    "footprint_mib": 113.0
+  },
+  {
+    "scenario": "no_sound",
+    "repeat": 1,
+    "flags": "no_sound",
+    "rss_median_bytes": 138625024.0,
+    "rss_max_bytes": 138625024,
+    "vmmap_exit": 0,
+    "footprint_mib": 149.9
+  },
+  {
+    "scenario": "no_text",
+    "repeat": 1,
+    "flags": "no_text",
+    "rss_median_bytes": 135806976.0,
+    "rss_max_bytes": 135806976,
+    "vmmap_exit": 0,
+    "footprint_mib": 144.8
+  },
+  {
+    "scenario": "no_actors",
+    "repeat": 1,
+    "flags": "no_actors",
+    "rss_median_bytes": 128401408.0,
+    "rss_max_bytes": 128401408,
+    "vmmap_exit": 0,
+    "footprint_mib": 139.0
+  },
+  {
+    "scenario": "procedural",
+    "repeat": 1,
+    "flags": "procedural",
+    "rss_median_bytes": 131162112.0,
+    "rss_max_bytes": 131170304,
+    "vmmap_exit": 0,
+    "footprint_mib": 148.8
+  },
+  {
+    "scenario": "no_music",
+    "repeat": 1,
+    "flags": "no_music",
+    "rss_median_bytes": 133914624.0,
+    "rss_max_bytes": 133971968,
+    "vmmap_exit": 0,
+    "footprint_mib": 146.6
+  },
+  {
+    "scenario": "baseline",
+    "repeat": 1,
+    "flags": "",
+    "rss_median_bytes": 138772480.0,
+    "rss_max_bytes": 138772480,
+    "vmmap_exit": 0,
+    "footprint_mib": 153.0
+  }
+]

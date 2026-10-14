@@ -1,0 +1,37 @@
+{
+  "samples": [
+    {
+      "seconds": 5,
+      "rss_mib": 17.609375,
+      "cpu_percent": 2.2,
+      "footprint_mib": 5.4384765625
+    },
+    {
+      "seconds": 30,
+      "rss_mib": 17.71875,
+      "cpu_percent": 1.4,
+      "footprint_mib": 5.4384765625
+    },
+    {
+      "seconds": 58,
+      "rss_mib": 17.71875,
+      "cpu_percent": 1.6,
+      "footprint_mib": 5.4384765625
+    }
+  ],
+  "output": [
+    {
+      "channels": 2,
+      "gain": 0.0,
+      "mode": "stream",
+      "pcm_capacity_bytes": 0,
+      "rate": 48000,
+      "ring_capacity_bytes": 131072
+    },
+    {
+      "decoder_failed": false,
+      "loops": 4,
+      "underrun_frames": 0
+    }
+  ]
+}

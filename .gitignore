@@ -1,0 +1,8 @@
+/target/
+/dist/
+/.build-tools/
+/assets/ui-subset.ttf
+/analysis/memory-comparison/*/target/
+/analysis/memory-comparison/results*/
+**/__pycache__/
+.DS_Store

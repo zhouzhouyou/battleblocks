@@ -1,0 +1,17 @@
+[
+  {
+    "seconds": 5,
+    "rss_mib": 137.40625,
+    "footprint_mib": 100.2
+  },
+  {
+    "seconds": 15,
+    "rss_mib": 137.265625,
+    "footprint_mib": 100.0
+  },
+  {
+    "seconds": 30,
+    "rss_mib": 133.34375,
+    "footprint_mib": 92.5
+  }
+]

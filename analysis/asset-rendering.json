@@ -1,0 +1,120 @@
+{
+  "binary_sha256": "6eb91aa920acad73e7e7907421dbf0e723f5b11ec8bfa4356c58b66e1b9a2174",
+  "scenario": "Release, knight + demon, fixed window, BGM playing, small buffers and grouped draws; no_actors removes sprites without replacing them.",
+  "rows": [
+    {
+      "case": "textures",
+      "repeat": 0,
+      "flags": "",
+      "samples": [
+        {
+          "seconds": 5,
+          "rss_mib": 138.75,
+          "cpu_percent": 11.2,
+          "footprint_mib": 106.2
+        },
+        {
+          "seconds": 10,
+          "rss_mib": 138.515625,
+          "cpu_percent": 10.7,
+          "footprint_mib": 101.4
+        }
+      ]
+    },
+    {
+      "case": "procedural_board",
+      "repeat": 0,
+      "flags": "procedural",
+      "samples": [
+        {
+          "seconds": 5,
+          "rss_mib": 132.296875,
+          "cpu_percent": 12.1,
+          "footprint_mib": 95.4
+        },
+        {
+          "seconds": 10,
+          "rss_mib": 132.140625,
+          "cpu_percent": 11.9,
+          "footprint_mib": 98.6
+        }
+      ]
+    },
+    {
+      "case": "procedural_board_no_actors",
+      "repeat": 0,
+      "flags": "procedural,no_actors",
+      "samples": [
+        {
+          "seconds": 5,
+          "rss_mib": 120.921875,
+          "cpu_percent": 11.1,
+          "footprint_mib": 85.9
+        },
+        {
+          "seconds": 10,
+          "rss_mib": 120.703125,
+          "cpu_percent": 11.4,
+          "footprint_mib": 83.4
+        }
+      ]
+    },
+    {
+      "case": "procedural_board_no_actors",
+      "repeat": 1,
+      "flags": "procedural,no_actors",
+      "samples": [
+        {
+          "seconds": 5,
+          "rss_mib": 121.640625,
+          "cpu_percent": 11.5,
+          "footprint_mib": 90.3
+        },
+        {
+          "seconds": 10,
+          "rss_mib": 121.453125,
+          "cpu_percent": 10.8,
+          "footprint_mib": 87.9
+        }
+      ]
+    },
+    {
+      "case": "procedural_board",
+      "repeat": 1,
+      "flags": "procedural",
+      "samples": [
+        {
+          "seconds": 5,
+          "rss_mib": 131.796875,
+          "cpu_percent": 11.1,
+          "footprint_mib": 94.9
+        },
+        {
+          "seconds": 10,
+          "rss_mib": 131.78125,
+          "cpu_percent": 10.8,
+          "footprint_mib": 94.8
+        }
+      ]
+    },
+    {
+      "case": "textures",
+      "repeat": 1,
+      "flags": "",
+      "samples": [
+        {
+          "seconds": 5,
+          "rss_mib": 181.875,
+          "cpu_percent": 11.3,
+          "footprint_mib": 162.3
+        },
+        {
+          "seconds": 10,
+          "rss_mib": 181.71875,
+          "cpu_percent": 10.7,
+          "footprint_mib": 165.6
+        }
+      ]
+    }
+  ]
+}

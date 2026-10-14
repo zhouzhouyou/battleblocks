@@ -1,0 +1,260 @@
+{
+  "knight": {
+    "original_size": [
+      320,
+      560
+    ],
+    "bounds": [
+      0,
+      160,
+      300,
+      560
+    ],
+    "frame_size": [
+      300,
+      400
+    ],
+    "indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "durations": [
+      0.1,
+      0.1,
+      0.1,
+      0.13
+    ],
+    "unique_frames": 4,
+    "original_rgba_bytes": 2867200,
+    "atlas_rgba_bytes": 1920000,
+    "atlas_png_bytes": 3641
+  },
+  "elf": {
+    "original_size": [
+      320,
+      560
+    ],
+    "bounds": [
+      0,
+      240,
+      320,
+      560
+    ],
+    "frame_size": [
+      320,
+      320
+    ],
+    "indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "durations": [
+      0.1,
+      0.1,
+      0.1,
+      0.1
+    ],
+    "unique_frames": 4,
+    "original_rgba_bytes": 2867200,
+    "atlas_rgba_bytes": 1638400,
+    "atlas_png_bytes": 3361
+  },
+  "wizzard": {
+    "original_size": [
+      320,
+      560
+    ],
+    "bounds": [
+      20,
+      160,
+      320,
+      560
+    ],
+    "frame_size": [
+      300,
+      400
+    ],
+    "indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "durations": [
+      0.1,
+      0.1,
+      0.1,
+      0.1
+    ],
+    "unique_frames": 4,
+    "original_rgba_bytes": 2867200,
+    "atlas_rgba_bytes": 1920000,
+    "atlas_png_bytes": 3868
+  },
+  "goblin": {
+    "original_size": [
+      320,
+      560
+    ],
+    "bounds": [
+      80,
+      360,
+      280,
+      560
+    ],
+    "frame_size": [
+      200,
+      200
+    ],
+    "indices": [
+      0,
+      1,
+      2,
+      1
+    ],
+    "durations": [
+      0.13,
+      0.13,
+      0.13,
+      0.13
+    ],
+    "unique_frames": 3,
+    "original_rgba_bytes": 2867200,
+    "atlas_rgba_bytes": 480000,
+    "atlas_png_bytes": 1212
+  },
+  "imp": {
+    "original_size": [
+      320,
+      560
+    ],
+    "bounds": [
+      80,
+      320,
+      281,
+      560
+    ],
+    "frame_size": [
+      201,
+      240
+    ],
+    "indices": [
+      0,
+      1,
+      2,
+      1
+    ],
+    "durations": [
+      0.13,
+      0.13,
+      0.13,
+      0.13
+    ],
+    "unique_frames": 3,
+    "original_rgba_bytes": 2867200,
+    "atlas_rgba_bytes": 578880,
+    "atlas_png_bytes": 1459
+  },
+  "chort": {
+    "original_size": [
+      320,
+      560
+    ],
+    "bounds": [
+      60,
+      140,
+      280,
+      560
+    ],
+    "frame_size": [
+      220,
+      420
+    ],
+    "indices": [
+      0,
+      1,
+      2,
+      0,
+      3
+    ],
+    "durations": [
+      0.13,
+      0.13,
+      0.13,
+      0.13,
+      0.13
+    ],
+    "unique_frames": 4,
+    "original_rgba_bytes": 3584000,
+    "atlas_rgba_bytes": 1478400,
+    "atlas_png_bytes": 3097
+  },
+  "big_zombie": {
+    "original_size": [
+      320,
+      560
+    ],
+    "bounds": [
+      26,
+      200,
+      294,
+      560
+    ],
+    "frame_size": [
+      268,
+      360
+    ],
+    "indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "durations": [
+      0.13,
+      0.13,
+      0.13,
+      0.13
+    ],
+    "unique_frames": 4,
+    "original_rgba_bytes": 2867200,
+    "atlas_rgba_bytes": 1543680,
+    "atlas_png_bytes": 4007
+  },
+  "big_demon_ro": {
+    "original_size": [
+      320,
+      560
+    ],
+    "bounds": [
+      0,
+      125,
+      320,
+      560
+    ],
+    "frame_size": [
+      320,
+      435
+    ],
+    "indices": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "durations": [
+      0.13,
+      0.13,
+      0.13,
+      0.13
+    ],
+    "unique_frames": 4,
+    "original_rgba_bytes": 2867200,
+    "atlas_rgba_bytes": 2227200,
+    "atlas_png_bytes": 24941
+  }
+}

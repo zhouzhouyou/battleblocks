@@ -1,0 +1,23 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>方块战斗 · 音频实验</title>
+<style>body{margin:0;background:#191b26;color:#e6e5dd;font:18px/1.65 system-ui,sans-serif}main{max-width:760px;margin:7vh auto;padding:24px}h1{color:#f3cd53;font-size:32px}button{font:inherit;padding:12px 20px;margin:8px 8px 8px 0;background:#293d4c;color:#fff;border:1px solid #617180;border-radius:6px;cursor:pointer}button:disabled{opacity:.5;cursor:wait}label{display:block;margin:24px 0}#status{border-left:4px solid #f3cd53;padding:12px 18px;background:#242733}small{color:#b5bdc8}</style>
+<main><h1>方块战斗 · 音频实验</h1><p>流式播放保留原来的背景音乐。实时合成播放一段新的像素风演示旋律，通过音符和波形生成声音。</p><button id="stream">播放流式原曲</button><button id="synth">播放实时合成</button><button id="stop">停止</button><label>音量 <input id="volume" aria-label="音量" type="range" min="0" max="1" value="0.25" step="0.01"></label><p id="status" role="status">尚未播放</p><small>两种方案仅用于试听实验。合成旋律未重新编配原曲。原生端的内存与缓冲数据见仓库实验报告。</small><audio id="music" src="bgm.ogg" preload="none" loop></audio></main>
+<script type="module">
+const music = document.querySelector('#music'), status = document.querySelector('#status'), volume = document.querySelector('#volume');
+let context, node, gain, workletReady, revision = 0;
+function stop() { revision++; music.pause(); if(node){node.port.postMessage('stop');node.disconnect();node=null;} status.textContent='已停止'; }
+function updateVolume(){music.volume=Number(volume.value);if(gain)gain.gain.value=Number(volume.value);}
+volume.addEventListener('input',updateVolume);
+document.querySelector('#stop').onclick=stop;
+document.querySelector('#stream').onclick=async()=>{stop();const current=revision;try{updateVolume();await music.play();if(current!==revision)return;status.textContent='正在循环播放原曲 · 浏览器媒体播放';}catch(error){if(current===revision)status.textContent='播放失败：'+error.message;}};
+document.querySelector('#synth').onclick=async()=>{
+ stop();const current=revision;try{
+  if(!context){context=new AudioContext();gain=context.createGain();gain.connect(context.destination);workletReady=context.audioWorklet.addModule('worklet.js');}
+  await context.resume();await workletReady;
+  const response=await fetch('score.json');if(!response.ok)throw new Error('旋律加载失败');const score=await response.json();
+  if(current!==revision)return;
+  node=new AudioWorkletNode(context,'battleblocks-chip',{numberOfInputs:0,numberOfOutputs:1,outputChannelCount:[2],processorOptions:{score}});
+  node.onprocessorerror=()=>{if(current===revision)status.textContent='合成处理失败';};node.port.onmessage=event=>{if(current===revision)status.textContent='正在实时合成 · '+score.title+'（已播放 '+event.data.seconds+' 秒）';};node.connect(gain);updateVolume();status.textContent='正在实时合成 · '+score.title;
+ }catch(error){if(current===revision)status.textContent='播放失败：'+error.message;}
+};
+window.addEventListener('pagehide',()=>{stop();context?.close();});
+</script></html>
