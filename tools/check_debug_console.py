@@ -62,6 +62,14 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-debug-') as temp:
         guard=next(e for e in data if e['event']=='skill' and 'Guard' in e['detail'])
         assert guard['after']['hp']==640 and guard['after']['mp']==150
         assert guard['after']['action_done'] and not guard['after']['armed']
+        expected_cells=[[x,y] for y,row in enumerate(guard['before']['board']) for x,tile in enumerate(row) if tile==1]
+        assert guard['after']['pending']==expected_cells and expected_cells
+        data=wait(lambda r:any(e['event']=='resolution' and e['action']==guard['action'] for e in r))
+        consumed=next(e for e in data if e['event']=='resolution' and e['action']==guard['action'])
+        assert consumed['before']['hp']==consumed['after']['hp']==640
+        assert consumed['after']['mp']==150
+        assert 'reward=false' in consumed['detail']
+
         send('undo player')
         data=wait(lambda r:sum(e['event']=='rollback' for e in r)>=4)
         assert [e for e in data if e['event']=='rollback'][-1]['after']==guard['before']

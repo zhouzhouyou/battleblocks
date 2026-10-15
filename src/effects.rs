@@ -233,7 +233,26 @@ pub fn draw(skill: Skill, cells: &[(usize, usize)], progress: f32, enemy: bool) 
                 draw_circle(at.x, at.y, 5., tint(GOLD, 1. - q));
                 draw_line(at.x, at.y - 3., at.x, at.y + 3., 1., tint(WHITE, 1. - q));
             }
-            Skill::Charge | Skill::Guard | Skill::Blood | Skill::Strike | Skill::Landslide => {}
+            Skill::Guard => {
+                // The board contribution is consumption, not additional healing.
+                draw_rectangle_lines(
+                    c.x - 24. * (1. - q),
+                    c.y - 24. * (1. - q),
+                    48. * (1. - q),
+                    48. * (1. - q),
+                    2.,
+                    tint(GREEN, 1. - q),
+                );
+                for j in 0..3 {
+                    draw_circle(
+                        c.x + (j as f32 * 2.).sin() * 14.,
+                        c.y - q * 28. - j as f32 * 5.,
+                        3. * (1. - q) + 1.,
+                        tint(LIME, 1. - q),
+                    );
+                }
+            }
+            Skill::Charge | Skill::Blood | Skill::Strike | Skill::Landslide => {}
         }
     }
 }
