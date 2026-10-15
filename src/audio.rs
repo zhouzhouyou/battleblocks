@@ -10,6 +10,7 @@ mod web {
         fn bb_audio_playing(value: u32);
         fn bb_audio_muted(value: u32);
         fn bb_audio_crush();
+        fn bb_audio_volume(value: u32);
     }
     pub struct Audio;
     impl Audio {
@@ -24,6 +25,9 @@ mod web {
         }
         pub fn muted(&self, v: bool) {
             unsafe { bb_audio_muted(v as u32) }
+        }
+        pub fn volume(&self, value: u32) {
+            unsafe { bb_audio_volume(value.min(100)) }
         }
         pub fn crush(&self) {
             unsafe { bb_audio_crush() }
