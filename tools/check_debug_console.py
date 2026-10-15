@@ -47,9 +47,12 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-debug-') as temp:
         send('undo player')
         data=wait(lambda r:sum(e['event']=='rollback' for e in r)>=2)
         assert [e for e in data if e['event']=='rollback'][-1]['after']==cast['before']
+        send('ai 2')  # Difficulty is locked once the battle starts.
         send('tile 8 8 6')
         data=wait(lambda r:any(e['event']=='debug_edit' and e['detail']=='tile 8 8 6' for e in r))
         edit=next(e for e in data if e['event']=='debug_edit' and e['detail']=='tile 8 8 6');assert edit['after']['board'][7][7]==6
+        assert edit['before']['difficulty']==edit['after']['difficulty']==1
+        assert not any(e['event']=='debug_edit' and e['detail']=='ai 2' for e in data)
         send('undo')
         data=wait(lambda r:sum(e['event']=='rollback' for e in r)>=3)
         assert [e for e in data if e['event']=='rollback'][-1]['after']==edit['before']
