@@ -504,6 +504,10 @@ async fn main() {
                             else if (skill==content::Skill::Strike&&extra_bonus>0)||(skill==content::Skill::Landslide&&armed){console.say("Preparation skill is already active");}
                             else{command_skill=Some(skill);command_target=Some(target);console.open=false;targeting=None;}
                         },
+                        Command::Ai(level)=>{
+                            if choosing {difficulty=level;console.say("Pre-battle AI difficulty updated");}
+                            else {console.say("AI difficulty is locked during battle; return to the main menu to choose a new difficulty");}
+                        },
                         command=>{
                             let allowed=!action_done&&pending.is_empty()&&!presentation.busy();
                             if !allowed && !matches!(command,Command::Hp(..)|Command::Mp(..)|Command::Ai(..)|Command::Pause(..)) {
@@ -529,7 +533,6 @@ async fn main() {
                                         bonuses[enemy_turn as usize]=extra_bonus;armed_sides[enemy_turn as usize]=armed;
                                         enemy_turn=side;extra_bonus=bonuses[side as usize];armed=armed_sides[side as usize];enemy_clock=0.;
                                     },
-                                    Command::Ai(level)=>difficulty=level,
                                     Command::Pause(value)=>paused=value,
                                     Command::Resolve=>{pending=matches(&b);action_done=true;deadline=0.28;reward=true;chain=1;console.open=false;},
                                     _=>unreachable!(),
@@ -543,14 +546,7 @@ async fn main() {
             }
         }
         let ui_consumed = if !was_console_open && !console.open {
-            interface.input(
-                pointer,
-                choosing,
-                &mut muted,
-                &mut paused,
-                &mut zh,
-                &mut difficulty,
-            )
+            interface.input(pointer, choosing, &mut muted, &mut paused, &mut zh)
         } else {
             false
         };
@@ -685,6 +681,11 @@ async fn main() {
                     interface.opponent_step = false;
                 }
                 if clicked(MouseButton::Left) {
+                    for i in 0..3 {
+                        if ui::difficulty_rect(i).contains(pointer) {
+                            difficulty = i;
+                        }
+                    }
                     for i in 0..8 {
                         if ui::opponent_rect(i).contains(pointer) {
                             interface.opponent = if i == 0 { None } else { Some(i - 1) };
@@ -757,12 +758,12 @@ async fn main() {
                 clear_background(Color::from_rgba(25, 27, 38, 255));
                 set_camera(&cam);
                 if interface.opponent_step {
-                    interface.draw_opponents(hero_id, zh, &thumbs, pointer);
+                    interface.draw_opponents(hero_id, zh, &thumbs, pointer, difficulty);
                 } else {
                     menu::draw(hero_id, zh, &knight, &thumbs, &tiles, &preview, pointer);
                 }
                 interface.draw_top(true, muted, paused, pointer, zh);
-                interface.draw_panel(zh, muted, difficulty, &tiles, pointer);
+                interface.draw_panel(zh, muted, &tiles, pointer);
                 console.draw();
                 flush_labels();
                 set_default_camera();
@@ -825,9 +826,6 @@ async fn main() {
                     &before,
                     &snapshot!(),
                 );
-            }
-            if key(KeyCode::D) && !action_done && !enemy_turn {
-                difficulty = (difficulty + 1) % 3;
             }
             if pending.is_empty() && !presentation.busy() {
                 deadline = (deadline - dt).max(0.);
@@ -1328,7 +1326,7 @@ async fn main() {
             28.,
             SKYBLUE,
         );
-        label(tr(zh, "D: AI level", "D：AI档位"), 805., 445., 24., WHITE);
+        label(tr(zh, "AI difficulty", "AI 难度"), 805., 445., 24., WHITE);
         label(
             [
                 tr(zh, "Beginner", "入门"),
@@ -1882,7 +1880,7 @@ async fn main() {
         if paused {
             ui::draw_pause(zh, pointer);
         }
-        interface.draw_panel(zh, muted, difficulty, &tiles, pointer);
+        interface.draw_panel(zh, muted, &tiles, pointer);
         console.draw();
         flush_labels();
         set_default_camera();

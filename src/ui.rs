@@ -49,7 +49,6 @@ impl Ui {
         muted: &mut bool,
         paused: &mut bool,
         zh: &mut bool,
-        difficulty: &mut usize,
     ) -> bool {
         let click = is_mouse_button_pressed(MouseButton::Left);
         let previous = self.panel.is_some();
@@ -95,7 +94,7 @@ impl Ui {
             }
             match self.panel {
                 Some(Panel::Settings) => {
-                    for i in 0..6 {
+                    for i in 0..5 {
                         if Rect::new(280., 190. + i as f32 * 58., 464., 46.).contains(pointer) {
                             match i {
                                 0 => {}
@@ -106,7 +105,7 @@ impl Ui {
                                 2 => request_new_screen_size(1024., 720.),
                                 3 => request_new_screen_size(1280., 900.),
                                 4 => *zh = !*zh,
-                                _ => *difficulty = (*difficulty + 1) % 3,
+                                _ => unreachable!(),
                             }
                         }
                     }
@@ -211,7 +210,14 @@ impl Ui {
             }
         }
     }
-    pub fn draw_opponents(&self, hero: usize, zh: bool, thumbs: &Texture2D, pointer: Vec2) {
+    pub fn draw_opponents(
+        &self,
+        hero: usize,
+        zh: bool,
+        thumbs: &Texture2D,
+        pointer: Vec2,
+        difficulty: usize,
+    ) {
         label(
             tr(zh, "STEP 2 · CHOOSE OPPONENT", "第二步 · 选择对手"),
             24.,
@@ -230,6 +236,21 @@ impl Ui {
             22.,
             LIGHTGRAY,
         );
+        label(tr(zh, "AI difficulty", "AI 难度"), 24., 140., 24., WHITE);
+        for (i, name) in [
+            tr(zh, "Easy", "简单"),
+            tr(zh, "Normal", "普通"),
+            tr(zh, "Hard", "困难"),
+        ]
+        .iter()
+        .enumerate()
+        {
+            let r = difficulty_rect(i);
+            button(r, name, pointer);
+            if i == difficulty {
+                draw_rectangle_lines(r.x, r.y, r.w, r.h, 2., GOLD);
+            }
+        }
         for i in 0..8 {
             let r = opponent_rect(i);
             button(r, "", pointer);
@@ -303,14 +324,7 @@ impl Ui {
             pointer,
         );
     }
-    pub fn draw_panel(
-        &self,
-        zh: bool,
-        muted: bool,
-        difficulty: usize,
-        tiles: &[Texture2D; 7],
-        pointer: Vec2,
-    ) {
+    pub fn draw_panel(&self, zh: bool, muted: bool, tiles: &[Texture2D; 7], pointer: Vec2) {
         let Some(panel) = self.panel else { return };
         flush_labels();
         draw_rectangle(0., 0., 1024., 720., Color::new(0., 0., 0., 0.78));
@@ -351,15 +365,6 @@ impl Ui {
                     tr(zh, "Window: 1024 × 720", "窗口：1024 × 720").into(),
                     tr(zh, "Window: 1280 × 900", "窗口：1280 × 900").into(),
                     tr(zh, "Language: English / 中文", "语言：中文 / English").into(),
-                    format!(
-                        "{}: {}",
-                        tr(zh, "AI difficulty", "AI 难度"),
-                        [
-                            tr(zh, "Easy", "简单"),
-                            tr(zh, "Normal", "普通"),
-                            tr(zh, "Hard", "困难")
-                        ][difficulty]
-                    ),
                 ];
                 for (i, t) in texts.iter().enumerate() {
                     button(
@@ -493,4 +498,8 @@ pub fn draw_pause(zh: bool, pointer: Vec2) {
 
 pub fn back_rect() -> Rect {
     Rect::new(24., 651., 232., 48.)
+}
+
+pub fn difficulty_rect(i: usize) -> Rect {
+    Rect::new(230. + i as f32 * 194., 112., 180., 40.)
 }
