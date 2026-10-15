@@ -22,3 +22,12 @@
     Object.assign(imports.env,{bb_audio_init:init,bb_audio_playing(value){const next=!!value;if(next!==wanted){wanted=next;apply();}},bb_audio_muted(value){muted=!!value;apply();},bb_audio_crush(){if(muted||!effect||!context)return;const source=context.createBufferSource();const gain=context.createGain();source.buffer=effect;gain.gain.value=.35;source.connect(gain);gain.connect(context.destination);source.onended=()=>{source.disconnect();gain.disconnect();};source.start();}});
   }});
 })();
+
+miniquad_add_plugin({name:'battleblocks_debug',version:1,register_plugin(imports){
+  imports.env.bb_debug_download=function(ptr,len){
+    const bytes=new Uint8Array(wasm_memory.buffer,ptr,len).slice();
+    const url=URL.createObjectURL(new Blob([bytes],{type:'application/x-ndjson'}));
+    const link=document.createElement('a');link.href=url;link.download='battleblocks-session.jsonl';
+    document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  };
+}});
