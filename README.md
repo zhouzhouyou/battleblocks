@@ -113,9 +113,9 @@ Macroquad 0.4.16 与依赖通过 Cargo.lock 固定；网页 JS 使用匹配的 m
 
 ### GitHub Pages
 
-`.github/workflows/pages.yml` 会在手动触发时检查 Pages 是否启用，然后构建并部署网页版。当前仓库为私有仓库，GitHub API 返回现有套餐不支持此仓库的 Pages，因此尚无可访问的在线游戏地址。工作流会在 Pages 不可用时跳过部署，保留原因说明。
+在线游玩：[BattleBlocks](https://zhouzhouyou.github.io/battleblocks/)。
 
-账户具备私有仓库 Pages 支持后，在仓库 Settings → Pages 将 Source 设为 GitHub Actions，再手动运行 “Deploy web game to Pages”。当前暂不发布网页，工作流仅保留手动触发。仓库可见性不会由工作流修改。
+`.github/workflows/pages.yml` 在推送 main 或手动触发时构建 WebAssembly 并部署至 GitHub Pages，Source 使用 GitHub Actions。Windows x64 与 macOS 安装包见 GitHub Releases。
 
 Windows x64 Release 由 `.github/workflows/windows-release.yml` 在 GitHub Windows runner 上构建、运行测试并打包；手动触发时填写已存在的 draft release tag，生成的压缩包和 SHA-256 校验文件会自动附加到对应 release。
 
