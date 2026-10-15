@@ -1,0 +1,72 @@
+name: Deploy web game to Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  availability:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: read
+    outputs:
+      enabled: ${{ steps.pages.outputs.enabled }}
+    steps:
+      - name: Check whether Pages is enabled
+        id: pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          if gh api "repos/$GH_REPO/pages" --jq '.build_type' > /tmp/pages-type; then
+            if [ "$(cat /tmp/pages-type)" = workflow ]; then
+              echo 'enabled=true' >> "$GITHUB_OUTPUT"
+            else
+              echo 'enabled=false' >> "$GITHUB_OUTPUT"
+              echo 'Set Pages source to GitHub Actions before deploying.' >> "$GITHUB_STEP_SUMMARY"
+            fi
+          else
+            echo 'enabled=false' >> "$GITHUB_OUTPUT"
+            echo 'Pages is unavailable or disabled. Enable Pages with GitHub Actions as its source, then run this workflow again. Private repositories require an eligible GitHub plan.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  deploy:
+    needs: availability
+    if: needs.availability.outputs.enabled == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Prepare Rust and font tools
+        run: |
+          rustup target add wasm32-unknown-unknown
+          python tools/build.py --setup-only
+      - name: Build and package WebAssembly
+        run: |
+          cargo build --release --locked --bin battleblocks --target wasm32-unknown-unknown
+          python tools/package.py --web-only
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/web
+      - name: Publish game
+        id: deployment
+        uses: actions/deploy-pages@v4
