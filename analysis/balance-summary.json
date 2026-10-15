@@ -1,0 +1,96 @@
+{
+  "before": [
+    {
+      "hero": "Knight",
+      "wins": "147",
+      "games": "288",
+      "win_percent": "51.0"
+    },
+    {
+      "hero": "Elf",
+      "wins": "182",
+      "games": "288",
+      "win_percent": "63.2"
+    },
+    {
+      "hero": "Wizard",
+      "wins": "42",
+      "games": "288",
+      "win_percent": "14.6"
+    },
+    {
+      "hero": "Goblin",
+      "wins": "73",
+      "games": "288",
+      "win_percent": "25.3"
+    },
+    {
+      "hero": "Imp",
+      "wins": "213",
+      "games": "288",
+      "win_percent": "74.0"
+    },
+    {
+      "hero": "Chort",
+      "wins": "254",
+      "games": "288",
+      "win_percent": "88.2"
+    },
+    {
+      "hero": "Big Zombie",
+      "wins": "18",
+      "games": "288",
+      "win_percent": "6.2"
+    }
+  ],
+  "after": [
+    {
+      "hero": "Knight",
+      "wins": "731",
+      "games": "1440",
+      "win_percent": "50.8"
+    },
+    {
+      "hero": "Elf",
+      "wins": "683",
+      "games": "1440",
+      "win_percent": "47.4"
+    },
+    {
+      "hero": "Wizard",
+      "wins": "804",
+      "games": "1440",
+      "win_percent": "55.8"
+    },
+    {
+      "hero": "Goblin",
+      "wins": "664",
+      "games": "1440",
+      "win_percent": "46.1"
+    },
+    {
+      "hero": "Imp",
+      "wins": "711",
+      "games": "1440",
+      "win_percent": "49.4"
+    },
+    {
+      "hero": "Chort",
+      "wins": "708",
+      "games": "1440",
+      "win_percent": "49.2"
+    },
+    {
+      "hero": "Big Zombie",
+      "wins": "739",
+      "games": "1440",
+      "win_percent": "51.3"
+    }
+  ],
+  "final_games": 5040,
+  "final_seeds_start": 30000,
+  "samples_per_pair_per_side": 120,
+  "median_actions": 36,
+  "p90_burst": 224,
+  "first_side_win_percent": 54.2
+}

@@ -1,6 +1,17 @@
+mod board;
+#[cfg(test)]
+use board::drop_board;
 mod content;
+use board::{fresh, matches, parallel_swap, playable, swap, valid_swap, Board, N};
+mod debug;
+mod effects;
+mod icons;
 mod menu;
-use content::{effect, HEROES, VALUES};
+mod presentation;
+use presentation::{CLEAR_TIME, TURN_HOLD};
+mod rng;
+mod strategy;
+use content::{effect, effect_at, HEROES, VALUES};
 struct SpriteAsset {
     bytes: &'static [u8],
     w: f32,
@@ -12,105 +23,37 @@ mod audio;
 mod sprites;
 use macroquad::prelude::*;
 use std::cell::RefCell;
-const N: usize = 8;
-type Board = [[u8; N]; N];
-fn matches(b: &Board) -> Vec<(usize, usize)> {
-    let mut hit = [[false; N]; N];
-    for y in 0..N {
-        for x in 0..N {
-            if b[y][x] == 255 {
-                continue;
+fn wrap_preview_text(text: &str, limit: f32) -> Vec<String> {
+    let mut lines = Vec::new();
+    for source in text.lines() {
+        let mut line = String::new();
+        let mut width = 0.;
+        for c in source.chars() {
+            let w = if c.is_ascii() { 0.55 } else { 1. };
+            if width + w > limit && !line.is_empty() {
+                lines.push(std::mem::take(&mut line));
+                width = 0.;
             }
-            if x + 2 < N && b[y][x] == b[y][x + 1] && b[y][x] == b[y][x + 2] {
-                hit[y][x] = true;
-                hit[y][x + 1] = true;
-                hit[y][x + 2] = true;
-            }
-            if y + 2 < N && b[y][x] == b[y + 1][x] && b[y][x] == b[y + 2][x] {
-                hit[y][x] = true;
-                hit[y + 1][x] = true;
-                hit[y + 2][x] = true;
-            }
+            line.push(c);
+            width += w;
+        }
+        if !line.is_empty() {
+            lines.push(line);
         }
     }
-    let mut out = Vec::new();
-    for y in 0..N {
-        for x in 0..N {
-            if hit[y][x] {
-                out.push((x, y));
-            }
-        }
-    }
-    out
+    lines
 }
-fn new_board() -> Board {
-    let mut b = [[255; N]; N];
-    for y in 0..N {
-        for x in 0..N {
-            loop {
-                b[y][x] = rand::gen_range(0, 7);
-                if !(x >= 2 && b[y][x] == b[y][x - 1] && b[y][x] == b[y][x - 2])
-                    && !(y >= 2 && b[y][x] == b[y - 1][x] && b[y][x] == b[y - 2][x])
-                {
-                    break;
-                }
-            }
-        }
-    }
-    b
+fn cancel_skill_rect() -> Rect {
+    Rect::new(805., 642., 195., 40.)
 }
-fn swap(b: &mut Board, a: (usize, usize), c: (usize, usize)) {
-    let t = b[a.1][a.0];
-    b[a.1][a.0] = b[c.1][c.0];
-    b[c.1][c.0] = t;
-}
-fn valid_swap(b: &mut Board, a: (usize, usize), c: (usize, usize)) -> bool {
-    if a.0.abs_diff(c.0) + a.1.abs_diff(c.1) != 1 {
-        return false;
-    }
-    swap(b, a, c);
-    if matches(b).is_empty() {
-        swap(b, a, c);
-        false
+fn toggle_skill_target(
+    current: Option<content::Skill>,
+    skill: content::Skill,
+) -> Option<content::Skill> {
+    if current == Some(skill) {
+        None
     } else {
-        true
-    }
-}
-fn playable(b: &Board) -> bool {
-    for y in 0..N {
-        for x in 0..N {
-            for c in [(x + 1, y), (x, y + 1)] {
-                if c.0 < N && c.1 < N {
-                    let mut copy = *b;
-                    if valid_swap(&mut copy, (x, y), c) {
-                        return true;
-                    }
-                }
-            }
-        }
-    }
-    false
-}
-fn fresh() -> Board {
-    loop {
-        let b = new_board();
-        if playable(&b) {
-            return b;
-        }
-    }
-}
-fn drop_board(b: &mut Board) {
-    for x in 0..N {
-        let mut dest = N;
-        for y in (0..N).rev() {
-            if b[y][x] != 255 {
-                dest -= 1;
-                b[dest][x] = b[y][x];
-            }
-        }
-        for y in 0..dest {
-            b[y][x] = rand::gen_range(0, 7);
-        }
+        Some(skill)
     }
 }
 fn diagnostic(flag: &str) -> bool {
@@ -381,21 +324,40 @@ async fn main() {
     #[cfg(target_arch = "wasm32")]
     let bench: Option<usize> = None;
     let mut hero_id = bench.unwrap_or(0);
+    #[cfg(not(target_arch = "wasm32"))]
+    let startup_commands = std::env::args().any(|arg| arg == "--command");
+    #[cfg(target_arch = "wasm32")]
+    let startup_commands = false;
     let mut knight = diagnostic_texture(sprites::SPRITES[hero_id].bytes, "no_actors");
     let thumbs = texture(include_bytes!("../assets/hero-thumbnails.png"));
     let mut preview = menu::Preview::new(hero_id, 0);
-    let demon = diagnostic_texture(sprites::SPRITES[7].bytes, "no_actors");
-    let mut choosing = bench.is_none();
+    let mut enemy_id = (hero_id + 1) % HEROES.len();
+    let mut demon = diagnostic_texture(sprites::SPRITES[enemy_id].bytes, "no_actors");
+    let mut choosing = bench.is_none() && !startup_commands;
     let audio = audio::Audio::new(!diagnostic("no_music"), !diagnostic("no_sound"))
         .map_err(|error| eprintln!("Audio unavailable: {error}"))
         .ok();
-    rand::srand((get_time() * 1e9) as u64);
+    rng::srand((get_time() * 1e9) as u64);
     let mut b = fresh();
     let mut selected: Option<(usize, usize)> = None;
-    let (mut hp, mut enemy, mut mp) = (HEROES[hero_id].hp, 800i32, 0i32);
+    let (mut hp, mut enemy, mut mp) = (HEROES[hero_id].hp, HEROES[enemy_id].hp, 0i32);
     let mut pending: Vec<(usize, usize)> = Vec::new();
     let mut deadline = 0.;
     let mut enemy_clock = 0.;
+    let mut enemy_mp = 0;
+    let mut enemy_turn = false;
+    let mut action_done = false;
+    let mut difficulty = 1usize;
+    let mut bonuses = [0, 0];
+    let mut armed_sides = [false, false];
+    let mut feedback = String::new();
+    let mut feedback_time = 0.;
+    let mut move_flash = None;
+    let mut targeting = None;
+    let mut skill_flash = Vec::new();
+    let mut last_cast = None;
+    let mut last_cast_enemy = false;
+    let mut cast_time = 0.;
     let mut paused = false;
     let mut muted = false;
     let mut chain = 0;
@@ -403,6 +365,86 @@ async fn main() {
     let mut reward = true;
     let mut extra_bonus = 0;
     let mut armed = false;
+    let mut console = debug::Console::new();
+    let mut game_over_logged = false;
+    let mut charge_damage: Option<(i32, bool)> = None;
+    let mut presentation = presentation::Presentation::default();
+    macro_rules! snapshot {
+        () => {
+            debug::Snapshot {
+                board: b,
+                hero: hero_id,
+                enemy: enemy_id,
+                hp,
+                enemy_hp: enemy,
+                mp,
+                enemy_mp,
+                enemy_turn,
+                action_done,
+                pending: pending.clone(),
+                deadline,
+                enemy_clock,
+                bonuses,
+                armed_sides,
+                bonus: extra_bonus,
+                armed,
+                chain,
+                reward,
+                difficulty,
+                paused,
+                rng_state: rng::state(),
+                charge_damage,
+                charge_remaining: presentation.charge_remaining(),
+            }
+        };
+    }
+    macro_rules! restore {
+        ($state:expr) => {{
+            let state = $state;
+            b = state.board;
+            hero_id = state.hero;
+            enemy_id = state.enemy;
+            hp = state.hp;
+            enemy = state.enemy_hp;
+            mp = state.mp;
+            enemy_mp = state.enemy_mp;
+            enemy_turn = state.enemy_turn;
+            action_done = state.action_done;
+            pending = state.pending;
+            deadline = state.deadline;
+            enemy_clock = state.enemy_clock;
+            bonuses = state.bonuses;
+            armed_sides = state.armed_sides;
+            extra_bonus = state.bonus;
+            armed = state.armed;
+            chain = state.chain;
+            rng::restore(state.rng_state);
+            reward = state.reward;
+            difficulty = state.difficulty;
+            paused = state.paused;
+            selected = None;
+            targeting = None;
+            presentation.clear();
+            charge_damage = state.charge_damage;
+            last_cast_enemy = charge_damage.map(|(_, enemy)| enemy).unwrap_or(false);
+            if charge_damage.is_some() {
+                let column = pending.first().map(|c| c.0).unwrap_or(0);
+                presentation.charge(column, state.charge_remaining.max(0.001));
+            }
+            skill_flash.clear();
+            last_cast = None;
+            cast_time = 0.;
+            feedback.clear();
+            feedback_time = 0.;
+            move_flash = None;
+            knight = diagnostic_texture(sprites::SPRITES[hero_id].bytes, "no_actors");
+            demon = diagnostic_texture(sprites::SPRITES[enemy_id].bytes, "no_actors");
+            preview = menu::Preview::new(hero_id, 0);
+            choosing = false;
+            game_over_logged = false;
+        }};
+    }
+    console.event("session_start", "New session", &snapshot!(), &snapshot!());
     loop {
         let dt = get_frame_time() as f64;
         let scale = (screen_width() / 1024.).min(screen_height() / 720.);
@@ -413,28 +455,132 @@ async fn main() {
         };
         let (mx, my) = mouse_position();
         let pointer = cam.screen_to_world(vec2(mx, my));
-        if is_key_pressed(KeyCode::L)
-            || (is_mouse_button_pressed(MouseButton::Left)
-                && Rect::new(810., 20., 190., 48.).contains(pointer))
+        let was_console_open = console.open;
+        console.input();
+        let mut command_move = None;
+        let mut command_skill = None;
+        let mut command_target = None;
+        let mut restart_command = false;
+        // Process one command per frame so multiple CLI commands retain their order.
+        if let Some(line) = console.commands.pop_front() {
+            console.event("command", &line, &snapshot!(), &snapshot!());
+            match debug::parse(&line) {
+                Err(error) => console.say(&error),
+                Ok(command) => {
+                    use debug::Command;
+                    let before = snapshot!();
+                    match command {
+                        Command::Help=>{
+                            for text in [
+                                "status | board | export | undo | undo player | restart",
+                                "tile x y type | board load <64 types in row order> | shuffle | seed n",
+                                "hp player/enemy n | mp player/enemy n | turn player/enemy | ai 0/1/2",
+                                "hero player/enemy 0..6 | buff player/enemy bonus 0..10 | buff player/enemy armed on/off",
+                                "move x1 y1 x2 y2 | cast 1/2 [x y] | resolve | pause on/off",
+                                "Coordinates: 1..8; tile: 0 balanced,1 heal,2 attack,3 mana,4 HP+ATK,5 HP+MP,6 ATK+MP",
+                                "Console freezes combat. Move/cast/resolve close it and run normal rules.",
+                                "Undo restores up to 256 action snapshots. Random refill state is also restored.",
+                            ]{console.say(text);}
+                        },
+                        Command::Status=>console.say(&format!("Hero={} Enemy={} HP={}/{} MP={}/{} turn={} pending={} buff={} armed={} AI={} paused={}",hero_id,enemy_id,hp,enemy,mp,enemy_mp,if enemy_turn{"enemy"}else{"player"},pending.len(),extra_bonus,armed,difficulty,paused)),
+                        Command::Board=>{for (y,row) in b.iter().enumerate(){console.say(&format!("{}: {:?}",y+1,row));}},
+                        Command::Export=>console.export(),
+                        Command::Undo(player)=>{
+                            if let Some((state,action))=console.undo(player) {restore!(state);console.event("rollback",&format!("Restored before action {action}; command: {line}"),&before,&snapshot!());}
+                            else{console.say("No matching action to undo");}
+                        },
+                        Command::Restart=>restart_command=true,
+                        Command::Move(a,c)=>{
+                            if choosing||enemy_turn||action_done||presentation.busy()||!pending.is_empty()||hp==0||enemy==0||paused {console.say("Move requires a live, unpaused player turn with no pending resolution");}
+                            else if a.0.abs_diff(c.0)+a.1.abs_diff(c.1)!=1{console.say("Move requires adjacent tiles");}
+                            else{command_move=Some((a,c));console.open=false;targeting=None;}
+                        },
+                        Command::Cast(slot,target)=>{
+                            let skill=HEROES[hero_id].skills[slot];
+                            if choosing||enemy_turn||action_done||presentation.busy()||!pending.is_empty()||hp==0||enemy==0||paused {console.say("Cast requires a live, unpaused player turn with no pending resolution");}
+                            else if mp<skill.cost(){console.say("Not enough mana");}
+                            else if (skill==content::Skill::Strike&&extra_bonus>0)||(skill==content::Skill::Landslide&&armed){console.say("Preparation skill is already active");}
+                            else{command_skill=Some(skill);command_target=Some(target);console.open=false;targeting=None;}
+                        },
+                        command=>{
+                            let allowed=!action_done&&pending.is_empty()&&!presentation.busy();
+                            if !allowed && !matches!(command,Command::Hp(..)|Command::Mp(..)|Command::Ai(..)|Command::Pause(..)) {
+                                console.say("Wait for resolution, or undo before editing board/turn");
+                            } else {
+                                console.checkpoint_edit(before.clone());
+                                match command {
+                                    Command::Hero(side,id)=>{
+                                        if side {enemy_id=id;enemy=HEROES[id].hp;enemy_mp=0;demon=diagnostic_texture(sprites::SPRITES[id].bytes,"no_actors");}
+                                        else {hero_id=id;hp=HEROES[id].hp;mp=0;knight=diagnostic_texture(sprites::SPRITES[id].bytes,"no_actors");preview=menu::Preview::new(id,0);}
+                                        bonuses[side as usize]=0;armed_sides[side as usize]=false;
+                                        if enemy_turn==side {extra_bonus=0;armed=false;}
+                                    },
+                                    Command::Bonus(side,value)=>{bonuses[side as usize]=value;if enemy_turn==side{extra_bonus=value;}},
+                                    Command::Armed(side,value)=>{armed_sides[side as usize]=value;if enemy_turn==side{armed=value;}},
+                                    Command::SetTile(x,y,kind)=>b[y][x]=kind,
+                                    Command::LoadBoard(board)=>b=board,
+                                    Command::Shuffle=>b=fresh(),
+                                    Command::Seed(seed)=>rng::srand(seed),
+                                    Command::Hp(side,value)=>if side{enemy=value.min(HEROES[enemy_id].hp)}else{hp=value.min(HEROES[hero_id].hp)},
+                                    Command::Mp(side,value)=>if side{enemy_mp=value.min(HEROES[enemy_id].mp)}else{mp=value.min(HEROES[hero_id].mp)},
+                                    Command::Turn(side)=>{
+                                        bonuses[enemy_turn as usize]=extra_bonus;armed_sides[enemy_turn as usize]=armed;
+                                        enemy_turn=side;extra_bonus=bonuses[side as usize];armed=armed_sides[side as usize];enemy_clock=0.;
+                                    },
+                                    Command::Ai(level)=>difficulty=level,
+                                    Command::Pause(value)=>paused=value,
+                                    Command::Resolve=>{pending=matches(&b);action_done=true;deadline=0.28;reward=true;chain=1;console.open=false;},
+                                    _=>unreachable!(),
+                                }
+                                selected=None;targeting=None;choosing=false;game_over_logged=false;
+                                console.event("debug_edit",&line,&before,&snapshot!());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        let block_input = was_console_open || console.open;
+        let key = |code| !block_input && is_key_pressed(code);
+        let clicked = |button| !block_input && is_mouse_button_pressed(button);
+        if key(KeyCode::L)
+            || (clicked(MouseButton::Left) && Rect::new(810., 20., 190., 48.).contains(pointer))
         {
             zh = !zh;
         }
-        if is_key_pressed(KeyCode::P) {
+        if key(KeyCode::P) {
             paused = !paused;
         }
-        if is_key_pressed(KeyCode::M) {
+        if key(KeyCode::M) {
             muted = !muted;
             if let Some(audio) = &audio {
                 audio.muted(muted);
             }
         }
-        if is_key_pressed(KeyCode::E) {
+        if key(KeyCode::E) {
             choosing = true;
         }
-        if is_key_pressed(KeyCode::R) {
+        if key(KeyCode::R) || restart_command {
+            let before = snapshot!();
             b = fresh();
             hp = HEROES[hero_id].hp;
-            enemy = 800;
+            enemy_id = (hero_id + 1 + rng::gen_range(0, HEROES.len() - 1)) % HEROES.len();
+            demon = diagnostic_texture(sprites::SPRITES[enemy_id].bytes, "no_actors");
+            enemy = HEROES[enemy_id].hp;
+            enemy_mp = 0;
+            enemy_turn = false;
+            action_done = false;
+            bonuses = [0, 0];
+            armed_sides = [false, false];
+            targeting = None;
+            presentation.clear();
+            charge_damage = None;
+            skill_flash.clear();
+            last_cast = None;
+            cast_time = 0.;
+            feedback.clear();
+            feedback_time = 0.;
+            move_flash = None;
             mp = 0;
             pending.clear();
             selected = None;
@@ -445,19 +591,22 @@ async fn main() {
             armed = false;
             extra_bonus = 0;
             reward = true;
+            game_over_logged = false;
+            console.reset_history();
+            console.event("restart", "Restart battle", &before, &snapshot!());
         }
         if choosing {
             if let Some(audio) = &audio {
                 audio.playing(false);
             }
             let old_hero = hero_id;
-            if is_key_pressed(KeyCode::Down) {
+            if key(KeyCode::Down) {
                 hero_id = (hero_id + 1) % HEROES.len();
             }
-            if is_key_pressed(KeyCode::Up) {
+            if key(KeyCode::Up) {
                 hero_id = (hero_id + HEROES.len() - 1) % HEROES.len();
             }
-            if is_mouse_button_pressed(MouseButton::Left) {
+            if clicked(MouseButton::Left) {
                 for i in 0..HEROES.len() {
                     if menu::hero_rect(i).contains(pointer) {
                         hero_id = i;
@@ -469,23 +618,38 @@ async fn main() {
                 preview = menu::Preview::new(hero_id, 0);
             }
             for i in 0..HEROES[hero_id].skills.len() {
-                if (is_mouse_button_pressed(MouseButton::Left)
-                    && menu::skill_rect(i).contains(pointer))
-                    || (i == 0 && is_key_pressed(KeyCode::Key1))
-                    || (i == 1 && is_key_pressed(KeyCode::Key2))
+                if (clicked(MouseButton::Left) && menu::skill_rect(i).contains(pointer))
+                    || (i == 0 && key(KeyCode::Key1))
+                    || (i == 1 && key(KeyCode::Key2))
                 {
                     preview = menu::Preview::new(hero_id, i);
                 }
             }
-            if is_key_pressed(KeyCode::Enter)
-                || (is_mouse_button_pressed(MouseButton::Left)
-                    && menu::start_rect().contains(pointer))
+            if key(KeyCode::Enter)
+                || (clicked(MouseButton::Left) && menu::start_rect().contains(pointer))
             {
+                let before = snapshot!();
                 choosing = false;
                 b = fresh();
                 hp = HEROES[hero_id].hp;
                 mp = 0;
-                enemy = 800;
+                enemy_id = (hero_id + 1 + rng::gen_range(0, HEROES.len() - 1)) % HEROES.len();
+                demon = diagnostic_texture(sprites::SPRITES[enemy_id].bytes, "no_actors");
+                enemy = HEROES[enemy_id].hp;
+                enemy_mp = 0;
+                enemy_turn = false;
+                action_done = false;
+                bonuses = [0, 0];
+                armed_sides = [false, false];
+                targeting = None;
+                presentation.clear();
+                charge_damage = None;
+                skill_flash.clear();
+                last_cast = None;
+                cast_time = 0.;
+                feedback.clear();
+                feedback_time = 0.;
+                move_flash = None;
                 pending.clear();
                 selected = None;
                 enemy_clock = 0.;
@@ -495,11 +659,20 @@ async fn main() {
                 reward = true;
                 chain = 0;
                 note = "Select two adjacent tiles";
+                game_over_logged = false;
+                console.reset_history();
+                console.event(
+                    "battle_start",
+                    "Selected hero and opponent",
+                    &before,
+                    &snapshot!(),
+                );
             }
             if choosing {
                 clear_background(Color::from_rgba(25, 27, 38, 255));
                 set_camera(&cam);
                 menu::draw(hero_id, zh, &knight, &thumbs, &tiles, &preview, pointer);
+                console.draw();
                 flush_labels();
                 set_default_camera();
                 next_frame().await;
@@ -507,35 +680,262 @@ async fn main() {
             }
         }
         if let Some(audio) = &audio {
-            audio.playing(!paused && hp > 0 && enemy > 0);
+            audio.playing(!paused && !console.open && hp > 0 && enemy > 0);
         }
-        let active = !paused && hp > 0 && enemy > 0;
+        // Visual lifetimes continue after victory/defeat and are independent of rewards.
+        feedback_time = (feedback_time - dt).max(0.);
+        cast_time = (cast_time - dt).max(0.);
+        if cast_time == 0. {
+            skill_flash.clear();
+            last_cast = None;
+        }
+        if !paused && !console.open {
+            presentation.tick(dt);
+        }
+        let active = !paused && !console.open && hp > 0 && enemy > 0 && !presentation.busy();
         if active {
-            enemy_clock += dt;
-            if enemy_clock >= 10. && pending.is_empty() {
-                hp = (hp - rand::gen_range(20, 120)).max(0);
-                enemy = (enemy + 50).min(800);
-                enemy_clock = 0.;
+            if let Some((damage, enemy_actor)) = charge_damage {
+                let before = snapshot!();
+                charge_damage = None;
+                if enemy_actor {
+                    hp = (hp - damage).max(0);
+                } else {
+                    enemy = (enemy - damage).max(0);
+                }
+                let actual = if enemy_actor {
+                    before.hp - hp
+                } else {
+                    before.enemy_hp - enemy
+                };
+                presentation.health(
+                    [before.hp, before.enemy_hp],
+                    [hp, enemy],
+                    content::Skill::Charge.name(zh),
+                );
+                feedback = format!(
+                    "{} · {} {}",
+                    content::Skill::Charge.name(zh),
+                    tr(zh, "Damage:", "伤害："),
+                    actual
+                );
+                feedback_time = 2.5;
+                deadline = 0.;
+                console.event(
+                    "skill_hit",
+                    &format!("Charge expected_damage={} actual_damage={}", damage, actual),
+                    &before,
+                    &snapshot!(),
+                );
             }
-            let mut cast = None;
-            if pending.is_empty() && hp > 0 {
+            if key(KeyCode::D) && !action_done && !enemy_turn {
+                difficulty = (difficulty + 1) % 3;
+            }
+            if pending.is_empty() && !presentation.busy() {
+                deadline = (deadline - dt).max(0.);
+            }
+            if action_done && pending.is_empty() && !presentation.busy() && deadline <= 0. {
+                let before = snapshot!();
+                bonuses[enemy_turn as usize] = extra_bonus;
+                armed_sides[enemy_turn as usize] = armed;
+                enemy_turn = !enemy_turn;
+                extra_bonus = bonuses[enemy_turn as usize];
+                armed = armed_sides[enemy_turn as usize];
+                action_done = false;
+                selected = None;
+                enemy_clock = 0.;
+                move_flash = None;
+                chain = 0;
+                console.event(
+                    "turn_start",
+                    "All cascades resolved; next actor",
+                    &before,
+                    &snapshot!(),
+                );
+            }
+            if enemy_turn && pending.is_empty() && !action_done {
+                enemy_clock += dt;
+            }
+            let mut cast = command_skill;
+            if pending.is_empty() && hp > 0 && !enemy_turn && !action_done {
                 for (i, skill) in HEROES[hero_id].skills.iter().enumerate() {
                     let rect = Rect::new(20., 445. + i as f32 * 118., 210., 112.);
-                    if (i == 0 && (is_key_pressed(KeyCode::Key1) || is_key_pressed(KeyCode::Space)))
-                        || (i == 1 && is_key_pressed(KeyCode::Key2))
-                        || (is_mouse_button_pressed(MouseButton::Left) && rect.contains(pointer))
+                    if !((matches!(skill, content::Skill::Strike) && extra_bonus > 0)
+                        || (matches!(skill, content::Skill::Landslide) && armed))
+                        && ((i == 0 && (key(KeyCode::Key1) || key(KeyCode::Space)))
+                            || (i == 1 && key(KeyCode::Key2))
+                            || (clicked(MouseButton::Left) && rect.contains(pointer)))
                     {
                         cast = Some(*skill);
                     }
                 }
             }
+            if enemy_turn && enemy_clock >= 1.1 && pending.is_empty() && !action_done {
+                let enemy_before = snapshot!();
+                cast = strategy::choose_skill(
+                    &b,
+                    enemy_id,
+                    enemy,
+                    enemy_mp,
+                    difficulty,
+                    armed,
+                    extra_bonus,
+                );
+                if cast.is_none() {
+                    if let Some((a, c)) = strategy::choose_move(
+                        &b,
+                        enemy,
+                        HEROES[enemy_id].hp,
+                        enemy_mp,
+                        HEROES[enemy_id].mp,
+                        difficulty,
+                    ) {
+                        let before = enemy_before.clone();
+                        console.checkpoint(before.clone());
+                        presentation.swap(&before.board, a, c, armed, enemy_turn);
+                        if armed {
+                            parallel_swap(&mut b, a, c);
+                            armed = false;
+                        } else {
+                            valid_swap(&mut b, a, c);
+                        }
+                        pending = matches(&b);
+                        deadline = CLEAR_TIME;
+                        reward = true;
+                        chain = 1;
+                        action_done = true;
+                        move_flash = Some((a, c));
+                        console.event(
+                            "move",
+                            &format!(
+                                "AI swap [{},{}] -> [{},{}]",
+                                a.0 + 1,
+                                a.1 + 1,
+                                c.0 + 1,
+                                c.1 + 1
+                            ),
+                            &before,
+                            &snapshot!(),
+                        );
+                    } else {
+                        let before = snapshot!();
+                        b = fresh();
+                        console.event(
+                            "board_refresh",
+                            "AI has no legal move",
+                            &before,
+                            &snapshot!(),
+                        );
+                    }
+                }
+                enemy_clock = 0.;
+            }
+            let board_target =
+                if pointer.x >= 256. && pointer.x < 768. && pointer.y >= 110. && pointer.y < 622. {
+                    Some((
+                        ((pointer.x - 256.) / 64.) as usize,
+                        ((pointer.y - 110.) / 64.) as usize,
+                    ))
+                } else {
+                    None
+                };
+            let cancel_target = key(KeyCode::Escape)
+                || clicked(MouseButton::Right)
+                || (targeting.is_some()
+                    && clicked(MouseButton::Left)
+                    && cancel_skill_rect().contains(pointer));
+            if cancel_target {
+                targeting = None;
+                selected = None;
+                cast = None;
+            }
+            if !enemy_turn {
+                if let Some(skill) = cast {
+                    if content::targeted(skill) && mp >= skill.cost() && command_skill.is_none() {
+                        targeting = toggle_skill_target(targeting, skill);
+                        selected = None;
+                        cast = None;
+                    }
+                }
+                if let Some(skill) = targeting {
+                    if board_target.is_some() && clicked(MouseButton::Left) {
+                        cast = Some(skill);
+                        targeting = None;
+                    }
+                }
+            }
+            let mut cast_this_frame = false;
             if let Some(skill) = cast {
-                if mp >= skill.cost() {
-                    mp -= skill.cost();
-                    let e = effect(skill, &mut b);
-                    hp = (hp + e.hp).min(HEROES[hero_id].hp);
-                    enemy = (enemy - e.damage).max(0);
-                    mp = (mp + e.mp).min(HEROES[hero_id].mp);
+                let before = snapshot!();
+                let actor_mp = if enemy_turn { &mut enemy_mp } else { &mut mp };
+                if *actor_mp >= skill.cost() {
+                    *actor_mp -= skill.cost();
+                    console.checkpoint(before.clone());
+                    cast_this_frame = true;
+                    move_flash = None;
+                    last_cast = Some(skill);
+                    last_cast_enemy = enemy_turn;
+                    cast_time = 1.4;
+                    let target = if enemy_turn {
+                        strategy::choose_target(skill, &b, enemy, HEROES[enemy_id].hp)
+                    } else {
+                        command_target.or(board_target).unwrap_or((3, 3))
+                    };
+                    skill_flash = content::target_cells(skill, &b, target);
+                    let e = effect_at(skill, &mut b, target);
+                    let direct_damage = if skill == content::Skill::Charge {
+                        charge_damage = Some((e.damage, enemy_turn));
+                        presentation.charge(target.0, presentation::CHARGE_TIME);
+                        0
+                    } else {
+                        e.damage
+                    };
+                    if enemy_turn {
+                        enemy = (enemy + e.hp).min(HEROES[enemy_id].hp);
+                        hp = (hp - direct_damage).max(0);
+                        enemy_mp = (enemy_mp + e.mp).min(HEROES[enemy_id].mp);
+                    } else {
+                        hp = (hp + e.hp).min(HEROES[hero_id].hp);
+                        enemy = (enemy - direct_damage).max(0);
+                        mp = (mp + e.mp).min(HEROES[hero_id].mp);
+                    }
+                    let actual_heal = if enemy_turn {
+                        enemy - before.enemy_hp
+                    } else {
+                        hp - before.hp
+                    };
+                    let actual_damage = if enemy_turn {
+                        before.hp - hp
+                    } else {
+                        before.enemy_hp - enemy
+                    };
+                    let actual_mana = if enemy_turn {
+                        enemy_mp - before.enemy_mp + skill.cost()
+                    } else {
+                        mp - before.mp + skill.cost()
+                    };
+                    feedback = format!(
+                        "{} · {}  +{} HP / {} damage / +{} MP",
+                        if enemy_turn {
+                            HEROES[enemy_id].zh
+                        } else {
+                            HEROES[hero_id].zh
+                        },
+                        skill.name(zh),
+                        actual_heal,
+                        actual_damage,
+                        actual_mana
+                    );
+                    if skill == content::Skill::Charge {
+                        feedback = format!(
+                            "{} · {} {}",
+                            skill.name(zh),
+                            tr(zh, "Charging · expected damage:", "冲锋中 · 预计伤害："),
+                            e.damage.min(if enemy_turn { hp } else { enemy })
+                        );
+                    }
+                    presentation.health([before.hp, before.enemy_hp], [hp, enemy], skill.name(zh));
+                    feedback_time = 2.5;
+                    action_done = !e.armed && e.bonus == 0;
                     extra_bonus += e.bonus;
                     armed |= e.armed;
                     pending = e.cells;
@@ -544,18 +944,34 @@ async fn main() {
                         pending = matches(&b);
                         reward = true;
                     }
-                    deadline = 0.28;
+                    deadline = if pending.is_empty() {
+                        TURN_HOLD
+                    } else {
+                        CLEAR_TIME
+                    };
+                    chain = 1;
                     selected = None;
                     note = "Skill cast";
+                    console.event("skill",&format!("{:?} target=[{},{}] cost={} direct_heal={} direct_damage={} direct_mana={} bonus={} armed={} actual_heal={} actual_damage={} actual_mana={}",skill,target.0+1,target.1+1,skill.cost(),e.hp,e.damage,e.mp,e.bonus,e.armed,actual_heal,actual_damage,actual_mana),&before,&snapshot!());
                 } else {
                     note = "Not enough mana";
                 }
             }
-            if !pending.is_empty() && hp > 0 {
-                deadline -= dt;
-                if deadline <= 0. {
+            if !pending.is_empty() {
+                if !presentation.busy() {
+                    deadline -= dt;
+                }
+                if deadline <= 0. && !presentation.busy() {
+                    if !muted {
+                        if let Some(audio) = &audio {
+                            audio.crush();
+                        }
+                    }
+                    let before = snapshot!();
+                    let cleared: Vec<_> = pending.iter().map(|&(x, y)| (x + 1, y + 1)).collect();
+                    let rewarded = reward;
                     let (mut heal, mut damage, mut mana) = (0, 0, 0);
-                    let bonus = (pending.len() as i32 - 2).max(1) + extra_bonus;
+                    let bonus = content::reward_scale(chain.max(1) as usize, extra_bonus);
                     if reward {
                         extra_bonus = 0;
                     }
@@ -570,77 +986,130 @@ async fn main() {
                         mana += v.2;
                         b[y][x] = 255;
                     }
-                    hp = (hp + heal * bonus).min(HEROES[hero_id].hp);
-                    enemy = (enemy - damage * bonus).max(0);
-                    mp = (mp + mana * bonus).min(HEROES[hero_id].mp);
-                    drop_board(&mut b);
+                    if enemy_turn {
+                        enemy = (enemy + heal * bonus / 100).min(HEROES[enemy_id].hp);
+                        hp = (hp - damage * bonus / 100).max(0);
+                        enemy_mp = (enemy_mp + mana * bonus / 100).min(HEROES[enemy_id].mp);
+                    } else {
+                        hp = (hp + heal * bonus / 100).min(HEROES[hero_id].hp);
+                        enemy = (enemy - damage * bonus / 100).max(0);
+                        mp = (mp + mana * bonus / 100).min(HEROES[hero_id].mp);
+                    }
+                    presentation.health(
+                        [before.hp, before.enemy_hp],
+                        [hp, enemy],
+                        tr(zh, "Clear", "消除"),
+                    );
+                    let actual_heal = if enemy_turn {
+                        enemy - before.enemy_hp
+                    } else {
+                        hp - before.hp
+                    };
+                    let actual_damage = if enemy_turn {
+                        before.hp - hp
+                    } else {
+                        before.enemy_hp - enemy
+                    };
+                    let actual_mana = if enemy_turn {
+                        enemy_mp - before.enemy_mp
+                    } else {
+                        mp - before.mp
+                    };
+                    if reward {
+                        feedback = format!(
+                            "{} +{} HP / {} damage / +{} MP",
+                            if enemy_turn {
+                                tr(zh, "Enemy", "敌方")
+                            } else {
+                                tr(zh, "You", "我方")
+                            },
+                            actual_heal,
+                            actual_damage,
+                            actual_mana
+                        );
+                        feedback_time = 2.;
+                    }
+                    presentation.fall(board::drop_board_animated(&mut b));
                     pending = matches(&b);
                     reward = true;
                     if !pending.is_empty() {
                         chain += 1;
-                        deadline = 0.28;
-                    } else if !playable(&b) {
-                        b = fresh();
-                        note = "No moves: board refreshed";
+                        deadline = CLEAR_TIME;
+                    } else {
+                        deadline = TURN_HOLD;
+                        if !playable(&b) {
+                            b = fresh();
+                            presentation.stop_motion();
+                            note = "No moves: board refreshed";
+                        }
                     }
+                    console.event("resolution",&format!("cells={:?} reward={} multiplier_percent={} heal={} damage={} mana={} chain={} refreshed={} actual_heal={} actual_damage={} actual_mana={}",cleared,rewarded,bonus,heal*bonus/100,damage*bonus/100,mana*bonus/100,chain,note=="No moves: board refreshed",actual_heal,actual_damage,actual_mana),&before,&snapshot!());
                 }
-            } else if is_mouse_button_pressed(MouseButton::Left) && hp > 0 {
+            } else if (clicked(MouseButton::Left) || command_move.is_some())
+                && hp > 0
+                && !enemy_turn
+                && !action_done
+                && targeting.is_none()
+                && !cast_this_frame
+            {
                 let (mx, my) = mouse_position();
                 let world = cam.screen_to_world(vec2(mx, my));
                 let x = (world.x - 256.) / 64.;
                 let y = (world.y - 110.) / 64.;
-                if x >= 0. && x < 8. && y >= 0. && y < 8. {
-                    let c = (x as usize, y as usize);
+                if command_move.is_some() || (x >= 0. && x < 8. && y >= 0. && y < 8.) {
+                    let c = command_move
+                        .map(|(_, c)| c)
+                        .unwrap_or((x as usize, y as usize));
+                    if let Some((a, _)) = command_move {
+                        selected = Some(a);
+                    }
                     if let Some(a) = selected {
+                        let before = snapshot!();
                         let legal = if armed && a.0.abs_diff(c.0) + a.1.abs_diff(c.1) == 1 {
-                            swap(&mut b, a, c);
-                            for delta in [-1isize, 1] {
-                                let p = if a.0 == c.0 {
-                                    (a.0 as isize + delta, a.1 as isize)
-                                } else {
-                                    (a.0 as isize, a.1 as isize + delta)
-                                };
-                                let q = if a.0 == c.0 {
-                                    (c.0 as isize + delta, c.1 as isize)
-                                } else {
-                                    (c.0 as isize, c.1 as isize + delta)
-                                };
-                                if p.0 >= 0
-                                    && p.1 >= 0
-                                    && q.0 >= 0
-                                    && q.1 >= 0
-                                    && p.0 < N as isize
-                                    && p.1 < N as isize
-                                    && q.0 < N as isize
-                                    && q.1 < N as isize
-                                {
-                                    swap(
-                                        &mut b,
-                                        (p.0 as usize, p.1 as usize),
-                                        (q.0 as usize, q.1 as usize),
-                                    );
-                                }
-                            }
+                            parallel_swap(&mut b, a, c);
                             armed = false;
                             true
                         } else {
                             valid_swap(&mut b, a, c)
                         };
                         if legal {
+                            presentation.swap(&before.board, a, c, before.armed, enemy_turn);
+                            console.checkpoint(before.clone());
+                            action_done = true;
+                            move_flash = Some((a, c));
                             pending = matches(&b);
                             reward = true;
-                            deadline = 0.28;
+                            deadline = CLEAR_TIME;
                             chain = 1;
                             selected = None;
                             note = "Match!";
-                            if !muted {
-                                if let Some(audio) = &audio {
-                                    audio.crush();
-                                }
-                            }
+                            console.event(
+                                "move",
+                                &format!(
+                                    "swap [{},{}] -> [{},{}]",
+                                    a.0 + 1,
+                                    a.1 + 1,
+                                    c.0 + 1,
+                                    c.1 + 1
+                                ),
+                                &before,
+                                &snapshot!(),
+                            );
                         } else {
                             selected = Some(c);
                             note = "No match: choose another tile";
+                            console.event(
+                                "move_rejected",
+                                &format!(
+                                    "swap [{},{}] -> [{},{}]: no match or nonadjacent",
+                                    a.0 + 1,
+                                    a.1 + 1,
+                                    c.0 + 1,
+                                    c.1 + 1
+                                ),
+                                &before,
+                                &snapshot!(),
+                            );
                         }
                     } else {
                         selected = Some(c);
@@ -648,9 +1117,55 @@ async fn main() {
                 }
             }
         }
+        if (hp == 0 || enemy == 0) && !game_over_logged {
+            console.event(
+                "battle_end",
+                if enemy == 0 {
+                    "Player victory"
+                } else {
+                    "Player defeat"
+                },
+                &snapshot!(),
+                &snapshot!(),
+            );
+            game_over_logged = true;
+        }
         clear_background(Color::from_rgba(25, 27, 38, 255));
         set_camera(&cam);
         procedural_board();
+        for (side, x) in [(false, 12.), (true, 788.)] {
+            let active_side = side == enemy_turn && hp > 0 && enemy > 0;
+            let color = if active_side {
+                if side {
+                    ORANGE
+                } else {
+                    SKYBLUE
+                }
+            } else {
+                Color::new(0.25, 0.28, 0.35, 0.6)
+            };
+            if active_side {
+                draw_rectangle(
+                    x,
+                    92.,
+                    224.,
+                    551.,
+                    Color::new(color.r, color.g, color.b, 0.07),
+                );
+            }
+            draw_rectangle_lines(x, 92., 224., 551., if active_side { 3. } else { 1. }, color);
+            if active_side {
+                let bx = if side { 918. } else { 142. };
+                draw_rectangle(
+                    bx,
+                    94.,
+                    88.,
+                    24.,
+                    Color::new(color.r * 0.3, color.g * 0.3, color.b * 0.3, 1.),
+                );
+                label(tr(zh, "ACTIVE", "行动中"), bx + 6., 112., 18., color);
+            }
+        }
         label(tr(zh, "BATTLE BLOCKS", "方块战斗"), 300., 55., 40., GOLD);
         draw_rectangle(810., 20., 190., 48., Color::new(0.15, 0.18, 0.25, 1.));
         label(tr(zh, "中文 / L", "English / L"), 825., 54., 28., WHITE);
@@ -665,12 +1180,12 @@ async fn main() {
         );
         actor(
             &demon,
-            320.,
-            435.,
+            sprites::SPRITES[enemy_id].w,
+            sprites::SPRITES[enemy_id].h,
             805.,
             get_time(),
-            &[0.13; 4],
-            &[0, 1, 2, 3],
+            sprites::SPRITES[enemy_id].durations,
+            sprites::SPRITES[enemy_id].indices,
         );
         label(
             if zh {
@@ -697,9 +1212,52 @@ async fn main() {
             30.,
             SKYBLUE,
         );
-        label(tr(zh, "DEMON", "大恶魔"), 805., 110., 32., WHITE);
         label(
-            &format!("{} {enemy} / 800", tr(zh, "HP", "生命")),
+            if zh {
+                HEROES[enemy_id].zh
+            } else {
+                HEROES[enemy_id].en
+            },
+            805.,
+            110.,
+            32.,
+            WHITE,
+        );
+        label(
+            &format!("MP {enemy_mp} / {}", HEROES[enemy_id].mp),
+            805.,
+            185.,
+            28.,
+            SKYBLUE,
+        );
+        label(tr(zh, "D: AI level", "D：AI档位"), 805., 445., 24., WHITE);
+        label(
+            [
+                tr(zh, "Beginner", "入门"),
+                tr(zh, "Standard", "标准"),
+                tr(zh, "Advanced", "进阶"),
+            ][difficulty],
+            805.,
+            480.,
+            28.,
+            GOLD,
+        );
+        label(
+            if enemy_turn {
+                tr(zh, "Enemy turn", "敌方回合")
+            } else {
+                tr(zh, "Your turn", "你的回合")
+            },
+            805.,
+            525.,
+            28.,
+            if enemy_turn { ORANGE } else { GREEN },
+        );
+        if feedback_time > 0. && targeting.is_none() {
+            label(&feedback, 256., 640., 16., GOLD);
+        }
+        label(
+            &format!("{} {enemy} / {}", tr(zh, "HP", "生命"), HEROES[enemy_id].hp),
             805.,
             150.,
             30.,
@@ -713,6 +1271,71 @@ async fn main() {
                 }
             }
         }
+        let player_hover = if !enemy_turn
+            && !action_done
+            && pending.is_empty()
+            && hp > 0
+            && enemy > 0
+            && !paused
+            && !console.open
+        {
+            HEROES[hero_id]
+                .skills
+                .iter()
+                .enumerate()
+                .find(|(i, _)| {
+                    Rect::new(20., 445. + *i as f32 * 118., 210., 112.).contains(pointer)
+                })
+                .map(|(_, s)| (*s, false))
+        } else {
+            None
+        };
+        let enemy_hover = if !console.open {
+            HEROES[enemy_id]
+                .skills
+                .iter()
+                .enumerate()
+                .find(|(i, _)| Rect::new(805., 565. + *i as f32 * 38., 195., 34.).contains(pointer))
+                .map(|(_, s)| (*s, true))
+        } else {
+            None
+        };
+        let hover_context = player_hover.or(enemy_hover);
+        let hover_skill = hover_context.map(|(skill, _)| skill);
+        let preview_cells = targeting
+            .or(hover_skill.filter(|s| !content::targeted(*s)))
+            .map(|skill| {
+                if content::targeted(skill)
+                    && !(pointer.x >= 256.
+                        && pointer.x < 768.
+                        && pointer.y >= 110.
+                        && pointer.y < 622.)
+                {
+                    return Vec::new();
+                }
+                let x = ((pointer.x - 256.) / 64.).clamp(0., 7.) as usize;
+                let y = ((pointer.y - 110.) / 64.).clamp(0., 7.) as usize;
+                content::target_cells(skill, &b, (x, y))
+            })
+            .unwrap_or_default();
+        if targeting.is_some() {
+            let cancel = cancel_skill_rect();
+            draw_rectangle(
+                cancel.x,
+                cancel.y,
+                cancel.w,
+                cancel.h,
+                Color::new(0.24, 0.16, 0.18, 1.),
+            );
+            draw_rectangle_lines(cancel.x, cancel.y, cancel.w, cancel.h, 1., GOLD);
+            label(
+                tr(zh, "Cancel · Esc / right click", "取消 · Esc / 右键"),
+                805.,
+                665.,
+                18.,
+                GOLD,
+            );
+        }
         for kind in 0..if !diagnostic("legacy_batches") { 7 } else { 1 } {
             for y in 0..N {
                 for x in 0..N {
@@ -720,29 +1343,111 @@ async fn main() {
                         continue;
                     }
                     let pos = vec2(256. + x as f32 * 64., 110. + y as f32 * 64.);
-                    let color = if pending.contains(&(x, y)) {
-                        Color::new(1., 1., 1., 0.35)
+                    let charge_progress = presentation.destruction(x, y);
+                    let clearing = pending.contains(&(x, y))
+                        && (!presentation.busy() || charge_progress.is_some_and(|p| p > 0.));
+                    let clear_progress = if let Some(progress) = charge_progress {
+                        progress
+                    } else if clearing {
+                        (1. - deadline as f32 / CLEAR_TIME as f32).clamp(0., 1.)
                     } else {
-                        WHITE
+                        0.
                     };
+                    let color = Color::new(1., 1., 1., 1. - clear_progress);
+                    let tile_size = 64. * (1. - clear_progress * 0.65);
                     if diagnostic("legacy_batches") {
                         procedural_cell(pos.x, pos.y);
                     }
-                    draw_texture_ex(
-                        &tiles[b[y][x] as usize],
-                        pos.x,
-                        pos.y,
-                        color,
-                        DrawTextureParams {
-                            dest_size: Some(vec2(64., 64.)),
-                            ..Default::default()
-                        },
-                    );
+                    if !presentation.hides(x, y) {
+                        draw_texture_ex(
+                            &tiles[b[y][x] as usize],
+                            pos.x + (64. - tile_size) / 2.,
+                            pos.y + (64. - tile_size) / 2.,
+                            color,
+                            DrawTextureParams {
+                                dest_size: Some(vec2(tile_size, tile_size)),
+                                ..Default::default()
+                            },
+                        );
+                    }
+                    if preview_cells.contains(&(x, y)) {
+                        draw_rectangle_lines(pos.x + 3., pos.y + 3., 58., 58., 3., SKYBLUE);
+                    }
+                    if clearing {
+                        let pulse = (get_time() as f32 * 14.).sin().abs();
+                        draw_rectangle(
+                            pos.x,
+                            pos.y,
+                            64.,
+                            64.,
+                            Color::new(1., 0.7, 0.2, 0.15 + pulse * 0.35),
+                        );
+                        draw_circle_lines(pos.x + 32., pos.y + 32., 15. + pulse * 15., 2., GOLD);
+                    }
+                    if !pending.is_empty()
+                        && move_flash.is_some_and(|(a, c)| a == (x, y) || c == (x, y))
+                    {
+                        draw_rectangle_lines(
+                            pos.x + 2.,
+                            pos.y + 2.,
+                            60.,
+                            60.,
+                            4.,
+                            if enemy_turn { ORANGE } else { SKYBLUE },
+                        );
+                    }
                     if selected == Some((x, y)) {
                         draw_rectangle_lines(pos.x, pos.y, 62., 62., 3., GOLD);
                     }
                 }
             }
+        }
+        presentation.draw_tiles(&tiles);
+        if presentation.charging() {
+            let id = if last_cast_enemy { enemy_id } else { hero_id };
+            let asset = &sprites::SPRITES[id];
+            presentation.draw_charge(
+                if last_cast_enemy { &demon } else { &knight },
+                asset.w,
+                asset.h,
+                asset.indices,
+            );
+        }
+        if let Some(skill) = last_cast.filter(|s| cast_time > 0. && *s != content::Skill::Charge) {
+            let progress = 1. - cast_time as f32 / 1.4;
+            effects::draw(skill, &skill_flash, progress, last_cast_enemy);
+            draw_rectangle(352., 82., 320., 26., Color::new(0.04, 0.06, 0.1, 0.9));
+            icons::draw(skill, 356., 84., 22.);
+            label(
+                &format!(
+                    "{} · {}",
+                    if last_cast_enemy {
+                        tr(zh, "Enemy", "敌方")
+                    } else {
+                        tr(zh, "You", "我方")
+                    },
+                    skill.name(zh)
+                ),
+                386.,
+                102.,
+                18.,
+                GOLD,
+            );
+        }
+        for (i, skill) in HEROES[enemy_id].skills.iter().enumerate() {
+            let r = Rect::new(805., 565. + i as f32 * 38., 195., 34.);
+            draw_rectangle(r.x, r.y, r.w, r.h, Color::new(0.12, 0.15, 0.2, 1.));
+            if r.contains(pointer) {
+                draw_rectangle_lines(r.x, r.y, r.w, r.h, 2., ORANGE);
+            }
+            icons::draw(*skill, 805., 565. + i as f32 * 38., 28.);
+            label(
+                &format!("{} · {} MP", skill.name(zh), skill.cost()),
+                840.,
+                585. + i as f32 * 38.,
+                17.,
+                if enemy_mp >= skill.cost() { GOLD } else { GRAY },
+            );
         }
         for (i, skill) in HEROES[hero_id].skills.iter().enumerate() {
             let rect = Rect::new(20., 445. + i as f32 * 118., 210., 112.);
@@ -757,11 +1462,12 @@ async fn main() {
                     Color::new(0.1, 0.12, 0.16, 1.)
                 },
             );
+            icons::draw(*skill, rect.x + 8., rect.y + 8., 26.);
             label(
                 &format!("{}: {}", i + 1, skill.name(zh)),
-                rect.x + 8.,
+                rect.x + 40.,
                 rect.y + 28.,
-                24.,
+                21.,
                 WHITE,
             );
             label(
@@ -784,6 +1490,208 @@ async fn main() {
                     LIGHTGRAY,
                 );
             }
+        }
+        presentation.draw_health(zh);
+        let detail_context = hover_context.or(targeting.map(|skill| (skill, false)));
+        if let Some((skill, is_enemy)) = detail_context {
+            let (id, health, mana, opponent, boost) = if is_enemy {
+                (
+                    enemy_id,
+                    enemy,
+                    enemy_mp,
+                    hp,
+                    if enemy_turn { extra_bonus } else { bonuses[1] },
+                )
+            } else {
+                (hero_id, hp, mp, enemy, extra_bonus)
+            };
+            // Show details in the opposite sidebar, keeping the highlighted board visible.
+            let x = if is_enemy { 14. } else { 790. };
+            flush_labels();
+            draw_rectangle(x, 208., 220., 438., Color::new(0.04, 0.07, 0.12, 0.98));
+            draw_rectangle_lines(
+                x,
+                208.,
+                220.,
+                438.,
+                2.,
+                if is_enemy { ORANGE } else { SKYBLUE },
+            );
+            label(
+                &format!(
+                    "{} · {}",
+                    if is_enemy {
+                        tr(zh, "Enemy", "敌方")
+                    } else {
+                        tr(zh, "You", "我方")
+                    },
+                    skill.name(zh)
+                ),
+                x + 10.,
+                239.,
+                20.,
+                GOLD,
+            );
+            label(
+                &format!("{} {} MP", tr(zh, "Cost:", "消耗："), skill.cost()),
+                x + 10.,
+                266.,
+                18.,
+                SKYBLUE,
+            );
+            for (line, text) in wrap_preview_text(skill.description(zh), 12.)
+                .iter()
+                .take(7)
+                .enumerate()
+            {
+                label(text, x + 10., 292. + line as f32 * 18., 15., LIGHTGRAY);
+            }
+            let exact_target = if !is_enemy
+                && targeting == Some(skill)
+                && pointer.x >= 256.
+                && pointer.x < 768.
+                && pointer.y >= 110.
+                && pointer.y < 622.
+            {
+                Some((
+                    ((pointer.x - 256.) / 64.) as usize,
+                    ((pointer.y - 110.) / 64.) as usize,
+                ))
+            } else {
+                None
+            };
+            let range = content::targeted(skill) && exact_target.is_none();
+            let (low, high) = if range {
+                content::preview_range(
+                    skill,
+                    &b,
+                    id,
+                    health,
+                    mana.max(skill.cost()),
+                    opponent,
+                    boost,
+                )
+            } else {
+                (
+                    content::preview_rewards(
+                        skill,
+                        &b,
+                        exact_target.unwrap_or((3, 3)),
+                        id,
+                        health,
+                        mana.max(skill.cost()),
+                        opponent,
+                        boost,
+                    ),
+                    content::preview_rewards(
+                        skill,
+                        &b,
+                        exact_target.unwrap_or((3, 3)),
+                        id,
+                        health,
+                        mana.max(skill.cost()),
+                        opponent,
+                        boost,
+                    ),
+                )
+            };
+            let amount = |lo: i32, hi: i32| {
+                if lo == hi {
+                    lo.to_string()
+                } else {
+                    format!("{lo}..{hi}")
+                }
+            };
+            label(
+                tr(zh, "Expected rewards", "预估收益"),
+                x + 10.,
+                433.,
+                19.,
+                GOLD,
+            );
+            label(
+                &format!(
+                    "{} +{}",
+                    tr(zh, "Heal:", "治疗："),
+                    amount(low.heal, high.heal)
+                ),
+                x + 10.,
+                460.,
+                18.,
+                GREEN,
+            );
+            label(
+                &format!(
+                    "{} {}",
+                    tr(zh, "Damage:", "预计伤害："),
+                    amount(low.damage, high.damage)
+                ),
+                x + 10.,
+                487.,
+                if exact_target.is_some() { 22. } else { 18. },
+                ORANGE,
+            );
+            label(
+                &format!(
+                    "{} +{}",
+                    tr(zh, "Mana:", "魔力："),
+                    amount(low.mana_gain, high.mana_gain)
+                ),
+                x + 10.,
+                514.,
+                18.,
+                SKYBLUE,
+            );
+            if mana >= skill.cost() {
+                label(
+                    &format!("MP {mana} → {}", amount(low.mana_after, high.mana_after)),
+                    x + 10.,
+                    541.,
+                    17.,
+                    SKYBLUE,
+                );
+            } else {
+                label(
+                    tr(zh, "If funded; mana too low", "筹足魔力后可获；当前不足"),
+                    x + 10.,
+                    541.,
+                    14.,
+                    ORANGE,
+                );
+            }
+            if exact_target.is_some() {
+                label(
+                    tr(zh, "Click board to confirm", "点击棋盘确认释放"),
+                    x + 10.,
+                    570.,
+                    15.,
+                    WHITE,
+                );
+            } else if range {
+                label(
+                    tr(zh, "Range depends on target", "收益区间依目标而定"),
+                    x + 10.,
+                    570.,
+                    15.,
+                    WHITE,
+                );
+            }
+            if skill == content::Skill::Strike {
+                label(
+                    tr(zh, "Next clear: +100%", "下次消除收益＋100%"),
+                    x + 10.,
+                    570.,
+                    15.,
+                    GREEN,
+                );
+            }
+            label(
+                tr(zh, "Refill cascades excluded", "补充后的连锁未计入"),
+                x + 10.,
+                626.,
+                15.,
+                GRAY,
+            );
         }
         {
             label(
@@ -812,7 +1720,37 @@ async fn main() {
         label(
             &format!(
                 "{}  {}: {chain}",
-                localized_note(zh, note),
+                if presentation.charging() {
+                    if enemy_turn {
+                        tr(zh, "Enemy · knight charge", "敌方 · 骑士冲锋")
+                    } else {
+                        tr(zh, "You · knight charge", "我方 · 骑士冲锋")
+                    }
+                } else if let Some(swap) = presentation.swapping() {
+                    if enemy_turn {
+                        if swap {
+                            tr(zh, "Enemy · swapping", "敌方 · 正在交换")
+                        } else {
+                            tr(zh, "Enemy · falling", "敌方 · 方块掉落")
+                        }
+                    } else {
+                        if swap {
+                            tr(zh, "You · swapping", "我方 · 正在交换")
+                        } else {
+                            tr(zh, "You · falling", "我方 · 方块掉落")
+                        }
+                    }
+                } else if !pending.is_empty() {
+                    if enemy_turn {
+                        tr(zh, "Enemy · clearing", "敌方 · 正在消除")
+                    } else {
+                        tr(zh, "You · clearing", "我方 · 正在消除")
+                    }
+                } else if action_done {
+                    tr(zh, "Action resolved", "行动结算完成")
+                } else {
+                    localized_note(zh, note)
+                },
                 tr(zh, "Chain", "连锁")
             ),
             256.,
@@ -866,6 +1804,14 @@ async fn main() {
                 );
             }
         }
+        label(
+            tr(zh, "~ / F1: Debug", "~ / F1：调试"),
+            805.,
+            705.,
+            20.,
+            GRAY,
+        );
+        console.draw();
         flush_labels();
         set_default_camera();
         next_frame().await;
@@ -882,6 +1828,17 @@ mod tests {
             }
         }
         b
+    }
+    #[test]
+    fn selecting_same_skill_cancels_and_different_skill_switches() {
+        use content::Skill;
+        let selected = toggle_skill_target(None, Skill::Lightning);
+        assert_eq!(selected, Some(Skill::Lightning));
+        assert_eq!(toggle_skill_target(selected, Skill::Lightning), None);
+        assert_eq!(
+            toggle_skill_target(selected, Skill::Charge),
+            Some(Skill::Charge)
+        );
     }
     #[test]
     fn raster_sizes_stay_bounded_while_visual_size_is_preserved() {

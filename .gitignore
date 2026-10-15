@@ -6,3 +6,5 @@
 /analysis/memory-comparison/results*/
 **/__pycache__/
 .DS_Store
+
+/logs/

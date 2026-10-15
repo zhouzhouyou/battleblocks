@@ -112,7 +112,7 @@ pub fn draw(
         tr(
             zh,
             "Preview your hero and skills before battle",
-            "查看角色与技能，准备挑战大恶魔",
+            "查看角色与技能，准备回合制对战",
         ),
         26.,
         88.,
@@ -211,9 +211,10 @@ pub fn draw(
         if i == preview.skill {
             draw_rectangle_lines(r.x, r.y, r.w, r.h, 2., GOLD);
         }
+        icons::draw(*skill, r.x + 12., r.y + 8., 28.);
         label(
             &format!("{}  {}", i + 1, skill.name(zh)),
-            r.x + 14.,
+            r.x + 50.,
             r.y + 28.,
             25.,
             WHITE,
@@ -279,7 +280,7 @@ pub fn draw(
     panel(Rect::new(548., 422., 452., 208.), dim);
     let clear = matches!(
         skill,
-        content::Skill::Blade
+        content::Skill::Charge
             | content::Skill::Lightning
             | content::Skill::Meteor
             | content::Skill::Greedy
@@ -327,8 +328,9 @@ pub fn draw(
     label(
         if after {
             match skill {
+                content::Skill::Guard => tr(zh, "HP +20% max", "回复生命上限20%"),
                 content::Skill::Landslide => tr(zh, "Next swap", "下次交换"),
-                content::Skill::Strike => tr(zh, "Next clear: +1", "下次消除：倍率+1"),
+                content::Skill::Strike => tr(zh, "Next clear: +100%", "下次消除：收益+100%"),
                 _ => tr(zh, "After casting", "释放后"),
             }
         } else {
@@ -363,7 +365,7 @@ pub fn draw(
         },
     );
     label(
-        tr(zh, "ENTER · FIGHT THE DEMON", "回车 / 点击 · 挑战大恶魔"),
+        tr(zh, "ENTER · START DUEL", "回车 / 点击 · 开始对战"),
         451.,
         682.,
         25.,
