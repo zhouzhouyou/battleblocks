@@ -281,6 +281,7 @@ pub fn draw(
     let clear = matches!(
         skill,
         content::Skill::Charge
+            | content::Skill::Guard
             | content::Skill::Lightning
             | content::Skill::Meteor
             | content::Skill::Greedy

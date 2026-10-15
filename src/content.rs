@@ -84,7 +84,7 @@ impl Skill {
                 "Clear 2 adjacent columns.\nDeal 60 + their attack value.\nNo healing or mana gain.",
                 "选择相邻两列并清除\n造成60＋方块伤害值总和\n不回复生命或魔力",
             ),
-            Self::Guard => ("Restore 20% of max HP.\nConsumes your turn.","回复最大生命值的20%\n释放后结束回合"),
+            Self::Guard => ("Restore 20% of max HP.\nConsume pure healing tiles.\nRefill; resolve cascades.","回复最大生命值的20%\n清除纯治疗，不额外回血\n掉落后结算三消，再换人"),
             Self::Landslide => (
                 "Next adjacent swap also\nswaps both parallel pairs.\nNo match required.",
                 "下次相邻交换附带两侧交换\n同时交换三组平行方块\n不要求交换后形成三消",
@@ -259,7 +259,17 @@ pub fn effect_at(skill: Skill, b: &mut Board, target: (usize, usize)) -> Effect 
                 }
             }
         }
-        Skill::Guard => e.hp = HEROES[0].hp / 5,
+        Skill::Guard => {
+            e.hp = HEROES[0].hp / 5;
+            for (y, row) in b.iter().enumerate() {
+                for (x, &kind) in row.iter().enumerate() {
+                    if kind == 1 {
+                        e.cells.push((x, y));
+                    }
+                }
+            }
+            // The consumed healing tiles deliberately grant no extra rewards.
+        }
         Skill::Charge => {
             e.damage = 60;
             let x = target.0.min(N - 2);
@@ -535,6 +545,32 @@ pub fn preview_range(
 #[cfg(test)]
 mod preview_tests {
     use super::*;
+    #[test]
+    fn guard_consumes_pure_healing_only_without_additional_rewards() {
+        let board = std::array::from_fn(|y| std::array::from_fn(|x| ((x + 2 * y) % 7) as u8));
+        let original = board;
+        let seed = crate::rng::state();
+        let expected: Vec<_> = (0..N)
+            .flat_map(|y| (0..N).filter_map(move |x| (board[y][x] == 1).then_some((x, y))))
+            .collect();
+        let e = effect(Skill::Guard, &mut board.clone());
+        assert_eq!(e.cells, expected);
+        assert!(!e.reward);
+        assert_eq!(e.damage, 0);
+        assert_eq!(e.mp, 0);
+        assert_eq!(e.hp, HEROES[0].hp / 5);
+        assert!(e
+            .cells
+            .iter()
+            .all(|&(x, y)| board[y][x] != 4 && board[y][x] != 5));
+        assert_eq!(target_cells(Skill::Guard, &board, (3, 3)), expected);
+        let preview = preview_rewards(Skill::Guard, &board, (3, 3), 0, 400, 300, 700, 0);
+        assert_eq!(preview.heal, HEROES[0].hp / 5);
+        assert_eq!(preview.mana_after, 150);
+        assert_eq!(preview.mana_gain, 0);
+        assert_eq!(board, original);
+        assert_eq!(crate::rng::state(), seed);
+    }
     #[test]
     fn charge_target_preview_is_positive_and_matches_selected_columns() {
         let b = std::array::from_fn(|y| std::array::from_fn(|x| ((x + 2 * y) % 7) as u8));
