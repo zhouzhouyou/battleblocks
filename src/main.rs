@@ -8,6 +8,7 @@ mod effects;
 mod icons;
 mod menu;
 mod presentation;
+mod ui;
 use presentation::{CLEAR_TIME, TURN_HOLD};
 mod rng;
 mod strategy;
@@ -360,6 +361,7 @@ async fn main() {
     let mut cast_time = 0.;
     let mut paused = false;
     let mut muted = false;
+    let mut interface = ui::Ui::default();
     let mut chain = 0;
     let mut note = "Select two adjacent tiles";
     let mut reward = true;
@@ -540,12 +542,53 @@ async fn main() {
                 }
             }
         }
-        let block_input = was_console_open || console.open;
+        let ui_consumed = if !was_console_open && !console.open {
+            interface.input(
+                pointer,
+                choosing,
+                &mut muted,
+                &mut paused,
+                &mut zh,
+                &mut difficulty,
+            )
+        } else {
+            false
+        };
+        if let Some(audio) = &audio {
+            audio.muted(muted);
+            audio.volume(interface.volume);
+        }
+        let mut pause_click = false;
+        if paused
+            && !choosing
+            && !was_console_open
+            && !console.open
+            && !ui_consumed
+            && interface.panel.is_none()
+            && is_mouse_button_pressed(MouseButton::Left)
+        {
+            for i in 0..4 {
+                if ui::pause_rect(i).contains(pointer) {
+                    pause_click = true;
+                    match i {
+                        0 => paused = false,
+                        1 => {
+                            choosing = true;
+                            paused = false;
+                            targeting = None;
+                            selected = None;
+                        }
+                        2 => restart_command = true,
+                        _ => interface.panel = Some(ui::Panel::Settings),
+                    }
+                    break;
+                }
+            }
+        }
+        let block_input = was_console_open || console.open || ui_consumed || pause_click;
         let key = |code| !block_input && is_key_pressed(code);
         let clicked = |button| !block_input && is_mouse_button_pressed(button);
-        if key(KeyCode::L)
-            || (clicked(MouseButton::Left) && Rect::new(810., 20., 190., 48.).contains(pointer))
-        {
+        if key(KeyCode::L) {
             zh = !zh;
         }
         if key(KeyCode::P) {
@@ -555,6 +598,7 @@ async fn main() {
             muted = !muted;
             if let Some(audio) = &audio {
                 audio.muted(muted);
+                audio.volume(interface.volume);
             }
         }
         if key(KeyCode::E) {
@@ -564,7 +608,9 @@ async fn main() {
             let before = snapshot!();
             b = fresh();
             hp = HEROES[hero_id].hp;
-            enemy_id = (hero_id + 1 + rng::gen_range(0, HEROES.len() - 1)) % HEROES.len();
+            enemy_id = interface.opponent.unwrap_or_else(|| {
+                (hero_id + 1 + rng::gen_range(0, HEROES.len() - 1)) % HEROES.len()
+            });
             demon = diagnostic_texture(sprites::SPRITES[enemy_id].bytes, "no_actors");
             enemy = HEROES[enemy_id].hp;
             enemy_mp = 0;
@@ -633,7 +679,9 @@ async fn main() {
                 b = fresh();
                 hp = HEROES[hero_id].hp;
                 mp = 0;
-                enemy_id = (hero_id + 1 + rng::gen_range(0, HEROES.len() - 1)) % HEROES.len();
+                enemy_id = interface.opponent.unwrap_or_else(|| {
+                    (hero_id + 1 + rng::gen_range(0, HEROES.len() - 1)) % HEROES.len()
+                });
                 demon = diagnostic_texture(sprites::SPRITES[enemy_id].bytes, "no_actors");
                 enemy = HEROES[enemy_id].hp;
                 enemy_mp = 0;
@@ -672,6 +720,9 @@ async fn main() {
                 clear_background(Color::from_rgba(25, 27, 38, 255));
                 set_camera(&cam);
                 menu::draw(hero_id, zh, &knight, &thumbs, &tiles, &preview, pointer);
+                interface.draw_opponent_button(zh, pointer);
+                interface.draw_top(true, muted, paused, pointer, zh);
+                interface.draw_panel(zh, muted, difficulty, &tiles, &thumbs, pointer);
                 console.draw();
                 flush_labels();
                 set_default_camera();
@@ -680,7 +731,9 @@ async fn main() {
             }
         }
         if let Some(audio) = &audio {
-            audio.playing(!paused && !console.open && hp > 0 && enemy > 0);
+            audio.playing(
+                !paused && !console.open && interface.panel.is_none() && hp > 0 && enemy > 0,
+            );
         }
         // Visual lifetimes continue after victory/defeat and are independent of rewards.
         feedback_time = (feedback_time - dt).max(0.);
@@ -689,10 +742,16 @@ async fn main() {
             skill_flash.clear();
             last_cast = None;
         }
-        if !paused && !console.open {
+        if !paused && !console.open && interface.panel.is_none() {
             presentation.tick(dt);
         }
-        let active = !paused && !console.open && hp > 0 && enemy > 0 && !presentation.busy();
+        let active = !paused
+            && !console.open
+            && !ui_consumed
+            && !pause_click
+            && hp > 0
+            && enemy > 0
+            && !presentation.busy();
         if active {
             if let Some((damage, enemy_actor)) = charge_damage {
                 let before = snapshot!();
@@ -1167,8 +1226,7 @@ async fn main() {
             }
         }
         label(tr(zh, "BATTLE BLOCKS", "方块战斗"), 300., 55., 40., GOLD);
-        draw_rectangle(810., 20., 190., 48., Color::new(0.15, 0.18, 0.25, 1.));
-        label(tr(zh, "中文 / L", "English / L"), 825., 54., 28., WHITE);
+        interface.draw_top(false, muted, paused, pointer, zh);
         actor(
             &knight,
             sprites::SPRITES[hero_id].w,
@@ -1693,30 +1751,6 @@ async fn main() {
                 GRAY,
             );
         }
-        {
-            label(
-                tr(
-                    zh,
-                    "1 / 2: Skills   E: Hero selection",
-                    "1 / 2：技能  E：角色选择",
-                ),
-                256.,
-                669.,
-                28.,
-                WHITE,
-            );
-            label(
-                tr(
-                    zh,
-                    "P: Pause   R: Restart   M: Mute",
-                    "P：暂停  R：重开  M：静音",
-                ),
-                256.,
-                706.,
-                28.,
-                WHITE,
-            );
-        }
         label(
             &format!(
                 "{}  {}: {chain}",
@@ -1758,7 +1792,8 @@ async fn main() {
             26.,
             WHITE,
         );
-        if paused || hp == 0 || enemy == 0 {
+        if !paused && (hp == 0 || enemy == 0) {
+            flush_labels();
             draw_rectangle(256., 190., 512., 340., Color::new(0.02, 0.02, 0.03, 0.96));
             if hp == 0 && enemy > 0 {
                 draw_texture_ex(
@@ -1804,13 +1839,10 @@ async fn main() {
                 );
             }
         }
-        label(
-            tr(zh, "~ / F1: Debug", "~ / F1：调试"),
-            805.,
-            705.,
-            20.,
-            GRAY,
-        );
+        if paused {
+            ui::draw_pause(zh, pointer);
+        }
+        interface.draw_panel(zh, muted, difficulty, &tiles, &thumbs, pointer);
         console.draw();
         flush_labels();
         set_default_camera();

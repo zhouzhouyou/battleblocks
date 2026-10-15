@@ -109,6 +109,7 @@ struct Control {
     stop: AtomicBool,
     playing: AtomicBool,
     muted: AtomicBool,
+    volume: AtomicU32,
     crush: AtomicBool,
     underruns: AtomicUsize,
 }
@@ -129,6 +130,7 @@ impl Audio {
             stop: AtomicBool::new(false),
             playing: AtomicBool::new(false),
             muted: AtomicBool::new(false),
+            volume: AtomicU32::new(100),
             crush: AtomicBool::new(false),
             underruns: AtomicUsize::new(0),
         });
@@ -205,7 +207,9 @@ impl Audio {
             if state.muted.load(Ordering::Relaxed) {
                 [0., 0.]
             } else {
-                pair.map(|v| v.clamp(-1., 1.))
+                pair.map(|v| {
+                    (v * state.volume.load(Ordering::Relaxed) as f32 / 100.).clamp(-1., 1.)
+                })
             }
         };
         let config = cpal::StreamConfig::from(supported.clone());
@@ -273,6 +277,9 @@ impl Audio {
     }
     pub fn muted(&self, muted: bool) {
         self.control.muted.store(muted, Ordering::Relaxed);
+    }
+    pub fn volume(&self, value: u32) {
+        self.control.volume.store(value.min(100), Ordering::Relaxed);
     }
     pub fn crush(&self) {
         self.control.crush.store(true, Ordering::Relaxed);

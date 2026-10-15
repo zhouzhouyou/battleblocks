@@ -119,8 +119,6 @@ pub fn draw(
         19.,
         LIGHTGRAY,
     );
-    draw_rectangle(810., 20., 190., 48., Color::new(0.15, 0.18, 0.25, 1.));
-    label(tr(zh, "中文 / L", "English / L"), 825., 54., 28., WHITE);
     for (i, h) in HEROES.iter().enumerate() {
         let r = hero_rect(i);
         panel(

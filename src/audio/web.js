@@ -1,8 +1,10 @@
 (() => {
+  let volume = 1;
   let music, context, effect, wanted = false, muted = false, musicEnabled = true, effectsEnabled = true, primed = false;
   function apply() {
     if (!music) return;
     music.muted = muted;
+    music.volume = .2 * volume;
     if (wanted && musicEnabled) music.play().catch(e => console.warn('BGM playback pending', e.message));
     else music.pause();
   }
@@ -19,7 +21,7 @@
     window.addEventListener('pagehide',()=>{music?.pause();context?.close();});
   }
   miniquad_add_plugin({name:'battleblocks_audio',version:1,register_plugin(imports){
-    Object.assign(imports.env,{bb_audio_init:init,bb_audio_playing(value){const next=!!value;if(next!==wanted){wanted=next;apply();}},bb_audio_muted(value){muted=!!value;apply();},bb_audio_crush(){if(muted||!effect||!context)return;const source=context.createBufferSource();const gain=context.createGain();source.buffer=effect;gain.gain.value=.35;source.connect(gain);gain.connect(context.destination);source.onended=()=>{source.disconnect();gain.disconnect();};source.start();}});
+    Object.assign(imports.env,{bb_audio_init:init,bb_audio_playing(value){const next=!!value;if(next!==wanted){wanted=next;apply();}},bb_audio_muted(value){muted=!!value;apply();},bb_audio_volume(value){volume=Math.max(0,Math.min(100,value))/100;apply();},bb_audio_crush(){if(muted||!effect||!context)return;const source=context.createBufferSource();const gain=context.createGain();source.buffer=effect;gain.gain.value=.35*volume;source.connect(gain);gain.connect(context.destination);source.onended=()=>{source.disconnect();gain.disconnect();};source.start();}});
   }});
 })();
 
