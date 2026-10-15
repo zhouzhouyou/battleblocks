@@ -113,8 +113,10 @@ Macroquad 0.4.16 与依赖通过 Cargo.lock 固定；网页 JS 使用匹配的 m
 
 ### GitHub Pages
 
-`.github/workflows/pages.yml` 会在推送 main 或手动触发时检查 Pages 是否启用，然后构建并部署网页版。当前仓库为私有仓库，GitHub API 返回现有套餐不支持此仓库的 Pages，因此尚无可访问的在线游戏地址。工作流会在 Pages 不可用时跳过部署，保留原因说明。
+`.github/workflows/pages.yml` 会在手动触发时检查 Pages 是否启用，然后构建并部署网页版。当前仓库为私有仓库，GitHub API 返回现有套餐不支持此仓库的 Pages，因此尚无可访问的在线游戏地址。工作流会在 Pages 不可用时跳过部署，保留原因说明。
 
-账户具备私有仓库 Pages 支持后，在仓库 Settings → Pages 将 Source 设为 GitHub Actions，再手动运行 “Deploy web game to Pages”。后续推送 main 自动更新网页。仓库可见性不会由工作流修改。
+账户具备私有仓库 Pages 支持后，在仓库 Settings → Pages 将 Source 设为 GitHub Actions，再手动运行 “Deploy web game to Pages”。当前暂不发布网页，工作流仅保留手动触发。仓库可见性不会由工作流修改。
 
 Windows x64 Release 由 `.github/workflows/windows-release.yml` 在 GitHub Windows runner 上构建、运行测试并打包；手动触发时填写已存在的 draft release tag，生成的压缩包和 SHA-256 校验文件会自动附加到对应 release。
+
+在 macOS 本地交叉编译 Windows x64：安装 `mingw-w64`，执行 `rustup target add x86_64-pc-windows-gnu`，用 `CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER=x86_64-w64-mingw32-gcc cargo build --release --locked --bin battleblocks --target x86_64-pc-windows-gnu` 编译，然后使用构建工具的 Python 执行 `tools/package.py --native-only --target x86_64-pc-windows-gnu` 打包为 `dist/windows-x64.zip`。本地 Mac 只能检查产物，实际窗口和音频需要 Windows 验证。

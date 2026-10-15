@@ -2,11 +2,13 @@
 from pathlib import Path
 import argparse,gzip,hashlib,json,platform,shutil,subprocess,sys,zipfile
 ROOT=Path(__file__).resolve().parents[1];DIST=ROOT/'dist';DIST.mkdir(exist_ok=True)
-parser=argparse.ArgumentParser();group=parser.add_mutually_exclusive_group();group.add_argument('--native-only',action='store_true');group.add_argument('--web-only',action='store_true');args=parser.parse_args()
+parser=argparse.ArgumentParser();group=parser.add_mutually_exclusive_group();group.add_argument('--native-only',action='store_true');group.add_argument('--web-only',action='store_true');parser.add_argument('--target',help='Native cross-compilation target (currently Windows x64 GNU)');args=parser.parse_args()
 cargo=shutil.which('cargo') or str(Path.home()/'.cargo/bin/cargo')
 rustc=shutil.which('rustc') or str(Path.home()/'.cargo/bin/rustc')
 host=next(line.split(': ',1)[1] for line in subprocess.check_output([rustc,'-vV'],text=True).splitlines() if line.startswith('host:'))
-results={'macroquad':'0.4.16','native_target':host}
+if args.target and args.target != 'x86_64-pc-windows-gnu':parser.error('--target currently supports x86_64-pc-windows-gnu only')
+native_target=args.target or host
+results={'macroquad':'0.4.16','native_target':native_target}
 def licenses_for(target,out):
     if out.exists():shutil.rmtree(out)
     out.mkdir(parents=True)
@@ -45,8 +47,14 @@ if not args.native_only:
     licenses_for('wasm32-unknown-unknown',web/'licenses');zip_directory('web.zip',web)
     results.update(wasm_bytes=(web/'battleblocks.wasm').stat().st_size,web_startup_gzip_bytes=sum(len(gzip.compress((web/name).read_bytes(),compresslevel=9,mtime=0)) for name in ['index.html','mq_js_bundle.js','battleblocks.wasm','crush.wav']),web_bgm_bytes=(web/'bgm.ogg').stat().st_size,web_zip_bytes=(DIST/'web.zip').stat().st_size)
 if not args.web_only:
-    executable='battleblocks.exe' if sys.platform=='win32' else 'battleblocks';binary=ROOT/'target/release'/executable
-    if sys.platform=='darwin':
+    windows='windows' in native_target
+    executable='battleblocks.exe' if windows else 'battleblocks'
+    binary=(ROOT/'target'/args.target/'release'/executable) if args.target else (ROOT/'target/release'/executable)
+    if windows:
+        directory=DIST/'battleblocks-windows-x64'
+        if directory.exists():shutil.rmtree(directory)
+        directory.mkdir();shutil.copy2(binary,directory/executable);licenses_for(native_target,directory/'licenses');name='windows-x64.zip'
+    elif sys.platform=='darwin':
         directory=DIST/'BattleBlocks.app'
         if directory.exists():shutil.rmtree(directory)
         mac=directory/'Contents/MacOS';mac.mkdir(parents=True);shutil.copy2(binary,mac/executable)
