@@ -3,11 +3,11 @@ use super::*;
 pub enum Panel {
     Settings,
     Help,
-    Opponent,
 }
 pub struct Ui {
     pub panel: Option<Panel>,
     pub opponent: Option<usize>,
+    pub opponent_step: bool,
     fullscreen: bool,
     pub volume: u32,
 }
@@ -16,6 +16,7 @@ impl Default for Ui {
         Self {
             panel: None,
             opponent: None,
+            opponent_step: false,
             fullscreen: false,
             volume: 100,
         }
@@ -38,9 +39,6 @@ fn button(r: Rect, text: &str, pointer: Vec2) {
 }
 pub fn top(i: usize) -> Rect {
     Rect::new(814. + i as f32 * 48., 20., 42., 42.)
-}
-pub fn opponent_button() -> Rect {
-    Rect::new(284., 611., 244., 30.)
 }
 impl Ui {
     // Returns whether the frame belongs to the interface, including the closing click.
@@ -112,18 +110,6 @@ impl Ui {
                             }
                         }
                     }
-                }
-                Some(Panel::Opponent) => {
-                    for i in 0..8 {
-                        if opponent_rect(i).contains(pointer) {
-                            self.opponent = if i == 0 { None } else { Some(i - 1) };
-                            self.panel = None;
-                            break;
-                        }
-                    }
-                }
-                None if choosing && opponent_button().contains(pointer) => {
-                    self.panel = Some(Panel::Opponent)
                 }
                 _ => {}
             }
@@ -225,14 +211,95 @@ impl Ui {
             }
         }
     }
-    pub fn draw_opponent_button(&self, zh: bool, pointer: Vec2) {
-        let name = self
-            .opponent
-            .map(|i| if zh { HEROES[i].zh } else { HEROES[i].en })
-            .unwrap_or(tr(zh, "Random", "随机"));
+    pub fn draw_opponents(&self, hero: usize, zh: bool, thumbs: &Texture2D, pointer: Vec2) {
+        label(
+            tr(zh, "STEP 2 · CHOOSE OPPONENT", "第二步 · 选择对手"),
+            24.,
+            58.,
+            34.,
+            GOLD,
+        );
+        label(
+            &format!(
+                "{}：{}",
+                tr(zh, "Your hero", "你的角色"),
+                if zh { HEROES[hero].zh } else { HEROES[hero].en }
+            ),
+            26.,
+            90.,
+            22.,
+            LIGHTGRAY,
+        );
+        for i in 0..8 {
+            let r = opponent_rect(i);
+            button(r, "", pointer);
+            let selected = if i == 0 {
+                self.opponent.is_none()
+            } else {
+                self.opponent == Some(i - 1)
+            };
+            if selected {
+                draw_rectangle_lines(r.x, r.y, r.w, r.h, 2., GOLD);
+            }
+            if i == 0 {
+                label(
+                    tr(zh, "Random opponent", "随机对手"),
+                    r.x + 14.,
+                    r.y + 32.,
+                    24.,
+                    GOLD,
+                );
+                label(
+                    tr(zh, "Excludes your hero", "随机时不与己方角色重复"),
+                    r.x + 14.,
+                    r.y + 65.,
+                    17.,
+                    LIGHTGRAY,
+                );
+            } else {
+                let h = &HEROES[i - 1];
+                draw_texture_ex(
+                    thumbs,
+                    r.x + 8.,
+                    r.y + 12.,
+                    WHITE,
+                    DrawTextureParams {
+                        dest_size: Some(vec2(40., 48.)),
+                        source: Some(Rect::new((i - 1) as f32 * 40., 0., 40., 48.)),
+                        ..Default::default()
+                    },
+                );
+                label(
+                    if zh { h.zh } else { h.en },
+                    r.x + 58.,
+                    r.y + 28.,
+                    22.,
+                    WHITE,
+                );
+                label(
+                    &format!("HP {}  MP {}", h.hp, h.mp),
+                    r.x + 58.,
+                    r.y + 51.,
+                    17.,
+                    LIGHTGRAY,
+                );
+                label(
+                    &format!("{} / {}", h.skills[0].name(zh), h.skills[1].name(zh)),
+                    r.x + 8.,
+                    r.y + 78.,
+                    if zh { 16. } else { 13. },
+                    SKYBLUE,
+                );
+            }
+        }
         button(
-            opponent_button(),
-            &format!("{}: {}", tr(zh, "Opponent", "对手"), name),
+            back_rect(),
+            tr(zh, "Back: choose hero", "上一步：选择角色"),
+            pointer,
+        );
+        button(
+            menu::start_rect(),
+            tr(zh, "Enter · Start battle", "回车 / 点击 · 开始对战"),
             pointer,
         );
     }
@@ -242,7 +309,6 @@ impl Ui {
         muted: bool,
         difficulty: usize,
         tiles: &[Texture2D; 7],
-        thumbs: &Texture2D,
         pointer: Vec2,
     ) {
         let Some(panel) = self.panel else { return };
@@ -254,7 +320,6 @@ impl Ui {
             match panel {
                 Panel::Settings => tr(zh, "SETTINGS", "游戏设置"),
                 Panel::Help => tr(zh, "TILE GUIDE", "方块说明"),
-                Panel::Opponent => tr(zh, "CHOOSE OPPONENT", "选择对手"),
             },
             236.,
             148.,
@@ -385,70 +450,6 @@ impl Ui {
                     LIGHTGRAY,
                 );
             }
-            Panel::Opponent => {
-                for i in 0..8 {
-                    let r = opponent_rect(i);
-                    button(r, "", pointer);
-                    let selected = if i == 0 {
-                        self.opponent.is_none()
-                    } else {
-                        self.opponent == Some(i - 1)
-                    };
-                    if selected {
-                        draw_rectangle_lines(r.x, r.y, r.w, r.h, 2., GOLD);
-                    }
-                    if i == 0 {
-                        label(
-                            tr(zh, "Random opponent", "随机对手"),
-                            r.x + 14.,
-                            r.y + 32.,
-                            24.,
-                            GOLD,
-                        );
-                        label(
-                            tr(zh, "Excludes your hero", "随机时不与己方角色重复"),
-                            r.x + 14.,
-                            r.y + 65.,
-                            17.,
-                            LIGHTGRAY,
-                        );
-                    } else {
-                        let h = &HEROES[i - 1];
-                        draw_texture_ex(
-                            thumbs,
-                            r.x + 8.,
-                            r.y + 12.,
-                            WHITE,
-                            DrawTextureParams {
-                                dest_size: Some(vec2(40., 48.)),
-                                source: Some(Rect::new((i - 1) as f32 * 40., 0., 40., 48.)),
-                                ..Default::default()
-                            },
-                        );
-                        label(
-                            if zh { h.zh } else { h.en },
-                            r.x + 58.,
-                            r.y + 28.,
-                            22.,
-                            WHITE,
-                        );
-                        label(
-                            &format!("HP {}  MP {}", h.hp, h.mp),
-                            r.x + 58.,
-                            r.y + 51.,
-                            17.,
-                            LIGHTGRAY,
-                        );
-                        label(
-                            &format!("{} / {}", h.skills[0].name(zh), h.skills[1].name(zh)),
-                            r.x + 8.,
-                            r.y + 78.,
-                            16.,
-                            SKYBLUE,
-                        );
-                    }
-                }
-            }
         }
         label(
             tr(zh, "Esc: Close", "Esc：关闭"),
@@ -459,7 +460,7 @@ impl Ui {
         );
     }
 }
-fn opponent_rect(i: usize) -> Rect {
+pub fn opponent_rect(i: usize) -> Rect {
     Rect::new(
         230. + (i % 2) as f32 * 288.,
         176. + (i / 2) as f32 * 106.,
@@ -488,4 +489,8 @@ pub fn draw_pause(zh: bool, pointer: Vec2) {
     {
         button(pause_rect(i), text, pointer);
     }
+}
+
+pub fn back_rect() -> Rect {
+    Rect::new(24., 651., 232., 48.)
 }

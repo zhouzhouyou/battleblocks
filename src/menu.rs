@@ -102,7 +102,7 @@ pub fn draw(
     let dim = Color::from_rgba(29, 33, 43, 255);
     let card = Color::from_rgba(35, 40, 52, 255);
     label(
-        tr(zh, "CHOOSE YOUR HERO", "选择你的角色"),
+        tr(zh, "STEP 1 · CHOOSE YOUR HERO", "第一步 · 选择角色"),
         24.,
         58.,
         34.,
@@ -364,7 +364,7 @@ pub fn draw(
         },
     );
     label(
-        tr(zh, "ENTER · START DUEL", "回车 / 点击 · 开始对战"),
+        tr(zh, "NEXT · CHOOSE OPPONENT", "下一步：选择对手"),
         451.,
         682.,
         25.,

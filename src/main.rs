@@ -574,6 +574,7 @@ async fn main() {
                         0 => paused = false,
                         1 => {
                             choosing = true;
+                            interface.opponent_step = false;
                             paused = false;
                             targeting = None;
                             selected = None;
@@ -603,6 +604,7 @@ async fn main() {
         }
         if key(KeyCode::E) {
             choosing = true;
+            interface.opponent_step = false;
         }
         if key(KeyCode::R) || restart_command {
             let before = snapshot!();
@@ -645,35 +647,70 @@ async fn main() {
             if let Some(audio) = &audio {
                 audio.playing(false);
             }
-            let old_hero = hero_id;
-            if key(KeyCode::Down) {
-                hero_id = (hero_id + 1) % HEROES.len();
-            }
-            if key(KeyCode::Up) {
-                hero_id = (hero_id + HEROES.len() - 1) % HEROES.len();
-            }
-            if clicked(MouseButton::Left) {
-                for i in 0..HEROES.len() {
-                    if menu::hero_rect(i).contains(pointer) {
-                        hero_id = i;
+            if !interface.opponent_step {
+                let old_hero = hero_id;
+                if key(KeyCode::Down) {
+                    hero_id = (hero_id + 1) % HEROES.len();
+                }
+                if key(KeyCode::Up) {
+                    hero_id = (hero_id + HEROES.len() - 1) % HEROES.len();
+                }
+                if clicked(MouseButton::Left) {
+                    for i in 0..HEROES.len() {
+                        if menu::hero_rect(i).contains(pointer) {
+                            hero_id = i;
+                        }
+                    }
+                }
+                if hero_id != old_hero {
+                    knight = diagnostic_texture(sprites::SPRITES[hero_id].bytes, "no_actors");
+                    preview = menu::Preview::new(hero_id, 0);
+                }
+                for i in 0..HEROES[hero_id].skills.len() {
+                    if (clicked(MouseButton::Left) && menu::skill_rect(i).contains(pointer))
+                        || (i == 0 && key(KeyCode::Key1))
+                        || (i == 1 && key(KeyCode::Key2))
+                    {
+                        preview = menu::Preview::new(hero_id, i);
                     }
                 }
             }
-            if hero_id != old_hero {
-                knight = diagnostic_texture(sprites::SPRITES[hero_id].bytes, "no_actors");
-                preview = menu::Preview::new(hero_id, 0);
-            }
-            for i in 0..HEROES[hero_id].skills.len() {
-                if (clicked(MouseButton::Left) && menu::skill_rect(i).contains(pointer))
-                    || (i == 0 && key(KeyCode::Key1))
-                    || (i == 1 && key(KeyCode::Key2))
+            let next = key(KeyCode::Enter)
+                || (clicked(MouseButton::Left) && menu::start_rect().contains(pointer));
+            let start_battle = interface.opponent_step && next;
+            if interface.opponent_step {
+                if key(KeyCode::Escape)
+                    || (clicked(MouseButton::Left) && ui::back_rect().contains(pointer))
                 {
-                    preview = menu::Preview::new(hero_id, i);
+                    interface.opponent_step = false;
                 }
+                if clicked(MouseButton::Left) {
+                    for i in 0..8 {
+                        if ui::opponent_rect(i).contains(pointer) {
+                            interface.opponent = if i == 0 { None } else { Some(i - 1) };
+                        }
+                    }
+                }
+                let index = interface.opponent.map(|i| i + 1).unwrap_or(0);
+                let delta = if key(KeyCode::Right) {
+                    1
+                } else if key(KeyCode::Left) {
+                    -1
+                } else if key(KeyCode::Down) {
+                    2
+                } else if key(KeyCode::Up) {
+                    -2
+                } else {
+                    0
+                };
+                if delta != 0 {
+                    let i = (index as i32 + delta).rem_euclid(8) as usize;
+                    interface.opponent = if i == 0 { None } else { Some(i - 1) };
+                }
+            } else if next {
+                interface.opponent_step = true;
             }
-            if key(KeyCode::Enter)
-                || (clicked(MouseButton::Left) && menu::start_rect().contains(pointer))
-            {
+            if start_battle {
                 let before = snapshot!();
                 choosing = false;
                 b = fresh();
@@ -719,10 +756,13 @@ async fn main() {
             if choosing {
                 clear_background(Color::from_rgba(25, 27, 38, 255));
                 set_camera(&cam);
-                menu::draw(hero_id, zh, &knight, &thumbs, &tiles, &preview, pointer);
-                interface.draw_opponent_button(zh, pointer);
+                if interface.opponent_step {
+                    interface.draw_opponents(hero_id, zh, &thumbs, pointer);
+                } else {
+                    menu::draw(hero_id, zh, &knight, &thumbs, &tiles, &preview, pointer);
+                }
                 interface.draw_top(true, muted, paused, pointer, zh);
-                interface.draw_panel(zh, muted, difficulty, &tiles, &thumbs, pointer);
+                interface.draw_panel(zh, muted, difficulty, &tiles, pointer);
                 console.draw();
                 flush_labels();
                 set_default_camera();
@@ -1842,7 +1882,7 @@ async fn main() {
         if paused {
             ui::draw_pause(zh, pointer);
         }
-        interface.draw_panel(zh, muted, difficulty, &tiles, &thumbs, pointer);
+        interface.draw_panel(zh, muted, difficulty, &tiles, pointer);
         console.draw();
         flush_labels();
         set_default_camera();
