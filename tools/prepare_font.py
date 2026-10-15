@@ -5,7 +5,7 @@ from fontTools.varLib.instancer import instantiateVariableFont
 import sys
 ROOT=Path(__file__).resolve().parents[1]
 source=Path(sys.argv[1])
-text=''.join(p.read_text() for p in sorted((ROOT/'src').rglob('*.rs')))
+text=''.join(p.read_text(encoding="utf-8") for p in sorted((ROOT/'src').rglob('*.rs')))
 characters=set(chr(c) for c in range(32,127))|{c for c in text if ord(c)>127}
 font=TTFont(source)
 if "fvar" in font: font=instantiateVariableFont(font,{"wght":600},inplace=True)
