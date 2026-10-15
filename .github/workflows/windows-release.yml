@@ -29,7 +29,7 @@ jobs:
         shell: pwsh
         run: |
           $name = "BattleBlocks-$env:RELEASE_TAG-windows-x64.zip"
-          Copy-Item dist/battleblocks-win32-AMD64.zip "dist/$name"
+          Copy-Item dist/windows-x64.zip "dist/$name"
           $hash = (Get-FileHash "dist/$name" -Algorithm SHA256).Hash.ToLower()
           "$hash  $name" | Set-Content dist/SHA256SUMS-windows.txt -Encoding ascii
       - name: Attach Windows files to release
