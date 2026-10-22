@@ -2,7 +2,9 @@ mod board;
 #[cfg(test)]
 use board::drop_board;
 mod content;
-use board::{fresh, matches, parallel_swap, playable, swap, valid_swap, Board, N};
+#[cfg(test)]
+use board::valid_swap;
+use board::{fresh, matches, parallel_swap, swap, Board, N};
 mod debug;
 mod effects;
 mod icons;
@@ -43,6 +45,9 @@ fn wrap_preview_text(text: &str, limit: f32) -> Vec<String> {
         }
     }
     lines
+}
+fn reroll_rect() -> Rect {
+    Rect::new(256., 650., 512., 38.)
 }
 fn cancel_skill_rect() -> Rect {
     Rect::new(805., 642., 195., 40.)
@@ -494,13 +499,13 @@ async fn main() {
                         Command::Restart=>restart_command=true,
                         Command::Move(a,c)=>{
                             if choosing||enemy_turn||action_done||presentation.busy()||!pending.is_empty()||hp==0||enemy==0||paused {console.say("Move requires a live, unpaused player turn with no pending resolution");}
-                            else if a.0.abs_diff(c.0)+a.1.abs_diff(c.1)!=1{console.say("Move requires adjacent tiles");}
+                            else if !board::adjacent(a,c,hero_id){console.say("Move requires adjacent tiles");}
                             else{command_move=Some((a,c));console.open=false;targeting=None;}
                         },
                         Command::Cast(slot,target)=>{
                             let skill=HEROES[hero_id].skills[slot];
                             if choosing||enemy_turn||action_done||presentation.busy()||!pending.is_empty()||hp==0||enemy==0||paused {console.say("Cast requires a live, unpaused player turn with no pending resolution");}
-                            else if mp<skill.cost(){console.say("Not enough mana");}
+                            else if content::payment(hero_id,hp,mp,skill).is_none(){console.say("Not enough mana");}
                             else if (skill==content::Skill::Strike&&extra_bonus>0)||(skill==content::Skill::Landslide&&armed){console.say("Preparation skill is already active");}
                             else{command_skill=Some(skill);command_target=Some(target);console.open=false;targeting=None;}
                         },
@@ -849,6 +854,40 @@ async fn main() {
                     &snapshot!(),
                 );
             }
+            if pending.is_empty() && !action_done && targeting.is_none() && !armed {
+                let (id, health, mana) = if enemy_turn {
+                    (enemy_id, enemy, enemy_mp)
+                } else {
+                    (hero_id, hp, mp)
+                };
+                let no_swaps = board::hero_options(&b, id).is_empty();
+                let automatic = no_swaps && content::must_refresh(&b, id, health, mana, armed);
+                let voluntary = no_swaps
+                    && !enemy_turn
+                    && (key(KeyCode::F2)
+                        || (clicked(MouseButton::Left) && reroll_rect().contains(pointer)));
+                if automatic || voluntary {
+                    let before = snapshot!();
+                    if voluntary {
+                        console.checkpoint(before.clone());
+                    }
+                    b = board::fresh_for(id);
+                    selected = None;
+                    move_flash = None;
+                    presentation.stop_motion();
+                    note = "No moves: board refreshed";
+                    console.event(
+                        "board_refresh",
+                        if voluntary {
+                            "Player chose reroll instead of a skill"
+                        } else {
+                            "No role-legal swap or usable skill"
+                        },
+                        &before,
+                        &snapshot!(),
+                    );
+                }
+            }
             if enemy_turn && pending.is_empty() && !action_done {
                 enemy_clock += dt;
             }
@@ -878,22 +917,18 @@ async fn main() {
                     extra_bonus,
                 );
                 if cast.is_none() {
-                    if let Some((a, c)) = strategy::choose_move(
-                        &b,
-                        enemy,
-                        HEROES[enemy_id].hp,
-                        enemy_mp,
-                        HEROES[enemy_id].mp,
-                        difficulty,
-                    ) {
+                    if let Some((a, c)) =
+                        strategy::choose_move(&b, enemy, enemy_id, enemy_mp, hero_id, difficulty)
+                            .or_else(|| armed.then_some(((0, 0), (1, 0))))
+                    {
                         let before = enemy_before.clone();
                         console.checkpoint(before.clone());
-                        presentation.swap(&before.board, a, c, armed, enemy_turn);
+                        presentation.swap(&before.board, a, c, armed, enemy_turn, enemy_id);
                         if armed {
                             parallel_swap(&mut b, a, c);
                             armed = false;
                         } else {
-                            valid_swap(&mut b, a, c);
+                            board::hero_swap(&mut b, a, c, enemy_id);
                         }
                         pending = matches(&b);
                         deadline = CLEAR_TIME;
@@ -915,10 +950,10 @@ async fn main() {
                         );
                     } else {
                         let before = snapshot!();
-                        b = fresh();
+                        b = board::fresh_for(enemy_id);
                         console.event(
                             "board_refresh",
-                            "AI has no legal move",
+                            "AI chose reroll instead of a skill",
                             &before,
                             &snapshot!(),
                         );
@@ -947,7 +982,11 @@ async fn main() {
             }
             if !enemy_turn {
                 if let Some(skill) = cast {
-                    if content::targeted(skill) && mp >= skill.cost() && command_skill.is_none() {
+                    if (content::targeted(skill)
+                        || content::payment(hero_id, hp, mp, skill).is_some_and(|p| p.blood > 0))
+                        && content::payment(hero_id, hp, mp, skill).is_some()
+                        && command_skill.is_none()
+                    {
                         targeting = toggle_skill_target(targeting, skill);
                         selected = None;
                         cast = None;
@@ -963,9 +1002,17 @@ async fn main() {
             let mut cast_this_frame = false;
             if let Some(skill) = cast {
                 let before = snapshot!();
-                let actor_mp = if enemy_turn { &mut enemy_mp } else { &mut mp };
-                if *actor_mp >= skill.cost() {
-                    *actor_mp -= skill.cost();
+                let id = if enemy_turn { enemy_id } else { hero_id };
+                let actor_hp = if enemy_turn { enemy } else { hp };
+                let actor_mp = if enemy_turn { enemy_mp } else { mp };
+                if let Some(pay) = content::payment(id, actor_hp, actor_mp, skill) {
+                    if enemy_turn {
+                        enemy_mp -= pay.mana;
+                        enemy -= pay.blood;
+                    } else {
+                        mp -= pay.mana;
+                        hp -= pay.blood;
+                    }
                     console.checkpoint(before.clone());
                     cast_this_frame = true;
                     move_flash = None;
@@ -973,7 +1020,14 @@ async fn main() {
                     last_cast_enemy = enemy_turn;
                     cast_time = 1.4;
                     let target = if enemy_turn {
-                        strategy::choose_target(skill, &b, enemy, HEROES[enemy_id].hp)
+                        strategy::choose_target(
+                            skill,
+                            &b,
+                            enemy_id,
+                            before.enemy_hp,
+                            before.enemy_mp,
+                            extra_bonus,
+                        )
                     } else {
                         command_target.or(board_target).unwrap_or((3, 3))
                     };
@@ -1006,9 +1060,9 @@ async fn main() {
                         before.enemy_hp - enemy
                     };
                     let actual_mana = if enemy_turn {
-                        enemy_mp - before.enemy_mp + skill.cost()
+                        enemy_mp - before.enemy_mp + pay.mana
                     } else {
-                        mp - before.mp + skill.cost()
+                        mp - before.mp + pay.mana
                     };
                     feedback = format!(
                         "{} · {}  +{} HP / {} damage / +{} MP",
@@ -1030,7 +1084,26 @@ async fn main() {
                             e.damage.min(if enemy_turn { hp } else { enemy })
                         );
                     }
-                    presentation.health([before.hp, before.enemy_hp], [hp, enemy], skill.name(zh));
+                    if pay.blood > 0 {
+                        feedback = format!(
+                            "{} -{} HP · HP {} → {} · MP {} → {}",
+                            tr(zh, "Flesh casting", "血肉施法"),
+                            pay.blood,
+                            actor_hp,
+                            if enemy_turn { enemy } else { hp },
+                            actor_mp,
+                            if enemy_turn { enemy_mp } else { mp }
+                        );
+                    }
+                    presentation.health(
+                        [before.hp, before.enemy_hp],
+                        [hp, enemy],
+                        if pay.blood > 0 {
+                            tr(zh, "Flesh casting", "血肉施法")
+                        } else {
+                            skill.name(zh)
+                        },
+                    );
                     feedback_time = 2.5;
                     action_done = !e.armed && e.bonus == 0;
                     extra_bonus += e.bonus;
@@ -1049,7 +1122,7 @@ async fn main() {
                     chain = 1;
                     selected = None;
                     note = "Skill cast";
-                    console.event("skill",&format!("{:?} target=[{},{}] cost={} direct_heal={} direct_damage={} direct_mana={} bonus={} armed={} actual_heal={} actual_damage={} actual_mana={}",skill,target.0+1,target.1+1,skill.cost(),e.hp,e.damage,e.mp,e.bonus,e.armed,actual_heal,actual_damage,actual_mana),&before,&snapshot!());
+                    console.event("skill",&format!("{:?} target=[{},{}] cost={} blood_cost={} direct_heal={} direct_damage={} direct_mana={} bonus={} armed={} actual_heal={} actual_damage={} actual_mana={}",skill,target.0+1,target.1+1,pay.mana,pay.blood,e.hp,e.damage,e.mp,e.bonus,e.armed,actual_heal,actual_damage,actual_mana),&before,&snapshot!());
                 } else {
                     note = "Not enough mana";
                 }
@@ -1067,30 +1140,35 @@ async fn main() {
                     let before = snapshot!();
                     let cleared: Vec<_> = pending.iter().map(|&(x, y)| (x + 1, y + 1)).collect();
                     let rewarded = reward;
-                    let (mut heal, mut damage, mut mana) = (0, 0, 0);
                     let bonus = content::reward_scale(chain.max(1) as usize, extra_bonus);
+                    let id = if enemy_turn { enemy_id } else { hero_id };
+                    let (heal, damage, mana) = if reward {
+                        content::clear_rewards(
+                            id,
+                            if enemy_turn { enemy } else { hp },
+                            if enemy_turn { enemy_mp } else { mp },
+                            &b,
+                            &pending,
+                            chain.max(1) as usize,
+                            extra_bonus,
+                        )
+                    } else {
+                        (0, 0, 0)
+                    };
                     if reward {
                         extra_bonus = 0;
                     }
                     for &(x, y) in &pending {
-                        let v = if reward {
-                            VALUES[b[y][x] as usize]
-                        } else {
-                            (0, 0, 0)
-                        };
-                        heal += v.0;
-                        damage += v.1;
-                        mana += v.2;
                         b[y][x] = 255;
                     }
                     if enemy_turn {
-                        enemy = (enemy + heal * bonus / 100).min(HEROES[enemy_id].hp);
-                        hp = (hp - damage * bonus / 100).max(0);
-                        enemy_mp = (enemy_mp + mana * bonus / 100).min(HEROES[enemy_id].mp);
+                        enemy = (enemy + heal).min(HEROES[enemy_id].hp);
+                        hp = (hp - damage).max(0);
+                        enemy_mp = (enemy_mp + mana).min(HEROES[enemy_id].mp);
                     } else {
-                        hp = (hp + heal * bonus / 100).min(HEROES[hero_id].hp);
-                        enemy = (enemy - damage * bonus / 100).max(0);
-                        mp = (mp + mana * bonus / 100).min(HEROES[hero_id].mp);
+                        hp = (hp + heal).min(HEROES[hero_id].hp);
+                        enemy = (enemy - damage).max(0);
+                        mp = (mp + mana).min(HEROES[hero_id].mp);
                     }
                     presentation.health(
                         [before.hp, before.enemy_hp],
@@ -1134,13 +1212,8 @@ async fn main() {
                         deadline = CLEAR_TIME;
                     } else {
                         deadline = TURN_HOLD;
-                        if !playable(&b) {
-                            b = fresh();
-                            presentation.stop_motion();
-                            note = "No moves: board refreshed";
-                        }
                     }
-                    console.event("resolution",&format!("cells={:?} reward={} multiplier_percent={} heal={} damage={} mana={} chain={} refreshed={} actual_heal={} actual_damage={} actual_mana={}",cleared,rewarded,bonus,heal*bonus/100,damage*bonus/100,mana*bonus/100,chain,note=="No moves: board refreshed",actual_heal,actual_damage,actual_mana),&before,&snapshot!());
+                    console.event("resolution",&format!("cells={:?} reward={} multiplier_percent={} heal={} damage={} mana={} chain={} refreshed={} actual_heal={} actual_damage={} actual_mana={}",cleared,rewarded,bonus,heal,damage,mana,chain,false,actual_heal,actual_damage,actual_mana),&before,&snapshot!());
                 }
             } else if (clicked(MouseButton::Left) || command_move.is_some())
                 && hp > 0
@@ -1167,10 +1240,17 @@ async fn main() {
                             armed = false;
                             true
                         } else {
-                            valid_swap(&mut b, a, c)
+                            board::hero_swap(&mut b, a, c, hero_id)
                         };
                         if legal {
-                            presentation.swap(&before.board, a, c, before.armed, enemy_turn);
+                            presentation.swap(
+                                &before.board,
+                                a,
+                                c,
+                                before.armed,
+                                enemy_turn,
+                                hero_id,
+                            );
                             console.checkpoint(before.clone());
                             action_done = true;
                             move_flash = Some((a, c));
@@ -1398,7 +1478,7 @@ async fn main() {
         };
         let hover_context = player_hover.or(enemy_hover);
         let hover_skill = hover_context.map(|(skill, _)| skill);
-        let preview_cells = targeting
+        let mut preview_cells = targeting
             .or(hover_skill.filter(|s| !content::targeted(*s)))
             .map(|skill| {
                 if content::targeted(skill)
@@ -1414,6 +1494,34 @@ async fn main() {
                 content::target_cells(skill, &b, (x, y))
             })
             .unwrap_or_default();
+        if targeting.is_none() && !enemy_turn && !action_done {
+            if let Some(a) = selected {
+                if pointer.x >= 256. && pointer.x < 768. && pointer.y >= 110. && pointer.y < 622. {
+                    let c = (
+                        ((pointer.x - 256.) / 64.) as usize,
+                        ((pointer.y - 110.) / 64.) as usize,
+                    );
+                    let mut copy = b;
+                    if board::hero_swap(&mut copy, a, c, hero_id) {
+                        preview_cells = matches(&copy);
+                    }
+                    if hero_id == 0 && board::adjacent(a, c, hero_id) && a.1 == c.1 {
+                        for y in 0..N {
+                            for x in [a.0, c.0] {
+                                draw_rectangle_lines(
+                                    256. + x as f32 * 64.,
+                                    110. + y as f32 * 64.,
+                                    64.,
+                                    64.,
+                                    2.,
+                                    GOLD,
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
         if targeting.is_some() {
             let cancel = cancel_skill_rect();
             draw_rectangle(
@@ -1542,7 +1650,11 @@ async fn main() {
                 840.,
                 585. + i as f32 * 38.,
                 17.,
-                if enemy_mp >= skill.cost() { GOLD } else { GRAY },
+                if content::payment(enemy_id, enemy, enemy_mp, *skill).is_some() {
+                    GOLD
+                } else {
+                    GRAY
+                },
             );
         }
         for (i, skill) in HEROES[hero_id].skills.iter().enumerate() {
@@ -1552,7 +1664,7 @@ async fn main() {
                 rect.y,
                 rect.w,
                 rect.h,
-                if mp >= skill.cost() {
+                if content::payment(hero_id, hp, mp, *skill).is_some() {
                     Color::new(0.2, 0.28, 0.35, 1.)
                 } else {
                     Color::new(0.1, 0.12, 0.16, 1.)
@@ -1567,15 +1679,19 @@ async fn main() {
                 WHITE,
             );
             label(
-                &format!(
-                    "{} {}",
-                    skill.cost(),
-                    tr(zh, "MP · click / key", "魔力 · 点击 / 按键")
-                ),
+                &if hero_id == 6 && mp < skill.cost() {
+                    format!("{} MP + {} HP !", mp, (skill.cost() - mp) * 2)
+                } else {
+                    format!("{} MP", skill.cost())
+                },
                 rect.x + 8.,
                 rect.y + 49.,
                 17.,
-                SKYBLUE,
+                if hero_id == 6 && mp < skill.cost() {
+                    RED
+                } else {
+                    SKYBLUE
+                },
             );
             for (line, text) in skill.description(zh).lines().enumerate() {
                 label(
@@ -1587,8 +1703,55 @@ async fn main() {
                 );
             }
         }
+        for (id, x) in [(hero_id, 20.), (enemy_id, 800.)] {
+            label(
+                tr(zh, "PASSIVE (hover)", "被动（悬停查看）"),
+                x,
+                415.,
+                16.,
+                GOLD,
+            );
+            if Rect::new(x, 394., 210., 36.).contains(pointer) {
+                flush_labels();
+                draw_rectangle(270., 225., 485., 145., Color::new(0.04, 0.07, 0.12, 0.98));
+                for (i, line) in content::passive(id, zh).lines().enumerate() {
+                    label(line, 287., 260. + i as f32 * 30., 22., GOLD);
+                }
+            }
+        }
+        if !enemy_turn
+            && !action_done
+            && pending.is_empty()
+            && !presentation.busy()
+            && !armed
+            && hp > 0
+            && enemy > 0
+            && targeting.is_none()
+            && board::hero_options(&b, hero_id).is_empty()
+        {
+            let rect = reroll_rect();
+            draw_rectangle(
+                rect.x,
+                rect.y,
+                rect.w,
+                rect.h,
+                Color::new(0.18, 0.24, 0.30, 1.),
+            );
+            draw_rectangle_lines(rect.x, rect.y, rect.w, rect.h, 2., GOLD);
+            label(
+                tr(
+                    zh,
+                    "No swaps: cast a skill / reroll (F2)",
+                    "无可交换：可施法 / 点击重排（F2）",
+                ),
+                rect.x + 12.,
+                rect.y + 25.,
+                19.,
+                GOLD,
+            );
+        }
         presentation.draw_health(zh);
-        let detail_context = hover_context.or(targeting.map(|skill| (skill, false)));
+        let detail_context = targeting.map(|skill| (skill, false)).or(hover_context);
         if let Some((skill, is_enemy)) = detail_context {
             let (id, health, mana, opponent, boost) = if is_enemy {
                 (
@@ -1629,11 +1792,19 @@ async fn main() {
                 GOLD,
             );
             label(
-                &format!("{} {} MP", tr(zh, "Cost:", "消耗："), skill.cost()),
+                &if id == 6 && mana < skill.cost() {
+                    format!("{} MP + {} HP !", mana, (skill.cost() - mana) * 2)
+                } else {
+                    format!("{} {} MP", tr(zh, "Cost:", "消耗："), skill.cost())
+                },
                 x + 10.,
                 266.,
                 18.,
-                SKYBLUE,
+                if id == 6 && mana < skill.cost() {
+                    RED
+                } else {
+                    SKYBLUE
+                },
             );
             for (line, text) in wrap_preview_text(skill.description(zh), 12.)
                 .iter()
@@ -1663,7 +1834,11 @@ async fn main() {
                     &b,
                     id,
                     health,
-                    mana.max(skill.cost()),
+                    if content::payment(id, health, mana, skill).is_some() {
+                        mana
+                    } else {
+                        mana.max(skill.cost())
+                    },
                     opponent,
                     boost,
                 )
@@ -1675,7 +1850,11 @@ async fn main() {
                         exact_target.unwrap_or((3, 3)),
                         id,
                         health,
-                        mana.max(skill.cost()),
+                        if content::payment(id, health, mana, skill).is_some() {
+                            mana
+                        } else {
+                            mana.max(skill.cost())
+                        },
                         opponent,
                         boost,
                     ),
@@ -1685,7 +1864,11 @@ async fn main() {
                         exact_target.unwrap_or((3, 3)),
                         id,
                         health,
-                        mana.max(skill.cost()),
+                        if content::payment(id, health, mana, skill).is_some() {
+                            mana
+                        } else {
+                            mana.max(skill.cost())
+                        },
                         opponent,
                         boost,
                     ),
@@ -1707,14 +1890,14 @@ async fn main() {
             );
             label(
                 &format!(
-                    "{} +{}",
-                    tr(zh, "Heal:", "治疗："),
+                    "{} {}",
+                    tr(zh, "HP change:", "生命变化："),
                     amount(low.heal, high.heal)
                 ),
                 x + 10.,
                 460.,
                 18.,
-                GREEN,
+                if low.heal < 0 { RED } else { GREEN },
             );
             label(
                 &format!(
@@ -1738,7 +1921,7 @@ async fn main() {
                 18.,
                 SKYBLUE,
             );
-            if mana >= skill.cost() {
+            if content::payment(id, health, mana, skill).is_some() {
                 label(
                     &format!("MP {mana} → {}", amount(low.mana_after, high.mana_after)),
                     x + 10.,
@@ -1753,6 +1936,36 @@ async fn main() {
                     541.,
                     14.,
                     ORANGE,
+                );
+            }
+            if id == 6 && mana < skill.cost() && content::payment(id, health, mana, skill).is_none()
+            {
+                label(
+                    tr(zh, "Not enough HP; must leave 1", "生命不足，支付后须剩1点"),
+                    x + 10.,
+                    598.,
+                    15.,
+                    RED,
+                );
+            }
+            if low.blood_cost > 0 && content::payment(id, health, mana, skill).is_some() {
+                label(
+                    &format!("-{} HP → {} !", low.blood_cost, health - low.blood_cost),
+                    x + 10.,
+                    598.,
+                    18.,
+                    RED,
+                );
+                label(
+                    &format!(
+                        "{} HP → {}",
+                        tr(zh, "After:", "结算后："),
+                        amount(low.health_after, high.health_after)
+                    ),
+                    x + 10.,
+                    620.,
+                    16.,
+                    RED,
                 );
             }
             if exact_target.is_some() {
@@ -1784,8 +1997,8 @@ async fn main() {
             label(
                 tr(zh, "Refill cascades excluded", "补充后的连锁未计入"),
                 x + 10.,
-                626.,
-                15.,
+                641.,
+                13.,
                 GRAY,
             );
         }

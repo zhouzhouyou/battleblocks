@@ -135,6 +135,7 @@ impl Presentation {
         b: (usize, usize),
         parallel: bool,
         actor_enemy: bool,
+        hero: usize,
     ) {
         self.actor_enemy = actor_enemy;
         self.swapping = true;
@@ -159,6 +160,9 @@ impl Presentation {
                     pairs.push(((p.0 as usize, p.1 as usize), (q.0 as usize, q.1 as usize)));
                 }
             }
+        }
+        if hero == 0 && a.1 == b.1 && !parallel {
+            pairs = (0..N).map(|y| ((a.0, y), (b.0, y))).collect();
         }
         self.motions.clear();
         for (a, b) in pairs {
@@ -310,7 +314,7 @@ mod tests {
     fn motion_finishes_without_resetting_health_feedback() {
         let b = [[2; N]; N];
         let mut p = Presentation::default();
-        p.swap(&b, (0, 0), (1, 0), false, true);
+        p.swap(&b, (0, 0), (1, 0), false, true, 2);
         p.health([700, 500], [700, 350], "charge");
         assert!(p.hides(0, 0));
         assert!(p.actor_enemy);
@@ -324,7 +328,7 @@ mod tests {
     #[test]
     fn animation_covers_every_parallel_pair_and_rollback_clears_it() {
         let mut p = Presentation::default();
-        p.swap(&[[2; N]; N], (3, 3), (4, 3), true, false);
+        p.swap(&[[2; N]; N], (3, 3), (4, 3), true, false, 2);
         assert_eq!(p.motions.len(), 6);
         p.clear();
         assert!(!p.busy());
