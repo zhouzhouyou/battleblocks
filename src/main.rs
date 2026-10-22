@@ -46,6 +46,9 @@ fn wrap_preview_text(text: &str, limit: f32) -> Vec<String> {
     }
     lines
 }
+fn move_hints_rect() -> Rect {
+    Rect::new(805., 642., 195., 40.)
+}
 fn reroll_rect() -> Rect {
     Rect::new(256., 650., 512., 38.)
 }
@@ -346,6 +349,8 @@ async fn main() {
     rng::srand((get_time() * 1e9) as u64);
     let mut b = fresh();
     let mut selected: Option<(usize, usize)> = None;
+    let mut move_hint_page = 0usize;
+    let mut hints_hover_open = false;
     let (mut hp, mut enemy, mut mp) = (HEROES[hero_id].hp, HEROES[enemy_id].hp, 0i32);
     let mut pending: Vec<(usize, usize)> = Vec::new();
     let mut deadline = 0.;
@@ -1447,7 +1452,29 @@ async fn main() {
                 }
             }
         }
-        let player_hover = if !enemy_turn
+        let hints_ready = targeting.is_none()
+            && !action_done
+            && pending.is_empty()
+            && !presentation.busy()
+            && !block_input
+            && !paused
+            && interface.panel.is_none()
+            && hp > 0
+            && enemy > 0;
+        let hints_rect = move_hints_rect();
+        // The continuous hover region bridges the entry button and its panel,
+        // so a mouse/trackpad can reach rows and pagination without holding H.
+        let hints_region = Rect::new(790., 208., 220., 474.);
+        hints_hover_open = hints_ready
+            && !key(KeyCode::Escape)
+            && (hints_rect.contains(pointer)
+                || ((hints_hover_open || is_key_down(KeyCode::H))
+                    && hints_region.contains(pointer)));
+        let show_moves =
+            hints_ready && !key(KeyCode::Escape) && (is_key_down(KeyCode::H) || hints_hover_open);
+        let hint_actor = if enemy_turn { enemy_id } else { hero_id };
+        let player_hover = if !show_moves
+            && !enemy_turn
             && !action_done
             && pending.is_empty()
             && hp > 0
@@ -1466,7 +1493,7 @@ async fn main() {
         } else {
             None
         };
-        let enemy_hover = if !console.open {
+        let enemy_hover = if !show_moves && !console.open {
             HEROES[enemy_id]
                 .skills
                 .iter()
@@ -1494,7 +1521,7 @@ async fn main() {
                 content::target_cells(skill, &b, (x, y))
             })
             .unwrap_or_default();
-        if targeting.is_none() && !enemy_turn && !action_done {
+        if !show_moves && targeting.is_none() && !enemy_turn && !action_done {
             if let Some(a) = selected {
                 if pointer.x >= 256. && pointer.x < 768. && pointer.y >= 110. && pointer.y < 622. {
                     let c = (
@@ -1607,6 +1634,166 @@ async fn main() {
             }
         }
         presentation.draw_tiles(&tiles);
+        // Hints are derived only from the settled board; drawing never changes
+        // selection, RNG, turn state, resources or the action log.
+        let legal_hints = if show_moves {
+            board::move_hints(&b, hint_actor, armed)
+        } else {
+            Vec::new()
+        };
+        let hint_health = if enemy_turn { enemy } else { hp };
+        let hint_mana = if enemy_turn { enemy_mp } else { mp };
+        let hint_opponent = if enemy_turn { hp } else { enemy };
+        let move_previews: Vec<_> = legal_hints
+            .iter()
+            .map(|&(a, c)| {
+                content::preview_move(
+                    &b,
+                    hint_actor,
+                    hint_health,
+                    hint_mana,
+                    hint_opponent,
+                    extra_bonus,
+                    armed,
+                    a,
+                    c,
+                )
+            })
+            .collect();
+        let pages = legal_hints.len().div_ceil(7).max(1);
+        let previous_page_rect = Rect::new(798., 590., 52., 24.);
+        let next_page_rect = Rect::new(950., 590., 52., 24.);
+        if show_moves {
+            let wheel = mouse_wheel().1;
+            if wheel < 0.
+                || key(KeyCode::Right)
+                || (clicked(MouseButton::Left) && next_page_rect.contains(pointer))
+            {
+                move_hint_page = (move_hint_page + 1).min(pages - 1);
+            }
+            if wheel > 0.
+                || key(KeyCode::Left)
+                || (clicked(MouseButton::Left) && previous_page_rect.contains(pointer))
+            {
+                move_hint_page = move_hint_page.saturating_sub(1);
+            }
+            move_hint_page = move_hint_page.min(pages - 1);
+        } else {
+            move_hint_page = 0;
+        }
+        let row_focus = if show_moves
+            && pointer.x >= 798.
+            && pointer.x < 1002.
+            && pointer.y >= 278.
+            && pointer.y < 586.
+        {
+            Some(move_hint_page * 7 + ((pointer.y - 278.) / 44.) as usize)
+                .filter(|&i| i < legal_hints.len())
+        } else {
+            None
+        };
+        let arrow_focus = if show_moves
+            && pointer.x >= 256.
+            && pointer.x < 768.
+            && pointer.y >= 110.
+            && pointer.y < 622.
+        {
+            legal_hints
+                .iter()
+                .enumerate()
+                .map(|(i, &(a, c))| (i, presentation::move_hint_anchor(a, c).distance(pointer)))
+                .filter(|(_, d)| *d < 22.)
+                .min_by(|a, b| a.1.total_cmp(&b.1))
+                .map(|(i, _)| i)
+        } else {
+            None
+        };
+        let focused_hint = row_focus.or(arrow_focus);
+        if let Some(i) = arrow_focus {
+            move_hint_page = i / 7;
+        }
+        if show_moves {
+            for (i, &(a, c)) in legal_hints.iter().enumerate() {
+                presentation::draw_move_hint(
+                    a,
+                    c,
+                    hint_actor == 0 && !armed && a.1 == c.1,
+                    i + 1,
+                    focused_hint == Some(i),
+                );
+            }
+            if let Some(p) = focused_hint.and_then(|i| move_previews[i].as_ref()) {
+                for &(x, y) in &p.cells {
+                    draw_rectangle_lines(
+                        259. + x as f32 * 64.,
+                        113. + y as f32 * 64.,
+                        58.,
+                        58.,
+                        3.,
+                        GREEN,
+                    );
+                }
+            }
+            if !legal_hints.is_empty() {
+                label(
+                    tr(
+                        zh,
+                        "Blue: tiles / Gold: whole columns",
+                        "蓝色：两格交换 / 金色：整列交换",
+                    ),
+                    256.,
+                    674.,
+                    17.,
+                    GOLD,
+                );
+            }
+        }
+        if targeting.is_none() {
+            draw_rectangle(
+                hints_rect.x,
+                hints_rect.y,
+                hints_rect.w,
+                hints_rect.h,
+                Color::new(0.10, 0.17, 0.23, 1.),
+            );
+            draw_rectangle_lines(
+                hints_rect.x,
+                hints_rect.y,
+                hints_rect.w,
+                hints_rect.h,
+                2.,
+                if show_moves { GOLD } else { GRAY },
+            );
+            label(
+                tr(zh, "Moves · hold H", "可行移动 · 按住 H"),
+                hints_rect.x + 8.,
+                hints_rect.y + 17.,
+                16.,
+                if hints_ready { SKYBLUE } else { GRAY },
+            );
+            let detail = if show_moves {
+                format!(
+                    "{} · {} {}",
+                    if zh {
+                        HEROES[hint_actor].zh
+                    } else {
+                        HEROES[hint_actor].en
+                    },
+                    legal_hints.len(),
+                    tr(zh, "moves", "种交换")
+                )
+            } else {
+                tr(zh, "Hover to show all swaps", "悬停显示全部交换").to_string()
+            };
+            label(
+                &detail,
+                hints_rect.x + 8.,
+                hints_rect.y + 33.,
+                13.,
+                if show_moves { GOLD } else { GRAY },
+            );
+        }
+
         if presentation.charging() {
             let id = if last_cast_enemy { enemy_id } else { hero_id };
             let asset = &sprites::SPRITES[id];
@@ -1749,6 +1936,141 @@ async fn main() {
                 19.,
                 GOLD,
             );
+        }
+        if show_moves {
+            flush_labels();
+            draw_rectangle(790., 208., 220., 430., Color::new(0.04, 0.07, 0.12, 0.98));
+            draw_rectangle_lines(790., 208., 220., 430., 2., SKYBLUE);
+            label(tr(zh, "Move rewards", "移动收益"), 800., 232., 20., GOLD);
+            label(
+                if zh {
+                    HEROES[hint_actor].zh
+                } else {
+                    HEROES[hint_actor].en
+                },
+                800.,
+                252.,
+                15.,
+                WHITE,
+            );
+            label(
+                tr(
+                    zh,
+                    "First clear; no refill chains",
+                    "首轮收益，不含补充连锁",
+                ),
+                800.,
+                270.,
+                13.,
+                GRAY,
+            );
+            for i in move_hint_page * 7..((move_hint_page + 1) * 7).min(legal_hints.len()) {
+                let row_y = 278. + (i % 7) as f32 * 44.;
+                if focused_hint == Some(i) {
+                    draw_rectangle(798., row_y, 204., 43., Color::new(0.16, 0.25, 0.30, 1.));
+                }
+                let (a, c) = legal_hints[i];
+                let column = hint_actor == 0 && !armed && a.1 == c.1;
+                label(
+                    &format!(
+                        "#{} ({},{})↔({},{}){}",
+                        i + 1,
+                        a.0 + 1,
+                        a.1 + 1,
+                        c.0 + 1,
+                        c.1 + 1,
+                        if column {
+                            tr(zh, " COL", " 整列")
+                        } else {
+                            ""
+                        }
+                    ),
+                    800.,
+                    row_y + 16.,
+                    13.,
+                    if column { GOLD } else { SKYBLUE },
+                );
+                if let Some(p) = &move_previews[i] {
+                    label(
+                        &format!(
+                            "{}{}  {}{}  {}{}",
+                            tr(zh, "Dmg ", "伤"),
+                            p.damage,
+                            tr(zh, "HP+", "治"),
+                            p.heal,
+                            tr(zh, "MP+", "魔"),
+                            p.mana_gain
+                        ),
+                        800.,
+                        row_y + 35.,
+                        14.,
+                        WHITE,
+                    );
+                }
+            }
+            if legal_hints.is_empty() {
+                label(
+                    tr(zh, "No legal exchanges", "当前无可行交换"),
+                    800.,
+                    305.,
+                    17.,
+                    GOLD,
+                );
+            }
+            for (rect, enabled, text) in [
+                (
+                    previous_page_rect,
+                    move_hint_page > 0,
+                    tr(zh, "< Prev", "上一页"),
+                ),
+                (
+                    next_page_rect,
+                    move_hint_page + 1 < pages,
+                    tr(zh, "Next >", "下一页"),
+                ),
+            ] {
+                draw_rectangle(
+                    rect.x,
+                    rect.y,
+                    rect.w,
+                    rect.h,
+                    Color::new(0.13, 0.20, 0.28, 1.),
+                );
+                draw_rectangle_lines(
+                    rect.x,
+                    rect.y,
+                    rect.w,
+                    rect.h,
+                    1.,
+                    if enabled { SKYBLUE } else { GRAY },
+                );
+                label(
+                    text,
+                    rect.x + 5.,
+                    rect.y + 17.,
+                    13.,
+                    if enabled { WHITE } else { GRAY },
+                );
+            }
+            label(
+                &format!("{} / {}", move_hint_page + 1, pages),
+                867.,
+                607.,
+                14.,
+                GOLD,
+            );
+            let focused_preview = focused_hint.and_then(|i| move_previews[i].as_ref());
+            let footer = focused_preview
+                .map(|p| {
+                    format!(
+                        "HP {hint_health}→{}  MP {hint_mana}→{}",
+                        p.health_after, p.mana_after
+                    )
+                })
+                .unwrap_or_else(|| {
+                    tr(zh, "Click arrows / Left, Right", "点按钮或按 ← → 翻页").to_string()
+                });
+            label(&footer, 800., 628., 13., LIGHTGRAY);
         }
         presentation.draw_health(zh);
         let detail_context = targeting.map(|skill| (skill, false)).or(hover_context);
