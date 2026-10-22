@@ -188,14 +188,17 @@ pub fn draw(
         &sprites::SPRITES[hero],
         Rect::new(301., 207., 210., 202.),
     );
-    label(tr(zh, "MAX HEALTH", "生命上限"), 304., 456., 19., LIGHTGRAY);
-    label(&h.hp.to_string(), 304., 488., 30., GREEN);
-    draw_rectangle(304., 505., 204., 6., Color::from_rgba(48, 55, 61, 255));
-    draw_rectangle(304., 505., 204. * h.hp as f32 / 800., 6., GREEN);
-    label(tr(zh, "MAX MANA", "魔力上限"), 304., 548., 19., LIGHTGRAY);
-    label(&h.mp.to_string(), 304., 580., 30., SKYBLUE);
-    draw_rectangle(304., 597., 204., 6., Color::from_rgba(48, 55, 61, 255));
-    draw_rectangle(304., 597., 204. * h.mp as f32 / 800., 6., SKYBLUE);
+    label(tr(zh, "MAX HEALTH", "生命上限"), 304., 444., 17., LIGHTGRAY);
+    label(&h.hp.to_string(), 304., 472., 28., GREEN);
+    draw_rectangle(304., 482., 204., 5., Color::from_rgba(48, 55, 61, 255));
+    draw_rectangle(304., 482., 204. * h.hp as f32 / 800., 5., GREEN);
+    label(tr(zh, "MAX MANA", "魔力上限"), 304., 510., 17., LIGHTGRAY);
+    label(&h.mp.to_string(), 304., 537., 28., SKYBLUE);
+    draw_rectangle(304., 548., 204., 5., Color::from_rgba(48, 55, 61, 255));
+    draw_rectangle(304., 548., 204. * h.mp as f32 / 800., 5., SKYBLUE);
+    for (i, line) in content::passive(hero, zh).lines().enumerate() {
+        label(line, 294., 572. + i as f32 * 20., 13., GOLD);
+    }
     for (i, skill) in h.skills.iter().enumerate() {
         let r = skill_rect(i);
         panel(
