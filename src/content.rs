@@ -938,3 +938,115 @@ mod deadlock_tests {
         assert_eq!(crate::rng::state(), seed);
     }
 }
+
+pub struct MovePreview {
+    pub heal: i32,
+    pub damage: i32,
+    pub mana_gain: i32,
+    pub health_after: i32,
+    pub mana_after: i32,
+    pub cells: Vec<(usize, usize)>,
+}
+/// Exact first-wave rewards for an exchange, before any random refill.
+pub fn preview_move(
+    board: &Board,
+    hero: usize,
+    hp: i32,
+    mp: i32,
+    enemy_hp: i32,
+    bonus: i32,
+    armed: bool,
+    a: (usize, usize),
+    c: (usize, usize),
+) -> Option<MovePreview> {
+    let mut copy = *board;
+    if armed && crate::board::adjacent(a, c, hero) && a.0.abs_diff(c.0) + a.1.abs_diff(c.1) == 1 {
+        crate::board::parallel_swap(&mut copy, a, c);
+    } else if !crate::board::hero_swap(&mut copy, a, c, hero) {
+        return None;
+    }
+    let cells = crate::matches(&copy);
+    let (h, d, m) = clear_rewards(hero, hp, mp, &copy, &cells, 1, bonus);
+    let health_after = (hp + h).min(HEROES[hero].hp);
+    let mana_after = (mp + m).min(HEROES[hero].mp);
+    Some(MovePreview {
+        heal: health_after - hp,
+        damage: d.min(enemy_hp),
+        mana_gain: mana_after - mp,
+        health_after,
+        mana_after,
+        cells,
+    })
+}
+
+#[cfg(test)]
+mod move_preview_tests {
+    use super::*;
+    fn base() -> Board {
+        std::array::from_fn(|y| std::array::from_fn(|x| ((x + 2 * y) % 7) as u8))
+    }
+    #[test]
+    fn previews_use_role_exchange_rules_rewards_caps_and_bonus() {
+        let mut b = base();
+        b[0][0] = 6;
+        b[0][1] = 2;
+        b[0][2] = 6;
+        b[0][3] = 6;
+        let p = preview_move(&b, 0, 500, 0, 700, 0, false, (0, 0), (1, 0)).unwrap();
+        assert_eq!((p.heal, p.damage, p.mana_gain), (0, 22, 22));
+        let p = preview_move(&b, 0, 500, 0, 700, 1, false, (0, 0), (1, 0)).unwrap();
+        assert_eq!((p.damage, p.mana_gain), (44, 44));
+        assert!(preview_move(&base(), 0, 700, 0, 700, 0, false, (0, 0), (1, 0)).is_none());
+        assert!(preview_move(&b, 0, 700, 0, 700, 0, false, (0, 0), (1, 1)).is_none());
+        let mut b = base();
+        b[0][0] = 6;
+        b[0][1] = 6;
+        b[0][2] = 2;
+        b[1][3] = 6;
+        let p = preview_move(&b, 1, 599, 499, 7, 0, false, (2, 0), (3, 1)).unwrap();
+        assert_eq!((p.heal, p.damage, p.mana_gain), (0, 7, 1));
+        assert_eq!((p.health_after, p.mana_after), (599, 500));
+        let mut b = base();
+        b[0][0] = 1;
+        b[0][1] = 2;
+        b[0][2] = 1;
+        b[0][3] = 1;
+        let p = preview_move(&b, 0, 699, 0, 700, 0, false, (0, 0), (1, 0)).unwrap();
+        assert_eq!((p.heal, p.health_after), (1, 700));
+    }
+    #[test]
+    fn every_hint_has_pure_preview_including_prepared_swaps() {
+        crate::rng::srand(5017);
+        let b = crate::board::fresh();
+        let original = b;
+        let seed = crate::rng::state();
+        for hero in 0..7 {
+            for armed in [false, true] {
+                for (a, c) in crate::board::move_hints(&b, hero, armed) {
+                    let p = preview_move(
+                        &b,
+                        hero,
+                        HEROES[hero].hp - 1,
+                        HEROES[hero].mp - 1,
+                        7,
+                        1,
+                        armed,
+                        a,
+                        c,
+                    )
+                    .unwrap();
+                    assert!((0..=1).contains(&p.heal));
+                    assert!((0..=1).contains(&p.mana_gain));
+                    assert!((0..=7).contains(&p.damage));
+                    assert_eq!(p.health_after, HEROES[hero].hp - 1 + p.heal);
+                    assert_eq!(p.mana_after, HEROES[hero].mp - 1 + p.mana_gain);
+                }
+            }
+        }
+        assert_eq!(b, original);
+        assert_eq!(crate::rng::state(), seed);
+        let p = preview_move(&base(), 0, 700, 0, 700, 0, true, (0, 0), (1, 0)).unwrap();
+        assert!(p.cells.is_empty());
+        assert_eq!((p.heal, p.damage, p.mana_gain), (0, 0, 0));
+    }
+}

@@ -306,3 +306,82 @@ mod refresh_tests {
         }
     }
 }
+
+/// Enumerate actual exchange inputs, including a prepared parallel exchange.
+/// This is a read-only query; column exchanges are deduplicated by column pair.
+pub fn move_hints(b: &Board, hero: usize, armed: bool) -> Vec<((usize, usize), (usize, usize))> {
+    if !armed {
+        return hero_options(b, hero);
+    }
+    let mut moves = Vec::new();
+    for y in 0..N {
+        for x in 0..N {
+            for c in [(x + 1, y), (x, y + 1)] {
+                if c.0 < N && c.1 < N {
+                    moves.push(((x, y), c));
+                }
+            }
+        }
+    }
+    // An armed elf can still make an ordinary diagonal swap without using
+    // the orthogonal parallel preparation, matching the input handler.
+    if hero == 1 {
+        moves.extend(
+            hero_options(b, hero)
+                .into_iter()
+                .filter(|&(a, c)| a.0 != c.0 && a.1 != c.1),
+        );
+    }
+    moves
+}
+
+#[cfg(test)]
+mod hint_tests {
+    use super::*;
+    #[test]
+    fn hints_cover_every_legal_input_without_changing_state() {
+        crate::rng::srand(613);
+        for _ in 0..8 {
+            let b = fresh();
+            let original = b;
+            let seed = crate::rng::state();
+            for hero in 0..7 {
+                for armed in [false, true] {
+                    let moves = move_hints(&b, hero, armed);
+                    let unique: std::collections::HashSet<_> = moves.iter().copied().collect();
+                    assert_eq!(unique.len(), moves.len());
+                    for y in 0..N {
+                        for x in 0..N {
+                            for (dx, dy) in [(1isize, 0), (0, 1), (1, 1), (-1, 1)] {
+                                let (cx, cy) = (x as isize + dx, y as isize + dy);
+                                if cx < 0 || cy < 0 || cx >= N as isize || cy >= N as isize {
+                                    continue;
+                                }
+                                let a = (x, y);
+                                let c = (cx as usize, cy as usize);
+                                let expected = (armed && dx.abs() + dy.abs() == 1)
+                                    || hero_swap(&mut b.clone(), a, c, hero);
+                                let canonical = if !armed && hero == 0 && dy == 0 {
+                                    ((x, 0), (c.0, 0))
+                                } else {
+                                    (a, c)
+                                };
+                                assert_eq!(unique.contains(&canonical), expected);
+                            }
+                        }
+                    }
+                }
+            }
+            assert_eq!(b, original);
+            assert_eq!(crate::rng::state(), seed);
+        }
+    }
+    #[test]
+    fn no_match_board_has_no_hints_unless_prepared() {
+        let b = std::array::from_fn(|y| std::array::from_fn(|x| ((x + 2 * y) % 7) as u8));
+        for hero in 0..7 {
+            assert!(move_hints(&b, hero, false).is_empty());
+            assert_eq!(move_hints(&b, hero, true).len(), 2 * N * (N - 1));
+        }
+    }
+}

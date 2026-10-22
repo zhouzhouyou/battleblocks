@@ -335,3 +335,71 @@ mod tests {
         assert!(!p.hides(3, 3));
     }
 }
+
+/// A two-headed arrow identifies the two exchange endpoints. Knight horizontal
+/// inputs outline the entire columns, rather than implying a single tile swap.
+pub fn draw_move_hint(
+    a: (usize, usize),
+    b: (usize, usize),
+    columns: bool,
+    number: usize,
+    focused: bool,
+) {
+    let center = |p: (usize, usize)| vec2(288. + p.0 as f32 * 64., 142. + p.1 as f32 * 64.);
+    let (from, to) = (center(a), center(b));
+    let color = if focused {
+        WHITE
+    } else if columns {
+        GOLD
+    } else {
+        SKYBLUE
+    };
+    if columns {
+        for x in [a.0, b.0] {
+            draw_rectangle_lines(256. + x as f32 * 64. + 5., 115., 54., 502., 2., GOLD);
+        }
+    }
+    let dir = (to - from).normalize();
+    let normal = vec2(-dir.y, dir.x);
+    let start = from + dir * 13.;
+    let end = to - dir * 13.;
+    draw_line(
+        start.x,
+        start.y,
+        end.x,
+        end.y,
+        7.,
+        Color::new(0.02, 0.04, 0.08, 0.95),
+    );
+    draw_line(start.x, start.y, end.x, end.y, 3., color);
+    for (tip, inward) in [(start, dir), (end, -dir)] {
+        for side in [-1., 1.] {
+            let wing = tip + inward * 9. + normal * side * 6.;
+            draw_line(
+                tip.x,
+                tip.y,
+                wing.x,
+                wing.y,
+                5.,
+                Color::new(0.02, 0.04, 0.08, 0.95),
+            );
+            draw_line(tip.x, tip.y, wing.x, wing.y, 2., color);
+        }
+    }
+    let badge = move_hint_anchor(a, b);
+    draw_rectangle(
+        badge.x - 10.,
+        badge.y - 8.,
+        22.,
+        17.,
+        Color::new(0.03, 0.05, 0.09, 0.95),
+    );
+    label(&number.to_string(), badge.x - 8., badge.y + 5., 12., color);
+}
+
+pub fn move_hint_anchor(a: (usize, usize), b: (usize, usize)) -> Vec2 {
+    let center = |p: (usize, usize)| vec2(288. + p.0 as f32 * 64., 142. + p.1 as f32 * 64.);
+    let (from, to) = (center(a), center(b));
+    let dir = (to - from).normalize();
+    (from + to) * 0.5 + vec2(-dir.y, dir.x) * 12.
+}
