@@ -1898,7 +1898,14 @@ async fn main() {
                 16.,
                 GOLD,
             );
-            if Rect::new(x, 394., 210., 36.).contains(pointer) {
+            if !show_moves
+                && targeting.is_none()
+                && hover_context.is_none()
+                && !block_input
+                && !paused
+                && interface.panel.is_none()
+                && Rect::new(x, 394., 210., 36.).contains(pointer)
+            {
                 flush_labels();
                 draw_rectangle(270., 225., 485., 145., Color::new(0.04, 0.07, 0.12, 0.98));
                 for (i, line) in content::passive(id, zh).lines().enumerate() {
