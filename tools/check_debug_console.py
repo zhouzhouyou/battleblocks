@@ -77,7 +77,84 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-debug-') as temp:
         data=wait(lambda r:sum(e['event']=='rollback' for e in r)>=4)
         assert [e for e in data if e['event']=='rollback'][-1]['after']==guard['before']
         assert [e['seq'] for e in data]==list(range(1,len(data)+1))
-        print(f'PASS: {len(data)} JSONL events; player/enemy moves, cascades, cast, board edit, full-state rollbacks')
+        # Check the new role rules and HP payment through the real game loop.
+        def edit_command(command):
+            count=sum(e['event']=='debug_edit' and e['detail']==command for e in records())
+            send(command)
+            return wait(lambda r:sum(e['event']=='debug_edit' and e['detail']==command for e in r)>count)
+        def action(command,event):
+            count=sum(e['event']==event for e in records())
+            send(command)
+            data=wait(lambda r:sum(e['event']==event for e in r)>count)
+            return [e for e in data if e['event']==event][-1]
+        def rollback_to(before):
+            undone=action('undo player','rollback')
+            assert undone['after']==before
+        edit_command('hero player 6')
+        edit_command('hp player 200')
+        edit_command('mp player 25')
+        clean=[[(x+2*y)%7 for x in range(8)] for y in range(8)]
+        edit_command('board load '+' '.join(str(v) for row in clean for v in row))
+        paid=action('cast 2 1 1','skill')
+        heal_values=[2,6,0,0,3,3,0]
+        healing=2*sum(heal_values[clean[y][x]] for y in range(2) for x in range(2))
+        assert paid['after']['hp']==150+healing
+        assert paid['after']['mp']==0
+        assert 'blood_cost=50' in paid['detail'] and 'cost=25' in paid['detail']
+        rollback_to(paid['before'])
+        for role in (0,1):
+            edit_command(f'hero player {role}')
+            layout=[row[:] for row in clean]
+            if role==0:
+                layout[0][:4]=[6,2,6,6]
+                command='move 1 1 2 1'
+            else:
+                layout[0][:3]=[6,6,2];layout[1][3]=6
+                command='move 3 1 4 2'
+            edit_command('board load '+' '.join(str(v) for row in layout for v in row))
+            moved=action(command,'move')
+            if role==0:
+                for y in range(8):
+                    assert moved['after']['board'][y][0]==layout[y][1]
+                    assert moved['after']['board'][y][1]==layout[y][0]
+            else:
+                assert moved['after']['board'][0][:3]==[6,6,6]
+            rollback_to(moved['before'])
+        # A no-swap board must survive while Charge is affordable.
+        edit_command('hero player 0')
+        edit_command('mp player 100')
+        edit_command('board load '+' '.join(str(v) for row in clean for v in row))
+        refreshes=sum(e['event']=='board_refresh' for e in records())
+        rejected=action('move 1 1 2 1','move_rejected')
+        assert rejected['after']['board']==clean
+        assert sum(e['event']=='board_refresh' for e in records())==refreshes
+        escaped=action('cast 1 1 1','skill')
+        assert escaped['before']['board']==clean
+        rollback_to(escaped['before'])
+        # With neither an exchange nor a payable skill, refresh for this actor.
+        refreshes=sum(e['event']=='board_refresh' for e in records())
+        edit_command('mp player 0')
+        data=wait(lambda r:sum(e['event']=='board_refresh' for e in r)>refreshes)
+        refreshed=[e for e in data if e['event']=='board_refresh'][-1]
+        assert refreshed['before']['board']==clean
+        assert refreshed['after']['board']!=clean
+        assert 'No role-legal swap or usable skill' in refreshed['detail']
+        # HP payment also keeps a no-swap board available for casting.
+        edit_command('hero player 6')
+        edit_command('hp player 101')
+        edit_command('mp player 0')
+        edit_command('board load '+' '.join(str(v) for row in clean for v in row))
+        refreshes=sum(e['event']=='board_refresh' for e in records())
+        rejected=action('move 1 1 2 1','move_rejected')
+        assert rejected['after']['board']==clean
+        assert sum(e['event']=='board_refresh' for e in records())==refreshes
+        escaped=action('cast 2 1 1','skill')
+        assert 'blood_cost=100' in escaped['detail']
+        assert escaped['before']['board']==clean
+        rollback_to(escaped['before'])
+        data=records()
+        assert [e['seq'] for e in data]==list(range(1,len(data)+1))
+        print(f'PASS: {len(data)} JSONL events; role swaps, HP payment, player/enemy moves, cascades, skills and full-state rollbacks')
     finally:
         process.terminate()
         try:process.communicate(timeout=5)

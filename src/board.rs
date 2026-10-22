@@ -173,3 +173,136 @@ mod fall_tests {
         assert!(b.iter().flatten().all(|&v| v < 7));
     }
 }
+
+/// Role-specific swaps are transactional, including invalid coordinates.
+pub fn hero_swap(b: &mut Board, a: (usize, usize), c: (usize, usize), hero: usize) -> bool {
+    if !adjacent(a, c, hero) {
+        return false;
+    }
+    let original = *b;
+    if hero == 0 && a.1 == c.1 {
+        for y in 0..N {
+            swap(b, (a.0, y), (c.0, y));
+        }
+    } else {
+        swap(b, a, c);
+    }
+    if matches(b).is_empty() {
+        *b = original;
+        false
+    } else {
+        true
+    }
+}
+pub fn adjacent(a: (usize, usize), c: (usize, usize), hero: usize) -> bool {
+    if [a.0, a.1, c.0, c.1].iter().any(|&v| v >= N) {
+        return false;
+    }
+    let dx = a.0.abs_diff(c.0);
+    let dy = a.1.abs_diff(c.1);
+    dx + dy == 1 || (hero == 1 && dx == 1 && dy == 1)
+}
+pub fn hero_options(b: &Board, hero: usize) -> Vec<((usize, usize), (usize, usize))> {
+    let mut out = Vec::new();
+    for y in 0..N {
+        for x in 0..N {
+            for (dx, dy) in [(1, 0), (0, 1), (1, 1), (-1, 1)] {
+                let (cx, cy) = (x as isize + dx, y as isize + dy);
+                if cx < 0 || cy < 0 || cx >= N as isize || cy >= N as isize {
+                    continue;
+                }
+                if hero == 0 && dy == 0 && y > 0 {
+                    continue;
+                }
+                let c = (cx as usize, cy as usize);
+                if hero_swap(&mut b.clone(), (x, y), c, hero) {
+                    out.push(((x, y), c));
+                }
+            }
+        }
+    }
+    out
+}
+
+#[cfg(test)]
+mod passive_tests {
+    use super::*;
+    fn base() -> Board {
+        std::array::from_fn(|y| std::array::from_fn(|x| ((x + 2 * y) % 7) as u8))
+    }
+    #[test]
+    fn column_swap_moves_all_rows_and_rejects_without_mutation() {
+        let mut b = base();
+        b[0][0] = 6;
+        b[0][1] = 2;
+        b[0][2] = 6;
+        b[0][3] = 6;
+        let original = b;
+        assert!(hero_swap(&mut b, (0, 0), (1, 0), 0));
+        for y in 0..N {
+            assert_eq!(b[y][0], original[y][1]);
+            assert_eq!(b[y][1], original[y][0]);
+        }
+        let mut b = base();
+        let original = b;
+        assert!(!hero_swap(&mut b, (0, 0), (1, 0), 0));
+        assert_eq!(b, original);
+        assert!(!hero_swap(&mut b, (8, 0), (7, 0), 0));
+        assert_eq!(b, original);
+    }
+    #[test]
+    fn diagonal_swap_only_for_elf_and_preserves_match_rules() {
+        let mut b = base();
+        b[0][0] = 6;
+        b[0][1] = 6;
+        b[0][2] = 2;
+        b[1][3] = 6;
+        let original = b;
+        assert!(!hero_swap(&mut b, (2, 0), (3, 1), 2));
+        assert_eq!(b, original);
+        assert!(hero_swap(&mut b, (2, 0), (3, 1), 1));
+        assert!(matches(&b).contains(&(0, 0)));
+    }
+    #[test]
+    fn all_role_options_are_legal_unique_and_match_playability() {
+        crate::rng::srand(711);
+        for _ in 0..12 {
+            let b = fresh();
+            for id in 0..7 {
+                let moves = hero_options(&b, id);
+                let mut unique = std::collections::HashSet::new();
+                for &(a, c) in &moves {
+                    assert!(hero_swap(&mut b.clone(), a, c, id));
+                    assert!(unique.insert((a, c)));
+                }
+                if id != 0 {
+                    assert!(!moves.is_empty());
+                }
+            }
+        }
+    }
+}
+
+/// Refresh for the actor who will actually use the resulting board.
+pub fn fresh_for(hero: usize) -> Board {
+    loop {
+        let b = new_board();
+        if !hero_options(&b, hero).is_empty() {
+            return b;
+        }
+    }
+}
+
+#[cfg(test)]
+mod refresh_tests {
+    #[test]
+    fn refreshed_boards_are_match_free_and_playable_for_actor() {
+        for id in 0..7 {
+            for _ in 0..20 {
+                let board = super::fresh_for(id);
+                assert!(super::matches(&board).is_empty());
+                assert!(!super::hero_options(&board, id).is_empty());
+            }
+        }
+    }
+}

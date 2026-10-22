@@ -161,7 +161,7 @@ pub const HEROES: &[Hero] = &[
     Hero {
         en: "Goblin",
         zh: "哥布林",
-        hp: 700,
+        hp: 725,
         mp: 500,
         skills: &[Skill::Greedy, Skill::Blood],
     },
@@ -182,7 +182,7 @@ pub const HEROES: &[Hero] = &[
     Hero {
         en: "Big Zombie",
         zh: "大僵尸",
-        hp: 750,
+        hp: 775,
         mp: 400,
         skills: &[Skill::Corrupt, Skill::Drain],
     },
@@ -474,6 +474,8 @@ pub struct SkillPreview {
     pub damage: i32,
     pub mana_gain: i32,
     pub mana_after: i32,
+    pub blood_cost: i32,
+    pub health_after: i32,
 }
 pub fn preview_rewards(
     skill: Skill,
@@ -487,9 +489,13 @@ pub fn preview_rewards(
 ) -> SkillPreview {
     let mut copy = *board;
     let e = effect_at(skill, &mut copy, target);
-    let mut health = (hp + e.hp).min(HEROES[hero].hp);
+    let pay = payment(hero, hp, mp, skill).unwrap_or(Payment {
+        mana: skill.cost().min(mp),
+        blood: 0,
+    });
+    let mut health = (hp - pay.blood + e.hp).min(HEROES[hero].hp);
     let mut opponent = (enemy_hp - e.damage).max(0);
-    let spent = mp - skill.cost();
+    let spent = mp - pay.mana;
     let mut mana = (spent + e.mp).min(HEROES[hero].mp);
     let (cells, rewarded) = if e.cells.is_empty() {
         (crate::matches(&copy), true)
@@ -497,23 +503,18 @@ pub fn preview_rewards(
         (e.cells.clone(), e.reward)
     };
     if rewarded && !cells.is_empty() {
-        let multiplier = reward_scale(1, bonus + e.bonus);
-        let (mut h, mut d, mut m) = (0, 0, 0);
-        for &(x, y) in &cells {
-            let v = VALUES[copy[y][x] as usize];
-            h += v.0;
-            d += v.1;
-            m += v.2;
-        }
-        health = (health + h * multiplier / 100).min(HEROES[hero].hp);
-        opponent = (opponent - d * multiplier / 100).max(0);
-        mana = (mana + m * multiplier / 100).min(HEROES[hero].mp);
+        let (h, d, m) = clear_rewards(hero, health, mana, &copy, &cells, 1, bonus + e.bonus);
+        health = (health + h).min(HEROES[hero].hp);
+        opponent = (opponent - d).max(0);
+        mana = (mana + m).min(HEROES[hero].mp);
     }
     SkillPreview {
         heal: health - hp,
         damage: enemy_hp - opponent,
         mana_gain: mana - spent,
         mana_after: mana,
+        blood_cost: pay.blood,
+        health_after: health,
     }
 }
 pub fn preview_range(
@@ -530,6 +531,8 @@ pub fn preview_range(
     for y in 0..N {
         for x in 0..N {
             let p = preview_rewards(skill, board, (x, y), hero, hp, mp, enemy_hp, bonus);
+            low.health_after = low.health_after.min(p.health_after);
+            high.health_after = high.health_after.max(p.health_after);
             low.heal = low.heal.min(p.heal);
             high.heal = high.heal.max(p.heal);
             low.damage = low.damage.min(p.damage);
@@ -661,5 +664,277 @@ mod reward_tests {
         assert_eq!(reward_scale(2, 0), 110);
         assert_eq!(reward_scale(100, 0), 130);
         assert_eq!(reward_scale(1, 1), 200);
+    }
+}
+
+/// Stateless passives: same calculation for game, previews and AI.
+pub fn clear_rewards(
+    hero: usize,
+    hp: i32,
+    _mp: i32,
+    board: &Board,
+    cells: &[(usize, usize)],
+    chain: usize,
+    bonus: i32,
+) -> (i32, i32, i32) {
+    let (mut h, mut d, mut m) = (0, 0, 0);
+    for &(x, y) in cells {
+        if board[y][x] == 255 {
+            continue;
+        }
+        let (a, b, c) = VALUES[board[y][x] as usize];
+        h += a;
+        d += b;
+        m += c;
+        if hero == 4 && board[y][x] == 0 {
+            d += 2;
+            m += 2;
+        }
+    }
+    let scale = reward_scale(chain, bonus);
+    h = h * scale / 100;
+    d = d * scale / 100;
+    m = m * scale / 100;
+    if hero == 0 {
+        h = h * 106 / 100;
+        d = d * 106 / 100;
+        m = m * 106 / 100;
+    }
+    if hero == 1 {
+        h = h * 93 / 100;
+        d = d * 93 / 100;
+        m = m * 93 / 100;
+    }
+    if hero == 2 {
+        let converted = h / 2;
+        h -= converted;
+        m += converted;
+    }
+    if hero == 3 {
+        m += (hp + h - HEROES[hero].hp).max(0) / 2;
+    }
+    if hero == 5 && hp * 100 <= HEROES[hero].hp * 35 {
+        d = d * 125 / 100;
+    }
+    (h, d, m)
+}
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct Payment {
+    pub mana: i32,
+    pub blood: i32,
+}
+pub fn payment(hero: usize, hp: i32, mp: i32, skill: Skill) -> Option<Payment> {
+    let missing = (skill.cost() - mp).max(0);
+    let blood = missing * 2;
+    if missing == 0 || (hero == 6 && hp > blood) {
+        Some(Payment {
+            mana: skill.cost().min(mp),
+            blood,
+        })
+    } else {
+        None
+    }
+}
+pub fn passive(hero: usize, zh: bool) -> &'static str {
+    let (en,cn)=match hero {
+        0=>("Column formation: horizontal\nswaps move two whole columns.\nClear rewards +6%.","列阵：左右交换相邻整列\n上下交换仍为两个方块\n消除收益增加6%"),
+        1=>("Forest step: diagonal adjacent\nswaps are also allowed.\nClear rewards reduced by 7%.","林间穿行：可斜向交换\n仅交换斜向相邻的两格\n横纵三消，消除收益降低7%"),
+        2=>("Arcane conversion: half of\nclear healing becomes mana.\nDirect skill healing is unchanged.","奥术转化：消除治疗的一半\n等量转为魔力（向下取整）\n技能直接治疗不变"),
+        3=>("Scrap recovery: overhealing\nfrom clears becomes mana at 2:1.\nMana still obeys the MP cap.","废物回收：消除溢出治疗\n每2点转为1点魔力\n魔力仍受上限限制"),
+        4=>("Balanced affinity: each balanced\ntile in a rewarded clear gives\n+2 damage and +2 mana.","平衡亲和：有收益消除时\n每个平衡方块额外提供\n2点伤害、2点魔力"),
+        5=>("Blood fury: at 35% HP or less,\nclear damage increases by 25%.\nChecked before each clear wave.","血怒：生命不高于35%时\n消除伤害增加25%\n每轮消除前判断生命"),
+        _=>("Flesh casting: missing mana\ncosts 2 HP per point.\nMust leave at least 1 HP.","血肉施法：魔力不足时\n每缺1魔力支付2生命\n必须至少剩余1生命"),
+    };
+    if zh {
+        cn
+    } else {
+        en
+    }
+}
+
+#[cfg(test)]
+mod passive_tests {
+    use super::*;
+    #[test]
+    fn payment_requires_surviving_before_any_heal() {
+        assert_eq!(
+            payment(6, 101, 0, Skill::Drain),
+            Some(Payment {
+                mana: 0,
+                blood: 100
+            })
+        );
+        assert_eq!(payment(6, 100, 0, Skill::Drain), None);
+        assert_eq!(
+            payment(6, 60, 25, Skill::Drain),
+            Some(Payment {
+                mana: 25,
+                blood: 50
+            })
+        );
+        assert_eq!(payment(6, 50, 25, Skill::Drain), None);
+        assert_eq!(payment(0, 700, 25, Skill::Drain), None);
+        assert_eq!(
+            payment(6, 1, 50, Skill::Drain),
+            Some(Payment { mana: 50, blood: 0 })
+        );
+    }
+    #[test]
+    fn clear_passives_have_exact_rewards_and_thresholds() {
+        let cells = vec![(0, 0), (1, 0), (2, 0)];
+        assert_eq!(
+            clear_rewards(2, 300, 0, &[[1; N]; N], &cells, 1, 0),
+            (9, 0, 9)
+        );
+        assert_eq!(
+            clear_rewards(3, 720, 490, &[[1; N]; N], &cells, 1, 0),
+            (18, 0, 6)
+        );
+        assert_eq!(
+            clear_rewards(4, 300, 0, &[[0; N]; N], &cells, 1, 0),
+            (6, 18, 18)
+        );
+        assert_eq!(
+            clear_rewards(5, 210, 0, &[[2; N]; N], &cells, 1, 0),
+            (0, 45, 0)
+        );
+        assert_eq!(
+            clear_rewards(5, 211, 0, &[[2; N]; N], &cells, 1, 0),
+            (0, 36, 0)
+        );
+        assert_eq!(
+            clear_rewards(4, 300, 0, &[[0; N]; N], &cells, 2, 1),
+            (12, 37, 37)
+        );
+    }
+    #[test]
+    fn blood_preview_is_pure_accounts_for_cost_caps_and_targets() {
+        let b = std::array::from_fn(|y| std::array::from_fn(|x| ((x + 2 * y) % 7) as u8));
+        let original = b;
+        let seed = crate::rng::state();
+        for target in [(0, 0), (3, 3), (7, 7)] {
+            let p = preview_rewards(Skill::Drain, &b, target, 6, 200, 25, 700, 0);
+            let e = effect_at(Skill::Drain, &mut b.clone(), target);
+            assert_eq!(p.blood_cost, 50);
+            assert_eq!(p.health_after, 150 + e.hp);
+            assert_eq!(p.heal, e.hp - 50);
+            assert_eq!(p.mana_after, 0);
+        }
+        let p = preview_rewards(
+            Skill::Drain,
+            &[[1; N]; N],
+            (0, 0),
+            6,
+            HEROES[6].hp - 1,
+            49,
+            700,
+            0,
+        );
+        assert_eq!(p.health_after, HEROES[6].hp);
+        assert_eq!(p.blood_cost, 2);
+        assert_eq!(b, original);
+        assert_eq!(crate::rng::state(), seed);
+    }
+    #[test]
+    fn passive_skill_preview_matches_manual_first_wave_with_caps() {
+        let b = [[0; N]; N];
+        for id in 0..7 {
+            let skill = Skill::Nature;
+            let hp = HEROES[id].hp - 5;
+            let mp = HEROES[id].mp;
+            let p = preview_rewards(skill, &b, (0, 0), id, hp, mp, 700, 0);
+            let mut copy = b;
+            let e = effect_at(skill, &mut copy, (0, 0));
+            let health = (hp + e.hp).min(HEROES[id].hp);
+            let mana = mp - skill.cost() + e.mp;
+            let (h, d, m) = clear_rewards(id, health, mana, &copy, &crate::matches(&copy), 1, 0);
+            assert_eq!(p.health_after, (health + h).min(HEROES[id].hp));
+            assert_eq!(p.damage, (e.damage + d).min(700));
+            assert_eq!(p.mana_after, (mana + m).min(HEROES[id].mp));
+        }
+    }
+}
+
+/// Actual actions that can continue a no-swap turn. A preparation which only
+/// multiplies future rewards does not by itself unlock a dead board.
+pub fn usable_skills(board: &Board, hero: usize, hp: i32, mp: i32) -> Vec<Skill> {
+    HEROES[hero]
+        .skills
+        .iter()
+        .copied()
+        .filter(|&skill| {
+            let Some(pay) = payment(hero, hp, mp, skill) else {
+                return false;
+            };
+            (0..N).any(|y| {
+                (0..N).any(|x| {
+                    let mut copy = *board;
+                    let e = effect_at(skill, &mut copy, (x, y));
+                    !e.cells.is_empty()
+                        || copy != *board
+                        || e.armed
+                        || e.damage > 0
+                        || (e.hp > pay.blood && hp - pay.blood < HEROES[hero].hp)
+                        || (mp - pay.mana + e.mp).min(HEROES[hero].mp) > mp
+                })
+            })
+        })
+        .collect()
+}
+pub fn must_refresh(board: &Board, hero: usize, hp: i32, mp: i32, armed: bool) -> bool {
+    !armed
+        && crate::board::hero_options(board, hero).is_empty()
+        && usable_skills(board, hero, hp, mp).is_empty()
+}
+
+#[cfg(test)]
+mod deadlock_tests {
+    use super::*;
+    fn dead() -> Board {
+        std::array::from_fn(|y| std::array::from_fn(|x| ((x + 2 * y) % 7) as u8))
+    }
+    #[test]
+    fn deadlock_respects_role_moves_and_preparation() {
+        let b = dead();
+        for hero in 0..7 {
+            assert!(must_refresh(&b, hero, 1, 0, false));
+        }
+        assert!(!must_refresh(&b, 0, 700, 0, true));
+        // Strike alone cannot unlock a board, Nature can.
+        assert!(must_refresh(&b, 1, 600, 35, false));
+        assert!(!must_refresh(&b, 1, 600, 60, false));
+        let mut diagonal = b;
+        diagonal[0][0] = 6;
+        diagonal[0][1] = 6;
+        diagonal[0][2] = 2;
+        diagonal[1][3] = 6;
+        assert!(!must_refresh(&diagonal, 1, 600, 0, false));
+        let mut columns = b;
+        columns[0][0] = 6;
+        columns[0][1] = 2;
+        columns[0][2] = 6;
+        columns[0][3] = 6;
+        assert!(!must_refresh(&columns, 0, 700, 0, false));
+    }
+    #[test]
+    fn skill_escape_checks_effects_caps_and_blood_before_heal() {
+        let b = dead();
+        let original = b;
+        let seed = crate::rng::state();
+        assert!(!must_refresh(&b, 0, 700, 100, false));
+        assert!(!must_refresh(&b, 3, 500, 80, false));
+        assert!(!must_refresh(&b, 6, 101, 0, false));
+        assert!(must_refresh(&b, 6, 100, 0, false));
+        assert!(!must_refresh(&b, 6, 51, 25, false));
+        assert!(must_refresh(&b, 6, 50, 25, false));
+        let no_targets =
+            std::array::from_fn(|y| std::array::from_fn(|x| [3, 4, 5, 6][(x + 2 * y) % 4]));
+        assert!(usable_skills(&no_targets, 0, 700, 150).contains(&Skill::Charge));
+        assert!(!usable_skills(&no_targets, 0, 700, 150).contains(&Skill::Guard));
+        assert!(!usable_skills(&no_targets, 4, 700, 60).contains(&Skill::Imp));
+        assert!(usable_skills(&no_targets, 4, 700, 60).contains(&Skill::Balance));
+        assert!(!usable_skills(&no_targets, 6, 775, 160).contains(&Skill::Corrupt));
+        assert_eq!(b, original);
+        assert_eq!(crate::rng::state(), seed);
     }
 }
