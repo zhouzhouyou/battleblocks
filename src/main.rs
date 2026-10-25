@@ -474,7 +474,7 @@ async fn main() {
     let mut reward = true;
     let mut extra_bonus = 0;
     let mut armed = false;
-    let mut console = debug::Console::new();
+    let mut console = debug::Console::new(zh);
     let mut game_over_logged = false;
     let mut charge_damage: Option<(i32, bool)> = None;
     let mut presentation = presentation::Presentation::default();
@@ -572,80 +572,211 @@ async fn main() {
         let mut restart_command = false;
         // Process one command per frame so multiple CLI commands retain their order.
         if let Some(line) = console.commands.pop_front() {
+            console.say(&format!("> {line}"));
             console.event("command", &line, &snapshot!(), &snapshot!());
             match debug::parse(&line) {
-                Err(error) => console.say(&error),
+                Err(error) => console.say(error.message(console.zh)),
                 Ok(command) => {
                     use debug::Command;
                     let before = snapshot!();
                     match command {
-                        Command::Help=>{
-                            for text in [
-                                "status | board | export | undo | undo player | restart",
-                                "tile x y type | board load <64 types in row order> | shuffle | seed n",
-                                "hp player/enemy n | mp player/enemy n | turn player/enemy | ai 0/1/2",
-                                "hero player/enemy 0..6 | buff player/enemy bonus 0..10 | buff player/enemy armed on/off",
-                                "move x1 y1 x2 y2 | cast 1/2 [x y] | resolve | pause on/off",
-                                "Coordinates: 1..8; tile: 0 balanced,1 heal,2 attack,3 mana,4 HP+ATK,5 HP+MP,6 ATK+MP",
-                                "Console freezes combat. Move/cast/resolve close it and run normal rules.",
-                                "Undo restores up to 256 action snapshots. Random refill state is also restored.",
-                            ]{console.say(text);}
-                        },
-                        Command::Status=>console.say(&format!("Hero={} Enemy={} HP={}/{} MP={}/{} turn={} pending={} buff={} armed={} AI={} paused={}",hero_id,enemy_id,hp,enemy,mp,enemy_mp,if enemy_turn{"enemy"}else{"player"},pending.len(),extra_bonus,armed,difficulty,paused)),
-                        Command::Board=>{for (y,row) in b.iter().enumerate(){console.say(&format!("{}: {:?}",y+1,row));}},
-                        Command::Export=>console.export(),
-                        Command::Undo(player)=>{
-                            if let Some((state,action))=console.undo(player) {restore!(state);console.event("rollback",&format!("Restored before action {action}; command: {line}"),&before,&snapshot!());}
-                            else{console.say("No matching action to undo");}
-                        },
-                        Command::Restart=>restart_command=true,
-                        Command::Move(a,c)=>{
-                            if choosing||enemy_turn||action_done||presentation.busy()||!pending.is_empty()||hp==0||enemy==0||paused {console.say("Move requires a live, unpaused player turn with no pending resolution");}
-                            else if !board::adjacent(a,c,hero_id){console.say("Move requires adjacent tiles");}
-                            else{command_move=Some((a,c));console.open=false;targeting=None;}
-                        },
-                        Command::Cast(slot,target)=>{
-                            let skill=HEROES[hero_id].skills[slot];
-                            if choosing||enemy_turn||action_done||presentation.busy()||!pending.is_empty()||hp==0||enemy==0||paused {console.say("Cast requires a live, unpaused player turn with no pending resolution");}
-                            else if content::payment(hero_id,hp,mp,skill).is_none(){console.say("Not enough mana");}
-                            else if (skill==content::Skill::Strike&&extra_bonus>0)||(skill==content::Skill::Landslide&&armed){console.say("Preparation skill is already active");}
-                            else{command_skill=Some(skill);command_target=Some(target);console.open=false;targeting=None;}
-                        },
-                        Command::Ai(level)=>{
-                            if choosing {difficulty=level;console.say("Pre-battle AI difficulty updated");}
-                            else {console.say("AI difficulty is locked during battle; return to the main menu to choose a new difficulty");}
-                        },
-                        command=>{
-                            let allowed=!action_done&&pending.is_empty()&&!presentation.busy();
-                            if !allowed && !matches!(command,Command::Hp(..)|Command::Mp(..)|Command::Ai(..)|Command::Pause(..)) {
-                                console.say("Wait for resolution, or undo before editing board/turn");
+                        Command::Help => console.help(),
+                        Command::Status => {
+                            let status = if console.zh {
+                                format!("状态：我方 {}({hero_id}) 生命 {hp}/{} 魔力 {mp}/{} · 敌方 {}({enemy_id}) 生命 {enemy}/{} 魔力 {enemy_mp}/{} · 行动方 {} · 待结算 {} 格 · 增幅 {extra_bonus} · 三线 {} · AI {} · 暂停 {}",HEROES[hero_id].zh,HEROES[hero_id].hp,HEROES[hero_id].mp,HEROES[enemy_id].zh,HEROES[enemy_id].hp,HEROES[enemy_id].mp,if enemy_turn{"敌方"}else{"玩家"},pending.len(),if armed{"是"}else{"否"},["入门","标准","进阶"][difficulty],if paused{"是"}else{"否"})
+                            } else {
+                                format!("Hero={} Enemy={} HP={}/{} MP={}/{} turn={} pending={} buff={} armed={} AI={} paused={}",hero_id,enemy_id,hp,enemy,mp,enemy_mp,if enemy_turn{"enemy"}else{"player"},pending.len(),extra_bonus,armed,difficulty,paused)
+                            };
+                            console.say(&status);
+                        }
+                        Command::Board => {
+                            console.say_tr(
+                                "Board: one row per line, tile types 0–6, top-left is 1 1",
+                                "棋盘：每行 8 个方块类型（0～6），左上角为 1 1",
+                            );
+                            for (y, row) in b.iter().enumerate() {
+                                console.say(&format!("{}: {:?}", y + 1, row));
+                            }
+                        }
+                        Command::Export => console.export(),
+                        Command::Undo(player) => {
+                            if let Some((state, action)) = console.undo(player) {
+                                restore!(state);
+                                console.event(
+                                    "rollback",
+                                    &format!("Restored before action {action}; command: {line}"),
+                                    &before,
+                                    &snapshot!(),
+                                );
+                            } else {
+                                console.say_tr("No matching action to undo", "没有可撤回的行动");
+                            }
+                        }
+                        Command::Restart => restart_command = true,
+                        Command::Move(a, c) => {
+                            if choosing
+                                || enemy_turn
+                                || action_done
+                                || presentation.busy()
+                                || !pending.is_empty()
+                                || hp == 0
+                                || enemy == 0
+                                || paused
+                            {
+                                console.say_tr("Move requires a live, unpaused player turn with no pending resolution","只能在玩家回合、未暂停且没有待结算时交换");
+                            } else if !board::adjacent(a, c, hero_id) {
+                                console.say_tr(
+                                    "Move requires adjacent tiles",
+                                    "交换的两个方块必须相邻",
+                                );
+                            } else {
+                                command_move = Some((a, c));
+                                console.open = false;
+                                targeting = None;
+                            }
+                        }
+                        Command::Cast(slot, target) => {
+                            let skill = HEROES[hero_id].skills[slot];
+                            if choosing
+                                || enemy_turn
+                                || action_done
+                                || presentation.busy()
+                                || !pending.is_empty()
+                                || hp == 0
+                                || enemy == 0
+                                || paused
+                            {
+                                console.say_tr("Cast requires a live, unpaused player turn with no pending resolution","只能在玩家回合、未暂停且没有待结算时施法");
+                            } else if content::payment(hero_id, hp, mp, skill).is_none() {
+                                console.say_tr("Not enough mana", "魔力不足");
+                            } else if (skill == content::Skill::Strike && extra_bonus > 0)
+                                || (skill == content::Skill::Landslide && armed)
+                            {
+                                console.say_tr(
+                                    "Preparation skill is already active",
+                                    "准备类技能已经生效",
+                                );
+                            } else {
+                                command_skill = Some(skill);
+                                command_target = Some(target);
+                                console.open = false;
+                                targeting = None;
+                            }
+                        }
+                        Command::Ai(level) => {
+                            if choosing {
+                                difficulty = level;
+                                console.say_tr(
+                                    "Pre-battle AI difficulty updated",
+                                    "已设置开战前的 AI 难度",
+                                );
+                            } else {
+                                console.say_tr("AI difficulty is locked during battle; return to the main menu to choose a new difficulty","战斗中 AI 难度已锁定，回到主菜单才能重新选择");
+                            }
+                        }
+                        Command::Lang(chinese) => {
+                            console.zh = chinese;
+                            console.say_tr("Console language: English", "控制台语言：中文");
+                        }
+                        command => {
+                            let allowed =
+                                !action_done && pending.is_empty() && !presentation.busy();
+                            if !allowed
+                                && !matches!(
+                                    command,
+                                    Command::Hp(..)
+                                        | Command::Mp(..)
+                                        | Command::Ai(..)
+                                        | Command::Pause(..)
+                                )
+                            {
+                                console.say_tr(
+                                    "Wait for resolution, or undo before editing board/turn",
+                                    "请等待结算完成，或先 undo，再修改棋盘或回合",
+                                );
                             } else {
                                 console.checkpoint_edit(before.clone());
                                 match command {
-                                    Command::Hero(side,id)=>{
-                                        if side {enemy_id=id;enemy=HEROES[id].hp;enemy_mp=0;demon=diagnostic_texture(sprites::SPRITES[id].bytes,"no_actors");}
-                                        else {hero_id=id;hp=HEROES[id].hp;mp=0;knight=diagnostic_texture(sprites::SPRITES[id].bytes,"no_actors");preview=menu::Preview::new(id,0);}
-                                        bonuses[side as usize]=0;armed_sides[side as usize]=false;
-                                        if enemy_turn==side {extra_bonus=0;armed=false;}
-                                    },
-                                    Command::Bonus(side,value)=>{bonuses[side as usize]=value;if enemy_turn==side{extra_bonus=value;}},
-                                    Command::Armed(side,value)=>{armed_sides[side as usize]=value;if enemy_turn==side{armed=value;}},
-                                    Command::SetTile(x,y,kind)=>b[y][x]=kind,
-                                    Command::LoadBoard(board)=>b=board,
-                                    Command::Shuffle=>b=fresh(),
-                                    Command::Seed(seed)=>rng::srand(seed),
-                                    Command::Hp(side,value)=>if side{enemy=value.min(HEROES[enemy_id].hp)}else{hp=value.min(HEROES[hero_id].hp)},
-                                    Command::Mp(side,value)=>if side{enemy_mp=value.min(HEROES[enemy_id].mp)}else{mp=value.min(HEROES[hero_id].mp)},
-                                    Command::Turn(side)=>{
-                                        bonuses[enemy_turn as usize]=extra_bonus;armed_sides[enemy_turn as usize]=armed;
-                                        enemy_turn=side;extra_bonus=bonuses[side as usize];armed=armed_sides[side as usize];enemy_clock=0.;
-                                    },
-                                    Command::Pause(value)=>paused=value,
-                                    Command::Resolve=>{pending=matches(&b);action_done=true;deadline=0.28;reward=true;chain=1;console.open=false;},
-                                    _=>unreachable!(),
+                                    Command::Hero(side, id) => {
+                                        if side {
+                                            enemy_id = id;
+                                            enemy = HEROES[id].hp;
+                                            enemy_mp = 0;
+                                            demon = diagnostic_texture(
+                                                sprites::SPRITES[id].bytes,
+                                                "no_actors",
+                                            );
+                                        } else {
+                                            hero_id = id;
+                                            hp = HEROES[id].hp;
+                                            mp = 0;
+                                            knight = diagnostic_texture(
+                                                sprites::SPRITES[id].bytes,
+                                                "no_actors",
+                                            );
+                                            preview = menu::Preview::new(id, 0);
+                                        }
+                                        bonuses[side as usize] = 0;
+                                        armed_sides[side as usize] = false;
+                                        if enemy_turn == side {
+                                            extra_bonus = 0;
+                                            armed = false;
+                                        }
+                                    }
+                                    Command::Bonus(side, value) => {
+                                        bonuses[side as usize] = value;
+                                        if enemy_turn == side {
+                                            extra_bonus = value;
+                                        }
+                                    }
+                                    Command::Armed(side, value) => {
+                                        armed_sides[side as usize] = value;
+                                        if enemy_turn == side {
+                                            armed = value;
+                                        }
+                                    }
+                                    Command::SetTile(x, y, kind) => b[y][x] = kind,
+                                    Command::LoadBoard(board) => b = board,
+                                    Command::Shuffle => b = fresh(),
+                                    Command::Seed(seed) => rng::srand(seed),
+                                    Command::Hp(side, value) => {
+                                        if side {
+                                            enemy = value.min(HEROES[enemy_id].hp)
+                                        } else {
+                                            hp = value.min(HEROES[hero_id].hp)
+                                        }
+                                    }
+                                    Command::Mp(side, value) => {
+                                        if side {
+                                            enemy_mp = value.min(HEROES[enemy_id].mp)
+                                        } else {
+                                            mp = value.min(HEROES[hero_id].mp)
+                                        }
+                                    }
+                                    Command::Turn(side) => {
+                                        bonuses[enemy_turn as usize] = extra_bonus;
+                                        armed_sides[enemy_turn as usize] = armed;
+                                        enemy_turn = side;
+                                        extra_bonus = bonuses[side as usize];
+                                        armed = armed_sides[side as usize];
+                                        enemy_clock = 0.;
+                                    }
+                                    Command::Pause(value) => paused = value,
+                                    Command::Resolve => {
+                                        pending = matches(&b);
+                                        action_done = true;
+                                        deadline = 0.28;
+                                        reward = true;
+                                        chain = 1;
+                                        console.open = false;
+                                    }
+                                    _ => unreachable!(),
                                 }
-                                selected=None;targeting=None;choosing=false;game_over_logged=false;
-                                console.event("debug_edit",&line,&before,&snapshot!());
+                                selected = None;
+                                targeting = None;
+                                choosing = false;
+                                game_over_logged = false;
+                                console.event("debug_edit", &line, &before, &snapshot!());
                             }
                         }
                     }
