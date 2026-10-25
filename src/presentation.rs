@@ -255,7 +255,7 @@ impl Presentation {
                 .enumerate()
             {
                 let x = if side { 802. } else { 22. };
-                let y = 218. + i as f32 * 58. - (2.4 - p.time) * 8.;
+                let y = 246. + i as f32 * 58. - (2.4 - p.time) * 8.;
                 let delta = p.after - p.before;
                 let color = if delta < 0 { ORANGE } else { GREEN };
                 draw_rectangle(x, y - 22., 200., 52., Color::new(0.04, 0.05, 0.08, 0.93));
