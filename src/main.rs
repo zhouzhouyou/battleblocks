@@ -47,13 +47,69 @@ fn wrap_preview_text(text: &str, limit: f32) -> Vec<String> {
     lines
 }
 fn move_hints_rect() -> Rect {
-    Rect::new(805., 642., 195., 40.)
+    Rect::new(796., 648., 208., 44.)
 }
 fn reroll_rect() -> Rect {
     Rect::new(256., 650., 512., 38.)
 }
 fn cancel_skill_rect() -> Rect {
-    Rect::new(805., 642., 195., 40.)
+    move_hints_rect()
+}
+// Battle sidebars: the player on the left, the enemy on the right. Every element
+// below stays inside its sidebar frame.
+fn side_panel_rect(enemy: bool) -> Rect {
+    Rect::new(if enemy { 788. } else { 12. }, 90., 224., 610.)
+}
+fn sprite_rect(enemy: bool) -> Rect {
+    Rect::new(if enemy { 796. } else { 20. }, 212., 208., 184.)
+}
+fn passive_rect(enemy: bool) -> Rect {
+    Rect::new(if enemy { 796. } else { 20. }, 402., 208., 24.)
+}
+fn player_skill_rect(i: usize) -> Rect {
+    Rect::new(20., 434. + i as f32 * 132., 208., 126.)
+}
+fn enemy_skill_rect(i: usize) -> Rect {
+    Rect::new(796., 470. + i as f32 * 44., 208., 38.)
+}
+fn status_rect() -> Rect {
+    Rect::new(256., 48., 512., 38.)
+}
+type Move = ((usize, usize), (usize, usize));
+/// Row of the move-reward panel under the pointer; the panel lists 7 hints per page.
+fn hint_row_at(pointer: Vec2, page: usize, count: usize) -> Option<usize> {
+    // Half-open bounds: `Rect::contains` includes the bottom edge, which would reach a
+    // row of the next page.
+    (pointer.x >= 798. && pointer.x < 1002. && pointer.y >= 278. && pointer.y < 586.)
+        .then(|| page * 7 + ((pointer.y - 278.) / 44.) as usize)
+        .filter(|&i| i < count)
+}
+/// Numbered hint badge on the board under the pointer, nearest first.
+fn hint_badge_at(pointer: Vec2, hints: &[Move]) -> Option<usize> {
+    if !(pointer.x >= 256. && pointer.x < 768. && pointer.y >= 110. && pointer.y < 622.) {
+        return None;
+    }
+    hints
+        .iter()
+        .enumerate()
+        .map(|(i, &(a, c))| (i, presentation::move_hint_anchor(a, c).distance(pointer)))
+        .filter(|(_, d)| *d < 22.)
+        .min_by(|a, b| a.1.total_cmp(&b.1))
+        .map(|(i, _)| i)
+}
+/// Reward part of the action feedback line, in the UI language.
+fn reward_summary(zh: bool, heal: i32, damage: i32, mana: i32) -> String {
+    if zh {
+        format!("生命 +{heal} · 伤害 {damage} · 魔力 +{mana}")
+    } else {
+        format!("+{heal} HP · {damage} damage · +{mana} MP")
+    }
+}
+fn passive_name(hero: usize, zh: bool) -> &'static str {
+    content::passive(hero, zh)
+        .split(['：', ':'])
+        .next()
+        .unwrap_or_default()
 }
 fn toggle_skill_target(
     current: Option<content::Skill>,
@@ -225,6 +281,34 @@ fn label(text: &str, x: f32, y: f32, size: f32, color: Color) {
         }
     });
 }
+/// Label width in world units. Measure before the frame's first `flush_labels`, so caching
+/// a new glyph cannot grow the atlas under text that was already drawn this frame.
+fn label_width(text: &str, size: f32) -> f32 {
+    if diagnostic("no_text") {
+        return 0.;
+    }
+    let (requested, font_scale, _) = camera_font_scale(size);
+    let font_size = font_raster_bucket(requested);
+    let font_scale = font_scale * requested.max(1) as f32 / font_size as f32;
+    UI_FONT.with(|slot| {
+        slot.borrow().as_ref().map_or(0., |ui| {
+            measure_text(text, Some(&ui.font), font_size, font_scale).width
+        })
+    })
+}
+/// Font size that fits `text` into `width`, never larger than `size`.
+fn fit_size(text: &str, size: f32, width: f32) -> f32 {
+    (size * width / label_width(text, size).max(1.)).min(size)
+}
+fn label_centered(text: &str, center_x: f32, y: f32, size: f32, color: Color) {
+    label(
+        text,
+        center_x - label_width(text, size) / 2.,
+        y,
+        size,
+        color,
+    );
+}
 fn flush_labels() {
     UI_FONT.with(|slot| {
         let mut slot = slot.borrow_mut();
@@ -271,7 +355,15 @@ fn flush_labels() {
     });
 }
 
-fn actor(t: &Texture2D, w: f32, h: f32, x: f32, time: f64, durations: &[f64], indices: &[usize]) {
+fn actor(
+    t: &Texture2D,
+    w: f32,
+    h: f32,
+    area: Rect,
+    time: f64,
+    durations: &[f64],
+    indices: &[usize],
+) {
     if diagnostic("no_actors") {
         return;
     }
@@ -285,13 +377,16 @@ fn actor(t: &Texture2D, w: f32, h: f32, x: f32, time: f64, durations: &[f64], in
         }
         elapsed -= d;
     }
+    // Fit the frame into its slot and stand it on the slot's bottom edge.
+    let scale = (area.w / w).min(area.h / h).min(0.55);
+    let size = vec2(w * scale, h * scale);
     draw_texture_ex(
         t,
-        x,
-        200.,
+        area.x + (area.w - size.x) / 2.,
+        area.y + area.h - size.y,
         WHITE,
         DrawTextureParams {
-            dest_size: Some(vec2(w * 0.55, h * 0.55)),
+            dest_size: Some(size),
             source: Some(Rect::new(indices[frame] as f32 * w, 0., w, h)),
             ..Default::default()
         },
@@ -351,6 +446,8 @@ async fn main() {
     let mut selected: Option<(usize, usize)> = None;
     let mut move_hint_page = 0usize;
     let mut hints_hover_open = false;
+    // Whether the move hints were on screen last frame; clicks act on what was shown.
+    let mut hints_shown = false;
     let (mut hp, mut enemy, mut mp) = (HEROES[hero_id].hp, HEROES[enemy_id].hp, 0i32);
     let mut pending: Vec<(usize, usize)> = Vec::new();
     let mut deadline = 0.;
@@ -899,7 +996,7 @@ async fn main() {
             let mut cast = command_skill;
             if pending.is_empty() && hp > 0 && !enemy_turn && !action_done {
                 for (i, skill) in HEROES[hero_id].skills.iter().enumerate() {
-                    let rect = Rect::new(20., 445. + i as f32 * 118., 210., 112.);
+                    let rect = player_skill_rect(i);
                     if !((matches!(skill, content::Skill::Strike) && extra_bonus > 0)
                         || (matches!(skill, content::Skill::Landslide) && armed))
                         && ((i == 0 && (key(KeyCode::Key1) || key(KeyCode::Space)))
@@ -1069,17 +1166,12 @@ async fn main() {
                     } else {
                         mp - before.mp + pay.mana
                     };
+                    let caster = &HEROES[if enemy_turn { enemy_id } else { hero_id }];
                     feedback = format!(
-                        "{} · {}  +{} HP / {} damage / +{} MP",
-                        if enemy_turn {
-                            HEROES[enemy_id].zh
-                        } else {
-                            HEROES[hero_id].zh
-                        },
+                        "{} · {}  {}",
+                        if zh { caster.zh } else { caster.en },
                         skill.name(zh),
-                        actual_heal,
-                        actual_damage,
-                        actual_mana
+                        reward_summary(zh, actual_heal, actual_damage, actual_mana)
                     );
                     if skill == content::Skill::Charge {
                         feedback = format!(
@@ -1130,6 +1222,28 @@ async fn main() {
                     console.event("skill",&format!("{:?} target=[{},{}] cost={} blood_cost={} direct_heal={} direct_damage={} direct_mana={} bonus={} armed={} actual_heal={} actual_damage={} actual_mana={}",skill,target.0+1,target.1+1,pay.mana,pay.blood,e.hp,e.damage,e.mp,e.bonus,e.armed,actual_heal,actual_damage,actual_mana),&before,&snapshot!());
                 } else {
                     note = "Not enough mana";
+                }
+            }
+            // Clicking a listed exchange (a reward-panel row, or a numbered badge on the
+            // board while H is held) plays it through the normal player swap below.
+            let mut hint_number = None;
+            if hints_shown
+                && command_move.is_none()
+                && pending.is_empty()
+                && !enemy_turn
+                && !action_done
+                && targeting.is_none()
+                && !cast_this_frame
+                && clicked(MouseButton::Left)
+            {
+                let hints = board::move_hints(&b, hero_id, armed);
+                if let Some(i) = hint_row_at(pointer, move_hint_page, hints.len()).or_else(|| {
+                    is_key_down(KeyCode::H)
+                        .then(|| hint_badge_at(pointer, &hints))
+                        .flatten()
+                }) {
+                    command_move = Some(hints[i]);
+                    hint_number = Some(i + 1);
                 }
             }
             if !pending.is_empty() {
@@ -1197,15 +1311,13 @@ async fn main() {
                     };
                     if reward {
                         feedback = format!(
-                            "{} +{} HP / {} damage / +{} MP",
+                            "{} · {}",
                             if enemy_turn {
                                 tr(zh, "Enemy", "敌方")
                             } else {
                                 tr(zh, "You", "我方")
                             },
-                            actual_heal,
-                            actual_damage,
-                            actual_mana
+                            reward_summary(zh, actual_heal, actual_damage, actual_mana)
                         );
                         feedback_time = 2.;
                     }
@@ -1268,11 +1380,14 @@ async fn main() {
                             console.event(
                                 "move",
                                 &format!(
-                                    "swap [{},{}] -> [{},{}]",
+                                    "swap [{},{}] -> [{},{}]{}",
                                     a.0 + 1,
                                     a.1 + 1,
                                     c.0 + 1,
-                                    c.1 + 1
+                                    c.1 + 1,
+                                    hint_number
+                                        .map(|n| format!(" via hint #{n}"))
+                                        .unwrap_or_default()
                                 ),
                                 &before,
                                 &snapshot!(),
@@ -1315,135 +1430,228 @@ async fn main() {
         clear_background(Color::from_rgba(25, 27, 38, 255));
         set_camera(&cam);
         procedural_board();
-        for (side, x) in [(false, 12.), (true, 788.)] {
-            let active_side = side == enemy_turn && hp > 0 && enemy > 0;
-            let color = if active_side {
-                if side {
-                    ORANGE
-                } else {
-                    SKYBLUE
-                }
+        for enemy_side in [false, true] {
+            let panel = side_panel_rect(enemy_side);
+            let active_side = enemy_side == enemy_turn && hp > 0 && enemy > 0;
+            let accent = if enemy_side { ORANGE } else { SKYBLUE };
+            let frame = if active_side {
+                accent
             } else {
                 Color::new(0.25, 0.28, 0.35, 0.6)
             };
             if active_side {
                 draw_rectangle(
-                    x,
-                    92.,
-                    224.,
-                    551.,
-                    Color::new(color.r, color.g, color.b, 0.07),
+                    panel.x,
+                    panel.y,
+                    panel.w,
+                    panel.h,
+                    Color::new(accent.r, accent.g, accent.b, 0.07),
                 );
             }
-            draw_rectangle_lines(x, 92., 224., 551., if active_side { 3. } else { 1. }, color);
+            draw_rectangle_lines(
+                panel.x,
+                panel.y,
+                panel.w,
+                panel.h,
+                if active_side { 3. } else { 1. },
+                frame,
+            );
+            let (id, health, mana) = if enemy_side {
+                (enemy_id, enemy, enemy_mp)
+            } else {
+                (hero_id, hp, mp)
+            };
+            let x = panel.x + 12.;
+            let name = if zh { HEROES[id].zh } else { HEROES[id].en };
+            let room = panel.w - 24. - if active_side { 88. } else { 0. };
+            label(name, x, 121., fit_size(name, 26., room), WHITE);
             if active_side {
-                let bx = if side { 918. } else { 142. };
+                let tag = Rect::new(panel.x + panel.w - 92., 99., 80., 26.);
                 draw_rectangle(
-                    bx,
-                    94.,
-                    88.,
-                    24.,
-                    Color::new(color.r * 0.3, color.g * 0.3, color.b * 0.3, 1.),
+                    tag.x,
+                    tag.y,
+                    tag.w,
+                    tag.h,
+                    Color::new(accent.r * 0.3, accent.g * 0.3, accent.b * 0.3, 1.),
                 );
-                label(tr(zh, "ACTIVE", "行动中"), bx + 6., 112., 18., color);
+                label_centered(
+                    tr(zh, "ACTIVE", "行动中"),
+                    tag.x + tag.w / 2.,
+                    tag.y + 19.,
+                    17.,
+                    accent,
+                );
             }
+            let health_color = if enemy_side {
+                Color::new(1., 0.62, 0.62, 1.)
+            } else {
+                Color::new(0.6, 1., 0.6, 1.)
+            };
+            for (row, (name, value, max, color)) in [
+                (tr(zh, "HP", "生命"), health, HEROES[id].hp, health_color),
+                (tr(zh, "MP", "魔力"), mana, HEROES[id].mp, SKYBLUE),
+            ]
+            .into_iter()
+            .enumerate()
+            {
+                let y = 150. + row as f32 * 38.;
+                let amount = format!("{value} / {max}");
+                label(name, x, y, 18., color);
+                label(
+                    &amount,
+                    panel.x + panel.w - 12. - label_width(&amount, 18.),
+                    y,
+                    18.,
+                    color,
+                );
+                let fill = (value as f32 / max.max(1) as f32).clamp(0., 1.);
+                draw_rectangle(x, y + 7., 200., 9., Color::new(0.1, 0.12, 0.17, 1.));
+                draw_rectangle(x, y + 7., 200. * fill, 9., color);
+            }
+            let sprite = &sprites::SPRITES[id];
+            actor(
+                if enemy_side { &demon } else { &knight },
+                sprite.w,
+                sprite.h,
+                sprite_rect(enemy_side),
+                get_time(),
+                sprite.durations,
+                sprite.indices,
+            );
         }
-        label(tr(zh, "BATTLE BLOCKS", "方块战斗"), 300., 55., 40., GOLD);
+        label_centered(tr(zh, "BATTLE BLOCKS", "方块战斗"), 512., 39., 32., GOLD);
         interface.draw_top(false, muted, paused, pointer, zh);
-        actor(
-            &knight,
-            sprites::SPRITES[hero_id].w,
-            sprites::SPRITES[hero_id].h,
-            50.,
-            get_time(),
-            sprites::SPRITES[hero_id].durations,
-            sprites::SPRITES[hero_id].indices,
+        // Status strip above the board: who acts, what is happening and the cascade depth.
+        let status = status_rect();
+        let over = hp == 0 || enemy == 0;
+        let turn_color = if over {
+            GOLD
+        } else if enemy_turn {
+            ORANGE
+        } else {
+            SKYBLUE
+        };
+        draw_rectangle(
+            status.x,
+            status.y,
+            status.w,
+            status.h,
+            Color::new(0.06, 0.08, 0.13, 0.96),
         );
-        actor(
-            &demon,
-            sprites::SPRITES[enemy_id].w,
-            sprites::SPRITES[enemy_id].h,
-            805.,
-            get_time(),
-            sprites::SPRITES[enemy_id].durations,
-            sprites::SPRITES[enemy_id].indices,
+        draw_rectangle_lines(status.x, status.y, status.w, status.h, 2., turn_color);
+        let chip = Rect::new(status.x + 5., status.y + 5., 104., 28.);
+        draw_rectangle(
+            chip.x,
+            chip.y,
+            chip.w,
+            chip.h,
+            Color::new(
+                turn_color.r * 0.3,
+                turn_color.g * 0.3,
+                turn_color.b * 0.3,
+                1.,
+            ),
         );
-        label(
-            if zh {
-                HEROES[hero_id].zh
-            } else {
-                HEROES[hero_id].en
-            },
-            25.,
-            110.,
-            32.,
-            WHITE,
-        );
-        label(
-            &format!("{} {hp} / {}", tr(zh, "HP", "生命"), HEROES[hero_id].hp),
-            25.,
-            150.,
-            30.,
-            Color::new(0.7, 1., 0.7, 1.),
-        );
-        label(
-            &format!("{} {mp} / {}", tr(zh, "MP", "魔力"), HEROES[hero_id].mp),
-            25.,
-            185.,
-            30.,
-            SKYBLUE,
-        );
-        label(
-            if zh {
-                HEROES[enemy_id].zh
-            } else {
-                HEROES[enemy_id].en
-            },
-            805.,
-            110.,
-            32.,
-            WHITE,
-        );
-        label(
-            &format!("MP {enemy_mp} / {}", HEROES[enemy_id].mp),
-            805.,
-            185.,
-            28.,
-            SKYBLUE,
-        );
-        label(tr(zh, "AI difficulty", "AI 难度"), 805., 445., 24., WHITE);
-        label(
-            [
-                tr(zh, "Beginner", "入门"),
-                tr(zh, "Standard", "标准"),
-                tr(zh, "Advanced", "进阶"),
-            ][difficulty],
-            805.,
-            480.,
-            28.,
-            GOLD,
-        );
-        label(
-            if enemy_turn {
+        label_centered(
+            if enemy == 0 {
+                tr(zh, "Victory", "胜利")
+            } else if hp == 0 {
+                tr(zh, "Defeat", "失败")
+            } else if enemy_turn {
                 tr(zh, "Enemy turn", "敌方回合")
             } else {
                 tr(zh, "Your turn", "你的回合")
             },
-            805.,
-            525.,
-            28.,
-            if enemy_turn { ORANGE } else { GREEN },
+            chip.x + chip.w / 2.,
+            chip.y + 20.,
+            18.,
+            turn_color,
         );
-        if feedback_time > 0. && targeting.is_none() {
-            label(&feedback, 256., 640., 16., GOLD);
+        let text_x = chip.x + chip.w + 12.;
+        if let Some(skill) = last_cast.filter(|s| cast_time > 0. && *s != content::Skill::Charge) {
+            icons::draw(skill, text_x, status.y + 8., 22.);
+            label(
+                &format!(
+                    "{} · {}",
+                    if last_cast_enemy {
+                        tr(zh, "Enemy", "敌方")
+                    } else {
+                        tr(zh, "You", "我方")
+                    },
+                    skill.name(zh)
+                ),
+                text_x + 30.,
+                status.y + 25.,
+                19.,
+                GOLD,
+            );
+        } else {
+            let phase = if over {
+                tr(
+                    zh,
+                    "Battle over · R to play again",
+                    "战斗结束 · 按 R 再来一局",
+                )
+                .to_string()
+            } else if presentation.charging() {
+                content::Skill::Charge.name(zh).to_string()
+            } else if let Some(swap) = presentation.swapping() {
+                if swap {
+                    tr(zh, "Swapping", "正在交换")
+                } else {
+                    tr(zh, "Tiles falling", "方块掉落")
+                }
+                .to_string()
+            } else if !pending.is_empty() {
+                tr(zh, "Clearing matches", "正在消除").to_string()
+            } else if action_done {
+                tr(zh, "Action resolved", "行动结算完成").to_string()
+            } else if enemy_turn {
+                tr(zh, "Enemy is choosing", "敌方思考中").to_string()
+            } else if let Some(skill) = targeting {
+                format!(
+                    "{} · {}",
+                    skill.name(zh),
+                    tr(zh, "click a target", "点击棋盘选择目标")
+                )
+            } else {
+                localized_note(zh, note).to_string()
+            };
+            label(&phase, text_x, status.y + 25., 19., WHITE);
         }
+        let chain_text = format!("{} {chain}", tr(zh, "Chain", "连锁"));
         label(
-            &format!("{} {enemy} / {}", tr(zh, "HP", "生命"), HEROES[enemy_id].hp),
-            805.,
-            150.,
-            30.,
-            Color::new(1., 0.7, 0.7, 1.),
+            &chain_text,
+            status.x + status.w - 14. - label_width(&chain_text, 18.),
+            status.y + 25.,
+            18.,
+            if chain > 1 {
+                GOLD
+            } else if chain == 1 {
+                WHITE
+            } else {
+                GRAY
+            },
         );
+        label(
+            &format!(
+                "{}{}",
+                tr(zh, "AI: ", "AI 难度："),
+                [
+                    tr(zh, "Beginner", "入门"),
+                    tr(zh, "Standard", "标准"),
+                    tr(zh, "Advanced", "进阶"),
+                ][difficulty]
+            ),
+            808.,
+            452.,
+            18.,
+            GOLD,
+        );
+        // Below the board frame; the hint legend uses this line while hints are shown.
+        if feedback_time > 0. && targeting.is_none() && !hints_shown {
+            label(&feedback, 262., 670., 17., GOLD);
+        }
         if !diagnostic("legacy_batches") {
             for y in 0..N {
                 for x in 0..N {
@@ -1464,7 +1672,7 @@ async fn main() {
         let hints_rect = move_hints_rect();
         // The continuous hover region bridges the entry button and its panel,
         // so a mouse/trackpad can reach rows and pagination without holding H.
-        let hints_region = Rect::new(790., 208., 220., 474.);
+        let hints_region = Rect::new(790., 208., 220., 484.);
         hints_hover_open = hints_ready
             && !key(KeyCode::Escape)
             && (hints_rect.contains(pointer)
@@ -1472,6 +1680,9 @@ async fn main() {
                     && hints_region.contains(pointer)));
         let show_moves =
             hints_ready && !key(KeyCode::Escape) && (is_key_down(KeyCode::H) || hints_hover_open);
+        hints_shown = show_moves;
+        // Hints can be played only on the player's own turn; the enemy's are view-only.
+        let hints_playable = show_moves && !enemy_turn;
         let hint_actor = if enemy_turn { enemy_id } else { hero_id };
         let player_hover = if !show_moves
             && !enemy_turn
@@ -1486,9 +1697,7 @@ async fn main() {
                 .skills
                 .iter()
                 .enumerate()
-                .find(|(i, _)| {
-                    Rect::new(20., 445. + *i as f32 * 118., 210., 112.).contains(pointer)
-                })
+                .find(|(i, _)| player_skill_rect(*i).contains(pointer))
                 .map(|(_, s)| (*s, false))
         } else {
             None
@@ -1498,7 +1707,7 @@ async fn main() {
                 .skills
                 .iter()
                 .enumerate()
-                .find(|(i, _)| Rect::new(805., 565. + *i as f32 * 38., 195., 34.).contains(pointer))
+                .find(|(i, _)| enemy_skill_rect(*i).contains(pointer))
                 .map(|(_, s)| (*s, true))
         } else {
             None
@@ -1681,33 +1890,12 @@ async fn main() {
         } else {
             move_hint_page = 0;
         }
-        let row_focus = if show_moves
-            && pointer.x >= 798.
-            && pointer.x < 1002.
-            && pointer.y >= 278.
-            && pointer.y < 586.
-        {
-            Some(move_hint_page * 7 + ((pointer.y - 278.) / 44.) as usize)
-                .filter(|&i| i < legal_hints.len())
-        } else {
-            None
-        };
-        let arrow_focus = if show_moves
-            && pointer.x >= 256.
-            && pointer.x < 768.
-            && pointer.y >= 110.
-            && pointer.y < 622.
-        {
-            legal_hints
-                .iter()
-                .enumerate()
-                .map(|(i, &(a, c))| (i, presentation::move_hint_anchor(a, c).distance(pointer)))
-                .filter(|(_, d)| *d < 22.)
-                .min_by(|a, b| a.1.total_cmp(&b.1))
-                .map(|(i, _)| i)
-        } else {
-            None
-        };
+        let row_focus = show_moves
+            .then(|| hint_row_at(pointer, move_hint_page, legal_hints.len()))
+            .flatten();
+        let arrow_focus = show_moves
+            .then(|| hint_badge_at(pointer, &legal_hints))
+            .flatten();
         let focused_hint = row_focus.or(arrow_focus);
         if let Some(i) = arrow_focus {
             move_hint_page = i / 7;
@@ -1736,11 +1924,19 @@ async fn main() {
             }
             if !legal_hints.is_empty() {
                 label(
-                    tr(
-                        zh,
-                        "Blue: tiles / Gold: whole columns",
-                        "蓝色：两格交换 / 金色：整列交换",
-                    ),
+                    if hints_playable {
+                        tr(
+                            zh,
+                            "Blue: tiles · Gold: columns · hold H + click a number",
+                            "蓝色：两格交换 / 金色：整列交换 · 按住 H 点编号即可执行",
+                        )
+                    } else {
+                        tr(
+                            zh,
+                            "Blue: tiles / Gold: whole columns",
+                            "蓝色：两格交换 / 金色：整列交换",
+                        )
+                    },
                     256.,
                     674.,
                     17.,
@@ -1767,7 +1963,7 @@ async fn main() {
             label(
                 tr(zh, "Moves · hold H", "可行移动 · 按住 H"),
                 hints_rect.x + 8.,
-                hints_rect.y + 17.,
+                hints_rect.y + 19.,
                 16.,
                 if hints_ready { SKYBLUE } else { GRAY },
             );
@@ -1783,12 +1979,17 @@ async fn main() {
                     tr(zh, "moves", "种交换")
                 )
             } else {
-                tr(zh, "Hover to show all swaps", "悬停显示全部交换").to_string()
+                tr(
+                    zh,
+                    "Hover to list · click to play",
+                    "悬停查看 · 点击条目执行",
+                )
+                .to_string()
             };
             label(
                 &detail,
                 hints_rect.x + 8.,
-                hints_rect.y + 33.,
+                hints_rect.y + 36.,
                 13.,
                 if show_moves { GOLD } else { GRAY },
             );
@@ -1807,45 +2008,34 @@ async fn main() {
         if let Some(skill) = last_cast.filter(|s| cast_time > 0. && *s != content::Skill::Charge) {
             let progress = 1. - cast_time as f32 / 1.4;
             effects::draw(skill, &skill_flash, progress, last_cast_enemy);
-            draw_rectangle(352., 82., 320., 26., Color::new(0.04, 0.06, 0.1, 0.9));
-            icons::draw(skill, 356., 84., 22.);
-            label(
-                &format!(
-                    "{} · {}",
-                    if last_cast_enemy {
-                        tr(zh, "Enemy", "敌方")
-                    } else {
-                        tr(zh, "You", "我方")
-                    },
-                    skill.name(zh)
-                ),
-                386.,
-                102.,
-                18.,
-                GOLD,
-            );
         }
         for (i, skill) in HEROES[enemy_id].skills.iter().enumerate() {
-            let r = Rect::new(805., 565. + i as f32 * 38., 195., 34.);
+            let r = enemy_skill_rect(i);
             draw_rectangle(r.x, r.y, r.w, r.h, Color::new(0.12, 0.15, 0.2, 1.));
             if r.contains(pointer) {
                 draw_rectangle_lines(r.x, r.y, r.w, r.h, 2., ORANGE);
             }
-            icons::draw(*skill, 805., 565. + i as f32 * 38., 28.);
+            icons::draw(*skill, r.x + 5., r.y + 5., 28.);
+            let color = if content::payment(enemy_id, enemy, enemy_mp, *skill).is_some() {
+                GOLD
+            } else {
+                GRAY
+            };
+            // Cost right-aligned; the name fits into the space left of it.
+            let cost = format!("{} MP", skill.cost());
+            let cost_width = label_width(&cost, 15.);
+            label(&cost, r.x + r.w - 7. - cost_width, r.y + 25., 15., color);
+            let name = skill.name(zh);
             label(
-                &format!("{} · {} MP", skill.name(zh), skill.cost()),
-                840.,
-                585. + i as f32 * 38.,
-                17.,
-                if content::payment(enemy_id, enemy, enemy_mp, *skill).is_some() {
-                    GOLD
-                } else {
-                    GRAY
-                },
+                name,
+                r.x + 40.,
+                r.y + 25.,
+                fit_size(name, 17., r.w - 54. - cost_width),
+                color,
             );
         }
         for (i, skill) in HEROES[hero_id].skills.iter().enumerate() {
-            let rect = Rect::new(20., 445. + i as f32 * 118., 210., 112.);
+            let rect = player_skill_rect(i);
             draw_rectangle(
                 rect.x,
                 rect.y,
@@ -1857,12 +2047,18 @@ async fn main() {
                     Color::new(0.1, 0.12, 0.16, 1.)
                 },
             );
+            if targeting == Some(*skill) {
+                draw_rectangle_lines(rect.x, rect.y, rect.w, rect.h, 2., GOLD);
+            } else if player_hover.is_some_and(|(s, _)| s == *skill) {
+                draw_rectangle_lines(rect.x, rect.y, rect.w, rect.h, 2., SKYBLUE);
+            }
             icons::draw(*skill, rect.x + 8., rect.y + 8., 26.);
+            let title = format!("{}: {}", i + 1, skill.name(zh));
             label(
-                &format!("{}: {}", i + 1, skill.name(zh)),
+                &title,
                 rect.x + 40.,
                 rect.y + 28.,
-                21.,
+                fit_size(&title, 21., rect.w - 48.),
                 WHITE,
             );
             label(
@@ -1872,7 +2068,7 @@ async fn main() {
                     format!("{} MP", skill.cost())
                 },
                 rect.x + 8.,
-                rect.y + 49.,
+                rect.y + 50.,
                 17.,
                 if hero_id == 6 && mp < skill.cost() {
                     RED
@@ -1881,36 +2077,66 @@ async fn main() {
                 },
             );
             for (line, text) in skill.description(zh).lines().enumerate() {
+                // Shrink a long line to the box width instead of letting it spill out.
                 label(
                     text,
                     rect.x + 8.,
-                    rect.y + 69. + line as f32 * 18.,
-                    16.,
+                    rect.y + 72. + line as f32 * 18.,
+                    fit_size(text, 16., rect.w - 16.),
                     LIGHTGRAY,
                 );
             }
         }
-        for (id, x) in [(hero_id, 20.), (enemy_id, 800.)] {
-            label(
-                tr(zh, "PASSIVE (hover)", "被动（悬停查看）"),
-                x,
-                415.,
-                16.,
-                GOLD,
-            );
-            if !show_moves
+        // Draw both passive rows before the popup flushes labels; widths are measured here.
+        let mut passive_popup = None;
+        for enemy_side in [false, true] {
+            let id = if enemy_side { enemy_id } else { hero_id };
+            let rect = passive_rect(enemy_side);
+            let hovered = !show_moves
                 && targeting.is_none()
                 && hover_context.is_none()
                 && !block_input
                 && !paused
                 && interface.panel.is_none()
-                && Rect::new(x, 394., 210., 36.).contains(pointer)
-            {
-                flush_labels();
-                draw_rectangle(270., 225., 485., 145., Color::new(0.04, 0.07, 0.12, 0.98));
-                for (i, line) in content::passive(id, zh).lines().enumerate() {
-                    label(line, 287., 260. + i as f32 * 30., 22., GOLD);
-                }
+                && rect.contains(pointer);
+            draw_rectangle(
+                rect.x,
+                rect.y,
+                rect.w,
+                rect.h,
+                Color::new(0.13, 0.12, 0.08, 1.),
+            );
+            draw_rectangle_lines(
+                rect.x,
+                rect.y,
+                rect.w,
+                rect.h,
+                if hovered { 2. } else { 1. },
+                if hovered {
+                    GOLD
+                } else {
+                    Color::new(0.55, 0.45, 0.2, 1.)
+                },
+            );
+            let tag = tr(zh, "Passive", "被动");
+            label(tag, rect.x + 7., rect.y + 17., 14., GOLD);
+            let name = passive_name(id, zh);
+            let name_x = rect.x + 15. + label_width(tag, 14.);
+            label(name, name_x, rect.y + 17., 15., WHITE);
+            let hint = tr(zh, "hover", "悬停查看");
+            let hint_x = rect.x + rect.w - 7. - label_width(hint, 12.);
+            if hint_x > name_x + label_width(name, 15.) + 6. {
+                label(hint, hint_x, rect.y + 17., 12., GRAY);
+            }
+            if hovered {
+                passive_popup = Some(id);
+            }
+        }
+        if let Some(id) = passive_popup {
+            flush_labels();
+            draw_rectangle(270., 225., 485., 145., Color::new(0.04, 0.07, 0.12, 0.98));
+            for (i, line) in content::passive(id, zh).lines().enumerate() {
+                label(line, 287., 260. + i as f32 * 30., 22., GOLD);
             }
         }
         if !enemy_turn
@@ -1975,6 +2201,10 @@ async fn main() {
                 let row_y = 278. + (i % 7) as f32 * 44.;
                 if focused_hint == Some(i) {
                     draw_rectangle(798., row_y, 204., 43., Color::new(0.16, 0.25, 0.30, 1.));
+                    if hints_playable {
+                        draw_rectangle_lines(798., row_y, 204., 43., 1., GOLD);
+                        label(tr(zh, "click", "点击执行"), 950., row_y + 35., 12., GOLD);
+                    }
                 }
                 let (a, c) = legal_hints[i];
                 let column = hint_actor == 0 && !armed && a.1 == c.1;
@@ -2075,7 +2305,16 @@ async fn main() {
                     )
                 })
                 .unwrap_or_else(|| {
-                    tr(zh, "Click arrows / Left, Right", "点按钮或按 ← → 翻页").to_string()
+                    if hints_playable {
+                        tr(
+                            zh,
+                            "Click a row to play · ← → pages",
+                            "点击条目即可执行 · ← → 翻页",
+                        )
+                    } else {
+                        tr(zh, "Enemy moves: view only", "敌方的交换，仅供查看")
+                    }
+                    .to_string()
                 });
             label(&footer, 800., 628., 13., LIGHTGRAY);
         }
@@ -2207,7 +2446,8 @@ async fn main() {
                 if lo == hi {
                     lo.to_string()
                 } else {
-                    format!("{lo}..{hi}")
+                    // Range over every possible target, e.g. 125～154; not Rust's `..` syntax.
+                    format!("{lo}{}{hi}", tr(zh, "–", "～"))
                 }
             };
             label(
@@ -2331,47 +2571,6 @@ async fn main() {
                 GRAY,
             );
         }
-        label(
-            &format!(
-                "{}  {}: {chain}",
-                if presentation.charging() {
-                    if enemy_turn {
-                        tr(zh, "Enemy · knight charge", "敌方 · 骑士冲锋")
-                    } else {
-                        tr(zh, "You · knight charge", "我方 · 骑士冲锋")
-                    }
-                } else if let Some(swap) = presentation.swapping() {
-                    if enemy_turn {
-                        if swap {
-                            tr(zh, "Enemy · swapping", "敌方 · 正在交换")
-                        } else {
-                            tr(zh, "Enemy · falling", "敌方 · 方块掉落")
-                        }
-                    } else {
-                        if swap {
-                            tr(zh, "You · swapping", "我方 · 正在交换")
-                        } else {
-                            tr(zh, "You · falling", "我方 · 方块掉落")
-                        }
-                    }
-                } else if !pending.is_empty() {
-                    if enemy_turn {
-                        tr(zh, "Enemy · clearing", "敌方 · 正在消除")
-                    } else {
-                        tr(zh, "You · clearing", "我方 · 正在消除")
-                    }
-                } else if action_done {
-                    tr(zh, "Action resolved", "行动结算完成")
-                } else {
-                    localized_note(zh, note)
-                },
-                tr(zh, "Chain", "连锁")
-            ),
-            256.,
-            80.,
-            26.,
-            WHITE,
-        );
         if !paused && (hp == 0 || enemy == 0) {
             flush_labels();
             draw_rectangle(256., 190., 512., 340., Color::new(0.02, 0.02, 0.03, 0.96));
@@ -2440,6 +2639,41 @@ mod tests {
             }
         }
         b
+    }
+    #[test]
+    fn hint_clicks_hit_rows_on_the_shown_page_and_board_badges() {
+        // Rows are 44 units tall from y=278, seven per page.
+        assert_eq!(hint_row_at(vec2(800., 280.), 0, 3), Some(0));
+        assert_eq!(
+            hint_row_at(vec2(1000., 278. + 44. * 2. + 1.), 1, 20),
+            Some(9)
+        );
+        assert_eq!(hint_row_at(vec2(800., 278. + 44. * 2. + 1.), 0, 2), None);
+        assert_eq!(hint_row_at(vec2(797., 280.), 0, 3), None);
+        assert_eq!(hint_row_at(vec2(800., 586.), 0, 20), None);
+        let hints = [((0, 0), (1, 0)), ((3, 4), (3, 5)), ((3, 5), (3, 6))];
+        let badge = presentation::move_hint_anchor((3, 4), (3, 5));
+        assert_eq!(hint_badge_at(badge, &hints), Some(1));
+        assert_eq!(hint_badge_at(badge + vec2(0., 3.), &hints), Some(1));
+        assert_eq!(hint_badge_at(badge + vec2(30., 0.), &hints), None);
+        // Off the board nothing is hit, even inside the badge radius.
+        assert_eq!(hint_badge_at(vec2(250., 120.), &[((0, 0), (0, 1))]), None);
+    }
+    #[test]
+    fn sidebar_labels_are_short_and_localized() {
+        for id in 0..HEROES.len() {
+            for zh in [false, true] {
+                let name = passive_name(id, zh);
+                assert!(!name.is_empty() && name.len() < content::passive(id, zh).len());
+                assert!(!name.contains(['：', ':', '\n']));
+            }
+        }
+        assert_eq!(passive_name(0, true), "列阵");
+        assert_eq!(
+            reward_summary(true, 3, 12, 0),
+            "生命 +3 · 伤害 12 · 魔力 +0"
+        );
+        assert_eq!(reward_summary(false, 3, 12, 0), "+3 HP · 12 damage · +0 MP");
     }
     #[test]
     fn selecting_same_skill_cancels_and_different_skill_switches() {
