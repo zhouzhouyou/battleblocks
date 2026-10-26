@@ -238,9 +238,9 @@ impl Ui {
         );
         label(tr(zh, "AI difficulty", "AI 难度"), 24., 140., 24., WHITE);
         for (i, name) in [
-            tr(zh, "Easy", "简单"),
-            tr(zh, "Normal", "普通"),
-            tr(zh, "Hard", "困难"),
+            tr(zh, "Beginner", "入门"),
+            tr(zh, "Standard", "标准"),
+            tr(zh, "Advanced", "进阶"),
         ]
         .iter()
         .enumerate()
@@ -298,7 +298,13 @@ impl Ui {
                     WHITE,
                 );
                 label(
-                    &format!("HP {}  MP {}", h.hp, h.mp),
+                    &format!(
+                        "{} {}  {} {}",
+                        tr(zh, "HP", "生命"),
+                        h.hp,
+                        tr(zh, "MP", "魔力"),
+                        h.mp
+                    ),
                     r.x + 58.,
                     r.y + 51.,
                     17.,

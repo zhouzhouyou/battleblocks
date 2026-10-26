@@ -151,7 +151,13 @@ pub fn draw(
             if i == hero { GOLD } else { WHITE },
         );
         label(
-            &format!("HP {}   MP {}", h.hp, h.mp),
+            &format!(
+                "{} {}   {} {}",
+                tr(zh, "HP", "生命"),
+                h.hp,
+                tr(zh, "MP", "魔力"),
+                h.mp
+            ),
             r.x + 67.,
             r.y + 51.,
             16.,

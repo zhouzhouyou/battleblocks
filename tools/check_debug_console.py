@@ -9,7 +9,8 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-debug-') as temp:
     args=[str(ROOT/'target/debug/battleblocks'),'--log',str(log)]
     commands=['pause on','board load '+' '.join(str(v) for row in board for v in row),'hp player 650','mp player 300','pause off','move 2 1 2 2']
     for command in commands:args+=['--command',command]
-    process=subprocess.Popen(args,cwd=ROOT,stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+    # Only the JSONL log is checked. An undrained stdout pipe fills up (about 4 KiB on Windows) and blocks the game.
+    process=subprocess.Popen(args,cwd=ROOT,stdin=subprocess.PIPE,stdout=subprocess.DEVNULL,stderr=subprocess.PIPE,text=True,encoding='utf-8',errors='replace')
     def records():
         return [json.loads(line) for line in log.read_text().splitlines() if line] if log.exists() else []
     def wait(predicate):
