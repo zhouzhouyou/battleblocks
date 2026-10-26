@@ -86,8 +86,8 @@ pub enum Command {
     Pause(bool),
     Move((usize, usize), (usize, usize)),
     Cast(usize, (usize, usize)),
-    /// Console output language: true for Chinese.
-    Lang(bool),
+    /// Console output language: Some(true) Chinese, Some(false) English, None follows the game.
+    Lang(Option<bool>),
 }
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum ParseError {
@@ -120,7 +120,10 @@ impl ParseError {
             ),
             Self::PauseUsage => ("Use pause on|off", "用法：pause on|off"),
             Self::SkillSlot => ("Skill slot must be 1 or 2", "技能编号只能是 1 或 2"),
-            Self::LangUsage => ("Use lang zh or lang en", "用法：lang zh 或 lang en"),
+            Self::LangUsage => (
+                "Use lang zh, lang en or lang auto (follow the game)",
+                "用法：lang zh、lang en 或 lang auto（跟随游戏语言）",
+            ),
             Self::Unknown => (
                 "Unknown command or argument count. Type help.",
                 "未知命令或参数个数不对，输入 help 查看用法",
@@ -235,8 +238,9 @@ pub fn parse(input: &str) -> Result<Command, ParseError> {
             ))
         }
         "lang" => match words.as_slice() {
-            [_, "zh" | "cn"] => Ok(Command::Lang(true)),
-            [_, "en"] => Ok(Command::Lang(false)),
+            [_, "zh" | "cn"] => Ok(Command::Lang(Some(true))),
+            [_, "en"] => Ok(Command::Lang(Some(false))),
+            [_, "auto" | "game"] => Ok(Command::Lang(None)),
             _ => Err(ParseError::LangUsage),
         },
         _ => Err(ParseError::Unknown),
@@ -322,6 +326,8 @@ pub struct Console {
     pub open: bool,
     /// Output language for help, messages and event lines; the JSONL log stays English.
     pub zh: bool,
+    /// Follow the game's UI language until `lang zh` / `lang en` fixes it.
+    follow_game: bool,
     scroll: usize,
     input: String,
     output: VecDeque<String>,
@@ -409,6 +415,7 @@ impl Console {
         let mut console = Self {
             open,
             zh,
+            follow_game: true,
             scroll: 0,
             input: String::new(),
             output: VecDeque::new(),
@@ -425,8 +432,8 @@ impl Console {
             path,
         };
         console.say_tr(
-            "Debug console: ~ / F1 toggles, Esc closes. Type help for commands, lang zh for Chinese.",
-            "调试控制台：~ / F1 开关，Esc 关闭。输入 help 查看命令，lang en 切换为英文。",
+            "Debug console: ~ / F1 toggles, Esc closes. Type help for commands; the language follows the game, lang zh / lang en fix it.",
+            "调试控制台：~ / F1 开关，Esc 关闭。输入 help 查看命令；语言跟随游戏，lang zh / lang en 可单独切换。",
         );
         let path = format!("{}{}", console.tr("Log: ", "日志："), console.path);
         console.say(&path);
@@ -443,6 +450,28 @@ impl Console {
     pub fn say_tr(&mut self, en: &str, zh: &str) {
         let line = if self.zh { zh } else { en }.to_string();
         self.say(&line);
+    }
+    /// Called every frame with the game's UI language.
+    pub fn sync_language(&mut self, game_zh: bool) {
+        if self.follow_game {
+            self.zh = game_zh;
+        }
+    }
+    /// `lang zh` / `lang en` fix the console language; `lang auto` follows the game again.
+    pub fn set_language(&mut self, choice: Option<bool>, game_zh: bool) {
+        self.follow_game = choice.is_none();
+        self.zh = choice.unwrap_or(game_zh);
+        if self.follow_game {
+            self.say_tr(
+                "Console language: follows the game (English now)",
+                "控制台语言：跟随游戏（当前为中文）",
+            );
+        } else {
+            self.say_tr(
+                "Console language: English (lang auto follows the game again)",
+                "控制台语言：中文（lang auto 恢复跟随游戏）",
+            );
+        }
     }
     pub fn help(&mut self) {
         let heroes = crate::content::HEROES
@@ -461,7 +490,7 @@ impl Console {
                 "强化\tbuff player|enemy bonus 0～10 · buff player|enemy armed on|off".into(),
                 "行动\tmove x1 y1 x2 y2 · cast 1|2 [x y] · pause on|off · ai 0|1|2（只能在开战前设置）".into(),
                 "历史\tundo 撤回上一步 · undo player 撤回到玩家上次行动前 · restart 重开 · export 导出日志".into(),
-                "语言\tlang zh 中文 · lang en English".into(),
+                "语言\t默认跟随游戏 · lang zh 中文 · lang en English · lang auto 恢复跟随".into(),
                 "方块\t0 平衡 · 1 治疗 · 2 伤害 · 3 魔力 · 4 治疗+伤害 · 5 治疗+魔力 · 6 伤害+魔力".into(),
                 format!("角色\t{heroes}"),
                 "说明\t控制台打开时战斗暂停；move、cast、resolve 会关闭控制台并按正常规则结算。最多保留 256 步撤回快照，随机补充状态也会还原。".into(),
@@ -475,7 +504,7 @@ impl Console {
                 "Buffs\tbuff player|enemy bonus 0–10 · buff player|enemy armed on|off".into(),
                 "Actions\tmove x1 y1 x2 y2 · cast 1|2 [x y] · pause on|off · ai 0|1|2 (before battle only)".into(),
                 "History\tundo · undo player · restart · export".into(),
-                "Language\tlang zh · lang en".into(),
+                "Language\tfollows the game by default · lang zh · lang en · lang auto to follow again".into(),
                 "Tiles\t0 balanced · 1 heal · 2 attack · 3 mana · 4 HP+ATK · 5 HP+MP · 6 ATK+MP".into(),
                 format!("Heroes\t{heroes}"),
                 "Notes\tThe console freezes combat; move, cast and resolve close it and follow normal rules. Undo keeps 256 snapshots, including the random refill state.".into(),
@@ -746,6 +775,7 @@ mod tests {
         Console {
             open: false,
             zh: false,
+            follow_game: true,
             scroll: 0,
             input: String::new(),
             output: VecDeque::new(),
@@ -808,6 +838,25 @@ mod tests {
     fn json_escapes_control_characters() {
         assert_eq!(quote("a\n\"\\"), "\"a\\n\\\"\\\\\"");
     }
+    #[cfg(not(target_arch = "wasm32"))]
+    #[test]
+    fn console_language_follows_the_game_until_fixed() {
+        let mut c = console();
+        c.sync_language(true);
+        assert!(c.zh);
+        c.sync_language(false);
+        assert!(!c.zh);
+        // A fixed language ignores the game's language toggles.
+        c.set_language(Some(true), false);
+        c.sync_language(false);
+        assert!(c.zh);
+        assert!(c.output.back().unwrap().contains("中文"));
+        // lang auto takes the game's current language at once and keeps following it.
+        c.set_language(None, false);
+        assert!(!c.zh);
+        c.sync_language(true);
+        assert!(c.zh);
+    }
     #[test]
     fn board_load_requires_64_valid_tiles() {
         let text = format!("board load {}", vec!["2"; 64].join(" "));
@@ -816,9 +865,10 @@ mod tests {
     }
     #[test]
     fn lang_command_and_errors_are_specific() {
-        assert_eq!(parse("lang zh"), Ok(Command::Lang(true)));
-        assert_eq!(parse("lang cn"), Ok(Command::Lang(true)));
-        assert_eq!(parse("lang en"), Ok(Command::Lang(false)));
+        assert_eq!(parse("lang zh"), Ok(Command::Lang(Some(true))));
+        assert_eq!(parse("lang cn"), Ok(Command::Lang(Some(true))));
+        assert_eq!(parse("lang en"), Ok(Command::Lang(Some(false))));
+        assert_eq!(parse("lang auto"), Ok(Command::Lang(None)));
         for (bad, error) in [
             ("lang", ParseError::LangUsage),
             ("lang fr", ParseError::LangUsage),
