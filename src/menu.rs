@@ -188,22 +188,35 @@ pub fn draw(
         16.,
         LIGHTGRAY,
     );
-    draw_ellipse(406., 412., 82., 12., 0., Color::from_rgba(20, 23, 31, 255));
+    draw_ellipse(406., 403., 82., 12., 0., Color::from_rgba(20, 23, 31, 255));
     sprite(
         texture,
         &sprites::SPRITES[hero],
-        Rect::new(301., 207., 210., 202.),
+        Rect::new(301., 198., 210., 202.),
     );
-    label(tr(zh, "MAX HEALTH", "生命上限"), 304., 444., 17., LIGHTGRAY);
-    label(&h.hp.to_string(), 304., 472., 28., GREEN);
-    draw_rectangle(304., 482., 204., 5., Color::from_rgba(48, 55, 61, 255));
-    draw_rectangle(304., 482., 204. * h.hp as f32 / 800., 5., GREEN);
-    label(tr(zh, "MAX MANA", "魔力上限"), 304., 510., 17., LIGHTGRAY);
-    label(&h.mp.to_string(), 304., 537., 28., SKYBLUE);
-    draw_rectangle(304., 548., 204., 5., Color::from_rgba(48, 55, 61, 255));
-    draw_rectangle(304., 548., 204. * h.mp as f32 / 800., 5., SKYBLUE);
+    label(tr(zh, "MAX HEALTH", "生命上限"), 304., 432., 17., LIGHTGRAY);
+    label(&h.hp.to_string(), 304., 459., 28., GREEN);
+    draw_rectangle(304., 469., 204., 5., Color::from_rgba(48, 55, 61, 255));
+    draw_rectangle(304., 469., 204. * h.hp as f32 / 800., 5., GREEN);
+    label(tr(zh, "MAX MANA", "魔力上限"), 304., 495., 17., LIGHTGRAY);
+    label(&h.mp.to_string(), 304., 521., 28., SKYBLUE);
+    draw_rectangle(304., 531., 204., 5., Color::from_rgba(48, 55, 61, 255));
+    draw_rectangle(304., 531., 204. * h.mp as f32 / 800., 5., SKYBLUE);
+    label(
+        tr(zh, "PASSIVE SKILL", "被动技能"),
+        304.,
+        557.,
+        17.,
+        LIGHTGRAY,
+    );
     for (i, line) in content::passive(hero, zh).lines().enumerate() {
-        label(line, 294., 572. + i as f32 * 20., 13., GOLD);
+        label(
+            line,
+            304.,
+            577. + i as f32 * 18.,
+            fit_size(line, 13., 214.),
+            GOLD,
+        );
     }
     for (i, skill) in h.skills.iter().enumerate() {
         let r = skill_rect(i);
