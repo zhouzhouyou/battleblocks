@@ -1392,7 +1392,12 @@ async fn main() {
                 && !cast_this_frame
                 && clicked(MouseButton::Left)
             {
-                let hints = board::move_hints(&b, hero_id, armed);
+                // Same ranking as the drawn list, so row and badge numbers match.
+                let hints: Vec<Move> =
+                    content::ranked_moves(&b, hero_id, hp, mp, enemy, extra_bonus, armed)
+                        .into_iter()
+                        .map(|(m, _)| m)
+                        .collect();
                 if let Some(i) = hint_row_at(pointer, move_hint_page, hints.len()).or_else(|| {
                     is_key_down(KeyCode::H)
                         .then(|| hint_badge_at(pointer, &hints))
@@ -2001,30 +2006,25 @@ async fn main() {
         presentation.draw_tiles(&tiles);
         // Hints are derived only from the settled board; drawing never changes
         // selection, RNG, turn state, resources or the action log.
-        let legal_hints = if show_moves {
-            board::move_hints(&b, hint_actor, armed)
-        } else {
-            Vec::new()
-        };
         let hint_health = if enemy_turn { enemy } else { hp };
         let hint_mana = if enemy_turn { enemy_mp } else { mp };
         let hint_opponent = if enemy_turn { hp } else { enemy };
-        let move_previews: Vec<_> = legal_hints
-            .iter()
-            .map(|&(a, c)| {
-                content::preview_move(
-                    &b,
-                    hint_actor,
-                    hint_health,
-                    hint_mana,
-                    hint_opponent,
-                    extra_bonus,
-                    armed,
-                    a,
-                    c,
-                )
-            })
-            .collect();
+        // Best total reward first; numbers on the board follow the same order.
+        let (legal_hints, move_previews): (Vec<Move>, Vec<_>) = if show_moves {
+            content::ranked_moves(
+                &b,
+                hint_actor,
+                hint_health,
+                hint_mana,
+                hint_opponent,
+                extra_bonus,
+                armed,
+            )
+            .into_iter()
+            .unzip()
+        } else {
+            (Vec::new(), Vec::new())
+        };
         let pages = legal_hints.len().div_ceil(7).max(1);
         let previous_page_rect = Rect::new(798., 590., 52., 24.);
         let next_page_rect = Rect::new(950., 590., 52., 24.);
