@@ -565,6 +565,7 @@ async fn main() {
         let (mx, my) = mouse_position();
         let pointer = cam.screen_to_world(vec2(mx, my));
         let was_console_open = console.open;
+        console.sync_language(zh);
         console.input();
         let mut command_move = None;
         let mut command_skill = None;
@@ -674,10 +675,7 @@ async fn main() {
                                 console.say_tr("AI difficulty is locked during battle; return to the main menu to choose a new difficulty","战斗中 AI 难度已锁定，回到主菜单才能重新选择");
                             }
                         }
-                        Command::Lang(chinese) => {
-                            console.zh = chinese;
-                            console.say_tr("Console language: English", "控制台语言：中文");
-                        }
+                        Command::Lang(choice) => console.set_language(choice, zh),
                         command => {
                             let allowed =
                                 !action_done && pending.is_empty() && !presentation.busy();
