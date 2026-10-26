@@ -74,11 +74,11 @@ fn enemy_skill_rect(i: usize) -> Rect {
     Rect::new(796., 470. + i as f32 * 44., 208., 38.)
 }
 // Turn indicator rows above the board frame, between the two sidebars.
-fn current_turn_rect() -> Rect {
-    Rect::new(236., 6., 552., 42.)
-}
 fn previous_turn_rect() -> Rect {
-    Rect::new(236., 52., 552., 32.)
+    Rect::new(236., 6., 552., 32.)
+}
+fn current_turn_rect() -> Rect {
+    Rect::new(236., 42., 552., 42.)
 }
 type Move = ((usize, usize), (usize, usize));
 /// Row of the move-reward panel under the pointer; the panel lists 7 hints per page.
@@ -1753,12 +1753,20 @@ async fn main() {
                 sprite.indices,
             );
         }
+        // Title centered over the player's sidebar.
         let title = tr(zh, "BATTLE BLOCKS", "方块战斗");
-        label(title, 24., 57., fit_size(title, 32., 200.), GOLD);
+        let sidebar = side_panel_rect(false);
+        label_centered(
+            title,
+            sidebar.x + sidebar.w / 2.,
+            57.,
+            fit_size(title, 32., sidebar.w - 24.),
+            GOLD,
+        );
         interface.draw_top(false, muted, paused, pointer, zh);
-        // Two-row turn indicator above the board. The current turn stands out: who acts,
-        // what was done so far, its running result and the cascade depth. The previous
-        // turn sits below in muted colors.
+        // Two-row turn indicator above the board. The current turn, next to the board,
+        // stands out: who acts, what was done so far, its running result and the cascade
+        // depth. The previous turn sits above it in muted colors.
         let current = current_turn_rect();
         let over = hp == 0 || enemy == 0;
         let turn_color = if over {
