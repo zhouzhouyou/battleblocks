@@ -4,6 +4,8 @@ fn main() {
     println!("cargo:rerun-if-changed=tools/prepare_font.py");
     println!("cargo:rerun-if-changed=.build-tools/NotoSansSC.ttf");
     println!("cargo:rerun-if-changed=.build-tools/python-path.txt");
+    // The subset also depends on the installed fonttools version.
+    println!("cargo:rerun-if-changed=.build-tools/site");
     let root = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
     let cache = root.join(".build-tools");
     let python = std::fs::read_to_string(cache.join("python-path.txt"))

@@ -40,7 +40,7 @@ python3 -m http.server 8765 --bind 127.0.0.1 --directory dist/web
 
 访问 http://127.0.0.1:8765/ 。部署时上传 **整个 `dist/web/`**，包含HTML、JS、WASM、`bgm.ogg`、`crush.wav`和licenses目录。不能仅上传WASM：网页流式音乐和音效为外部文件。服务器应为WASM返回`application/wasm`；启用gzip/Brotli可减少传输。首次用户点击/按键解锁声音，符合浏览器播放规则。
 
-`python3 tools/build.py --setup-only` 仅准备字体裁剪工具。build.rs自动扫描Rust源码中的文本、生成中文/英文字体子集；新增文字无需手动裁剪，完整字体不随游戏分发。字体来源校验SHA-256，fonttools固定4.66.1。
+`python3 tools/build.py --setup-only` 仅准备字体裁剪工具。build.rs自动扫描Rust源码中的文本、生成中文/英文字体子集；新增文字无需手动裁剪，完整字体不随游戏分发。字体来源校验SHA-256，fonttools固定4.67.0。
 
 已手动完成Release构建时，可 `python3 tools/package.py` 重新打包，或加 `--native-only` / `--web-only`。脚本清理对应旧产物，收集当前目标实际解析的依赖许可，并生成 `dist/measurements.json` 记录字节数。
 
