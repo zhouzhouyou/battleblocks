@@ -58,3 +58,55 @@ pub const SPRITES: &[SpriteAsset] = &[
         indices: &[0, 1, 2, 3],
     },
 ];
+
+pub const AWAKENED: &[SpriteAsset] = &[
+    SpriteAsset {
+        bytes: include_bytes!("../assets/awakened/knight-awakening.png"),
+        w: 75.,
+        h: 96.,
+        durations: &[1.],
+        indices: &[0],
+    },
+    SpriteAsset {
+        bytes: include_bytes!("../assets/awakened/elf-awakening.png"),
+        w: 78.,
+        h: 96.,
+        durations: &[1.],
+        indices: &[0],
+    },
+    SpriteAsset {
+        bytes: include_bytes!("../assets/awakened/wizard-awakening.png"),
+        w: 77.,
+        h: 96.,
+        durations: &[1.],
+        indices: &[0],
+    },
+    SpriteAsset {
+        bytes: include_bytes!("../assets/awakened/goblin-awakening.png"),
+        w: 81.,
+        h: 96.,
+        durations: &[1.],
+        indices: &[0],
+    },
+    SpriteAsset {
+        bytes: include_bytes!("../assets/awakened/imp-awakening.png"),
+        w: 88.,
+        h: 96.,
+        durations: &[1.],
+        indices: &[0],
+    },
+    SpriteAsset {
+        bytes: include_bytes!("../assets/awakened/chort-awakening.png"),
+        w: 78.,
+        h: 96.,
+        durations: &[1.],
+        indices: &[0],
+    },
+    SpriteAsset {
+        bytes: include_bytes!("../assets/awakened/zombie-awakening.png"),
+        w: 75.,
+        h: 96.,
+        durations: &[1.],
+        indices: &[0],
+    },
+];

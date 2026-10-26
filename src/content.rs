@@ -1,3 +1,108 @@
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct Rules {
+    pub awake: bool,
+    pub initial_loot: bool,
+    pub opponent_hp: Option<i32>,
+    pub opponent: Option<(usize, bool)>,
+}
+pub const AWAKENING_LINES: [i32; 7] = [45, 35, 40, 50, 40, 35, 30];
+pub const AWAKENING_CAPS: [i32; 7] = [55, 45, 50, 55, 45, 45, 40];
+pub fn awakening_line(hero: usize) -> i32 {
+    HEROES[hero].hp * AWAKENING_LINES[hero] / 100
+}
+pub fn health_cap(hero: usize, awake: bool) -> i32 {
+    if awake {
+        HEROES[hero].hp * AWAKENING_CAPS[hero] / 100
+    } else {
+        HEROES[hero].hp
+    }
+}
+/// Wizard's reserve unlocks on awakening; other roles keep their base cap.
+pub fn mana_cap(hero: usize, awake: bool) -> i32 {
+    if hero == 2 && !awake {
+        250
+    } else {
+        HEROES[hero].mp
+    }
+}
+pub fn skill_cost(hero: usize, awake: bool, skill: Skill) -> i32 {
+    if awake && hero == 0 && skill == Skill::Guard {
+        80
+    } else if hero == 2 && awake && skill == Skill::Meteor {
+        140
+    } else {
+        skill.cost()
+    }
+}
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub struct DamageResult {
+    pub damage: i32,
+    pub awakened: bool,
+    pub restored: i32,
+}
+/// One damage event. The triggering hit cannot spill into the second life bar.
+pub fn take_damage(hero: usize, hp: &mut i32, awake: &mut bool, damage: i32) -> DamageResult {
+    if damage <= 0 || *hp <= 0 {
+        return DamageResult::default();
+    }
+    let before = *hp;
+    let hit = before.saturating_sub(damage).max(0);
+    let triggered = !*awake && hit <= awakening_line(hero);
+    *hp = if triggered {
+        health_cap(hero, true)
+    } else {
+        hit
+    };
+    *awake |= triggered;
+    DamageResult {
+        damage: before - hit,
+        awakened: triggered,
+        restored: if triggered { *hp - hit } else { 0 },
+    }
+}
+pub fn awakening_effect(hero: usize, zh: bool) -> &'static str {
+    let (en, cn) = match hero {
+        0 => (
+            "Charge damage +25%; Guard heals 20% of new HP cap; costs 80 MP",
+            "冲锋伤害增加25%；坚守回复按新上限治疗20%，消耗80魔力",
+        ),
+        1 => (
+            "Clear damage +25% of base (additive)",
+            "消除伤害额外增加基础值25%（加算）",
+        ),
+        2 => (
+            "MP cap: 250 → 400; Meteor cost: 160 → 140",
+            "魔力上限250 → 400；陨星消耗160 → 140",
+        ),
+        3 => ("Area loot damage +30%", "区域掠夺伤害增加30%"),
+        4 => (
+            "Balanced bonus damage: +2 → +4",
+            "平衡方块被动额外伤害2 → 4",
+        ),
+        5 => ("Blood fury threshold: 35% → 50%", "血怒触发线35% → 50%"),
+        _ => (
+            "1 HP pays 2 MP (round HP up); blood-paid damage +20%",
+            "1生命抵2魔力（生命向上取整）；代付技能伤害+20%",
+        ),
+    };
+    if zh {
+        cn
+    } else {
+        en
+    }
+}
+fn preview_hit(rules: Rules, hp: &mut i32, damage: i32) -> (i32, Rules) {
+    let mut next = rules;
+    if let Some((hero, mut awake)) = rules.opponent {
+        let hit = take_damage(hero, hp, &mut awake, damage);
+        next.opponent = Some((hero, awake));
+        (hit.damage, next)
+    } else {
+        let actual = damage.max(0).min(*hp);
+        *hp -= actual;
+        (actual, next)
+    }
+}
 use super::{Board, N};
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -141,49 +246,49 @@ pub const HEROES: &[Hero] = &[
         en: "Knight",
         zh: "骑士",
         hp: 700,
-        mp: 300,
+        mp: 200,
         skills: &[Skill::Charge, Skill::Guard],
     },
     Hero {
         en: "Elf",
         zh: "精灵",
         hp: 600,
-        mp: 500,
+        mp: 120,
         skills: &[Skill::Strike, Skill::Nature],
     },
     Hero {
         en: "Wizard",
         zh: "巫师",
         hp: 550,
-        mp: 800,
+        mp: 400,
         skills: &[Skill::Lightning, Skill::Meteor],
     },
     Hero {
         en: "Goblin",
         zh: "哥布林",
         hp: 725,
-        mp: 500,
+        mp: 160,
         skills: &[Skill::Greedy, Skill::Blood],
     },
     Hero {
         en: "Imp",
         zh: "小恶魔",
         hp: 700,
-        mp: 500,
+        mp: 120,
         skills: &[Skill::Imp, Skill::Balance],
     },
     Hero {
         en: "Chort",
         zh: "角魔",
         hp: 600,
-        mp: 700,
+        mp: 160,
         skills: &[Skill::Chort, Skill::War],
     },
     Hero {
         en: "Big Zombie",
         zh: "大僵尸",
         hp: 775,
-        mp: 400,
+        mp: 100,
         skills: &[Skill::Corrupt, Skill::Drain],
     },
 ];
@@ -470,6 +575,9 @@ mod tests {
 
 /// Exact rewards before the first random refill, including conversion matches, cost and caps.
 pub struct SkillPreview {
+    pub enemy_health_after: i32,
+    pub awakens_enemy: bool,
+    pub awakens_self: bool,
     pub heal: i32,
     pub damage: i32,
     pub mana_gain: i32,
@@ -477,6 +585,7 @@ pub struct SkillPreview {
     pub blood_cost: i32,
     pub health_after: i32,
 }
+#[cfg(test)]
 pub fn preview_rewards(
     skill: Skill,
     board: &Board,
@@ -487,36 +596,92 @@ pub fn preview_rewards(
     enemy_hp: i32,
     bonus: i32,
 ) -> SkillPreview {
+    preview_rewards_in(
+        skill,
+        board,
+        target,
+        hero,
+        hp,
+        mp,
+        enemy_hp,
+        bonus,
+        Rules::default(),
+    )
+}
+pub fn preview_rewards_in(
+    skill: Skill,
+    board: &Board,
+    target: (usize, usize),
+    hero: usize,
+    hp: i32,
+    mp: i32,
+    enemy_hp: i32,
+    bonus: i32,
+    rules: Rules,
+) -> SkillPreview {
     let mut copy = *board;
-    let e = effect_at(skill, &mut copy, target);
-    let pay = payment(hero, hp, mp, skill).unwrap_or(Payment {
-        mana: skill.cost().min(mp),
+    let pay = payment_in(hero, hp, mp, skill, rules).unwrap_or(Payment {
+        mana: skill_cost(hero, rules.awake, skill).min(mp),
         blood: 0,
     });
-    let mut health = (hp - pay.blood + e.hp).min(HEROES[hero].hp);
-    let mut opponent = (enemy_hp - e.damage).max(0);
+    let mut health = hp;
+    let mut actor_awake = rules.awake;
+    let paid_hit = if rules.opponent.is_some() {
+        take_damage(hero, &mut health, &mut actor_awake, pay.blood)
+    } else {
+        health -= pay.blood;
+        DamageResult::default()
+    };
+    let rules = Rules {
+        awake: actor_awake,
+        ..rules
+    };
+    let e = effect_at_in(skill, &mut copy, target, hero, hp, mp, rules);
+    health = (health + e.hp).min(health_cap(hero, actor_awake));
+    let mut opponent = enemy_hp;
+    let (mut damage, mut hit_rules) = preview_hit(rules, &mut opponent, e.damage);
     let spent = mp - pay.mana;
-    let mut mana = (spent + e.mp).min(HEROES[hero].mp);
+    let mut mana = (spent + e.mp).min(mana_cap(hero, rules.awake));
     let (cells, rewarded) = if e.cells.is_empty() {
         (crate::matches(&copy), true)
     } else {
         (e.cells.clone(), e.reward)
     };
-    if rewarded && !cells.is_empty() {
-        let (h, d, m) = clear_rewards(hero, health, mana, &copy, &cells, 1, bonus + e.bonus);
-        health = (health + h).min(HEROES[hero].hp);
-        opponent = (opponent - d).max(0);
-        mana = (mana + m).min(HEROES[hero].mp);
+    if health > 0 && opponent > 0 && rewarded && !cells.is_empty() {
+        let clear_rules = Rules {
+            initial_loot: skill == Skill::Greedy && e.reward,
+            ..rules
+        };
+        let (h, d, m) = clear_rewards_in(
+            hero,
+            health,
+            mana,
+            &copy,
+            &cells,
+            1,
+            bonus + e.bonus,
+            clear_rules,
+        );
+        health = (health + h).min(health_cap(hero, rules.awake));
+        let (actual, next) = preview_hit(hit_rules, &mut opponent, d);
+        damage += actual;
+        hit_rules = next;
+        mana = (mana + m).min(mana_cap(hero, rules.awake));
     }
     SkillPreview {
+        awakens_self: paid_hit.awakened,
         heal: health - hp,
-        damage: enemy_hp - opponent,
+        damage,
+        enemy_health_after: opponent,
+        awakens_enemy: rules.opponent.is_some_and(|(_, a)| !a)
+            && hit_rules.opponent.is_some_and(|(_, a)| a),
         mana_gain: mana - spent,
         mana_after: mana,
         blood_cost: pay.blood,
         health_after: health,
     }
 }
+#[cfg(test)]
 pub fn preview_range(
     skill: Skill,
     board: &Board,
@@ -526,11 +691,38 @@ pub fn preview_range(
     enemy_hp: i32,
     bonus: i32,
 ) -> (SkillPreview, SkillPreview) {
-    let mut low = preview_rewards(skill, board, (0, 0), hero, hp, mp, enemy_hp, bonus);
-    let mut high = preview_rewards(skill, board, (0, 0), hero, hp, mp, enemy_hp, bonus);
+    preview_range_in(
+        skill,
+        board,
+        hero,
+        hp,
+        mp,
+        enemy_hp,
+        bonus,
+        Rules::default(),
+    )
+}
+pub fn preview_range_in(
+    skill: Skill,
+    board: &Board,
+    hero: usize,
+    hp: i32,
+    mp: i32,
+    enemy_hp: i32,
+    bonus: i32,
+    rules: Rules,
+) -> (SkillPreview, SkillPreview) {
+    let mut low = preview_rewards_in(skill, board, (0, 0), hero, hp, mp, enemy_hp, bonus, rules);
+    let mut high = preview_rewards_in(skill, board, (0, 0), hero, hp, mp, enemy_hp, bonus, rules);
     for y in 0..N {
         for x in 0..N {
-            let p = preview_rewards(skill, board, (x, y), hero, hp, mp, enemy_hp, bonus);
+            let p = preview_rewards_in(skill, board, (x, y), hero, hp, mp, enemy_hp, bonus, rules);
+            low.enemy_health_after = low.enemy_health_after.min(p.enemy_health_after);
+            high.enemy_health_after = high.enemy_health_after.max(p.enemy_health_after);
+            low.awakens_enemy &= p.awakens_enemy;
+            high.awakens_enemy |= p.awakens_enemy;
+            low.awakens_self &= p.awakens_self;
+            high.awakens_self |= p.awakens_self;
             low.health_after = low.health_after.min(p.health_after);
             high.health_after = high.health_after.max(p.health_after);
             low.heal = low.heal.min(p.heal);
@@ -633,10 +825,10 @@ mod preview_tests {
     fn lightning_shows_cost_and_actual_mana() {
         let b = [[3; N]; N];
         let p = preview_rewards(Skill::Lightning, &b, (3, 3), 2, 500, 200, 700, 0);
-        assert_eq!(p.mana_gain, 2 * N as i32 * VALUES[3].2);
+        assert_eq!(p.mana_gain, (2 * N as i32 * VALUES[3].2).min(90));
         assert_eq!(
             p.mana_after,
-            200 - Skill::Lightning.cost() + 2 * N as i32 * VALUES[3].2
+            (200 - Skill::Lightning.cost() + 2 * N as i32 * VALUES[3].2).min(250)
         );
         assert_eq!(b, [[3; N]; N]);
     }
@@ -668,14 +860,27 @@ mod reward_tests {
 }
 
 /// Stateless passives: same calculation for game, previews and AI.
+#[cfg(test)]
 pub fn clear_rewards(
     hero: usize,
     hp: i32,
-    _mp: i32,
+    mp: i32,
     board: &Board,
     cells: &[(usize, usize)],
     chain: usize,
     bonus: i32,
+) -> (i32, i32, i32) {
+    clear_rewards_in(hero, hp, mp, board, cells, chain, bonus, Rules::default())
+}
+pub fn clear_rewards_in(
+    hero: usize,
+    hp: i32,
+    mp: i32,
+    board: &Board,
+    cells: &[(usize, usize)],
+    chain: usize,
+    bonus: i32,
+    rules: Rules,
 ) -> (i32, i32, i32) {
     let (mut h, mut d, mut m) = (0, 0, 0);
     for &(x, y) in cells {
@@ -687,13 +892,13 @@ pub fn clear_rewards(
         d += b;
         m += c;
         if hero == 4 && board[y][x] == 0 {
-            d += 2;
+            d += if rules.awake { 4 } else { 2 };
             m += 2;
         }
     }
     let scale = reward_scale(chain, bonus);
     h = h * scale / 100;
-    d = d * scale / 100;
+    d = d * (scale + if hero == 1 && rules.awake { 25 } else { 0 }) / 100;
     m = m * scale / 100;
     if hero == 0 {
         h = h * 106 / 100;
@@ -705,16 +910,19 @@ pub fn clear_rewards(
         d = d * 93 / 100;
         m = m * 93 / 100;
     }
-    if hero == 2 {
+    if hero == 2 && mp < mana_cap(hero, rules.awake) {
         let converted = h / 2;
         h -= converted;
         m += converted;
     }
     if hero == 3 {
-        m += (hp + h - HEROES[hero].hp).max(0) / 2;
+        m += (hp + h - health_cap(hero, rules.awake)).max(0) / 2;
     }
-    if hero == 5 && hp * 100 <= HEROES[hero].hp * 35 {
+    if hero == 5 && hp * 100 <= HEROES[hero].hp * if rules.awake { 50 } else { 35 } {
         d = d * 125 / 100;
+    }
+    if hero == 3 && rules.awake && rules.initial_loot {
+        d = d * 130 / 100;
     }
     (h, d, m)
 }
@@ -723,12 +931,24 @@ pub struct Payment {
     pub mana: i32,
     pub blood: i32,
 }
+#[cfg(test)]
 pub fn payment(hero: usize, hp: i32, mp: i32, skill: Skill) -> Option<Payment> {
-    let missing = (skill.cost() - mp).max(0);
-    let blood = missing * 2;
+    payment_in(hero, hp, mp, skill, Rules::default())
+}
+pub fn blood_cost(hero: usize, awake: bool, missing: i32) -> i32 {
+    let missing = missing.max(0);
+    if awake && hero == 6 {
+        (missing + 1) / 2
+    } else {
+        missing * 2
+    }
+}
+pub fn payment_in(hero: usize, hp: i32, mp: i32, skill: Skill, rules: Rules) -> Option<Payment> {
+    let missing = (skill_cost(hero, rules.awake, skill) - mp).max(0);
+    let blood = blood_cost(hero, rules.awake, missing);
     if missing == 0 || (hero == 6 && hp > blood) {
         Some(Payment {
-            mana: skill.cost().min(mp),
+            mana: skill_cost(hero, rules.awake, skill).min(mp),
             blood,
         })
     } else {
@@ -739,7 +959,7 @@ pub fn passive(hero: usize, zh: bool) -> &'static str {
     let (en,cn)=match hero {
         0=>("Column formation: horizontal\nswaps move two whole columns.\nClear rewards +6%.","列阵：左右交换相邻整列\n上下交换仍为两个方块\n消除收益增加6%"),
         1=>("Forest step: diagonal adjacent\nswaps are also allowed.\nClear rewards reduced by 7%.","林间穿行：可斜向交换\n仅交换斜向相邻的两格\n横纵三消，消除收益降低7%"),
-        2=>("Arcane conversion: half of\nclear healing becomes mana.\nDirect skill healing is unchanged.","奥术转化：消除治疗的一半\n等量转为魔力（向下取整）\n技能直接治疗不变"),
+        2=>("Arcane conversion: below MP cap,\nhalf of clear healing becomes MP.\nAt full MP, heal normally.","奥术转化：魔力未满时，消除\n治疗的一半转魔力（向下取整）\n魔力已满时正常治疗"),
         3=>("Scrap recovery: overhealing\nfrom clears becomes mana at 2:1.\nMana still obeys the MP cap.","废物回收：消除溢出治疗\n每2点转为1点魔力\n魔力仍受上限限制"),
         4=>("Balanced affinity: each balanced\ntile in a rewarded clear gives\n+2 damage and +2 mana.","平衡亲和：有收益消除时\n每个平衡方块额外提供\n2点伤害、2点魔力"),
         5=>("Blood fury: at 35% HP or less,\nclear damage increases by 25%.\nChecked before each clear wave.","血怒：生命不高于35%时\n消除伤害增加25%\n每轮消除前判断生命"),
@@ -841,7 +1061,7 @@ mod passive_tests {
         for id in 0..7 {
             let skill = Skill::Nature;
             let hp = HEROES[id].hp - 5;
-            let mp = HEROES[id].mp;
+            let mp = mana_cap(id, false);
             let p = preview_rewards(skill, &b, (0, 0), id, hp, mp, 700, 0);
             let mut copy = b;
             let e = effect_at(skill, &mut copy, (0, 0));
@@ -850,41 +1070,56 @@ mod passive_tests {
             let (h, d, m) = clear_rewards(id, health, mana, &copy, &crate::matches(&copy), 1, 0);
             assert_eq!(p.health_after, (health + h).min(HEROES[id].hp));
             assert_eq!(p.damage, (e.damage + d).min(700));
-            assert_eq!(p.mana_after, (mana + m).min(HEROES[id].mp));
+            assert_eq!(p.mana_after, (mana + m).min(mana_cap(id, false)));
         }
     }
 }
 
 /// Actual actions that can continue a no-swap turn. A preparation which only
 /// multiplies future rewards does not by itself unlock a dead board.
+#[cfg(test)]
 pub fn usable_skills(board: &Board, hero: usize, hp: i32, mp: i32) -> Vec<Skill> {
+    usable_skills_in(board, hero, hp, mp, Rules::default())
+}
+pub fn usable_skills_in(board: &Board, hero: usize, hp: i32, mp: i32, rules: Rules) -> Vec<Skill> {
     HEROES[hero]
         .skills
         .iter()
         .copied()
         .filter(|&skill| {
-            let Some(pay) = payment(hero, hp, mp, skill) else {
+            let Some(pay) = payment_in(hero, hp, mp, skill, rules) else {
                 return false;
             };
             (0..N).any(|y| {
                 (0..N).any(|x| {
                     let mut copy = *board;
-                    let e = effect_at(skill, &mut copy, (x, y));
+                    let e = effect_at_in(skill, &mut copy, (x, y), hero, hp, mp, rules);
                     !e.cells.is_empty()
                         || copy != *board
                         || e.armed
                         || e.damage > 0
-                        || (e.hp > pay.blood && hp - pay.blood < HEROES[hero].hp)
-                        || (mp - pay.mana + e.mp).min(HEROES[hero].mp) > mp
+                        || (e.hp > pay.blood && hp - pay.blood < health_cap(hero, rules.awake))
+                        || (mp - pay.mana + e.mp).min(mana_cap(hero, rules.awake)) > mp
                 })
             })
         })
         .collect()
 }
+#[cfg(test)]
 pub fn must_refresh(board: &Board, hero: usize, hp: i32, mp: i32, armed: bool) -> bool {
+    must_refresh_in(board, hero, hp, mp, armed, Rules::default())
+}
+pub fn must_refresh_in(
+    board: &Board,
+    hero: usize,
+    hp: i32,
+    mp: i32,
+    armed: bool,
+    rules: Rules,
+) -> bool {
     !armed
         && crate::board::hero_options(board, hero).is_empty()
-        && usable_skills(board, hero, hp, mp).is_empty()
+        && usable_skills_in(board, hero, hp, mp, rules).is_empty()
 }
 
 #[cfg(test)]
@@ -940,6 +1175,8 @@ mod deadlock_tests {
 }
 
 pub struct MovePreview {
+    pub enemy_health_after: i32,
+    pub awakens_enemy: bool,
     pub heal: i32,
     pub damage: i32,
     pub mana_gain: i32,
@@ -948,6 +1185,7 @@ pub struct MovePreview {
     pub cells: Vec<(usize, usize)>,
 }
 /// Exact first-wave rewards for an exchange, before any random refill.
+#[cfg(test)]
 pub fn preview_move(
     board: &Board,
     hero: usize,
@@ -959,6 +1197,31 @@ pub fn preview_move(
     a: (usize, usize),
     c: (usize, usize),
 ) -> Option<MovePreview> {
+    preview_move_in(
+        board,
+        hero,
+        hp,
+        mp,
+        enemy_hp,
+        bonus,
+        armed,
+        a,
+        c,
+        Rules::default(),
+    )
+}
+pub fn preview_move_in(
+    board: &Board,
+    hero: usize,
+    hp: i32,
+    mp: i32,
+    enemy_hp: i32,
+    bonus: i32,
+    armed: bool,
+    a: (usize, usize),
+    c: (usize, usize),
+    rules: Rules,
+) -> Option<MovePreview> {
     let mut copy = *board;
     if armed && crate::board::adjacent(a, c, hero) && a.0.abs_diff(c.0) + a.1.abs_diff(c.1) == 1 {
         crate::board::parallel_swap(&mut copy, a, c);
@@ -966,12 +1229,17 @@ pub fn preview_move(
         return None;
     }
     let cells = crate::matches(&copy);
-    let (h, d, m) = clear_rewards(hero, hp, mp, &copy, &cells, 1, bonus);
-    let health_after = (hp + h).min(HEROES[hero].hp);
-    let mana_after = (mp + m).min(HEROES[hero].mp);
+    let (h, d, m) = clear_rewards_in(hero, hp, mp, &copy, &cells, 1, bonus, rules);
+    let health_after = (hp + h).min(health_cap(hero, rules.awake));
+    let mana_after = (mp + m).min(mana_cap(hero, rules.awake));
+    let mut opponent = enemy_hp;
+    let (damage, hit_rules) = preview_hit(rules, &mut opponent, d);
     Some(MovePreview {
         heal: health_after - hp,
-        damage: d.min(enemy_hp),
+        damage,
+        enemy_health_after: opponent,
+        awakens_enemy: rules.opponent.is_some_and(|(_, a)| !a)
+            && hit_rules.opponent.is_some_and(|(_, a)| a),
         mana_gain: mana_after - mp,
         health_after,
         mana_after,
@@ -980,6 +1248,7 @@ pub fn preview_move(
 }
 /// Every listed exchange with its preview, best first: by heal + damage + mana, then by
 /// heal, damage and mana, each from high to low. Equal rewards keep the board order.
+#[cfg(test)]
 pub fn ranked_moves(
     board: &Board,
     hero: usize,
@@ -989,10 +1258,31 @@ pub fn ranked_moves(
     bonus: i32,
     armed: bool,
 ) -> Vec<(((usize, usize), (usize, usize)), Option<MovePreview>)> {
+    ranked_moves_in(
+        board,
+        hero,
+        hp,
+        mp,
+        enemy_hp,
+        bonus,
+        armed,
+        Rules::default(),
+    )
+}
+pub fn ranked_moves_in(
+    board: &Board,
+    hero: usize,
+    hp: i32,
+    mp: i32,
+    enemy_hp: i32,
+    bonus: i32,
+    armed: bool,
+    rules: Rules,
+) -> Vec<(((usize, usize), (usize, usize)), Option<MovePreview>)> {
     let mut moves: Vec<_> = crate::board::move_hints(board, hero, armed)
         .into_iter()
         .map(|(a, c)| {
-            let p = preview_move(board, hero, hp, mp, enemy_hp, bonus, armed, a, c);
+            let p = preview_move_in(board, hero, hp, mp, enemy_hp, bonus, armed, a, c, rules);
             ((a, c), p)
         })
         .collect();
@@ -1033,9 +1323,9 @@ mod move_preview_tests {
         b[0][1] = 6;
         b[0][2] = 2;
         b[1][3] = 6;
-        let p = preview_move(&b, 1, 599, 499, 7, 0, false, (2, 0), (3, 1)).unwrap();
+        let p = preview_move(&b, 1, 599, 119, 7, 0, false, (2, 0), (3, 1)).unwrap();
         assert_eq!((p.heal, p.damage, p.mana_gain), (0, 7, 1));
-        assert_eq!((p.health_after, p.mana_after), (599, 500));
+        assert_eq!((p.health_after, p.mana_after), (599, 120));
         let mut b = base();
         b[0][0] = 1;
         b[0][1] = 2;
@@ -1057,7 +1347,7 @@ mod move_preview_tests {
                         &b,
                         hero,
                         HEROES[hero].hp - 1,
-                        HEROES[hero].mp - 1,
+                        mana_cap(hero, false) - 1,
                         7,
                         1,
                         armed,
@@ -1069,7 +1359,7 @@ mod move_preview_tests {
                     assert!((0..=1).contains(&p.mana_gain));
                     assert!((0..=7).contains(&p.damage));
                     assert_eq!(p.health_after, HEROES[hero].hp - 1 + p.heal);
-                    assert_eq!(p.mana_after, HEROES[hero].mp - 1 + p.mana_gain);
+                    assert_eq!(p.mana_after, mana_cap(hero, false) - 1 + p.mana_gain);
                 }
             }
         }
@@ -1152,5 +1442,457 @@ mod move_preview_tests {
             assert_eq!(b, original);
             assert_eq!(crate::rng::state(), seed);
         }
+    }
+}
+
+pub fn effect_at_in(
+    skill: Skill,
+    b: &mut Board,
+    target: (usize, usize),
+    hero: usize,
+    hp: i32,
+    mp: i32,
+    rules: Rules,
+) -> Effect {
+    let mut e = effect_at(skill, b, target);
+    if rules.awake {
+        if hero == 0 && skill == Skill::Guard {
+            e.hp = health_cap(hero, true) / 5;
+        }
+        if hero == 4 && skill == Skill::Imp {
+            e.damage += e.cells.len() as i32 * 2;
+        }
+        if (hero == 0 && skill == Skill::Charge) || (hero == 3 && skill == Skill::Greedy) {
+            e.damage = e.damage * if hero == 0 { 125 } else { 130 } / 100;
+        }
+        if hero == 6 && payment_in(hero, hp, mp, skill, rules).is_some_and(|p| p.blood > 0) {
+            e.damage = e.damage * 120 / 100;
+        }
+    }
+    e
+}
+
+pub fn passive_in(hero: usize, awake: bool, zh: bool) -> &'static str {
+    if awake && hero == 6 {
+        return if zh {
+            "血肉施法：魔力不足时\n1生命抵2魔力，生命向上取整\n必须至少剩余1生命"
+        } else {
+            "Flesh casting: 1 HP pays 2 MP.\nRound HP cost up.\nMust leave at least 1 HP."
+        };
+    }
+    if awake && hero == 4 {
+        return if zh {
+            "平衡亲和：有收益消除时\n每个平衡方块额外提供\n4点伤害、2点魔力"
+        } else {
+            "Balanced affinity: each balanced\ntile in a rewarded clear gives\n+4 damage and +2 mana."
+        };
+    }
+    if awake && hero == 5 {
+        return if zh {
+            "血怒：生命不高于初始上限50%时\n消除伤害增加25%\n每轮消除前判断生命"
+        } else {
+            "Blood fury: at 50% of initial HP,\nclear damage increases by 25%.\nChecked before each clear wave."
+        };
+    }
+    passive(hero, zh)
+}
+pub fn skill_description(skill: Skill, awake: bool, zh: bool) -> &'static str {
+    if awake && skill == Skill::Guard {
+        if zh {
+            "回复觉醒后生命上限的20%\n清除纯治疗，不额外回血\n掉落后结算三消，再换人"
+        } else {
+            "Heal 20% of the new HP cap.\nConsume pure healing tiles.\nRefill; resolve cascades."
+        }
+    } else {
+        skill.description(zh)
+    }
+}
+
+#[cfg(test)]
+mod awakening_tests {
+    use super::*;
+    fn rules(awake: bool, enemy: usize, other_awake: bool) -> Rules {
+        Rules {
+            awake,
+            opponent: Some((enemy, other_awake)),
+            ..Rules::default()
+        }
+    }
+    fn board() -> Board {
+        std::array::from_fn(|y| std::array::from_fn(|x| ((x + 2 * y) % 7) as u8))
+    }
+    #[test]
+    fn every_role_triggers_exactly_at_its_line_and_survives_a_lethal_hit() {
+        for hero in 0..7 {
+            let threshold = awakening_line(hero);
+            let mut hp = threshold + 2;
+            let mut awake = false;
+            assert!(!take_damage(hero, &mut hp, &mut awake, 1).awakened);
+            assert!(take_damage(hero, &mut hp, &mut awake, 1).awakened);
+            assert_eq!(hp, health_cap(hero, true));
+            assert!(awake);
+            let hit = take_damage(hero, &mut hp, &mut awake, 10_000);
+            assert!(!hit.awakened);
+            assert_eq!(hp, 0);
+            hp = HEROES[hero].hp;
+            awake = false;
+            assert!(take_damage(hero, &mut hp, &mut awake, 10_000).awakened);
+            assert_eq!(hp, health_cap(hero, true));
+            assert_eq!(take_damage(hero, &mut hp, &mut awake, 80).damage, 80);
+            assert_eq!(hp, health_cap(hero, true) - 80);
+        }
+        let mut hp = 0;
+        let mut awake = false;
+        assert!(!take_damage(0, &mut hp, &mut awake, 10).awakened);
+        hp = 300;
+        assert!(!take_damage(0, &mut hp, &mut awake, 0).awakened);
+    }
+    #[test]
+    fn same_role_has_independent_flags_and_reset_is_a_plain_snapshot_restore() {
+        let mut hp = [400, 400];
+        let mut flags = [false, false];
+        let original = (hp, flags);
+        take_damage(0, &mut hp[1], &mut flags[1], 1000);
+        assert_eq!(flags, [false, true]);
+        assert_eq!(hp, [400, 385]);
+        (hp, flags) = original;
+        assert_eq!(hp, [400, 400]);
+        assert_eq!(flags, [false, false]);
+    }
+    #[test]
+    fn awakened_buffs_costs_and_caps_use_the_actual_shared_rules() {
+        let cells = vec![(0, 0), (1, 0), (2, 0)];
+        let r = rules(true, 2, true);
+        let b = [[2; N]; N];
+        assert_eq!(clear_rewards_in(1, 200, 0, &b, &cells, 1, 1, r).1, 75); // (200+25)% then elf -7%
+        assert_eq!(
+            clear_rewards_in(4, 200, 0, &[[0; N]; N], &cells, 1, 0, r).1,
+            24
+        );
+        assert_eq!(clear_rewards_in(5, 270, 0, &b, &cells, 1, 0, r).1, 45);
+        assert_eq!(clear_rewards_in(5, 301, 0, &b, &cells, 1, 0, r).1, 36);
+        assert_eq!(
+            clear_rewards_in(3, health_cap(3, true) - 1, 0, &[[1; N]; N], &cells, 1, 0, r).2,
+            8
+        );
+        assert_eq!(skill_cost(0, true, Skill::Guard), 80);
+        assert_eq!(skill_cost(2, true, Skill::Meteor), 140);
+        assert!(payment_in(2, 200, 139, Skill::Meteor, r).is_none());
+        assert_eq!(payment_in(2, 200, 140, Skill::Meteor, r).unwrap().mana, 140);
+        let p = preview_rewards_in(Skill::Guard, &board(), (0, 0), 0, 380, 80, 500, 0, r);
+        assert_eq!((p.health_after, p.heal, p.mana_after), (385, 5, 0));
+        assert_eq!(
+            effect_at_in(Skill::Charge, &mut b.clone(), (0, 0), 0, 385, 100, r).damage,
+            315
+        );
+    }
+    #[test]
+    fn awakened_guard_heals_its_new_cap_and_preserves_tile_consumption() {
+        let r = rules(true, 0, true);
+        let b = board();
+        let p = preview_rewards_in(Skill::Guard, &b, (0, 0), 0, 200, 80, 385, 0, r);
+        assert_eq!((p.health_after, p.heal, p.mana_after), (277, 77, 0));
+        let e = effect_at_in(Skill::Guard, &mut b.clone(), (0, 0), 0, 200, 80, r);
+        assert_eq!(e.hp, 77);
+        assert!(!e.reward);
+        assert!(e.cells.iter().all(|&(x, y)| b[y][x] == 1));
+        assert!(payment_in(0, 200, 79, Skill::Guard, r).is_none());
+    }
+    #[test]
+    fn loot_boost_applies_only_to_its_first_clear_and_mana_still_caps() {
+        let r = rules(true, 0, true);
+        let b = [[2; N]; N];
+        let p = preview_rewards_in(Skill::Greedy, &b, (0, 0), 3, 300, 500, 700, 0, r);
+        assert_eq!(p.damage, 93); // 24*1.3 floor + 48*1.3 floor
+        let cells = vec![(0, 0), (1, 0), (0, 1), (1, 1)];
+        assert_eq!(clear_rewards_in(3, 300, 0, &b, &cells, 1, 0, r).1, 48);
+        assert_eq!(
+            clear_rewards_in(
+                3,
+                300,
+                0,
+                &b,
+                &cells,
+                1,
+                0,
+                Rules {
+                    initial_loot: true,
+                    ..r
+                }
+            )
+            .1,
+            62
+        );
+        let p = preview_rewards_in(Skill::Meteor, &[[3; N]; N], (0, 0), 2, 200, 400, 700, 0, r);
+        assert_eq!(p.mana_after, 400);
+        assert_eq!(p.mana_gain, 140);
+    }
+    #[test]
+    fn wizard_full_mana_heals_normally_and_checks_phase_cap_before_clear() {
+        let b = [[1; N]; N];
+        let cells = vec![(0, 0), (1, 0), (2, 0)];
+        for (awake, cap) in [(false, 250), (true, 400)] {
+            let r = rules(awake, 0, true);
+            assert_eq!(
+                clear_rewards_in(2, 200, cap, &b, &cells, 1, 0, r),
+                (18, 0, 0)
+            );
+            assert_eq!(
+                clear_rewards_in(2, 200, cap - 1, &b, &cells, 1, 0, r),
+                (9, 0, 9)
+            );
+            // Filling MP in this wave still uses the below-cap rule for that wave.
+            let mut swap = board();
+            swap[0][..3].copy_from_slice(&[1, 0, 1]);
+            swap[1][1] = 1;
+            let original = swap;
+            let seed = crate::rng::state();
+            let full =
+                preview_move_in(&swap, 2, 200, cap, 700, 0, false, (1, 0), (1, 1), r).unwrap();
+            let low =
+                preview_move_in(&swap, 2, 200, cap - 1, 700, 0, false, (1, 0), (1, 1), r).unwrap();
+            assert_eq!((full.heal, full.mana_gain), (18, 0));
+            assert_eq!((low.heal, low.mana_gain), (9, 1));
+            assert_eq!(swap, original);
+            assert_eq!(crate::rng::state(), seed);
+        }
+    }
+    #[test]
+    fn reduced_reserves_cover_each_roles_largest_skill() {
+        assert_eq!(
+            HEROES.iter().map(|h| h.mp).collect::<Vec<_>>(),
+            [200, 120, 400, 160, 120, 160, 100]
+        );
+        for hero in 0..7 {
+            for awake in [false, true] {
+                for &skill in HEROES[hero].skills {
+                    assert!(skill_cost(hero, awake, skill) <= mana_cap(hero, awake));
+                }
+            }
+        }
+    }
+    #[test]
+    fn wizard_reserve_caps_skill_and_swap_rewards_in_both_phases() {
+        let b = [[3; N]; N];
+        let original = b;
+        let seed = crate::rng::state();
+        for (awake, cap) in [(false, 250), (true, 400)] {
+            assert_eq!(mana_cap(2, awake), cap);
+            let r = rules(awake, 0, true);
+            let p = preview_rewards_in(Skill::Lightning, &b, (0, 0), 2, 250, cap - 10, 700, 0, r);
+            assert_eq!(p.mana_after, cap);
+            assert_eq!(p.mana_gain, 10 + Skill::Lightning.cost());
+            let mut swapped = board();
+            swapped[0][..3].copy_from_slice(&[3, 0, 3]);
+            swapped[1][1] = 3;
+            let p = preview_move_in(&swapped, 2, 250, cap - 1, 700, 0, false, (1, 0), (1, 1), r)
+                .unwrap();
+            assert_eq!((p.mana_gain, p.mana_after), (1, cap));
+        }
+        for hero in [0, 1, 3, 4, 5, 6] {
+            assert_eq!(mana_cap(hero, false), HEROES[hero].mp);
+        }
+        assert_eq!(b, original);
+        assert_eq!(crate::rng::state(), seed);
+    }
+    #[test]
+    fn awakened_flesh_casting_rounds_up_and_requires_survival() {
+        let r = rules(true, 0, true);
+        for (mp, blood) in [(0, 25), (1, 25), (25, 13), (47, 2), (49, 1), (50, 0)] {
+            let pay = payment_in(6, 100, mp, Skill::Drain, r).unwrap();
+            assert_eq!(
+                pay,
+                Payment {
+                    mana: mp.min(50),
+                    blood
+                }
+            );
+            if blood > 0 {
+                assert!(payment_in(6, blood, mp, Skill::Drain, r).is_none());
+                assert!(payment_in(6, blood + 1, mp, Skill::Drain, r).is_some());
+            }
+        }
+        assert_eq!(
+            payment_in(6, 101, 0, Skill::Drain, rules(false, 0, true))
+                .unwrap()
+                .blood,
+            100
+        );
+        assert!(payment_in(0, 100, 0, Skill::Drain, r).is_none());
+    }
+    #[test]
+    fn awakened_flesh_preview_matches_payment_effect_targets_and_caps() {
+        let b = board();
+        let original = b;
+        let seed = crate::rng::state();
+        let r = rules(true, 0, true);
+        let mut damage = Vec::new();
+        for target in [(0, 0), (1, 0), (2, 0)] {
+            let p = preview_rewards_in(Skill::Drain, &b, target, 6, 310, 25, 700, 0, r);
+            let mut copy = b;
+            let e = effect_at_in(Skill::Drain, &mut copy, target, 6, 310, 25, r);
+            assert_eq!(p.blood_cost, 13);
+            assert_eq!(p.health_after, (310 - 13 + e.hp).min(310));
+            assert_eq!(p.mana_after, 0);
+            assert_eq!(p.damage, e.damage);
+            assert!(!p.awakens_self);
+            damage.push(p.damage);
+        }
+        assert!(damage.windows(2).any(|w| w[0] != w[1]));
+        assert_eq!(b, original);
+        assert_eq!(crate::rng::state(), seed);
+    }
+    #[test]
+    fn payment_can_awaken_before_healing_and_boost_that_same_skill() {
+        let b = board();
+        let original = b;
+        let seed = crate::rng::state();
+        let r = rules(false, 0, false);
+        let p = preview_rewards_in(Skill::Drain, &b, (0, 0), 6, 250, 25, 700, 0, r);
+        let e = effect_at_in(
+            Skill::Drain,
+            &mut b.clone(),
+            (0, 0),
+            6,
+            250,
+            25,
+            Rules { awake: true, ..r },
+        );
+        assert!(p.awakens_self);
+        assert_eq!(p.blood_cost, 50);
+        assert_eq!(p.health_after, 310);
+        assert_eq!(p.damage, e.damage);
+        assert_eq!(p.mana_after, 0);
+        assert_eq!(payment_in(6, 100, 0, Skill::Drain, r), None); // still must be payable
+        assert_eq!(b, original);
+        assert_eq!(crate::rng::state(), seed);
+    }
+    #[test]
+    fn previews_simulate_opponent_awakening_and_subsequent_damage_without_mutation() {
+        let b = board();
+        let original = b;
+        let seed = crate::rng::state();
+        let r = rules(true, 0, false);
+        let p = preview_rewards_in(Skill::Charge, &b, (0, 0), 0, 385, 300, 330, 0, r);
+        assert!(p.awakens_enemy);
+        assert_eq!(p.enemy_health_after, 385);
+        let p2 = preview_rewards_in(
+            Skill::Charge,
+            &b,
+            (0, 0),
+            0,
+            385,
+            300,
+            330,
+            0,
+            rules(true, 0, true),
+        );
+        assert!(!p2.awakens_enemy);
+        assert!(p2.enemy_health_after < 330);
+        let (low, high) = preview_range_in(Skill::Charge, &b, 0, 385, 300, 700, 0, r);
+        for y in 0..N {
+            for x in 0..N {
+                let p = preview_rewards_in(Skill::Charge, &b, (x, y), 0, 385, 300, 700, 0, r);
+                assert!((low.damage..=high.damage).contains(&p.damage));
+                assert!((low.enemy_health_after..=high.enemy_health_after)
+                    .contains(&p.enemy_health_after));
+            }
+        }
+        assert_eq!(b, original);
+        assert_eq!(crate::rng::state(), seed);
+    }
+}
+
+/// Persistent indicators for conditional passives; phase itself has no badge.
+pub fn passive_status(
+    hero: usize,
+    hp: i32,
+    mp: i32,
+    awake: bool,
+    zh: bool,
+) -> Option<(&'static str, bool)> {
+    if hero == 5 {
+        let active = hp > 0 && hp * 100 <= HEROES[hero].hp * if awake { 50 } else { 35 };
+        return Some((
+            if active {
+                if zh {
+                    "伤害+25%"
+                } else {
+                    "DMG +25%"
+                }
+            } else if zh {
+                "未触发"
+            } else {
+                "Inactive"
+            },
+            active,
+        ));
+    }
+    if hero == 6 && hp > 0 {
+        let missing = HEROES[hero]
+            .skills
+            .iter()
+            .copied()
+            .filter(|&s| mp < skill_cost(hero, awake, s))
+            .collect::<Vec<_>>();
+        if !missing.is_empty() {
+            let active = missing.into_iter().any(|s| {
+                payment_in(
+                    hero,
+                    hp,
+                    mp,
+                    s,
+                    Rules {
+                        awake,
+                        ..Rules::default()
+                    },
+                )
+                .is_some()
+            });
+            return Some((
+                if active {
+                    if zh {
+                        "可代付"
+                    } else {
+                        "HP ready"
+                    }
+                } else if zh {
+                    "代付不足"
+                } else {
+                    "HP too low"
+                },
+                active,
+            ));
+        }
+    }
+    None
+}
+#[cfg(test)]
+mod passive_status_tests {
+    use super::*;
+    #[test]
+    fn badges_follow_health_thresholds_and_real_payment_capacity() {
+        assert_eq!(
+            passive_status(5, 210, 0, false, true),
+            Some(("伤害+25%", true))
+        );
+        assert_eq!(
+            passive_status(5, 211, 0, false, true),
+            Some(("未触发", false))
+        );
+        assert_eq!(
+            passive_status(5, 270, 0, true, true),
+            Some(("伤害+25%", true))
+        );
+        assert_eq!(
+            passive_status(6, 101, 0, false, true),
+            Some(("可代付", true))
+        );
+        assert_eq!(
+            passive_status(6, 100, 0, false, true),
+            Some(("代付不足", false))
+        );
+        assert_eq!(passive_status(6, 200, 80, true, true), None);
+        assert_eq!(passive_status(0, 100, 0, false, true), None);
     }
 }

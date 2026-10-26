@@ -17,8 +17,18 @@ struct Popup {
     time: f32,
     source: String,
 }
+struct Awakening {
+    enemy: bool,
+    before: i32,
+    hit: i32,
+    old_max: i32,
+    new_max: i32,
+    time: f64,
+}
+const AWAKEN_TIME: f64 = 1.1;
 #[derive(Default)]
 pub struct Presentation {
+    awakenings: Vec<Awakening>,
     motions: Vec<Motion>,
     time: f64,
     duration: f64,
@@ -44,6 +54,10 @@ impl Presentation {
             self.charge_column = None;
             self.motions.clear();
         }
+        for a in &mut self.awakenings {
+            a.time -= dt;
+        }
+        self.awakenings.retain(|a| a.time > 0.);
         for p in &mut self.popups {
             p.time -= dt as f32;
         }
@@ -123,7 +137,99 @@ impl Presentation {
         self.busy().then_some(self.swapping)
     }
     pub fn busy(&self) -> bool {
-        self.time > 0.
+        self.time > 0. || !self.awakenings.is_empty()
+    }
+    pub fn awakening(
+        &mut self,
+        enemy: bool,
+        before: i32,
+        old_max: i32,
+        new_max: i32,
+        restored: i32,
+    ) {
+        self.awakenings.retain(|a| a.enemy != enemy);
+        self.awakenings.push(Awakening {
+            enemy,
+            before,
+            hit: new_max - restored,
+            old_max,
+            new_max,
+            time: AWAKEN_TIME,
+        });
+    }
+    pub fn awakened_visible(&self, enemy: bool) -> bool {
+        self.awakenings
+            .iter()
+            .find(|a| a.enemy == enemy)
+            .is_none_or(|a| a.time < AWAKEN_TIME - 0.45)
+    }
+    pub fn health_bar(&self, enemy: bool, hp: i32, max: i32) -> (f32, f32, f32) {
+        let Some(a) = self.awakenings.iter().find(|a| a.enemy == enemy) else {
+            return (hp as f32, max as f32, 1.);
+        };
+        let t = (AWAKEN_TIME - a.time) as f32;
+        let lerp = |x: f32, y: f32, t: f32| x + (y - x) * t.clamp(0., 1.);
+        let cap = lerp(a.old_max as f32, a.new_max as f32, (t - 0.15) / 0.3);
+        let value = if t < 0.15 {
+            lerp(a.before as f32, a.hit as f32, t / 0.15)
+        } else {
+            lerp(a.hit as f32, a.new_max as f32, (t - 0.45) / 0.35)
+        };
+        let extent = if t < 0.8 {
+            cap / a.old_max as f32
+        } else {
+            lerp(a.new_max as f32 / a.old_max as f32, 1., (t - 0.8) / 0.3)
+        };
+        (value, cap, extent)
+    }
+    pub fn awakening_progress(&self, enemy: bool) -> Option<f32> {
+        self.awakenings
+            .iter()
+            .find(|a| a.enemy == enemy)
+            .map(|a| (AWAKEN_TIME - a.time) as f32)
+    }
+    pub fn mana_bar(&self, enemy: bool, mp: i32, old_max: i32, max: i32) -> (f32, f32, f32) {
+        let progress = self
+            .awakenings
+            .iter()
+            .find(|a| a.enemy == enemy)
+            .map_or(1., |a| {
+                (((AWAKEN_TIME - a.time) as f32 - 0.15) / 0.65).clamp(0., 1.)
+            });
+        (
+            mp as f32,
+            old_max as f32 + (max - old_max) as f32 * progress,
+            1.,
+        )
+    }
+    pub fn draw_awakening(&self, zh: bool) {
+        for a in &self.awakenings {
+            let panel = crate::side_panel_rect(a.enemy);
+            let t = (AWAKEN_TIME - a.time) as f32;
+            let alpha = if t < 0.2 {
+                t / 0.2
+            } else {
+                ((1.1 - t) / 0.35).clamp(0., 1.)
+            };
+            let x = panel.x + panel.w / 2.;
+            crate::label_centered(
+                if zh { "觉醒" } else { "AWAKENING" },
+                x,
+                255. - t * 9.,
+                24.,
+                Color::new(1., 0.8, 0.4, alpha),
+            );
+            if t > 0.45 {
+                let text = format!("+{} {}", a.new_max - a.hit, if zh { "生命" } else { "HP" });
+                crate::label_centered(
+                    &text,
+                    x,
+                    282. - t * 9.,
+                    18.,
+                    Color::new(0.6, 1., 0.7, alpha),
+                );
+            }
+        }
     }
     pub fn hides(&self, x: usize, y: usize) -> bool {
         self.busy() && self.motions.iter().any(|m| m.to == pos(x, y as isize))
@@ -204,7 +310,7 @@ impl Presentation {
         }
     }
     pub fn draw_tiles(&self, tiles: &[Texture2D; 7]) {
-        if !self.busy() {
+        if self.time <= 0. {
             return;
         }
         let t = 1. - (self.time / self.duration) as f32;
@@ -402,4 +508,49 @@ pub fn move_hint_anchor(a: (usize, usize), b: (usize, usize)) -> Vec2 {
     let (from, to) = (center(a), center(b));
     let dir = (to - from).normalize();
     (from + to) * 0.5 + vec2(-dir.y, dir.x) * 12.
+}
+
+#[cfg(test)]
+mod awakening_animation_tests {
+    use super::*;
+    #[test]
+    fn wizard_unlock_animation_keeps_mana_and_other_side_independent() {
+        let mut p = Presentation::default();
+        p.awakening(false, 230, 550, 275, 275);
+        assert_eq!(p.mana_bar(false, 250, 250, 400), (250., 250., 1.));
+        assert_eq!(p.mana_bar(true, 200, 250, 400), (200., 400., 1.));
+        p.tick(0.45);
+        let (mp, cap, _) = p.mana_bar(false, 250, 250, 400);
+        assert_eq!(mp, 250.);
+        assert!(cap > 250. && cap < 400.);
+        assert!(p.awakening_progress(false).is_some());
+        p.tick(0.7);
+        assert_eq!(p.mana_bar(false, 250, 250, 400), (250., 400., 1.));
+        assert!(p.awakening_progress(false).is_none());
+    }
+    #[test]
+    fn awakening_shrinks_refills_normalizes_and_blocks_resolution() {
+        let mut p = Presentation::default();
+        p.awakening(false, 330, 700, 385, 385);
+        assert!(p.busy());
+        assert!(!p.awakened_visible(false));
+        assert_eq!(p.health_bar(false, 385, 385), (330., 700., 1.));
+        p.tick(0.3);
+        let (hp, cap, width) = p.health_bar(false, 385, 385);
+        assert_eq!(hp, 0.);
+        assert!(cap > 385. && cap < 700.);
+        assert!(width < 1.);
+        p.tick(0.35);
+        let (hp, cap, width) = p.health_bar(false, 385, 385);
+        assert!(hp > 0. && hp < 385.);
+        assert_eq!(cap, 385.);
+        assert!(width < 1.);
+        assert!(p.awakened_visible(false));
+        p.tick(0.46);
+        assert!(!p.busy());
+        assert_eq!(p.health_bar(false, 385, 385), (385., 385., 1.));
+        p.awakening(true, 20, 700, 385, 385);
+        p.clear();
+        assert!(!p.busy());
+    }
 }

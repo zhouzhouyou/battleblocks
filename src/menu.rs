@@ -98,6 +98,8 @@ pub fn draw(
     tiles: &[Texture2D; 7],
     preview: &Preview,
     pointer: Vec2,
+    page: usize,
+    awakened_texture: &Texture2D,
 ) {
     let dim = Color::from_rgba(29, 33, 43, 255);
     let card = Color::from_rgba(35, 40, 52, 255);
@@ -156,7 +158,7 @@ pub fn draw(
                 tr(zh, "HP", "生命"),
                 h.hp,
                 tr(zh, "MP", "魔力"),
-                h.mp
+                content::mana_cap(i, false)
             ),
             r.x + 67.,
             r.y + 51.,
@@ -188,36 +190,120 @@ pub fn draw(
         16.,
         LIGHTGRAY,
     );
-    draw_ellipse(406., 403., 82., 12., 0., Color::from_rgba(20, 23, 31, 255));
+    draw_ellipse(406., 383., 82., 12., 0., Color::from_rgba(20, 23, 31, 255));
     sprite(
-        texture,
-        &sprites::SPRITES[hero],
-        Rect::new(301., 198., 210., 202.),
+        if page == 0 { texture } else { awakened_texture },
+        if page == 0 {
+            &sprites::SPRITES[hero]
+        } else {
+            &sprites::AWAKENED[hero]
+        },
+        Rect::new(301., 198., 210., 182.),
     );
-    label(tr(zh, "MAX HEALTH", "生命上限"), 304., 432., 17., LIGHTGRAY);
-    label(&h.hp.to_string(), 304., 459., 28., GREEN);
-    draw_rectangle(304., 469., 204., 5., Color::from_rgba(48, 55, 61, 255));
-    draw_rectangle(304., 469., 204. * h.hp as f32 / 800., 5., GREEN);
-    label(tr(zh, "MAX MANA", "魔力上限"), 304., 495., 17., LIGHTGRAY);
-    label(&h.mp.to_string(), 304., 521., 28., SKYBLUE);
-    draw_rectangle(304., 531., 204., 5., Color::from_rgba(48, 55, 61, 255));
-    draw_rectangle(304., 531., 204. * h.mp as f32 / 800., 5., SKYBLUE);
-    label(
-        tr(zh, "PASSIVE SKILL", "被动技能"),
-        304.,
-        557.,
-        17.,
-        LIGHTGRAY,
-    );
-    for (i, line) in content::passive(hero, zh).lines().enumerate() {
+    if page == 0 {
+        label(tr(zh, "MAX HEALTH", "生命上限"), 304., 412., 17., LIGHTGRAY);
+        label(&h.hp.to_string(), 304., 439., 28., GREEN);
+        draw_rectangle(304., 449., 204., 5., Color::from_rgba(48, 55, 61, 255));
+        draw_rectangle(304., 449., 204. * h.hp as f32 / 800., 5., GREEN);
+        label(tr(zh, "MAX MANA", "魔力上限"), 304., 475., 17., LIGHTGRAY);
         label(
-            line,
+            &content::mana_cap(hero, false).to_string(),
             304.,
-            577. + i as f32 * 18.,
-            fit_size(line, 13., 214.),
-            GOLD,
+            501.,
+            28.,
+            SKYBLUE,
+        );
+        draw_rectangle(304., 511., 204., 5., Color::from_rgba(48, 55, 61, 255));
+        draw_rectangle(
+            304.,
+            511.,
+            204. * content::mana_cap(hero, false) as f32 / 400.,
+            5.,
+            SKYBLUE,
+        );
+        if hero == 2 {
+            let full = 204. * content::mana_cap(hero, true) as f32 / 400.;
+            let unlocked = 204. * content::mana_cap(hero, false) as f32 / 400.;
+            draw_rectangle(
+                304. + unlocked,
+                511.,
+                full - unlocked,
+                5.,
+                Color::from_rgba(60, 70, 88, 255),
+            );
+            crate::draw_lock(304. + unlocked - 5.5, 506., SKYBLUE);
+        }
+        label(
+            tr(zh, "PASSIVE SKILL", "被动技能"),
+            304.,
+            537.,
+            17.,
+            LIGHTGRAY,
+        );
+        for (i, line) in content::passive(hero, zh).lines().enumerate() {
+            label(
+                line,
+                304.,
+                561. + i as f32 * 18.,
+                fit_size(line, 13., 214.),
+                GOLD,
+            );
+        }
+    } else {
+        label(tr(zh, "AWAKENING", "觉醒能力"), 304., 431., 22., GOLD);
+        let info = if zh {
+            format!(
+                "觉醒点 {}（{}%）\n恢复至 {}（{}%）",
+                content::awakening_line(hero),
+                content::AWAKENING_LINES[hero],
+                content::health_cap(hero, true),
+                content::AWAKENING_CAPS[hero]
+            )
+        } else {
+            format!(
+                "Trigger: {} HP ({}%)\nNew cap: {} HP ({}%)",
+                content::awakening_line(hero),
+                content::AWAKENING_LINES[hero],
+                content::health_cap(hero, true),
+                content::AWAKENING_CAPS[hero]
+            )
+        };
+        for (i, line) in info.lines().enumerate() {
+            label(line, 304., 460. + i as f32 * 23., 16., LIGHTGRAY);
+        }
+        for (i, line) in wrap_preview_text(content::awakening_effect(hero, zh), 14.)
+            .iter()
+            .enumerate()
+        {
+            label(line, 304., 514. + i as f32 * 19., 14., GOLD);
+        }
+        label(
+            tr(
+                zh,
+                "Damage or HP payment triggers",
+                "受伤或支付生命触线即觉醒",
+            ),
+            304.,
+            590.,
+            13.,
+            LIGHTGRAY,
         );
     }
+    for (i, text) in [tr(zh, "< Prev", "上一页"), tr(zh, "Next >", "下一页")]
+        .iter()
+        .enumerate()
+    {
+        let r = page_rect(i);
+        panel(r, dim);
+        label(
+            text,
+            r.x + 7.,
+            r.y + 16.,
+            14.,
+            if page == i { GRAY } else { SKYBLUE },
+        );
+    }
+    label(&format!("{} / 2", page + 1), 388., 623., 14., WHITE);
     for (i, skill) in h.skills.iter().enumerate() {
         let r = skill_rect(i);
         panel(
@@ -240,13 +326,20 @@ pub fn draw(
             WHITE,
         );
         label(
-            &format!("{} {}", skill.cost(), tr(zh, "MP", "魔力")),
+            &format!(
+                "{} {}",
+                content::skill_cost(hero, page == 1, *skill),
+                tr(zh, "MP", "魔力")
+            ),
             r.x + 332.,
             r.y + 27.,
             18.,
             SKYBLUE,
         );
-        for (line, text) in skill.description(zh).lines().enumerate() {
+        for (line, text) in content::skill_description(*skill, page == 1, zh)
+            .lines()
+            .enumerate()
+        {
             label(
                 text,
                 r.x + 14.,
@@ -392,4 +485,8 @@ pub fn draw(
         25.,
         WHITE,
     );
+}
+
+pub fn page_rect(i: usize) -> Rect {
+    Rect::new(if i == 0 { 302. } else { 436. }, 607., 76., 22.)
 }
