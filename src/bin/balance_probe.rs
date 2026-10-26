@@ -278,10 +278,13 @@ fn main() {
     lengths.sort();
     bursts.sort();
     println!(
-        "games={total},draws={draws},median_actions={},p90_burst={},first_side_win={:.1}%",
+        "games={total},draws={draws},median_actions={},p90_burst={},first_side_win={:.1}%,p10_actions={},p90_actions={},max_actions={}",
         lengths[lengths.len() / 2],
         bursts[bursts.len() * 9 / 10],
-        starts as f64 / total as f64 * 100.
+        starts as f64 / total as f64 * 100.,
+        lengths[lengths.len()/10],
+        lengths[lengths.len()*9/10],
+        lengths[lengths.len()-1]
     );
     println!("pairwise_win_counts={pairs:?}");
     println!("hero,swaps,skills,blood_casts,blood_paid,actual_damage,actual_healing,actual_mana,wasted_mana");

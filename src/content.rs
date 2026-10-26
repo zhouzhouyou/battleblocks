@@ -5,8 +5,8 @@ pub struct Rules {
     pub opponent_hp: Option<i32>,
     pub opponent: Option<(usize, bool)>,
 }
-pub const AWAKENING_LINES: [i32; 7] = [45, 35, 40, 50, 40, 35, 30];
-pub const AWAKENING_CAPS: [i32; 7] = [55, 45, 50, 55, 45, 45, 40];
+pub const AWAKENING_LINES: [i32; 7] = [45, 35, 40, 50, 37, 35, 30];
+pub const AWAKENING_CAPS: [i32; 7] = [55, 45, 50, 55, 50, 47, 44];
 pub fn awakening_line(hero: usize) -> i32 {
     HEROES[hero].hp * AWAKENING_LINES[hero] / 100
 }
@@ -76,8 +76,8 @@ pub fn awakening_effect(hero: usize, zh: bool) -> &'static str {
         ),
         3 => ("Area loot damage +30%", "区域掠夺伤害增加30%"),
         4 => (
-            "Balanced bonus damage: +2 → +4",
-            "平衡方块被动额外伤害2 → 4",
+            "Balanced bonus: +4 → +6; Blast: 12 → 14 per tile",
+            "平衡方块额外伤害4 → 6；引爆每格伤害12 → 14",
         ),
         5 => ("Blood fury threshold: 35% → 50%", "血怒触发线35% → 50%"),
         _ => (
@@ -135,7 +135,7 @@ impl Skill {
             Self::Landslide => 200,
             Self::Strike => 35,
             Self::Nature => 60,
-            Self::Lightning => 40,
+            Self::Lightning => 60,
             Self::Meteor => 160,
             Self::Greedy => 25,
             Self::Imp => 60,
@@ -215,8 +215,8 @@ impl Skill {
                 "选择2×2区域清除\n获得三种基础收益的150%\n按方块基础值结算",
             ),
             Self::Imp => (
-                "Clear all balanced tiles.\nPer tile: 16 damage, 4 mana.\nNew cascades give rewards.",
-                "清除所有平衡方块\n每格造成16伤害、回复4魔力\n后续下落三消正常结算",
+                "Clear all balanced tiles.\nPer tile: 12 damage, 4 mana.\nNew cascades give rewards.",
+                "清除所有平衡方块\n每格造成12伤害、回复4魔力\n后续下落三消正常结算",
             ),
             Self::Chort => (
                 "Clear one selected type.\nPer tile: heal 2, deal 4,\nand restore 1 mana.",
@@ -450,7 +450,7 @@ pub fn effect_at(skill: Skill, b: &mut Board, target: (usize, usize)) -> Effect 
                 for x in 0..N {
                     if b[y][x] == 0 {
                         e.cells.push((x, y));
-                        e.damage += 16;
+                        e.damage += 12;
                         e.mp += 4;
                     }
                 }
@@ -825,7 +825,10 @@ mod preview_tests {
     fn lightning_shows_cost_and_actual_mana() {
         let b = [[3; N]; N];
         let p = preview_rewards(Skill::Lightning, &b, (3, 3), 2, 500, 200, 700, 0);
-        assert_eq!(p.mana_gain, (2 * N as i32 * VALUES[3].2).min(90));
+        assert_eq!(
+            p.mana_gain,
+            (2 * N as i32 * VALUES[3].2).min(250 - (200 - Skill::Lightning.cost()))
+        );
         assert_eq!(
             p.mana_after,
             (200 - Skill::Lightning.cost() + 2 * N as i32 * VALUES[3].2).min(250)
@@ -892,7 +895,7 @@ pub fn clear_rewards_in(
         d += b;
         m += c;
         if hero == 4 && board[y][x] == 0 {
-            d += if rules.awake { 4 } else { 2 };
+            d += if rules.awake { 6 } else { 4 };
             m += 2;
         }
     }
@@ -961,7 +964,7 @@ pub fn passive(hero: usize, zh: bool) -> &'static str {
         1=>("Forest step: diagonal adjacent\nswaps are also allowed.\nClear rewards reduced by 7%.","林间穿行：可斜向交换\n仅交换斜向相邻的两格\n横纵三消，消除收益降低7%"),
         2=>("Arcane conversion: below MP cap,\nhalf of clear healing becomes MP.\nAt full MP, heal normally.","奥术转化：魔力未满时，消除\n治疗的一半转魔力（向下取整）\n魔力已满时正常治疗"),
         3=>("Scrap recovery: overhealing\nfrom clears becomes mana at 2:1.\nMana still obeys the MP cap.","废物回收：消除溢出治疗\n每2点转为1点魔力\n魔力仍受上限限制"),
-        4=>("Balanced affinity: each balanced\ntile in a rewarded clear gives\n+2 damage and +2 mana.","平衡亲和：有收益消除时\n每个平衡方块额外提供\n2点伤害、2点魔力"),
+        4=>("Balanced affinity: each balanced\ntile in a rewarded clear gives\n+4 damage and +2 mana.","平衡亲和：有收益消除时\n每个平衡方块额外提供\n4点伤害、2点魔力"),
         5=>("Blood fury: at 35% HP or less,\nclear damage increases by 25%.\nChecked before each clear wave.","血怒：生命不高于35%时\n消除伤害增加25%\n每轮消除前判断生命"),
         _=>("Flesh casting: missing mana\ncosts 2 HP per point.\nMust leave at least 1 HP.","血肉施法：魔力不足时\n每缺1魔力支付2生命\n必须至少剩余1生命"),
     };
@@ -1012,7 +1015,7 @@ mod passive_tests {
         );
         assert_eq!(
             clear_rewards(4, 300, 0, &[[0; N]; N], &cells, 1, 0),
-            (6, 18, 18)
+            (6, 24, 18)
         );
         assert_eq!(
             clear_rewards(5, 210, 0, &[[2; N]; N], &cells, 1, 0),
@@ -1024,7 +1027,7 @@ mod passive_tests {
         );
         assert_eq!(
             clear_rewards(4, 300, 0, &[[0; N]; N], &cells, 2, 1),
-            (12, 37, 37)
+            (12, 50, 37)
         );
     }
     #[test]
@@ -1482,9 +1485,9 @@ pub fn passive_in(hero: usize, awake: bool, zh: bool) -> &'static str {
     }
     if awake && hero == 4 {
         return if zh {
-            "平衡亲和：有收益消除时\n每个平衡方块额外提供\n4点伤害、2点魔力"
+            "平衡亲和：有收益消除时\n每个平衡方块额外提供\n6点伤害、2点魔力"
         } else {
-            "Balanced affinity: each balanced\ntile in a rewarded clear gives\n+4 damage and +2 mana."
+            "Balanced affinity: each balanced\ntile in a rewarded clear gives\n+6 damage and +2 mana."
         };
     }
     if awake && hero == 5 {
@@ -1497,6 +1500,13 @@ pub fn passive_in(hero: usize, awake: bool, zh: bool) -> &'static str {
     passive(hero, zh)
 }
 pub fn skill_description(skill: Skill, awake: bool, zh: bool) -> &'static str {
+    if awake && skill == Skill::Imp {
+        return if zh {
+            "清除所有平衡方块\n每格造成14伤害、回复4魔力\n后续下落三消正常结算"
+        } else {
+            "Clear all balanced tiles.\nPer tile: 14 damage, 4 mana.\nNew cascades give rewards."
+        };
+    }
     if awake && skill == Skill::Guard {
         if zh {
             "回复觉醒后生命上限的20%\n清除纯治疗，不额外回血\n掉落后结算三消，再换人"
@@ -1548,6 +1558,113 @@ mod awakening_tests {
         assert!(!take_damage(0, &mut hp, &mut awake, 0).awakened);
     }
     #[test]
+    fn imp_strength_moves_from_blast_to_rewarded_clears_in_both_phases() {
+        let b = board();
+        let original = b;
+        let seed = crate::rng::state();
+        let cells = vec![(0, 0)]; // balanced tile: base 2 HP / 4 damage / 4 MP
+        let count = b.iter().flatten().filter(|&&t| t == 0).count() as i32;
+        for (awake, blast, bonus) in [(false, 12, 4), (true, 14, 6)] {
+            let r = rules(awake, 0, true);
+            assert_eq!(
+                clear_rewards_in(4, 300, 0, &b, &cells, 1, 0, r),
+                (2, 4 + bonus, 6)
+            );
+            let e = effect_at_in(Skill::Imp, &mut b.clone(), (0, 0), 4, 300, 60, r);
+            assert_eq!((e.damage, e.mp), (count * blast, count * 4));
+            assert!(!e.reward); // direct blast does not also receive clear/passive rewards
+            assert!(payment_in(4, 300, 59, Skill::Imp, r).is_none());
+            let p = preview_rewards_in(Skill::Imp, &b, (0, 0), 4, 300, 60, 385, 0, r);
+            assert_eq!(p.damage, count * blast);
+            assert_eq!(p.mana_after, count * 4);
+            let p = preview_rewards_in(Skill::Imp, &[[0; N]; N], (0, 0), 4, 300, 120, 385, 0, r);
+            assert_eq!(p.mana_after, 120);
+            assert!(skill_description(Skill::Imp, awake, true).contains(&format!("{blast}伤害")));
+        }
+        assert_eq!(b, original);
+        assert_eq!(crate::rng::state(), seed);
+    }
+    #[test]
+    fn tuned_enemy_caps_match_real_hits_for_every_target_and_phase() {
+        let b = board();
+        let original = b;
+        let seed = crate::rng::state();
+        for enemy in [2, 4, 5, 6] {
+            for awake in [false, true] {
+                let hp = if awake {
+                    health_cap(enemy, true)
+                } else {
+                    awakening_line(enemy) + 1
+                };
+                for target in [(0, 0), (3, 0), (6, 0)] {
+                    let mut copy = b;
+                    let e = effect_at_in(
+                        Skill::Charge,
+                        &mut copy,
+                        target,
+                        0,
+                        700,
+                        100,
+                        Rules::default(),
+                    );
+                    let (mut actual_hp, mut actual_awake) = (hp, awake);
+                    take_damage(enemy, &mut actual_hp, &mut actual_awake, e.damage);
+                    let preview = preview_rewards_in(
+                        Skill::Charge,
+                        &b,
+                        target,
+                        0,
+                        700,
+                        100,
+                        hp,
+                        0,
+                        rules(false, enemy, awake),
+                    );
+                    assert_eq!(preview.enemy_health_after, actual_hp);
+                    assert_eq!(preview.awakens_enemy, !awake && actual_awake);
+                    assert_eq!(preview.mana_after, 0);
+                }
+            }
+        }
+        assert_eq!(b, original);
+        assert_eq!(crate::rng::state(), seed);
+    }
+    #[test]
+    fn phase_health_changes_reach_actual_caps_without_changing_costs_or_preview_state() {
+        let mut b = board();
+        b[0][..3].copy_from_slice(&[1, 0, 1]);
+        b[1][1] = 1;
+        let original = b;
+        let seed = crate::rng::state();
+        for hero in [2, 4, 5, 6] {
+            let cap = health_cap(hero, true);
+            let r = rules(true, 0, true);
+            let p =
+                preview_move_in(&b, hero, cap - 1, 0, 385, 0, false, (1, 0), (1, 1), r).unwrap();
+            let mut actual = b;
+            assert!(crate::board::hero_swap(&mut actual, (1, 0), (1, 1), hero));
+            let (heal, damage, mana) =
+                clear_rewards_in(hero, cap - 1, 0, &actual, &crate::matches(&actual), 1, 0, r);
+            assert_eq!(p.health_after, (cap - 1 + heal).min(cap));
+            assert_eq!(
+                (p.heal, p.damage, p.mana_after),
+                (1, damage, mana.min(mana_cap(hero, true)))
+            );
+            for &skill in HEROES[hero].skills {
+                let cost = skill_cost(hero, true, skill);
+                assert_eq!(
+                    payment_in(hero, cap, cost, skill, r),
+                    Some(Payment {
+                        mana: cost,
+                        blood: 0
+                    })
+                );
+            }
+        }
+        assert_eq!(b, original);
+        assert_eq!(crate::rng::state(), seed);
+    }
+    #[test]
     fn same_role_has_independent_flags_and_reset_is_a_plain_snapshot_restore() {
         let mut hp = [400, 400];
         let mut flags = [false, false];
@@ -1567,7 +1684,7 @@ mod awakening_tests {
         assert_eq!(clear_rewards_in(1, 200, 0, &b, &cells, 1, 1, r).1, 75); // (200+25)% then elf -7%
         assert_eq!(
             clear_rewards_in(4, 200, 0, &[[0; N]; N], &cells, 1, 0, r).1,
-            24
+            30
         );
         assert_eq!(clear_rewards_in(5, 270, 0, &b, &cells, 1, 0, r).1, 45);
         assert_eq!(clear_rewards_in(5, 301, 0, &b, &cells, 1, 0, r).1, 36);
@@ -1679,6 +1796,11 @@ mod awakening_tests {
         for (awake, cap) in [(false, 250), (true, 400)] {
             assert_eq!(mana_cap(2, awake), cap);
             let r = rules(awake, 0, true);
+            assert!(payment_in(2, 200, 59, Skill::Lightning, r).is_none());
+            assert_eq!(
+                payment_in(2, 200, 60, Skill::Lightning, r),
+                Some(Payment { mana: 60, blood: 0 })
+            );
             let p = preview_rewards_in(Skill::Lightning, &b, (0, 0), 2, 250, cap - 10, 700, 0, r);
             assert_eq!(p.mana_after, cap);
             assert_eq!(p.mana_gain, 10 + Skill::Lightning.cost());
@@ -1726,13 +1848,14 @@ mod awakening_tests {
         let original = b;
         let seed = crate::rng::state();
         let r = rules(true, 0, true);
+        let cap = health_cap(6, true);
         let mut damage = Vec::new();
         for target in [(0, 0), (1, 0), (2, 0)] {
-            let p = preview_rewards_in(Skill::Drain, &b, target, 6, 310, 25, 700, 0, r);
+            let p = preview_rewards_in(Skill::Drain, &b, target, 6, cap, 25, 700, 0, r);
             let mut copy = b;
-            let e = effect_at_in(Skill::Drain, &mut copy, target, 6, 310, 25, r);
+            let e = effect_at_in(Skill::Drain, &mut copy, target, 6, cap, 25, r);
             assert_eq!(p.blood_cost, 13);
-            assert_eq!(p.health_after, (310 - 13 + e.hp).min(310));
+            assert_eq!(p.health_after, (cap - 13 + e.hp).min(cap));
             assert_eq!(p.mana_after, 0);
             assert_eq!(p.damage, e.damage);
             assert!(!p.awakens_self);
@@ -1760,7 +1883,7 @@ mod awakening_tests {
         );
         assert!(p.awakens_self);
         assert_eq!(p.blood_cost, 50);
-        assert_eq!(p.health_after, 310);
+        assert_eq!(p.health_after, health_cap(6, true));
         assert_eq!(p.damage, e.damage);
         assert_eq!(p.mana_after, 0);
         assert_eq!(payment_in(6, 100, 0, Skill::Drain, r), None); // still must be payable

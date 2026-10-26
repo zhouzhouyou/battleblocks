@@ -99,7 +99,7 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-debug-') as temp:
         paid=action('cast 2 1 1','skill')
         heal_values=[2,6,0,0,3,3,0]
         healing=2*sum(heal_values[clean[y][x]] for y in range(2) for x in range(2))
-        assert paid['after']['hp']==310
+        assert paid['after']['hp']==341
         assert paid['after']['awakened']==[True,False]
         assert any(e['event']=='awakening' and 'cause=blood_payment' in e['detail'] and e['action']==paid['action'] for e in records())
         assert paid['after']['mp']==0
@@ -193,6 +193,27 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-debug-') as temp:
         data=edit_command('mp enemy 800')
         assert data[-1]['after']['enemy_mp']==400
         rollback_to(unlock['before'])
+        # Imp blast uses its new direct damage/mana without double-counting clear rewards.
+        edit_command('hero player 4')
+        edit_command('hero enemy 0')
+        edit_command('mp player 60')
+        edit_command('board load '+' '.join(str(v) for row in clean for v in row))
+        blast=action('cast 1','skill')
+        count=sum(v==0 for row in clean for v in row)
+        assert blast['before']['mp']-60+count*4==blast['after']['mp']
+        assert blast['before']['enemy_hp']-blast['after']['enemy_hp']==count*12
+        assert not blast['after']['reward']
+        rollback_to(blast['before'])
+        # Wizard's reserve remains 250/400; its first skill now pays 60 MP.
+        edit_command('hero player 2')
+        edit_command('mp player 60')
+        edit_command('board load '+' '.join(str(v) for row in clean for v in row))
+        recharge=action('cast 1','skill')
+        mana_values=[4,0,0,12,0,7,7]
+        recovered=sum(mana_values[clean[y][x]] for y in range(8) for x in (y,7-y))
+        assert recharge['before']['mp']==60 and recharge['after']['mp']==min(recovered,250)
+        assert 'cost=60' in recharge['detail']
+        rollback_to(recharge['before'])
         # At the locked full reserve, the wizard's clear heals normally.
         edit_command('hero player 2')
         edit_command('hp player 300')
