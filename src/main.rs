@@ -219,6 +219,8 @@ struct LabelJob {
     font_scale: f32,
     font_scale_aspect: f32,
     color: Color,
+    // Share of the measured width drawn left of `x`: 0 left-aligns, 0.5 centers.
+    align: f32,
 }
 struct UiFont {
     font: Font,
@@ -256,6 +258,9 @@ fn font_raster_bucket(requested: u16) -> u16 {
         .unwrap_or(64)
 }
 fn label(text: &str, x: f32, y: f32, size: f32, color: Color) {
+    queue_label(text, x, y, size, color, 0.);
+}
+fn queue_label(text: &str, x: f32, y: f32, size: f32, color: Color, align: f32) {
     if diagnostic("no_text") {
         return;
     }
@@ -276,6 +281,7 @@ fn label(text: &str, x: f32, y: f32, size: f32, color: Color) {
                     font_scale,
                     font_scale_aspect,
                     color,
+                    align,
                 });
             }
             let job = &mut ui.jobs[n];
@@ -287,6 +293,7 @@ fn label(text: &str, x: f32, y: f32, size: f32, color: Color) {
             job.font_scale = font_scale;
             job.font_scale_aspect = font_scale_aspect;
             job.color = color;
+            job.align = align;
         }
     });
 }
@@ -309,14 +316,10 @@ fn label_width(text: &str, size: f32) -> f32 {
 fn fit_size(text: &str, size: f32, width: f32) -> f32 {
     (size * width / label_width(text, size).max(1.)).min(size)
 }
+/// Centered on `center_x`. The width is measured when the label is flushed, after the
+/// frame's glyphs are cached, so this is safe after an earlier `flush_labels` too.
 fn label_centered(text: &str, center_x: f32, y: f32, size: f32, color: Color) {
-    label(
-        text,
-        center_x - label_width(text, size) / 2.,
-        y,
-        size,
-        color,
-    );
+    queue_label(text, center_x, y, size, color, 0.5);
 }
 fn flush_labels() {
     UI_FONT.with(|slot| {
@@ -345,9 +348,16 @@ fn flush_labels() {
                 }
             }
             for job in jobs.iter().take(*pending) {
+                let x = if job.align > 0. {
+                    let width =
+                        measure_text(&job.text, Some(font), job.font_size, job.font_scale).width;
+                    job.x - width * job.align
+                } else {
+                    job.x
+                };
                 draw_text_ex(
                     &job.text,
-                    job.x,
+                    x,
                     job.y,
                     TextParams {
                         font: Some(font),
