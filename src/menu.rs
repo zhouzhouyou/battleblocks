@@ -372,9 +372,9 @@ pub fn draw(
             Color::from_rgba(51, 70, 45, 255)
         },
     );
-    label(
+    label_centered(
         tr(zh, "NEXT · CHOOSE OPPONENT", "下一步：选择对手"),
-        451.,
+        r.x + r.w / 2.,
         682.,
         25.,
         WHITE,

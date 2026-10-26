@@ -22,20 +22,23 @@ impl Default for Ui {
         }
     }
 }
-fn button(r: Rect, text: &str, pointer: Vec2) {
+fn frame(r: Rect, hovered: bool) {
     draw_rectangle(
         r.x,
         r.y,
         r.w,
         r.h,
-        if r.contains(pointer) {
+        if hovered {
             Color::from_rgba(61, 76, 98, 255)
         } else {
             Color::from_rgba(39, 47, 64, 255)
         },
     );
     draw_rectangle_lines(r.x, r.y, r.w, r.h, 1., GRAY);
-    label(text, r.x + 12., r.y + r.h / 2. + 8., 22., WHITE);
+}
+fn button(r: Rect, text: &str, pointer: Vec2) {
+    frame(r, r.contains(pointer));
+    label_centered(text, r.x + r.w / 2., r.y + r.h / 2. + 8., 22., WHITE);
 }
 pub fn top(i: usize) -> Rect {
     Rect::new(814. + i as f32 * 48., 20., 42., 42.)
@@ -236,7 +239,15 @@ impl Ui {
             22.,
             LIGHTGRAY,
         );
-        label(tr(zh, "AI difficulty", "AI 难度"), 24., 140., 24., WHITE);
+        // Centered over the column of the back button below.
+        let back = back_rect();
+        label_centered(
+            tr(zh, "AI difficulty", "AI 难度"),
+            back.x + back.w / 2.,
+            140.,
+            24.,
+            WHITE,
+        );
         for (i, name) in [
             tr(zh, "Beginner", "入门"),
             tr(zh, "Standard", "标准"),
@@ -253,7 +264,7 @@ impl Ui {
         }
         for i in 0..8 {
             let r = opponent_rect(i);
-            button(r, "", pointer);
+            frame(r, r.contains(pointer));
             let selected = if i == 0 {
                 self.opponent.is_none()
             } else {
