@@ -105,6 +105,15 @@ fn reward_summary(zh: bool, heal: i32, damage: i32, mana: i32) -> String {
         format!("+{heal} HP · {damage} damage · +{mana} MP")
     }
 }
+/// Skill cost in the UI language, including the HP part of a flesh-casting payment.
+fn cost_text(zh: bool, mana: i32, blood: i32) -> String {
+    match (zh, blood > 0) {
+        (true, true) => format!("{mana} 魔力 + {blood} 生命 !"),
+        (true, false) => format!("{mana} 魔力"),
+        (false, true) => format!("{mana} MP + {blood} HP !"),
+        (false, false) => format!("{mana} MP"),
+    }
+}
 fn passive_name(hero: usize, zh: bool) -> &'static str {
     content::passive(hero, zh)
         .split(['：', ':'])
@@ -1311,15 +1320,22 @@ async fn main() {
                         );
                     }
                     if pay.blood > 0 {
-                        feedback = format!(
-                            "{} -{} HP · HP {} → {} · MP {} → {}",
-                            tr(zh, "Flesh casting", "血肉施法"),
-                            pay.blood,
-                            actor_hp,
-                            if enemy_turn { enemy } else { hp },
-                            actor_mp,
-                            if enemy_turn { enemy_mp } else { mp }
-                        );
+                        let (hp_now, mp_now) = if enemy_turn {
+                            (enemy, enemy_mp)
+                        } else {
+                            (hp, mp)
+                        };
+                        feedback = if zh {
+                            format!(
+                                "血肉施法 生命 -{} · 生命 {actor_hp} → {hp_now} · 魔力 {actor_mp} → {mp_now}",
+                                pay.blood
+                            )
+                        } else {
+                            format!(
+                                "Flesh casting -{} HP · HP {actor_hp} → {hp_now} · MP {actor_mp} → {mp_now}",
+                                pay.blood
+                            )
+                        };
                     }
                     presentation.health(
                         [before.hp, before.enemy_hp],
@@ -2151,7 +2167,7 @@ async fn main() {
                 GRAY
             };
             // Cost right-aligned; the name fits into the space left of it.
-            let cost = format!("{} MP", skill.cost());
+            let cost = cost_text(zh, skill.cost(), 0);
             let cost_width = label_width(&cost, 15.);
             label(&cost, r.x + r.w - 7. - cost_width, r.y + 25., 15., color);
             let name = skill.name(zh);
@@ -2192,9 +2208,9 @@ async fn main() {
             );
             label(
                 &if hero_id == 6 && mp < skill.cost() {
-                    format!("{} MP + {} HP !", mp, (skill.cost() - mp) * 2)
+                    cost_text(zh, mp, (skill.cost() - mp) * 2)
                 } else {
-                    format!("{} MP", skill.cost())
+                    cost_text(zh, skill.cost(), 0)
                 },
                 rect.x + 8.,
                 rect.y + 50.,
@@ -2429,8 +2445,11 @@ async fn main() {
             let footer = focused_preview
                 .map(|p| {
                     format!(
-                        "HP {hint_health}→{}  MP {hint_mana}→{}",
-                        p.health_after, p.mana_after
+                        "{} {hint_health}→{}  {} {hint_mana}→{}",
+                        tr(zh, "HP", "生命"),
+                        p.health_after,
+                        tr(zh, "MP", "魔力"),
+                        p.mana_after
                     )
                 })
                 .unwrap_or_else(|| {
@@ -2490,9 +2509,13 @@ async fn main() {
             );
             label(
                 &if id == 6 && mana < skill.cost() {
-                    format!("{} MP + {} HP !", mana, (skill.cost() - mana) * 2)
+                    cost_text(zh, mana, (skill.cost() - mana) * 2)
                 } else {
-                    format!("{} {} MP", tr(zh, "Cost:", "消耗："), skill.cost())
+                    format!(
+                        "{}{}",
+                        tr(zh, "Cost: ", "消耗："),
+                        cost_text(zh, skill.cost(), 0)
+                    )
                 },
                 x + 10.,
                 266.,
@@ -2621,7 +2644,11 @@ async fn main() {
             );
             if content::payment(id, health, mana, skill).is_some() {
                 label(
-                    &format!("MP {mana} → {}", amount(low.mana_after, high.mana_after)),
+                    &format!(
+                        "{} {mana} → {}",
+                        tr(zh, "MP", "魔力"),
+                        amount(low.mana_after, high.mana_after)
+                    ),
                     x + 10.,
                     541.,
                     17.,
@@ -2648,7 +2675,11 @@ async fn main() {
             }
             if low.blood_cost > 0 && content::payment(id, health, mana, skill).is_some() {
                 label(
-                    &format!("-{} HP → {} !", low.blood_cost, health - low.blood_cost),
+                    &if zh {
+                        format!("生命 -{} → {} !", low.blood_cost, health - low.blood_cost)
+                    } else {
+                        format!("-{} HP → {} !", low.blood_cost, health - low.blood_cost)
+                    },
                     x + 10.,
                     598.,
                     18.,
@@ -2656,8 +2687,8 @@ async fn main() {
                 );
                 label(
                     &format!(
-                        "{} HP → {}",
-                        tr(zh, "After:", "结算后："),
+                        "{} → {}",
+                        tr(zh, "After: HP", "结算后生命"),
                         amount(low.health_after, high.health_after)
                     ),
                     x + 10.,
@@ -2803,6 +2834,10 @@ mod tests {
             "生命 +3 · 伤害 12 · 魔力 +0"
         );
         assert_eq!(reward_summary(false, 3, 12, 0), "+3 HP · 12 damage · +0 MP");
+        assert_eq!(cost_text(true, 25, 50), "25 魔力 + 50 生命 !");
+        assert_eq!(cost_text(true, 100, 0), "100 魔力");
+        assert_eq!(cost_text(false, 25, 50), "25 MP + 50 HP !");
+        assert_eq!(cost_text(false, 100, 0), "100 MP");
     }
     #[test]
     fn selecting_same_skill_cancels_and_different_skill_switches() {

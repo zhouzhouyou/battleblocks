@@ -298,7 +298,13 @@ impl Ui {
                     WHITE,
                 );
                 label(
-                    &format!("HP {}  MP {}", h.hp, h.mp),
+                    &format!(
+                        "{} {}  {} {}",
+                        tr(zh, "HP", "生命"),
+                        h.hp,
+                        tr(zh, "MP", "魔力"),
+                        h.mp
+                    ),
                     r.x + 58.,
                     r.y + 51.,
                     17.,
