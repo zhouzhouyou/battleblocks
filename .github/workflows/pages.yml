@@ -51,8 +51,8 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Prepare Rust and font tools
@@ -63,10 +63,10 @@ jobs:
         run: |
           cargo build --release --locked --bin battleblocks --target wasm32-unknown-unknown
           python tools/package.py --web-only
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dist/web
       - name: Publish game
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
