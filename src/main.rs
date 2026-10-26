@@ -525,7 +525,7 @@ async fn main() {
     let mut knight = diagnostic_texture(sprites::SPRITES[hero_id].bytes, "no_actors");
     let thumbs = texture(include_bytes!("../assets/hero-thumbnails.png"));
     let mut preview = menu::Preview::new(hero_id, 0);
-    let mut character_page = 0;
+    let mut character_page = 0usize;
     let mut enemy_id = (hero_id + 1) % HEROES.len();
     let mut demon = diagnostic_texture(sprites::SPRITES[enemy_id].bytes, "no_actors");
     let mut choosing = bench.is_none() && !startup_commands;
@@ -1073,10 +1073,10 @@ async fn main() {
             }
             if !interface.opponent_step {
                 if clicked(MouseButton::Left) && menu::page_rect(0).contains(pointer) {
-                    character_page = 0;
+                    character_page = character_page.saturating_sub(1);
                 }
                 if clicked(MouseButton::Left) && menu::page_rect(1).contains(pointer) {
-                    character_page = 1;
+                    character_page = (character_page + 1).min(2);
                 }
                 let old_hero = hero_id;
                 if key(KeyCode::Down) {
@@ -1917,7 +1917,7 @@ async fn main() {
                     18.,
                     color,
                 );
-                let visual_max = if row == 1 && id == 2 {
+                let visual_max = if row == 1 {
                     content::mana_cap(id, true) as f32
                 } else {
                     shown_max
@@ -1931,7 +1931,7 @@ async fn main() {
                     Color::new(0.1, 0.12, 0.17, 1.),
                 );
                 draw_rectangle(x, y + 7., 200. * fill, 9., color);
-                if row == 1 && id == 2 {
+                if row == 1 && content::mana_cap(id, false) < content::mana_cap(id, true) {
                     let lock_x = x + 200. * content::mana_cap(id, false) as f32 / visual_max;
                     if !awakened[enemy_side as usize] {
                         draw_rectangle(
@@ -2547,21 +2547,29 @@ async fn main() {
                         label(line, x + 10., 150. + i as f32 * 18., 14., GOLD);
                     }
                 }
-                if id == 2
+                if content::mana_cap(id, false) < content::mana_cap(id, true)
                     && !awakened[side as usize]
                     && Rect::new(panel.x + 12., 174., 200., 40.).contains(pointer)
                 {
                     let x = if side { 548. } else { 256. };
                     draw_rectangle(x, 176., 220., 64., Color::from_rgba(25, 33, 46, 255));
                     label(
-                        tr(zh, "MP cap locked: 250", "魔力上限锁定：250"),
+                        &if zh {
+                            format!("魔力上限锁定：{}", content::mana_cap(id, false))
+                        } else {
+                            format!("MP cap locked: {}", content::mana_cap(id, false))
+                        },
                         x + 10.,
                         199.,
                         16.,
                         SKYBLUE,
                     );
                     label(
-                        tr(zh, "Awakening unlocks 400 MP", "觉醒后解锁至400魔力"),
+                        &if zh {
+                            format!("觉醒后解锁至{}魔力", content::mana_cap(id, true))
+                        } else {
+                            format!("Awakening unlocks {} MP", content::mana_cap(id, true))
+                        },
                         x + 10.,
                         223.,
                         15.,
