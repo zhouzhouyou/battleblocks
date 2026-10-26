@@ -567,6 +567,18 @@ pub fn draw_pause(zh: bool, pointer: Vec2) {
     }
 }
 
+pub fn game_over_rect(i: usize) -> Rect {
+    Rect::new(296. + i as f32 * 232., 462., 200., 48.)
+}
+pub fn draw_game_over_buttons(zh: bool, pointer: Vec2) {
+    for (i, text) in [tr(zh, "Play again", "重来一局"), tr(zh, "Home", "回到首页")]
+        .iter()
+        .enumerate()
+    {
+        button(game_over_rect(i), text, pointer);
+    }
+}
+
 pub fn back_rect() -> Rect {
     Rect::new(24., 651., 232., 48.)
 }
