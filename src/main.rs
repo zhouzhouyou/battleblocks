@@ -861,7 +861,31 @@ async fn main() {
                 }
             }
         }
-        let block_input = was_console_open || console.open || ui_consumed || pause_click;
+        // Buttons on the victory/defeat box, which is drawn only while not paused.
+        let mut over_click = false;
+        if (hp == 0 || enemy == 0)
+            && !paused
+            && !choosing
+            && !pause_click
+            && !was_console_open
+            && !console.open
+            && !ui_consumed
+            && interface.panel.is_none()
+            && is_mouse_button_pressed(MouseButton::Left)
+        {
+            if ui::game_over_rect(0).contains(pointer) {
+                over_click = true;
+                restart_command = true;
+            } else if ui::game_over_rect(1).contains(pointer) {
+                over_click = true;
+                choosing = true;
+                interface.opponent_step = false;
+                targeting = None;
+                selected = None;
+            }
+        }
+        let block_input =
+            was_console_open || console.open || ui_consumed || pause_click || over_click;
         let key = |code| !block_input && is_key_pressed(code);
         let clicked = |button| !block_input && is_mouse_button_pressed(button);
         if key(KeyCode::L) {
@@ -2855,38 +2879,11 @@ async fn main() {
                         ..Default::default()
                     },
                 );
-                label(tr(zh, "DEFEAT", "你输了"), 395., 435., 38., GOLD);
-                label(
-                    tr(zh, "R: Try again", "按 R 再来一局"),
-                    355.,
-                    485.,
-                    32.,
-                    WHITE,
-                );
+                label_centered(tr(zh, "DEFEAT", "你输了"), 512., 436., 38., GOLD);
             } else {
-                label(
-                    if enemy == 0 {
-                        tr(zh, "VICTORY!", "胜利！")
-                    } else {
-                        tr(zh, "PAUSED", "已暂停")
-                    },
-                    365.,
-                    335.,
-                    40.,
-                    GOLD,
-                );
-                label(
-                    if enemy == 0 {
-                        tr(zh, "R: Play again", "按 R 再来一局")
-                    } else {
-                        tr(zh, "P: Continue", "按 P 继续游戏")
-                    },
-                    345.,
-                    390.,
-                    32.,
-                    WHITE,
-                );
+                label_centered(tr(zh, "VICTORY!", "胜利！"), 512., 345., 40., GOLD);
             }
+            ui::draw_game_over_buttons(zh, pointer);
         }
         if paused {
             ui::draw_pause(zh, pointer);
