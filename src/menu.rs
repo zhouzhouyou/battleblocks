@@ -101,6 +101,7 @@ pub fn draw(
     page: usize,
     awakened_texture: &Texture2D,
 ) {
+    let mut resource_hint = None;
     let dim = Color::from_rgba(29, 33, 43, 255);
     let card = Color::from_rgba(35, 40, 52, 255);
     label(
@@ -192,102 +193,121 @@ pub fn draw(
     );
     draw_ellipse(406., 383., 82., 12., 0., Color::from_rgba(20, 23, 31, 255));
     sprite(
-        if page == 0 { texture } else { awakened_texture },
-        if page == 0 {
-            &sprites::SPRITES[hero]
-        } else {
+        if page == 2 { awakened_texture } else { texture },
+        if page == 2 {
             &sprites::AWAKENED[hero]
+        } else {
+            &sprites::SPRITES[hero]
         },
         Rect::new(301., 198., 210., 182.),
     );
     if page == 0 {
         label(tr(zh, "MAX HEALTH", "生命上限"), 304., 412., 17., LIGHTGRAY);
         label(&h.hp.to_string(), 304., 439., 28., GREEN);
-        draw_rectangle(304., 449., 204., 5., Color::from_rgba(48, 55, 61, 255));
-        draw_rectangle(304., 449., 204. * h.hp as f32 / 800., 5., GREEN);
-        label(tr(zh, "MAX MANA", "魔力上限"), 304., 475., 17., LIGHTGRAY);
-        label(
-            &content::mana_cap(hero, false).to_string(),
-            304.,
-            501.,
-            28.,
-            SKYBLUE,
-        );
-        draw_rectangle(304., 511., 204., 5., Color::from_rgba(48, 55, 61, 255));
-        draw_rectangle(
-            304.,
-            511.,
-            204. * content::mana_cap(hero, false) as f32 / 400.,
-            5.,
-            SKYBLUE,
-        );
-        if hero == 2 {
-            let full = 204. * content::mana_cap(hero, true) as f32 / 400.;
-            let unlocked = 204. * content::mana_cap(hero, false) as f32 / 400.;
-            draw_rectangle(
-                304. + unlocked,
-                511.,
-                full - unlocked,
-                5.,
-                Color::from_rgba(60, 70, 88, 255),
-            );
-            crate::draw_lock(304. + unlocked - 5.5, 506., SKYBLUE);
-        }
-        label(
-            tr(zh, "PASSIVE SKILL", "被动技能"),
-            304.,
-            537.,
-            17.,
-            LIGHTGRAY,
-        );
-        for (i, line) in content::passive(hero, zh).lines().enumerate() {
-            label(
-                line,
-                304.,
-                561. + i as f32 * 18.,
-                fit_size(line, 13., 214.),
-                GOLD,
-            );
-        }
-    } else {
-        label(tr(zh, "AWAKENING", "觉醒能力"), 304., 431., 22., GOLD);
-        let info = if zh {
+        draw_rectangle(304., 449., 204., 9., GREEN);
+        let trigger_x = 304. + 204. * content::AWAKENING_LINES[hero] as f32 / 100.;
+        let cap_x = 304. + 204. * content::AWAKENING_CAPS[hero] as f32 / 100.;
+        crate::draw_diamond(trigger_x, 444., 5., GOLD, true);
+        draw_line(cap_x, 458., cap_x, 463., 1., SKYBLUE);
+        crate::draw_diamond(cap_x, 464., 4., SKYBLUE, false);
+        crate::draw_diamond(309., 480., 4., GOLD, true);
+        crate::draw_diamond(309., 502., 4., SKYBLUE, false);
+        let trigger = if zh {
             format!(
-                "觉醒点 {}（{}%）\n恢复至 {}（{}%）",
+                "觉醒点 {}（{}%）",
                 content::awakening_line(hero),
-                content::AWAKENING_LINES[hero],
+                content::AWAKENING_LINES[hero]
+            )
+        } else {
+            format!(
+                "Awaken: {} ({}%)",
+                content::awakening_line(hero),
+                content::AWAKENING_LINES[hero]
+            )
+        };
+        let recovered = if zh {
+            format!(
+                "恢复后上限 {}（{}%）",
                 content::health_cap(hero, true),
                 content::AWAKENING_CAPS[hero]
             )
         } else {
             format!(
-                "Trigger: {} HP ({}%)\nNew cap: {} HP ({}%)",
-                content::awakening_line(hero),
-                content::AWAKENING_LINES[hero],
+                "New HP cap: {} ({}%)",
                 content::health_cap(hero, true),
                 content::AWAKENING_CAPS[hero]
             )
         };
-        for (i, line) in info.lines().enumerate() {
-            label(line, 304., 460. + i as f32 * 23., 16., LIGHTGRAY);
+        label(&trigger, 320., 485., fit_size(&trigger, 15., 190.), GOLD);
+        label(
+            &recovered,
+            320.,
+            507.,
+            fit_size(&recovered, 15., 190.),
+            SKYBLUE,
+        );
+        label(tr(zh, "MAX MANA", "魔力上限"), 304., 540., 17., LIGHTGRAY);
+        let mana = content::mana_cap(hero, false);
+        label(&mana.to_string(), 304., 566., 28., SKYBLUE);
+        draw_rectangle(304., 578., 204., 9., SKYBLUE);
+        if content::mana_cap(hero, false) < content::mana_cap(hero, true) {
+            let unlocked = 204. * mana as f32 / content::mana_cap(hero, true) as f32;
+            crate::draw_lock(304. + unlocked - 5.5, 574., SKYBLUE);
+            let text = if zh {
+                format!("觉醒后 {}", content::mana_cap(hero, true))
+            } else {
+                format!("Unlock: {}", content::mana_cap(hero, true))
+            };
+            label(&text, 508. - label_width(&text, 14.), 566., 14., LIGHTGRAY);
         }
+    } else if page == 1 {
+        label(tr(zh, "PASSIVE SKILL", "被动技能"), 304., 431., 22., GOLD);
+        for (i, line) in content::passive(hero, zh).lines().enumerate() {
+            label(
+                line,
+                304.,
+                465. + i as f32 * 24.,
+                fit_size(line, 16., 214.),
+                LIGHTGRAY,
+            );
+        }
+    } else {
+        label(tr(zh, "AWAKENING", "觉醒能力"), 304., 431., 22., GOLD);
         for (i, line) in wrap_preview_text(content::awakening_effect(hero, zh), 14.)
             .iter()
             .enumerate()
         {
-            label(line, 304., 514. + i as f32 * 19., 14., GOLD);
+            label(line, 304., 465. + i as f32 * 24., 14., GOLD);
         }
-        label(
-            tr(
-                zh,
-                "Damage or HP payment triggers",
-                "受伤或支付生命触线即觉醒",
-            ),
-            304.,
-            590.,
-            13.,
-            LIGHTGRAY,
-        );
+    }
+    if page == 0 {
+        let old_mana = content::mana_cap(hero, false);
+        let new_mana = content::mana_cap(hero, true);
+        let hint = if Rect::new(304., 438., 204., 35.).contains(pointer) {
+            Some(if zh {
+                format!("金色菱形：觉醒点 {}（{}%）\n蓝色菱形：恢复后上限 {}（{}%）\n觉醒时恢复至新的生命上限",content::awakening_line(hero),content::AWAKENING_LINES[hero],content::health_cap(hero,true),content::AWAKENING_CAPS[hero])
+            } else {
+                format!("Gold: awakening at {} HP ({}%)\nBlue: new HP cap {} ({}%)\nAwakening restores HP to the new cap",content::awakening_line(hero),content::AWAKENING_LINES[hero],content::health_cap(hero,true),content::AWAKENING_CAPS[hero])
+            })
+        } else if Rect::new(304., 568., 204., 28.).contains(pointer) {
+            Some(if old_mana < new_mana {
+                if zh {
+                    format!("当前魔力上限：{old_mana}\n觉醒后解锁魔力上限：{new_mana}\n锁的位置表示当前可用容量")
+                } else {
+                    format!("Current MP cap: {old_mana}\nAwakening unlocks MP cap: {new_mana}\nLock marks the currently available capacity")
+                }
+            } else if zh {
+                format!("魔力上限：{old_mana}")
+            } else {
+                format!("MP cap: {old_mana}")
+            })
+        } else {
+            None
+        };
+        if let Some(text) = hint {
+            // Draw after the preview so the resource tooltip stays above it.
+            resource_hint = Some(text);
+        }
     }
     for (i, text) in [tr(zh, "< Prev", "上一页"), tr(zh, "Next >", "下一页")]
         .iter()
@@ -300,10 +320,14 @@ pub fn draw(
             r.x + 7.,
             r.y + 16.,
             14.,
-            if page == i { GRAY } else { SKYBLUE },
+            if (i == 0 && page == 0) || (i == 1 && page == 2) {
+                GRAY
+            } else {
+                SKYBLUE
+            },
         );
     }
-    label(&format!("{} / 2", page + 1), 388., 623., 14., WHITE);
+    label(&format!("{} / 3", page + 1), 388., 623., 14., WHITE);
     for (i, skill) in h.skills.iter().enumerate() {
         let r = skill_rect(i);
         panel(
@@ -328,7 +352,7 @@ pub fn draw(
         label(
             &format!(
                 "{} {}",
-                content::skill_cost(hero, page == 1, *skill),
+                content::skill_cost(hero, page == 2, *skill),
                 tr(zh, "MP", "魔力")
             ),
             r.x + 332.,
@@ -336,7 +360,7 @@ pub fn draw(
             18.,
             SKYBLUE,
         );
-        for (line, text) in content::skill_description(*skill, page == 1, zh)
+        for (line, text) in content::skill_description(*skill, page == 2, zh)
             .lines()
             .enumerate()
         {
@@ -485,6 +509,20 @@ pub fn draw(
         25.,
         WHITE,
     );
+    if let Some(text) = resource_hint {
+        let lines = text
+            .lines()
+            .map(|line| (line, fit_size(line, 17., 422.)))
+            .collect::<Vec<_>>();
+        crate::flush_labels();
+        panel(
+            Rect::new(548., 422., 452., 24. + lines.len() as f32 * 24.),
+            Color::from_rgba(25, 33, 46, 255),
+        );
+        for (i, (line, size)) in lines.iter().enumerate() {
+            label(line, 562., 450. + i as f32 * 24., *size, LIGHTGRAY);
+        }
+    }
 }
 
 pub fn page_rect(i: usize) -> Rect {
