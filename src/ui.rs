@@ -12,6 +12,7 @@ pub struct Ui {
     pub panel: Option<Panel>,
     pub opponent: Option<usize>,
     pub opponent_step: bool,
+    help_awakening: bool,
     fullscreen: bool,
     // Index into WINDOW_SIZES.
     window: usize,
@@ -23,6 +24,7 @@ impl Default for Ui {
             panel: None,
             opponent: None,
             opponent_step: false,
+            help_awakening: false,
             fullscreen: false,
             window: 1,
             volume: 100,
@@ -84,6 +86,16 @@ impl Ui {
             *muted = false;
         }
         if click {
+            if self.panel == Some(Panel::Help) {
+                if Rect::new(236., 158., 180., 30.).contains(pointer) {
+                    self.help_awakening = false;
+                    return true;
+                }
+                if Rect::new(426., 158., 180., 30.).contains(pointer) {
+                    self.help_awakening = true;
+                    return true;
+                }
+            }
             if top(0).contains(pointer) {
                 self.panel = if self.panel == Some(Panel::Settings) {
                     None
@@ -347,7 +359,7 @@ impl Ui {
                         tr(zh, "HP", "生命"),
                         h.hp,
                         tr(zh, "MP", "魔力"),
-                        h.mp
+                        crate::content::mana_cap(i - 1, false)
                     ),
                     r.x + 58.,
                     r.y + 51.,
@@ -361,6 +373,41 @@ impl Ui {
                     if zh { 16. } else { 13. },
                     SKYBLUE,
                 );
+            }
+        }
+        let focus = (1..8)
+            .find(|&i| opponent_rect(i).contains(pointer))
+            .map(|i| i - 1)
+            .or(self.opponent);
+        if let Some(id) = focus {
+            label(
+                if zh { HEROES[id].zh } else { HEROES[id].en },
+                24.,
+                218.,
+                22.,
+                GOLD,
+            );
+            let text = if zh {
+                format!(
+                    "觉醒点 {}（{}%）\n新生命上限 {}（{}%）\n{}",
+                    content::awakening_line(id),
+                    content::AWAKENING_LINES[id],
+                    content::health_cap(id, true),
+                    content::AWAKENING_CAPS[id],
+                    content::awakening_effect(id, zh)
+                )
+            } else {
+                format!(
+                    "Trigger: {} HP ({}%)\nNew cap: {} HP ({}%)\n{}",
+                    content::awakening_line(id),
+                    content::AWAKENING_LINES[id],
+                    content::health_cap(id, true),
+                    content::AWAKENING_CAPS[id],
+                    content::awakening_effect(id, zh)
+                )
+            };
+            for (i, line) in wrap_preview_text(&text, 12.).iter().enumerate() {
+                label(line, 24., 251. + i as f32 * 22., 15., LIGHTGRAY);
             }
         }
         button(
@@ -391,6 +438,72 @@ impl Ui {
             GOLD,
         );
         button(Rect::new(758., 119., 42., 38.), "×", pointer);
+        if panel == Panel::Help {
+            for (i, text) in [
+                tr(zh, "Tiles & matching", "方块与消除"),
+                tr(zh, "Awakening", "觉醒"),
+            ]
+            .iter()
+            .enumerate()
+            {
+                let r = Rect::new(236. + i as f32 * 190., 158., 180., 30.);
+                frame(r, self.help_awakening == (i == 1));
+                label(text, r.x + 10., r.y + 21., 17., WHITE);
+            }
+            if self.help_awakening {
+                label(
+                    tr(
+                        zh,
+                        "Damage or HP payment triggers a new skin, healing and power.",
+                        "受伤或支付生命到达血线后，更换皮肤、恢复生命并强化。",
+                    ),
+                    236.,
+                    214.,
+                    16.,
+                    GOLD,
+                );
+                label(
+                    tr(
+                        zh,
+                        "The triggering hit cannot spill over; later hits resolve normally.",
+                        "触发觉醒的攻击不继续扣第二阶段生命；后续伤害正常结算。",
+                    ),
+                    236.,
+                    242.,
+                    16.,
+                    LIGHTGRAY,
+                );
+                label(
+                    tr(
+                        zh,
+                        "Hero                 Trigger / new HP cap",
+                        "角色                         觉醒点 / 新生命上限",
+                    ),
+                    236.,
+                    278.,
+                    17.,
+                    SKYBLUE,
+                );
+                for (id, h) in HEROES.iter().enumerate() {
+                    let y = 307. + id as f32 * 40.;
+                    label(if zh { h.zh } else { h.en }, 236., y, 16., WHITE);
+                    label(
+                        &format!(
+                            "{} / {}",
+                            content::awakening_line(id),
+                            content::health_cap(id, true)
+                        ),
+                        380.,
+                        y,
+                        16.,
+                        GREEN,
+                    );
+                    let text = content::awakening_effect(id, zh);
+                    label(text, 236., y + 18., fit_size(text, 13., 550.), GOLD);
+                }
+                return;
+            }
+        }
         match panel {
             Panel::Settings => {
                 let names = [
@@ -474,7 +587,7 @@ impl Ui {
                     ]
                 };
                 for i in 0..7 {
-                    let y = 174. + i as f32 * 52.;
+                    let y = 202. + i as f32 * 48.;
                     draw_texture_ex(
                         &tiles[i],
                         238.,
