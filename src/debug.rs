@@ -29,6 +29,8 @@ pub struct Snapshot {
     pub rng_state: u64,
     pub charge_damage: Option<(i32, bool)>,
     pub charge_remaining: f64,
+    // Turn indicator records: restored by undo, left out of the log.
+    pub turns: crate::turns::Log,
 }
 impl Snapshot {
     fn json(&self) -> String {
@@ -767,6 +769,7 @@ mod tests {
             rng_state: 42,
             charge_damage: None,
             charge_remaining: 0.,
+            turns: crate::turns::Log::new(),
         }
     }
     #[cfg(not(target_arch = "wasm32"))]
