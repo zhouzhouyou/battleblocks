@@ -62,10 +62,10 @@ fn side_panel_rect(enemy: bool) -> Rect {
     Rect::new(if enemy { 788. } else { 12. }, 90., 224., 610.)
 }
 fn sprite_rect(enemy: bool) -> Rect {
-    Rect::new(if enemy { 796. } else { 20. }, 212., 208., 184.)
+    Rect::new(if enemy { 796. } else { 20. }, 212., 208., 156.)
 }
 fn passive_rect(enemy: bool) -> Rect {
-    Rect::new(if enemy { 796. } else { 20. }, 402., 208., 24.)
+    Rect::new(if enemy { 796. } else { 20. }, 376., 208., 50.)
 }
 fn player_skill_rect(i: usize) -> Rect {
     Rect::new(20., 434. + i as f32 * 132., 208., 126.)
@@ -167,12 +167,6 @@ fn cost_text(zh: bool, mana: i32, blood: i32) -> String {
         (false, true) => format!("{mana} MP + {blood} HP !"),
         (false, false) => format!("{mana} MP"),
     }
-}
-fn passive_name(hero: usize, zh: bool) -> &'static str {
-    content::passive(hero, zh)
-        .split(['：', ':'])
-        .next()
-        .unwrap_or_default()
 }
 fn toggle_skill_target(
     current: Option<content::Skill>,
@@ -2537,7 +2531,11 @@ async fn main() {
                     draw_rectangle(r.x, r.y, r.w, r.h, Color::from_rgba(25, 33, 46, 255));
                     draw_rectangle_lines(r.x, r.y, r.w, r.h, 1., SKYBLUE);
                     let text = if awakened[side as usize] {
-                        content::awakening_effect(id, zh).to_string()
+                        if zh {
+                            format!("当前生命上限：{}", content::health_cap(id, true))
+                        } else {
+                            format!("Current HP cap: {}", content::health_cap(id, true))
+                        }
                     } else if zh {
                         format!("觉醒点：{}（{}%）\n觉醒后上限：{}（{}%）\n受伤触线后恢复生命并强化\n{}", content::awakening_line(id), content::AWAKENING_LINES[id], content::health_cap(id,true),content::AWAKENING_CAPS[id],content::awakening_effect(id,zh))
                     } else {
@@ -2694,89 +2692,112 @@ async fn main() {
                 );
             }
         }
-        // Draw both passive rows before the popup flushes labels; widths are measured here.
+        // Each passive has its own identity, icon, state and hit target.
         let mut passive_popup = None;
         for enemy_side in [false, true] {
             let id = if enemy_side { enemy_id } else { hero_id };
-            let rect = passive_rect(enemy_side);
-            let hovered = !show_moves
-                && targeting.is_none()
-                && hover_context.is_none()
-                && !block_input
-                && !paused
-                && interface.panel.is_none()
-                && rect.contains(pointer);
-            draw_rectangle(
-                rect.x,
-                rect.y,
-                rect.w,
-                rect.h,
-                Color::new(0.13, 0.12, 0.08, 1.),
-            );
-            draw_rectangle_lines(
-                rect.x,
-                rect.y,
-                rect.w,
-                rect.h,
-                if hovered { 2. } else { 1. },
-                if hovered {
-                    GOLD
-                } else {
-                    Color::new(0.55, 0.45, 0.2, 1.)
-                },
-            );
-            let tag = tr(zh, "Passive", "被动");
-            label(tag, rect.x + 7., rect.y + 17., 14., GOLD);
-            let name = passive_name(id, zh);
-            let name_x = rect.x + 15. + label_width(tag, 14.);
-            label(name, name_x, rect.y + 17., 15., WHITE);
+            let awake = awakened[enemy_side as usize];
+            let area = passive_rect(enemy_side);
             let (health, mana) = if enemy_side {
                 (enemy, enemy_mp)
             } else {
                 (hp, mp)
             };
-            if let Some((text, on)) =
-                content::passive_status(id, health, mana, awakened[enemy_side as usize], zh)
-            {
-                let width = label_width(text, 12.) + 12.;
-                let x = rect.x + rect.w - width - 5.;
+            for (i, &passive) in content::passives(id, awake).iter().enumerate() {
+                let rect = Rect::new(
+                    area.x + (i % 2) as f32 * 106.,
+                    area.y + (i / 2) as f32 * 26.,
+                    102.,
+                    24.,
+                );
+                let hovered = !show_moves
+                    && targeting.is_none()
+                    && hover_context.is_none()
+                    && !block_input
+                    && !paused
+                    && interface.panel.is_none()
+                    && rect.contains(pointer);
+                let status = passive.status(id, health, mana, awake, zh);
+                let color = if status.is_some_and(|(_, on)| !on) {
+                    GRAY
+                } else {
+                    GOLD
+                };
                 draw_rectangle(
-                    x,
-                    rect.y + 4.,
-                    width,
-                    rect.h - 8.,
-                    if on {
-                        Color::from_rgba(100, 53, 18, 255)
-                    } else {
-                        Color::from_rgba(40, 43, 49, 255)
-                    },
+                    rect.x,
+                    rect.y,
+                    rect.w,
+                    rect.h,
+                    Color::from_rgba(43, 40, 29, 255),
                 );
+                if hovered {
+                    draw_rectangle_lines(rect.x, rect.y, rect.w, rect.h, 1., GOLD);
+                }
+                icons::draw_passive(passive, rect.x + 3., rect.y + 3., 18.);
+                let name = if matches!(
+                    passive,
+                    content::Passive::BloodFury | content::Passive::BoilingBlood
+                ) {
+                    format!(
+                        "{}{}",
+                        passive.short_name(zh),
+                        if status.is_some_and(|(_, on)| on) {
+                            "+25%"
+                        } else {
+                            tr(zh, " · off", "·未触发")
+                        }
+                    )
+                } else {
+                    passive.short_name(zh).to_string()
+                };
                 label(
-                    text,
-                    x + 6.,
-                    rect.y + 17.,
-                    12.,
-                    if on { ORANGE } else { GRAY },
+                    &name,
+                    rect.x + 25.,
+                    rect.y + 16.,
+                    fit_size(&name, 13., 73.),
+                    color,
                 );
-            } else {
-                let hint = tr(zh, "hover", "悬停查看");
-                let hint_x = rect.x + rect.w - 7. - label_width(hint, 12.);
-                if hint_x > name_x + label_width(name, 15.) + 6. {
-                    label(hint, hint_x, rect.y + 17., 12., GRAY);
+                if matches!(
+                    passive,
+                    content::Passive::BloodFury | content::Passive::BoilingBlood
+                ) && status.is_some_and(|(_, on)| on)
+                {
+                    draw_circle(rect.x + rect.w - 4., rect.y + 4., 2.5, ORANGE);
+                }
+                if hovered {
+                    passive_popup = Some((passive, id, health, mana, awake));
                 }
             }
-            if hovered {
-                passive_popup = Some((id, enemy_side));
-            }
         }
-        if let Some((id, side)) = passive_popup {
+        if let Some((passive, id, health, mana, awake)) = passive_popup {
+            let lines = wrap_preview_text(passive.description(zh), 18.);
+            let status = passive.status(id, health, mana, awake, zh);
+            let relation = passive.replaces().map(|old| {
+                if zh {
+                    format!("替代：{}", old.name(zh))
+                } else {
+                    format!("Replaces: {}", old.name(zh))
+                }
+            });
+            let height = 65.
+                + lines.len() as f32 * 26.
+                + if status.is_some() { 26. } else { 0. }
+                + if relation.is_some() { 24. } else { 0. };
             flush_labels();
-            draw_rectangle(270., 225., 485., 145., Color::new(0.04, 0.07, 0.12, 0.98));
-            for (i, line) in content::passive_in(id, awakened[side as usize], zh)
-                .lines()
-                .enumerate()
-            {
-                label(line, 287., 260. + i as f32 * 30., 22., GOLD);
+            draw_rectangle(270., 225., 485., height, Color::from_rgba(15, 23, 34, 255));
+            icons::draw_passive(passive, 286., 239., 28.);
+            label(passive.name(zh), 326., 261., 22., GOLD);
+            let mut y = 292.;
+            for line in &lines {
+                label(line, 287., y, 18., WHITE);
+                y += 26.;
+            }
+            if let Some((text, on)) = status {
+                label(text, 287., y, 17., if on { ORANGE } else { GRAY });
+                y += 26.;
+            }
+            if let Some(text) = relation {
+                label(&text, 287., y, 15., SKYBLUE);
             }
         }
         if !enemy_turn
@@ -3037,11 +3058,7 @@ async fn main() {
                     SKYBLUE
                 },
             );
-            let description = if awakened[is_enemy as usize] && skill == content::Skill::Guard {
-                tr(zh,"Heal 20% of the new HP cap.\nConsume pure healing tiles.\nRefill; resolve cascades.","回复觉醒后生命上限的20%\n清除纯治疗，不额外回血\n掉落后结算三消，再换人")
-            } else {
-                skill.description(zh)
-            };
+            let description = content::skill_description(skill, awakened[is_enemy as usize], zh);
             for (line, text) in wrap_preview_text(description, 12.)
                 .iter()
                 .take(7)
@@ -3049,13 +3066,7 @@ async fn main() {
             {
                 label(text, x + 10., 292. + line as f32 * 18., 15., LIGHTGRAY);
             }
-            if awakened[is_enemy as usize] {
-                let text = content::awakening_effect(id, zh);
-                let lines = wrap_preview_text(text, 13.);
-                for (i, line) in lines.iter().take(2).enumerate() {
-                    label(line, x + 10., 399. + i as f32 * 16., 13., GOLD);
-                }
-            }
+
             let exact_target = if !is_enemy
                 && targeting == Some(skill)
                 && pointer.x >= 256.
@@ -3348,13 +3359,15 @@ mod tests {
     #[test]
     fn sidebar_labels_are_short_and_localized() {
         for id in 0..HEROES.len() {
-            for zh in [false, true] {
-                let name = passive_name(id, zh);
-                assert!(!name.is_empty() && name.len() < content::passive(id, zh).len());
-                assert!(!name.contains(['：', ':', '\n']));
+            for awake in [false, true] {
+                for &passive in content::passives(id, awake) {
+                    for zh in [false, true] {
+                        let name = passive.name(zh);
+                        assert!(!name.is_empty() && !name.contains(['：', ':', '\n']));
+                    }
+                }
             }
         }
-        assert_eq!(passive_name(0, true), "列阵");
         assert_eq!(
             reward_summary(true, 3, 12, 0),
             "生命 +3 · 伤害 12 · 魔力 +0"

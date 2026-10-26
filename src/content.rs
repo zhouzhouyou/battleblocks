@@ -1,3 +1,9 @@
+#[path = "abilities.rs"]
+mod abilities;
+pub use abilities::{has_passive, Passive};
+pub fn passives(hero: usize, awake: bool) -> &'static [Passive] {
+    abilities::passives(hero, awake)
+}
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct Rules {
     pub awake: bool,
@@ -19,16 +25,16 @@ pub fn health_cap(hero: usize, awake: bool) -> i32 {
 }
 /// Wizard's reserve unlocks on awakening; other roles keep their base cap.
 pub fn mana_cap(hero: usize, awake: bool) -> i32 {
-    if hero == 2 && !awake {
+    if has_passive(hero, awake, Passive::ManaSeal) {
         250
     } else {
         HEROES[hero].mp
     }
 }
 pub fn skill_cost(hero: usize, awake: bool, skill: Skill) -> i32 {
-    if awake && hero == 0 && skill == Skill::Guard {
+    if has_passive(hero, awake, Passive::GuardEconomy) && skill == Skill::Guard {
         80
-    } else if hero == 2 && awake && skill == Skill::Meteor {
+    } else if has_passive(hero, awake, Passive::MeteorEconomy) && skill == Skill::Meteor {
         140
     } else {
         skill.cost()
@@ -894,37 +900,61 @@ pub fn clear_rewards_in(
         h += a;
         d += b;
         m += c;
-        if hero == 4 && board[y][x] == 0 {
-            d += if rules.awake { 6 } else { 4 };
-            m += 2;
+        if board[y][x] == 0 {
+            if has_passive(hero, rules.awake, Passive::BalancedAffinity) {
+                d += 4;
+            }
+            if has_passive(hero, rules.awake, Passive::BalancedResonance) {
+                d += 6;
+            }
+            if has_passive(hero, rules.awake, Passive::ElementReturn) {
+                m += 2;
+            }
         }
     }
     let scale = reward_scale(chain, bonus);
     h = h * scale / 100;
-    d = d * (scale + if hero == 1 && rules.awake { 25 } else { 0 }) / 100;
+    d = d
+        * (scale
+            + if has_passive(hero, rules.awake, Passive::ElvenPower) {
+                25
+            } else {
+                0
+            })
+        / 100;
     m = m * scale / 100;
-    if hero == 0 {
+    if has_passive(hero, rules.awake, Passive::BattleTraining) {
         h = h * 106 / 100;
         d = d * 106 / 100;
         m = m * 106 / 100;
     }
-    if hero == 1 {
+    if has_passive(hero, rules.awake, Passive::ForestPact) {
         h = h * 93 / 100;
         d = d * 93 / 100;
         m = m * 93 / 100;
     }
-    if hero == 2 && mp < mana_cap(hero, rules.awake) {
+    if has_passive(hero, rules.awake, Passive::ArcaneConversion) && mp < mana_cap(hero, rules.awake)
+    {
         let converted = h / 2;
         h -= converted;
         m += converted;
     }
-    if hero == 3 {
+    if has_passive(hero, rules.awake, Passive::Recycling) {
         m += (hp + h - health_cap(hero, rules.awake)).max(0) / 2;
     }
-    if hero == 5 && hp * 100 <= HEROES[hero].hp * if rules.awake { 50 } else { 35 } {
+    if (has_passive(hero, rules.awake, Passive::BloodFury)
+        || has_passive(hero, rules.awake, Passive::BoilingBlood))
+        && hp * 100
+            <= HEROES[hero].hp
+                * if has_passive(hero, rules.awake, Passive::BoilingBlood) {
+                    50
+                } else {
+                    35
+                }
+    {
         d = d * 125 / 100;
     }
-    if hero == 3 && rules.awake && rules.initial_loot {
+    if has_passive(hero, rules.awake, Passive::LootMastery) && rules.initial_loot {
         d = d * 130 / 100;
     }
     (h, d, m)
@@ -940,7 +970,7 @@ pub fn payment(hero: usize, hp: i32, mp: i32, skill: Skill) -> Option<Payment> {
 }
 pub fn blood_cost(hero: usize, awake: bool, missing: i32) -> i32 {
     let missing = missing.max(0);
-    if awake && hero == 6 {
+    if has_passive(hero, awake, Passive::FleshConversion) {
         (missing + 1) / 2
     } else {
         missing * 2
@@ -956,22 +986,6 @@ pub fn payment_in(hero: usize, hp: i32, mp: i32, skill: Skill, rules: Rules) -> 
         })
     } else {
         None
-    }
-}
-pub fn passive(hero: usize, zh: bool) -> &'static str {
-    let (en,cn)=match hero {
-        0=>("Column formation: horizontal\nswaps move two whole columns.\nClear rewards +6%.","列阵：左右交换相邻整列\n上下交换仍为两个方块\n消除收益增加6%"),
-        1=>("Forest step: diagonal adjacent\nswaps are also allowed.\nClear rewards reduced by 7%.","林间穿行：可斜向交换\n仅交换斜向相邻的两格\n横纵三消，消除收益降低7%"),
-        2=>("Arcane conversion: below MP cap,\nhalf of clear healing becomes MP.\nAt full MP, heal normally.","奥术转化：魔力未满时，消除\n治疗的一半转魔力（向下取整）\n魔力已满时正常治疗"),
-        3=>("Scrap recovery: overhealing\nfrom clears becomes mana at 2:1.\nMana still obeys the MP cap.","废物回收：消除溢出治疗\n每2点转为1点魔力\n魔力仍受上限限制"),
-        4=>("Balanced affinity: each balanced\ntile in a rewarded clear gives\n+4 damage and +2 mana.","平衡亲和：有收益消除时\n每个平衡方块额外提供\n4点伤害、2点魔力"),
-        5=>("Blood fury: at 35% HP or less,\nclear damage increases by 25%.\nChecked before each clear wave.","血怒：生命不高于35%时\n消除伤害增加25%\n每轮消除前判断生命"),
-        _=>("Flesh casting: missing mana\ncosts 2 HP per point.\nMust leave at least 1 HP.","血肉施法：魔力不足时\n每缺1魔力支付2生命\n必须至少剩余1生命"),
-    };
-    if zh {
-        cn
-    } else {
-        en
     }
 }
 
@@ -1462,43 +1476,23 @@ pub fn effect_at_in(
         if hero == 0 && skill == Skill::Guard {
             e.hp = health_cap(hero, true) / 5;
         }
-        if hero == 4 && skill == Skill::Imp {
+        if has_passive(hero, rules.awake, Passive::BlastMastery) && skill == Skill::Imp {
             e.damage += e.cells.len() as i32 * 2;
         }
-        if (hero == 0 && skill == Skill::Charge) || (hero == 3 && skill == Skill::Greedy) {
+        if (has_passive(hero, rules.awake, Passive::ChargeMastery) && skill == Skill::Charge)
+            || (has_passive(hero, rules.awake, Passive::LootMastery) && skill == Skill::Greedy)
+        {
             e.damage = e.damage * if hero == 0 { 125 } else { 130 } / 100;
         }
-        if hero == 6 && payment_in(hero, hp, mp, skill, rules).is_some_and(|p| p.blood > 0) {
+        if has_passive(hero, rules.awake, Passive::BloodSacrifice)
+            && payment_in(hero, hp, mp, skill, rules).is_some_and(|p| p.blood > 0)
+        {
             e.damage = e.damage * 120 / 100;
         }
     }
     e
 }
 
-pub fn passive_in(hero: usize, awake: bool, zh: bool) -> &'static str {
-    if awake && hero == 6 {
-        return if zh {
-            "血肉施法：魔力不足时\n1生命抵2魔力，生命向上取整\n必须至少剩余1生命"
-        } else {
-            "Flesh casting: 1 HP pays 2 MP.\nRound HP cost up.\nMust leave at least 1 HP."
-        };
-    }
-    if awake && hero == 4 {
-        return if zh {
-            "平衡亲和：有收益消除时\n每个平衡方块额外提供\n6点伤害、2点魔力"
-        } else {
-            "Balanced affinity: each balanced\ntile in a rewarded clear gives\n+6 damage and +2 mana."
-        };
-    }
-    if awake && hero == 5 {
-        return if zh {
-            "血怒：生命不高于初始上限50%时\n消除伤害增加25%\n每轮消除前判断生命"
-        } else {
-            "Blood fury: at 50% of initial HP,\nclear damage increases by 25%.\nChecked before each clear wave."
-        };
-    }
-    passive(hero, zh)
-}
 pub fn skill_description(skill: Skill, awake: bool, zh: bool) -> &'static str {
     if awake && skill == Skill::Imp {
         return if zh {
@@ -1935,21 +1929,12 @@ pub fn passive_status(
     zh: bool,
 ) -> Option<(&'static str, bool)> {
     if hero == 5 {
-        let active = hp > 0 && hp * 100 <= HEROES[hero].hp * if awake { 50 } else { 35 };
-        return Some((
-            if active {
-                if zh {
-                    "伤害+25%"
-                } else {
-                    "DMG +25%"
-                }
-            } else if zh {
-                "未触发"
-            } else {
-                "Inactive"
-            },
-            active,
-        ));
+        let passive = if has_passive(hero, awake, Passive::BoilingBlood) {
+            Passive::BoilingBlood
+        } else {
+            Passive::BloodFury
+        };
+        return passive.status(hero, hp, mp, awake, zh);
     }
     if hero == 6 && hp > 0 {
         let missing = HEROES[hero]

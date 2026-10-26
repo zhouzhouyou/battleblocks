@@ -262,23 +262,15 @@ pub fn draw(
         }
     } else if page == 1 {
         label(tr(zh, "PASSIVE SKILL", "被动技能"), 304., 431., 22., GOLD);
-        for (i, line) in content::passive(hero, zh).lines().enumerate() {
-            label(
-                line,
-                304.,
-                465. + i as f32 * 24.,
-                fit_size(line, 16., 214.),
-                LIGHTGRAY,
-            );
-        }
+        draw_passive_entries(content::passives(hero, false), zh, false);
     } else {
         label(tr(zh, "AWAKENING", "觉醒能力"), 304., 431., 22., GOLD);
-        for (i, line) in wrap_preview_text(content::awakening_effect(hero, zh), 14.)
+        let changes = content::passives(hero, true)
             .iter()
-            .enumerate()
-        {
-            label(line, 304., 465. + i as f32 * 24., 14., GOLD);
-        }
+            .copied()
+            .filter(|p| !content::passives(hero, false).contains(p))
+            .collect::<Vec<_>>();
+        draw_passive_entries(&changes, zh, true);
     }
     if page == 0 {
         let old_mana = content::mana_cap(hero, false);
@@ -518,6 +510,36 @@ pub fn draw(
     }
 }
 
+fn draw_passive_entries(items: &[content::Passive], zh: bool, changes: bool) {
+    for (i, &passive) in items.iter().enumerate() {
+        let y = 451. + i as f32 * 70.;
+        icons::draw_passive(passive, 304., y, 22.);
+        label(
+            passive.name(zh),
+            334.,
+            y + 17.,
+            fit_size(passive.name(zh), 16., 124.),
+            GOLD,
+        );
+        if changes {
+            let kind = if passive.replaces().is_some() {
+                tr(zh, "Replaces", "替换")
+            } else {
+                tr(zh, "New", "新增")
+            };
+            label(kind, 477., y + 16., 12., SKYBLUE);
+        }
+        for (line, text) in passive.description(zh).lines().enumerate() {
+            label(
+                text,
+                304.,
+                y + 39. + line as f32 * 16.,
+                fit_size(text, 13., 208.),
+                LIGHTGRAY,
+            );
+        }
+    }
+}
 pub fn page_rect(i: usize) -> Rect {
     Rect::new(if i == 0 { 302. } else { 436. }, 607., 76., 22.)
 }
