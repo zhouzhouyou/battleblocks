@@ -125,8 +125,8 @@ impl Passive {
             BattleTraining=>("消除治疗、伤害和魔力\n收益增加6%","Clear healing, damage and mana\nincrease by 6%."),
             ForestStep=>("可交换斜向相邻方块\n仍按横向、纵向三消判定","Diagonal adjacent swaps allowed.\nMatches remain horizontal/vertical."),
             ForestPact=>("消除治疗、伤害和魔力\n收益降低7%","Clear healing, damage and mana\ndecrease by 7%."),
-            ArcaneConversion=>("魔力未满时，一半消除治疗\n转为魔力；已满则正常治疗\n转换量向下取整","Below MP cap, half of clear healing\nbecomes MP (round down).\nAt full MP, heal normally."),
-            ManaSeal=>("当前魔力上限锁定为250\n觉醒后解锁至400","Current MP cap is locked at 250.\nAwakening unlocks 400."),
+            ArcaneConversion=>("魔力未满时，一半消除治疗\n转为魔力；已满则正常治疗\n转换量向下取整","Below cap, half of clear\nhealing becomes MP (floor).\nAt full MP, heal normally."),
+            ManaSeal=>("当前魔力上限锁定为250\n觉醒后解锁至400","MP cap locked at 250.\nAwakening unlocks 400."),
             ManaRelease=>("魔力上限解锁至400","MP cap unlocked to 400."),
             Recycling=>("消除产生的溢出治疗\n每2点转为1魔力，受上限限制","Every 2 overheal from clears\nbecomes 1 MP, obeying the cap."),
             BalancedAffinity=>("有收益消除中，每个平衡\n方块额外造成4点伤害","Each balanced tile in rewarded\nclears deals 4 extra damage."),
@@ -140,9 +140,9 @@ impl Passive {
             GuardEconomy=>("坚守回复的魔力消耗\n从150降低至80","Guard MP cost reduced\nfrom 150 to 80."),
             ElvenPower=>("消除伤害额外增加基础值25%\n与消除增幅加算","Clear damage gains 25% of base.\nAdditive with clear amplification."),
             MeteorEconomy=>("陨星轰击的魔力消耗\n从160降低至140","Meteor MP cost reduced\nfrom 160 to 140."),
-            LootMastery=>("区域掠夺直接与首轮消除\n伤害增加30%，后续连锁不加成","Area loot direct/first clear damage\n+30%; later cascades unchanged."),
+            LootMastery=>("区域掠夺的伤害提高30%\n后续连锁消除不享受此加成","Area loot deals 30% more damage.\nLater cascades get no bonus."),
             BlastMastery=>("平衡引爆每格额外造成2伤害\n单格伤害由12提高至14","Blast gains 2 damage per tile:\n12 increases to 14."),
-            BloodSacrifice=>("使用生命代付的技能\n直接伤害增加20%\n不放大后续消除伤害","HP-paid skills deal 20% more\ndirect damage. Subsequent clear\ndamage is unchanged."),
+            BloodSacrifice=>("使用生命代付的技能\n直接伤害增加20%\n不放大后续消除伤害","HP-paid skills deal 20% more\ndirect damage; later clears\nare unchanged."),
         };
         if zh {
             cn

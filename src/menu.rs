@@ -191,7 +191,17 @@ pub fn draw(
         16.,
         LIGHTGRAY,
     );
-    draw_ellipse(406., 383., 82., 12., 0., Color::from_rgba(20, 23, 31, 255));
+    let detail_page = page != 0;
+    let portrait_height = if detail_page { 132. } else { 182. };
+    let shadow_y = if detail_page { 333. } else { 383. };
+    draw_ellipse(
+        406.,
+        shadow_y,
+        82.,
+        12.,
+        0.,
+        Color::from_rgba(20, 23, 31, 255),
+    );
     sprite(
         if page == 2 { awakened_texture } else { texture },
         if page == 2 {
@@ -199,7 +209,7 @@ pub fn draw(
         } else {
             &sprites::SPRITES[hero]
         },
-        Rect::new(301., 198., 210., 182.),
+        Rect::new(301., 198., 210., portrait_height),
     );
     if page == 0 {
         label(tr(zh, "MAX HEALTH", "生命上限"), 304., 412., 17., LIGHTGRAY);
@@ -261,10 +271,10 @@ pub fn draw(
             label(&text, 508. - label_width(&text, 14.), 566., 14., LIGHTGRAY);
         }
     } else if page == 1 {
-        label(tr(zh, "PASSIVE SKILL", "被动技能"), 304., 431., 22., GOLD);
+        label(tr(zh, "PASSIVE SKILL", "被动技能"), 304., 373., 22., GOLD);
         draw_passive_entries(content::passives(hero, false), zh, false);
     } else {
-        label(tr(zh, "AWAKENING", "觉醒能力"), 304., 431., 22., GOLD);
+        label(tr(zh, "AWAKENING", "觉醒能力"), 304., 373., 22., GOLD);
         let changes = content::passives(hero, true)
             .iter()
             .copied()
@@ -511,8 +521,9 @@ pub fn draw(
 }
 
 fn draw_passive_entries(items: &[content::Passive], zh: bool, changes: bool) {
-    for (i, &passive) in items.iter().enumerate() {
-        let y = 451. + i as f32 * 70.;
+    let mut y = 391.;
+    for &passive in items {
+        let lines = wrap_preview_text(passive.description(zh), if zh { 14.5 } else { 16. });
         icons::draw_passive(passive, 304., y, 22.);
         label(
             passive.name(zh),
@@ -529,15 +540,17 @@ fn draw_passive_entries(items: &[content::Passive], zh: bool, changes: bool) {
             };
             label(kind, 477., y + 16., 12., SKYBLUE);
         }
-        for (line, text) in passive.description(zh).lines().enumerate() {
+        for (line, text) in lines.iter().enumerate() {
             label(
                 text,
                 304.,
-                y + 39. + line as f32 * 16.,
-                fit_size(text, 13., 208.),
+                y + 43. + line as f32 * 20.,
+                if zh { 14. } else { 13. },
                 LIGHTGRAY,
             );
         }
+        // Advance by actual content height, leaving a clear gap before the next icon/title.
+        y += 43. + lines.len().saturating_sub(1) as f32 * 20. + 22.;
     }
 }
 pub fn page_rect(i: usize) -> Rect {
