@@ -180,14 +180,15 @@ fn procedural_cell(x: f32, y: f32) {
     );
 }
 fn conf() -> macroquad::conf::Conf {
+    let (window_width, window_height) = if diagnostic("small_window") {
+        (512, 360)
+    } else {
+        ui::WINDOW_SIZES[1]
+    };
     let window = Conf {
         window_title: "BattleBlocks".into(),
-        window_width: if diagnostic("small_window") {
-            512
-        } else {
-            1024
-        },
-        window_height: if diagnostic("small_window") { 360 } else { 720 },
+        window_width,
+        window_height,
         high_dpi: diagnostic("hidpi"),
         ..Default::default()
     };

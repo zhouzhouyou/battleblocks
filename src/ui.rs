@@ -4,11 +4,17 @@ pub enum Panel {
     Settings,
     Help,
 }
+/// Window sizes offered in settings; the game opens in the larger one.
+pub const WINDOW_SIZES: [(i32, i32); 2] = [(1024, 720), (1280, 900)];
+// Horizontal extent of the volume slider in the first settings row.
+const VOLUME_TRACK: (f32, f32) = (462., 662.);
 pub struct Ui {
     pub panel: Option<Panel>,
     pub opponent: Option<usize>,
     pub opponent_step: bool,
     fullscreen: bool,
+    // Index into WINDOW_SIZES.
+    window: usize,
     pub volume: u32,
 }
 impl Default for Ui {
@@ -18,6 +24,7 @@ impl Default for Ui {
             opponent: None,
             opponent_step: false,
             fullscreen: false,
+            window: 1,
             volume: 100,
         }
     }
@@ -40,6 +47,14 @@ fn button(r: Rect, text: &str, pointer: Vec2) {
     frame(r, r.contains(pointer));
     label_centered(text, r.x + r.w / 2., r.y + r.h / 2. + 8., 22., WHITE);
 }
+fn settings_row(i: usize) -> Rect {
+    Rect::new(280., 190. + i as f32 * 58., 464., 46.)
+}
+/// One of the two choices at the right end of a settings toggle row.
+fn option_rect(row: usize, i: usize) -> Rect {
+    let r = settings_row(row);
+    Rect::new(r.x + r.w - 236. + i as f32 * 116., r.y + 7., 112., 32.)
+}
 pub fn top(i: usize) -> Rect {
     Rect::new(814. + i as f32 * 48., 20., 42., 42.)
 }
@@ -59,11 +74,13 @@ impl Ui {
             self.panel = None;
             return true;
         }
+        let (start, end) = VOLUME_TRACK;
         if self.panel == Some(Panel::Settings)
             && is_mouse_button_down(MouseButton::Left)
-            && Rect::new(448., 190., 280., 46.).contains(pointer)
+            && Rect::new(start - 14., 190., end - start + 28., 46.).contains(pointer)
         {
-            self.volume = (((pointer.x - 462.) / 252.).clamp(0., 1.) * 100.).round() as u32;
+            self.volume =
+                (((pointer.x - start) / (end - start)).clamp(0., 1.) * 100.).round() as u32;
             *muted = false;
         }
         if click {
@@ -95,28 +112,44 @@ impl Ui {
                 self.panel = None;
                 return true;
             }
-            match self.panel {
-                Some(Panel::Settings) => {
-                    for i in 0..5 {
-                        if Rect::new(280., 190. + i as f32 * 58., 464., 46.).contains(pointer) {
-                            match i {
-                                0 => {}
-                                1 => {
-                                    self.fullscreen = !self.fullscreen;
-                                    set_fullscreen(self.fullscreen);
-                                }
-                                2 => request_new_screen_size(1024., 720.),
-                                3 => request_new_screen_size(1280., 900.),
-                                4 => *zh = !*zh,
-                                _ => unreachable!(),
-                            }
+            if self.panel == Some(Panel::Settings) {
+                // Toggle rows: clicking a choice selects it, clicking elsewhere on the
+                // row switches to the other one.
+                for row in 1..4 {
+                    if !settings_row(row).contains(pointer) {
+                        continue;
+                    }
+                    let current = self.choice(row, *zh);
+                    let choice = (0..2)
+                        .find(|&i| option_rect(row, i).contains(pointer))
+                        .unwrap_or(1 - current);
+                    if choice == current {
+                        continue;
+                    }
+                    match row {
+                        1 => {
+                            self.fullscreen = choice == 1;
+                            set_fullscreen(self.fullscreen);
                         }
+                        2 => {
+                            self.window = choice;
+                            let (w, h) = WINDOW_SIZES[choice];
+                            request_new_screen_size(w as f32, h as f32);
+                        }
+                        _ => *zh = choice == 0,
                     }
                 }
-                _ => {}
             }
         }
         previous || self.panel.is_some()
+    }
+    /// Selected choice of a settings toggle row: fullscreen off/on, window size, 中文/English.
+    fn choice(&self, row: usize, zh: bool) -> usize {
+        match row {
+            1 => self.fullscreen as usize,
+            2 => self.window,
+            _ => (!zh) as usize,
+        }
     }
     pub fn draw_top(&self, choosing: bool, muted: bool, paused: bool, pointer: Vec2, zh: bool) {
         for i in 0..4 {
@@ -360,42 +393,63 @@ impl Ui {
         button(Rect::new(758., 119., 42., 38.), "×", pointer);
         match panel {
             Panel::Settings => {
-                let texts = [
-                    format!(
-                        "{}{}",
-                        tr(zh, "Volume", "音量"),
-                        if muted {
-                            tr(zh, " (muted)", "（静音）")
-                        } else {
-                            ""
-                        }
-                    ),
-                    format!(
-                        "{}: {}",
-                        tr(zh, "Fullscreen", "全屏"),
-                        if self.fullscreen {
-                            tr(zh, "On", "开启")
-                        } else {
-                            tr(zh, "Off", "关闭")
-                        }
-                    ),
-                    tr(zh, "Window: 1024 × 720", "窗口：1024 × 720").into(),
-                    tr(zh, "Window: 1280 × 900", "窗口：1280 × 900").into(),
-                    tr(zh, "Language: English / 中文", "语言：中文 / English").into(),
+                let names = [
+                    if muted {
+                        tr(zh, "Volume (muted)", "音量（静音）")
+                    } else {
+                        tr(zh, "Volume", "音量")
+                    },
+                    tr(zh, "Fullscreen", "全屏"),
+                    tr(zh, "Window", "窗口"),
+                    tr(zh, "Language", "语言"),
                 ];
-                for (i, t) in texts.iter().enumerate() {
-                    button(
-                        Rect::new(280., 190. + i as f32 * 58., 464., 46.),
-                        t,
-                        pointer,
-                    );
+                let windows = WINDOW_SIZES.map(|(w, h)| format!("{w} × {h}"));
+                let choices = [
+                    [tr(zh, "Off", "关闭"), tr(zh, "On", "开启")],
+                    [windows[0].as_str(), windows[1].as_str()],
+                    ["中文", "English"],
+                ];
+                for (row, name) in names.iter().enumerate() {
+                    let r = settings_row(row);
+                    frame(r, row > 0 && r.contains(pointer));
+                    label(name, r.x + 12., r.y + r.h / 2. + 8., 22., WHITE);
+                    if row == 0 {
+                        continue;
+                    }
+                    let selected = self.choice(row, zh);
+                    for (i, text) in choices[row - 1].iter().enumerate() {
+                        let o = option_rect(row, i);
+                        draw_rectangle(o.x, o.y, o.w, o.h, Color::from_rgba(24, 30, 43, 255));
+                        let on = i == selected;
+                        draw_rectangle_lines(
+                            o.x,
+                            o.y,
+                            o.w,
+                            o.h,
+                            if on { 2. } else { 1. },
+                            if on {
+                                GOLD
+                            } else {
+                                Color::from_rgba(66, 71, 83, 255)
+                            },
+                        );
+                        label_centered(
+                            text,
+                            o.x + o.w / 2.,
+                            o.y + 22.,
+                            18.,
+                            if on { WHITE } else { GRAY },
+                        );
+                    }
                 }
-                draw_rectangle(440., 190., 304., 46., Color::from_rgba(39, 47, 64, 255));
-                draw_line(462., 213., 714., 213., 5., GRAY);
-                let x = 462. + 252. * self.volume as f32 / 100.;
-                draw_line(462., 213., x, 213., 5., SKYBLUE);
-                draw_circle(x, 213., 8., WHITE);
-                label(&format!("{}%", self.volume), 666., 182., 18., SKYBLUE);
+                // Slider and percentage share the volume row.
+                let (start, end) = VOLUME_TRACK;
+                let y = settings_row(0).y + 23.;
+                draw_line(start, y, end, y, 5., GRAY);
+                let x = start + (end - start) * self.volume as f32 / 100.;
+                draw_line(start, y, x, y, 5., SKYBLUE);
+                draw_circle(x, y, 8., WHITE);
+                label_centered(&format!("{}%", self.volume), 707., y + 7., 20., SKYBLUE);
             }
             Panel::Help => {
                 let names = if zh {
