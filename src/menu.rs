@@ -486,13 +486,6 @@ pub fn draw(
         16.,
         LIGHTGRAY,
     );
-    label(
-        tr(zh, "Demo · no mana spent", "演示不消耗魔力"),
-        766.,
-        594.,
-        16.,
-        LIGHTGRAY,
-    );
     let r = start_rect();
     panel(
         r,
