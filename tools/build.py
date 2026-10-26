@@ -5,6 +5,7 @@ ROOT=Path(__file__).resolve().parents[1]
 CACHE=ROOT/'.build-tools'
 FONT_URL='https://raw.githubusercontent.com/google/fonts/main/ofl/notosanssc/NotoSansSC%5Bwght%5D.ttf'
 FONT_SHA256='a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da'
+FONTTOOLS='4.67.0'
 parser=argparse.ArgumentParser();parser.add_argument('--setup-only',action='store_true');group=parser.add_mutually_exclusive_group();group.add_argument('--native-only',action='store_true');group.add_argument('--web-only',action='store_true');args=parser.parse_args()
 if sys.version_info<(3,10): raise SystemExit('Font build tools require Python 3.10 or newer.')
 CACHE.mkdir(exist_ok=True)
@@ -16,8 +17,10 @@ if not source.exists():
     source.write_bytes(data)
 if hashlib.sha256(source.read_bytes()).hexdigest()!=FONT_SHA256:raise SystemExit('Cached font checksum mismatch')
 site=CACHE/'site'
-if not (site/'fonttools-4.66.1.dist-info').exists():
-    subprocess.run([sys.executable,'-m','pip','install','--target',str(site),'fonttools==4.66.1'],check=True)
+# Rebuild the cache from scratch on a version change; pip --target keeps old package folders.
+if not (site/f'fonttools-{FONTTOOLS}.dist-info').exists():
+    shutil.rmtree(site,ignore_errors=True)
+    subprocess.run([sys.executable,'-m','pip','install','--target',str(site),f'fonttools=={FONTTOOLS}'],check=True)
 path_file=CACHE/'python-path.txt'
 if not path_file.exists() or path_file.read_text()!=sys.executable:path_file.write_text(sys.executable)
 if args.setup_only:raise SystemExit(0)
