@@ -176,8 +176,8 @@ impl Skill {
     pub fn description(self, zh: bool) -> &'static str {
         let names = match self {
             Self::Blood => (
-                "Spend 80 mana to heal 100.\nConsumes your turn.",
-                "消耗80魔力回复100生命\n释放后结束回合",
+                "Spend 80 mana to heal 100.",
+                "消耗80魔力回复100生命",
             ),
             Self::Balance => (
                 "Turn selected 2×2 into\nbalanced tiles. Set up\nbalanced detonation.",
@@ -195,14 +195,14 @@ impl Skill {
                 "Clear 2 adjacent columns.\nDeal 60 + their attack value.\nNo healing or mana gain.",
                 "选择相邻两列并清除\n造成60＋方块伤害值总和\n不回复生命或魔力",
             ),
-            Self::Guard => ("Restore 20% of max HP.\nConsume pure healing tiles.\nRefill; resolve cascades.","回复最大生命值的20%\n清除纯治疗，不额外回血\n掉落后结算三消，再换人"),
+            Self::Guard => ("Restore 20% of max HP.\nConsume pure healing tiles.","回复最大生命值的20%\n清除纯治疗，不额外回血"),
             Self::Landslide => (
                 "Next adjacent swap also\nswaps both parallel pairs.\nNo match required.",
                 "下次相邻交换附带两侧交换\n同时交换三组平行方块\n不要求交换后形成三消",
             ),
             Self::Strike => (
-                "Next rewarded clear gets\n+100% rewards.\nOne cast per exchange.",
-                "下次有收益的消除收益+100%\n增加治疗、伤害和魔力\n每次交换前只能释放一次",
+                "Next match grants double\nhealing, damage and mana.\nOne cast per exchange.",
+                "下次三消时，治疗、伤害\n和魔力翻倍\n每次交换前只能释放一次",
             ),
             Self::Nature => (
                 "Change a selected 2×2\nto balanced tiles.\nHeal 10, deal 25.",
@@ -1503,9 +1503,9 @@ pub fn skill_description(skill: Skill, awake: bool, zh: bool) -> &'static str {
     }
     if awake && skill == Skill::Guard {
         if zh {
-            "回复觉醒后生命上限的20%\n清除纯治疗，不额外回血\n掉落后结算三消，再换人"
+            "回复觉醒后生命上限的20%\n清除纯治疗，不额外回血"
         } else {
-            "Heal 20% of the new HP cap.\nConsume pure healing tiles.\nRefill; resolve cascades."
+            "Heal 20% of the new HP cap.\nConsume pure healing tiles."
         }
     } else {
         skill.description(zh)
