@@ -14,6 +14,7 @@ mod ui;
 use presentation::{CLEAR_TIME, TURN_HOLD};
 mod rng;
 mod strategy;
+mod turns;
 use content::{effect, effect_at, HEROES, VALUES};
 struct SpriteAsset {
     bytes: &'static [u8],
@@ -72,8 +73,12 @@ fn player_skill_rect(i: usize) -> Rect {
 fn enemy_skill_rect(i: usize) -> Rect {
     Rect::new(796., 470. + i as f32 * 44., 208., 38.)
 }
-fn status_rect() -> Rect {
-    Rect::new(256., 48., 512., 38.)
+// Turn indicator rows above the board frame, between the two sidebars.
+fn current_turn_rect() -> Rect {
+    Rect::new(236., 6., 552., 42.)
+}
+fn previous_turn_rect() -> Rect {
+    Rect::new(236., 52., 552., 32.)
 }
 type Move = ((usize, usize), (usize, usize));
 /// Row of the move-reward panel under the pointer; the panel lists 7 hints per page.
@@ -317,6 +322,20 @@ fn label_width(text: &str, size: f32) -> f32 {
 fn fit_size(text: &str, size: f32, width: f32) -> f32 {
     (size * width / label_width(text, size).max(1.)).min(size)
 }
+/// Differently colored pieces of one line from `x`, shrunk together to fit into `room`.
+/// Measures like `label_width`, so draw before the frame's first `flush_labels`.
+fn label_segments(segments: &[(String, Color)], x: f32, y: f32, size: f32, room: f32) {
+    let width: f32 = segments
+        .iter()
+        .map(|(text, _)| label_width(text, size))
+        .sum();
+    let size = (size * room / width.max(1.)).min(size);
+    let mut x = x;
+    for (text, color) in segments {
+        label(text, x, y, size, *color);
+        x += label_width(text, size);
+    }
+}
 /// Centered on `center_x`. The width is measured when the label is flushed, after the
 /// frame's glyphs are cached, so this is safe after an earlier `flush_labels` too.
 fn label_centered(text: &str, center_x: f32, y: f32, size: f32, color: Color) {
@@ -498,6 +517,7 @@ async fn main() {
     let mut game_over_logged = false;
     let mut charge_damage: Option<(i32, bool)> = None;
     let mut presentation = presentation::Presentation::default();
+    let mut turn_log = turns::Log::new();
     macro_rules! snapshot {
         () => {
             debug::Snapshot {
@@ -524,6 +544,7 @@ async fn main() {
                 rng_state: rng::state(),
                 charge_damage,
                 charge_remaining: presentation.charge_remaining(),
+                turns: turn_log.clone(),
             }
         };
     }
@@ -555,6 +576,7 @@ async fn main() {
             targeting = None;
             presentation.clear();
             charge_damage = state.charge_damage;
+            turn_log = state.turns;
             last_cast_enemy = charge_damage.map(|(_, enemy)| enemy).unwrap_or(false);
             if charge_damage.is_some() {
                 let column = pending.first().map(|c| c.0).unwrap_or(0);
@@ -778,6 +800,7 @@ async fn main() {
                                         extra_bonus = bonuses[side as usize];
                                         armed = armed_sides[side as usize];
                                         enemy_clock = 0.;
+                                        turn_log.next(side);
                                     }
                                     Command::Pause(value) => paused = value,
                                     Command::Resolve => {
@@ -892,6 +915,7 @@ async fn main() {
             extra_bonus = 0;
             reward = true;
             game_over_logged = false;
+            turn_log = turns::Log::new();
             console.reset_history();
             console.event("restart", "Restart battle", &before, &snapshot!());
         }
@@ -1002,6 +1026,7 @@ async fn main() {
                 chain = 0;
                 note = "Select two adjacent tiles";
                 game_over_logged = false;
+                turn_log = turns::Log::new();
                 console.reset_history();
                 console.event(
                     "battle_start",
@@ -1063,6 +1088,7 @@ async fn main() {
                 } else {
                     before.enemy_hp - enemy
                 };
+                turn_log.current.add(0, actual, 0);
                 presentation.health(
                     [before.hp, before.enemy_hp],
                     [hp, enemy],
@@ -1093,6 +1119,9 @@ async fn main() {
                 enemy_turn = !enemy_turn;
                 extra_bonus = bonuses[enemy_turn as usize];
                 armed = armed_sides[enemy_turn as usize];
+                turn_log.next(enemy_turn);
+                // The last turn has its own row; prompt the new actor afresh.
+                note = "Select two adjacent tiles";
                 action_done = false;
                 selected = None;
                 enemy_clock = 0.;
@@ -1123,6 +1152,7 @@ async fn main() {
                         console.checkpoint(before.clone());
                     }
                     b = board::fresh_for(id);
+                    turn_log.current.actions.push(turns::Action::Reroll);
                     selected = None;
                     move_flash = None;
                     presentation.stop_motion();
@@ -1175,6 +1205,11 @@ async fn main() {
                         let before = enemy_before.clone();
                         console.checkpoint(before.clone());
                         presentation.swap(&before.board, a, c, armed, enemy_turn, enemy_id);
+                        turn_log.current.actions.push(turns::Action::Swap {
+                            from: a,
+                            to: c,
+                            columns: enemy_id == 0 && !armed && a.1 == c.1,
+                        });
                         if armed {
                             parallel_swap(&mut b, a, c);
                             armed = false;
@@ -1202,6 +1237,7 @@ async fn main() {
                     } else {
                         let before = snapshot!();
                         b = board::fresh_for(enemy_id);
+                        turn_log.current.actions.push(turns::Action::Reroll);
                         console.event(
                             "board_refresh",
                             "AI chose reroll instead of a skill",
@@ -1315,6 +1351,10 @@ async fn main() {
                     } else {
                         mp - before.mp + pay.mana
                     };
+                    turn_log.current.actions.push(turns::Action::Skill(skill));
+                    turn_log
+                        .current
+                        .add(actual_heal, actual_damage, actual_mana);
                     let caster = &HEROES[if enemy_turn { enemy_id } else { hero_id }];
                     feedback = format!(
                         "{} · {}  {}",
@@ -1470,6 +1510,10 @@ async fn main() {
                     } else {
                         mp - before.mp
                     };
+                    turn_log
+                        .current
+                        .add(actual_heal, actual_damage, actual_mana);
+                    turn_log.current.chain = turn_log.current.chain.max(chain.max(1));
                     if reward {
                         feedback = format!(
                             "{} · {}",
@@ -1529,6 +1573,11 @@ async fn main() {
                                 enemy_turn,
                                 hero_id,
                             );
+                            turn_log.current.actions.push(turns::Action::Swap {
+                                from: a,
+                                to: c,
+                                columns: hero_id == 0 && !before.armed && a.1 == c.1,
+                            });
                             console.checkpoint(before.clone());
                             action_done = true;
                             move_flash = Some((a, c));
@@ -1680,10 +1729,13 @@ async fn main() {
                 sprite.indices,
             );
         }
-        label_centered(tr(zh, "BATTLE BLOCKS", "方块战斗"), 512., 39., 32., GOLD);
+        let title = tr(zh, "BATTLE BLOCKS", "方块战斗");
+        label(title, 24., 57., fit_size(title, 32., 200.), GOLD);
         interface.draw_top(false, muted, paused, pointer, zh);
-        // Status strip above the board: who acts, what is happening and the cascade depth.
-        let status = status_rect();
+        // Two-row turn indicator above the board. The current turn stands out: who acts,
+        // what was done so far, its running result and the cascade depth. The previous
+        // turn sits below in muted colors.
+        let current = current_turn_rect();
         let over = hp == 0 || enemy == 0;
         let turn_color = if over {
             GOLD
@@ -1693,14 +1745,14 @@ async fn main() {
             SKYBLUE
         };
         draw_rectangle(
-            status.x,
-            status.y,
-            status.w,
-            status.h,
-            Color::new(0.06, 0.08, 0.13, 0.96),
+            current.x,
+            current.y,
+            current.w,
+            current.h,
+            Color::new(0.07, 0.10, 0.16, 0.98),
         );
-        draw_rectangle_lines(status.x, status.y, status.w, status.h, 2., turn_color);
-        let chip = Rect::new(status.x + 5., status.y + 5., 104., 28.);
+        draw_rectangle_lines(current.x, current.y, current.w, current.h, 2., turn_color);
+        let chip = Rect::new(current.x + 5., current.y + 5., 104., current.h - 10.);
         draw_rectangle(
             chip.x,
             chip.y,
@@ -1724,67 +1776,16 @@ async fn main() {
                 tr(zh, "Your turn", "你的回合")
             },
             chip.x + chip.w / 2.,
-            chip.y + 20.,
+            chip.y + 23.,
             18.,
             turn_color,
         );
-        let text_x = chip.x + chip.w + 12.;
-        if let Some(skill) = last_cast.filter(|s| cast_time > 0. && *s != content::Skill::Charge) {
-            icons::draw(skill, text_x, status.y + 8., 22.);
-            label(
-                &format!(
-                    "{} · {}",
-                    if last_cast_enemy {
-                        tr(zh, "Enemy", "敌方")
-                    } else {
-                        tr(zh, "You", "我方")
-                    },
-                    skill.name(zh)
-                ),
-                text_x + 30.,
-                status.y + 25.,
-                19.,
-                GOLD,
-            );
-        } else {
-            let phase = if over {
-                tr(
-                    zh,
-                    "Battle over · R to play again",
-                    "战斗结束 · 按 R 再来一局",
-                )
-                .to_string()
-            } else if presentation.charging() {
-                content::Skill::Charge.name(zh).to_string()
-            } else if let Some(swap) = presentation.swapping() {
-                if swap {
-                    tr(zh, "Swapping", "正在交换")
-                } else {
-                    tr(zh, "Tiles falling", "方块掉落")
-                }
-                .to_string()
-            } else if !pending.is_empty() {
-                tr(zh, "Clearing matches", "正在消除").to_string()
-            } else if action_done {
-                tr(zh, "Action resolved", "行动结算完成").to_string()
-            } else if enemy_turn {
-                tr(zh, "Enemy is choosing", "敌方思考中").to_string()
-            } else if let Some(skill) = targeting {
-                format!(
-                    "{} · {}",
-                    skill.name(zh),
-                    tr(zh, "click a target", "点击棋盘选择目标")
-                )
-            } else {
-                localized_note(zh, note).to_string()
-            };
-            label(&phase, text_x, status.y + 25., 19., WHITE);
-        }
         let chain_text = format!("{} {chain}", tr(zh, "Chain", "连锁"));
+        let chain_x = current.x + current.w - 14. - label_width(&chain_text, 18.);
         label(
             &chain_text,
-            status.x + status.w - 14. - label_width(&chain_text, 18.),
-            status.y + 25.,
+            chain_x,
+            current.y + 28.,
             18.,
             if chain > 1 {
                 GOLD
@@ -1793,6 +1794,116 @@ async fn main() {
             } else {
                 GRAY
             },
+        );
+        let mut text_x = chip.x + chip.w + 12.;
+        if let Some(skill) = turn_log.current.last_skill() {
+            icons::draw(skill, text_x, current.y + 10., 22.);
+            text_x += 30.;
+        }
+        let phase = if over {
+            tr(zh, "Battle over", "战斗结束").to_string()
+        } else if presentation.charging() {
+            tr(zh, "Charging", "冲锋中").to_string()
+        } else if let Some(swap) = presentation.swapping() {
+            if swap {
+                tr(zh, "Swapping", "正在交换")
+            } else {
+                tr(zh, "Tiles falling", "方块掉落")
+            }
+            .to_string()
+        } else if !pending.is_empty() {
+            tr(zh, "Clearing matches", "正在消除").to_string()
+        } else if action_done {
+            tr(zh, "Action resolved", "行动结算完成").to_string()
+        } else if enemy_turn {
+            tr(zh, "Enemy is choosing", "敌方思考中").to_string()
+        } else if let Some(skill) = targeting {
+            format!(
+                "{} · {}",
+                skill.name(zh),
+                tr(zh, "click a target", "点击棋盘选择目标")
+            )
+        } else {
+            localized_note(zh, note).to_string()
+        };
+        // Actions so far, then the running result, or the phase until something changes.
+        let actions = turn_log.current.actions_text(zh);
+        let mut segments = Vec::new();
+        if !actions.is_empty() {
+            segments.push((actions, WHITE));
+            segments.push((" · ".to_string(), GRAY));
+        }
+        segments.push(match turn_log.current.results_text(zh) {
+            Some(results) => (results, GOLD),
+            None => (phase, WHITE),
+        });
+        label_segments(
+            &segments,
+            text_x,
+            current.y + 28.,
+            19.,
+            chain_x - 12. - text_x,
+        );
+        let previous = previous_turn_rect();
+        draw_rectangle(
+            previous.x,
+            previous.y,
+            previous.w,
+            previous.h,
+            Color::new(0.05, 0.06, 0.09, 0.92),
+        );
+        draw_rectangle_lines(
+            previous.x,
+            previous.y,
+            previous.w,
+            previous.h,
+            1.,
+            Color::new(0.25, 0.28, 0.35, 0.8),
+        );
+        label_centered(
+            tr(zh, "Last turn", "上一回合"),
+            chip.x + chip.w / 2.,
+            previous.y + 21.,
+            15.,
+            GRAY,
+        );
+        let segments = match &turn_log.previous {
+            Some(turn) => {
+                let mut segments = vec![
+                    if turn.enemy {
+                        (tr(zh, "Enemy", "敌方").to_string(), ORANGE)
+                    } else {
+                        (tr(zh, "You", "我方").to_string(), SKYBLUE)
+                    },
+                    (tr(zh, ": ", "：").to_string(), GRAY),
+                ];
+                let actions = turn.actions_text(zh);
+                if !actions.is_empty() {
+                    segments.push((actions, LIGHTGRAY));
+                    segments.push((" · ".to_string(), GRAY));
+                }
+                segments.push((
+                    turn.results_text(zh)
+                        .unwrap_or_else(|| tr(zh, "no gain", "无收益").to_string()),
+                    LIGHTGRAY,
+                ));
+                if turn.chain > 1 {
+                    segments.push((
+                        format!(" · {} {}", tr(zh, "Chain", "连锁"), turn.chain),
+                        GRAY,
+                    ));
+                }
+                segments
+            }
+            None => vec![(tr(zh, "None yet", "暂无").to_string(), GRAY)],
+        };
+        let text_x = chip.x + chip.w + 12.;
+        label_segments(
+            &segments,
+            text_x,
+            previous.y + 21.,
+            15.,
+            previous.x + previous.w - 14. - text_x,
         );
         label(
             &format!(
@@ -2365,19 +2476,7 @@ async fn main() {
                 let (a, c) = legal_hints[i];
                 let column = hint_actor == 0 && !armed && a.1 == c.1;
                 label(
-                    &format!(
-                        "#{} ({},{})↔({},{}){}",
-                        i + 1,
-                        a.0 + 1,
-                        a.1 + 1,
-                        c.0 + 1,
-                        c.1 + 1,
-                        if column {
-                            tr(zh, " COL", " 整列")
-                        } else {
-                            ""
-                        }
-                    ),
+                    &format!("#{} {}", i + 1, turns::swap_text(zh, a, c, column)),
                     800.,
                     row_y + 16.,
                     13.,
