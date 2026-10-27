@@ -1,0 +1,418 @@
+{
+  "method": "All 24 runtime PNG images, including original sprite atlases, tiles, defeat screen and awakening skins. Lossless WebP method=6, exact RGBA equality; identical release settings and source code in isolated copies.",
+  "variants": {
+    "png": {
+      "macroquad": "0.4.16",
+      "native_target": "aarch64-apple-darwin",
+      "wasm_bytes": 1020283,
+      "web_startup_gzip_bytes": 614716,
+      "web_bgm_bytes": 169994,
+      "web_zip_bytes": 902675,
+      "native_executable_bytes": 1796752,
+      "native_package_bytes": 2187044,
+      "native_zip_bytes": 1245031,
+      "native_zip": "macos-arm64.zip",
+      "images": [
+        {
+          "path": "assets/awakened/chort-awakening.png",
+          "png": 8653,
+          "webp": 7042
+        },
+        {
+          "path": "assets/awakened/elf-awakening.png",
+          "png": 10749,
+          "webp": 9304
+        },
+        {
+          "path": "assets/awakened/goblin-awakening.png",
+          "png": 8214,
+          "webp": 6386
+        },
+        {
+          "path": "assets/awakened/imp-awakening.png",
+          "png": 8446,
+          "webp": 7102
+        },
+        {
+          "path": "assets/awakened/knight-awakening.png",
+          "png": 8676,
+          "webp": 7296
+        },
+        {
+          "path": "assets/awakened/wizard-awakening.png",
+          "png": 8357,
+          "webp": 7126
+        },
+        {
+          "path": "assets/awakened/zombie-awakening.png",
+          "png": 7434,
+          "webp": 5846
+        },
+        {
+          "path": "assets/balanced.png",
+          "png": 4464,
+          "webp": 2826
+        },
+        {
+          "path": "assets/big_demon_ro.png",
+          "png": 24941,
+          "webp": 5222
+        },
+        {
+          "path": "assets/big_zombie.png",
+          "png": 4007,
+          "webp": 716
+        },
+        {
+          "path": "assets/chort.png",
+          "png": 3097,
+          "webp": 430
+        },
+        {
+          "path": "assets/damage.png",
+          "png": 5686,
+          "webp": 3520
+        },
+        {
+          "path": "assets/defeat.png",
+          "png": 5986,
+          "webp": 1658
+        },
+        {
+          "path": "assets/dm.png",
+          "png": 3678,
+          "webp": 1690
+        },
+        {
+          "path": "assets/elf.png",
+          "png": 3361,
+          "webp": 448
+        },
+        {
+          "path": "assets/goblin.png",
+          "png": 1212,
+          "webp": 208
+        },
+        {
+          "path": "assets/hd.png",
+          "png": 4763,
+          "webp": 1692
+        },
+        {
+          "path": "assets/hero-thumbnails.png",
+          "png": 1939,
+          "webp": 790
+        },
+        {
+          "path": "assets/hm.png",
+          "png": 4504,
+          "webp": 2940
+        },
+        {
+          "path": "assets/hp.png",
+          "png": 4850,
+          "webp": 3076
+        },
+        {
+          "path": "assets/imp.png",
+          "png": 1459,
+          "webp": 316
+        },
+        {
+          "path": "assets/knight.png",
+          "png": 3641,
+          "webp": 422
+        },
+        {
+          "path": "assets/mp.png",
+          "png": 4168,
+          "webp": 2534
+        },
+        {
+          "path": "assets/wizzard.png",
+          "png": 3868,
+          "webp": 496
+        }
+      ],
+      "image_bytes": 146153,
+      "native_gzip_bytes": 1077945,
+      "wasm_gzip_bytes": 502128
+    },
+    "png_webp_decoder": {
+      "macroquad": "0.4.16",
+      "native_target": "aarch64-apple-darwin",
+      "wasm_bytes": 1101355,
+      "web_startup_gzip_bytes": 647036,
+      "web_bgm_bytes": 169994,
+      "web_zip_bytes": 934995,
+      "native_executable_bytes": 1862992,
+      "native_package_bytes": 2253284,
+      "native_zip_bytes": 1283724,
+      "native_zip": "macos-arm64.zip",
+      "images": [
+        {
+          "path": "assets/awakened/chort-awakening.png",
+          "png": 8653,
+          "webp": 7042
+        },
+        {
+          "path": "assets/awakened/elf-awakening.png",
+          "png": 10749,
+          "webp": 9304
+        },
+        {
+          "path": "assets/awakened/goblin-awakening.png",
+          "png": 8214,
+          "webp": 6386
+        },
+        {
+          "path": "assets/awakened/imp-awakening.png",
+          "png": 8446,
+          "webp": 7102
+        },
+        {
+          "path": "assets/awakened/knight-awakening.png",
+          "png": 8676,
+          "webp": 7296
+        },
+        {
+          "path": "assets/awakened/wizard-awakening.png",
+          "png": 8357,
+          "webp": 7126
+        },
+        {
+          "path": "assets/awakened/zombie-awakening.png",
+          "png": 7434,
+          "webp": 5846
+        },
+        {
+          "path": "assets/balanced.png",
+          "png": 4464,
+          "webp": 2826
+        },
+        {
+          "path": "assets/big_demon_ro.png",
+          "png": 24941,
+          "webp": 5222
+        },
+        {
+          "path": "assets/big_zombie.png",
+          "png": 4007,
+          "webp": 716
+        },
+        {
+          "path": "assets/chort.png",
+          "png": 3097,
+          "webp": 430
+        },
+        {
+          "path": "assets/damage.png",
+          "png": 5686,
+          "webp": 3520
+        },
+        {
+          "path": "assets/defeat.png",
+          "png": 5986,
+          "webp": 1658
+        },
+        {
+          "path": "assets/dm.png",
+          "png": 3678,
+          "webp": 1690
+        },
+        {
+          "path": "assets/elf.png",
+          "png": 3361,
+          "webp": 448
+        },
+        {
+          "path": "assets/goblin.png",
+          "png": 1212,
+          "webp": 208
+        },
+        {
+          "path": "assets/hd.png",
+          "png": 4763,
+          "webp": 1692
+        },
+        {
+          "path": "assets/hero-thumbnails.png",
+          "png": 1939,
+          "webp": 790
+        },
+        {
+          "path": "assets/hm.png",
+          "png": 4504,
+          "webp": 2940
+        },
+        {
+          "path": "assets/hp.png",
+          "png": 4850,
+          "webp": 3076
+        },
+        {
+          "path": "assets/imp.png",
+          "png": 1459,
+          "webp": 316
+        },
+        {
+          "path": "assets/knight.png",
+          "png": 3641,
+          "webp": 422
+        },
+        {
+          "path": "assets/mp.png",
+          "png": 4168,
+          "webp": 2534
+        },
+        {
+          "path": "assets/wizzard.png",
+          "png": 3868,
+          "webp": 496
+        }
+      ],
+      "image_bytes": 146153,
+      "native_gzip_bytes": 1116638,
+      "wasm_gzip_bytes": 534445
+    },
+    "webp": {
+      "macroquad": "0.4.16",
+      "native_target": "aarch64-apple-darwin",
+      "wasm_bytes": 1034291,
+      "web_startup_gzip_bytes": 605815,
+      "web_bgm_bytes": 169994,
+      "web_zip_bytes": 893774,
+      "native_executable_bytes": 1796944,
+      "native_package_bytes": 2187236,
+      "native_zip_bytes": 1242053,
+      "native_zip": "macos-arm64.zip",
+      "images": [
+        {
+          "path": "assets/awakened/chort-awakening.png",
+          "png": 8653,
+          "webp": 7042
+        },
+        {
+          "path": "assets/awakened/elf-awakening.png",
+          "png": 10749,
+          "webp": 9304
+        },
+        {
+          "path": "assets/awakened/goblin-awakening.png",
+          "png": 8214,
+          "webp": 6386
+        },
+        {
+          "path": "assets/awakened/imp-awakening.png",
+          "png": 8446,
+          "webp": 7102
+        },
+        {
+          "path": "assets/awakened/knight-awakening.png",
+          "png": 8676,
+          "webp": 7296
+        },
+        {
+          "path": "assets/awakened/wizard-awakening.png",
+          "png": 8357,
+          "webp": 7126
+        },
+        {
+          "path": "assets/awakened/zombie-awakening.png",
+          "png": 7434,
+          "webp": 5846
+        },
+        {
+          "path": "assets/balanced.png",
+          "png": 4464,
+          "webp": 2826
+        },
+        {
+          "path": "assets/big_demon_ro.png",
+          "png": 24941,
+          "webp": 5222
+        },
+        {
+          "path": "assets/big_zombie.png",
+          "png": 4007,
+          "webp": 716
+        },
+        {
+          "path": "assets/chort.png",
+          "png": 3097,
+          "webp": 430
+        },
+        {
+          "path": "assets/damage.png",
+          "png": 5686,
+          "webp": 3520
+        },
+        {
+          "path": "assets/defeat.png",
+          "png": 5986,
+          "webp": 1658
+        },
+        {
+          "path": "assets/dm.png",
+          "png": 3678,
+          "webp": 1690
+        },
+        {
+          "path": "assets/elf.png",
+          "png": 3361,
+          "webp": 448
+        },
+        {
+          "path": "assets/goblin.png",
+          "png": 1212,
+          "webp": 208
+        },
+        {
+          "path": "assets/hd.png",
+          "png": 4763,
+          "webp": 1692
+        },
+        {
+          "path": "assets/hero-thumbnails.png",
+          "png": 1939,
+          "webp": 790
+        },
+        {
+          "path": "assets/hm.png",
+          "png": 4504,
+          "webp": 2940
+        },
+        {
+          "path": "assets/hp.png",
+          "png": 4850,
+          "webp": 3076
+        },
+        {
+          "path": "assets/imp.png",
+          "png": 1459,
+          "webp": 316
+        },
+        {
+          "path": "assets/knight.png",
+          "png": 3641,
+          "webp": 422
+        },
+        {
+          "path": "assets/mp.png",
+          "png": 4168,
+          "webp": 2534
+        },
+        {
+          "path": "assets/wizzard.png",
+          "png": 3868,
+          "webp": 496
+        }
+      ],
+      "image_bytes": 79086,
+      "native_gzip_bytes": 1074967,
+      "wasm_gzip_bytes": 493223
+    }
+  },
+  "png_source_commit": "73aed51",
+  "selection": "webp: smaller downloadable archives on both platforms; raw native +192 bytes, raw wasm +14008 bytes. All transitive dependency versions fixed."
+}
