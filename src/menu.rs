@@ -73,6 +73,8 @@ fn sprite(texture: &Texture2D, asset: &SpriteAsset, area: Rect) {
     }
     let scale = (area.w / asset.w).min(area.h / asset.h);
     let size = vec2(asset.w * scale, asset.h * scale);
+    let (size, rotation) =
+        crate::presentation::idle_pose(size, get_time(), asset.indices.len() == 1);
     draw_texture_ex(
         texture,
         area.x + (area.w - size.x) / 2.,
@@ -80,6 +82,8 @@ fn sprite(texture: &Texture2D, asset: &SpriteAsset, area: Rect) {
         WHITE,
         DrawTextureParams {
             dest_size: Some(size),
+            rotation,
+            pivot: Some(vec2(area.x + area.w / 2., area.y + area.h)),
             source: Some(Rect::new(
                 asset.indices[frame] as f32 * asset.w,
                 0.,

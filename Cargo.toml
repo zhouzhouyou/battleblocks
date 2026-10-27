@@ -7,6 +7,9 @@ default-run = "battleblocks"
 [dependencies]
 macroquad = { version = "=0.4.16", default-features = false }
 
+# Unify the existing image decoder dependency; no new crate.
+image = { version = "=0.24.9", default-features = false, features = ["webp"] }
+
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 cpal = "=0.18.2"
 lewton = "=0.10.2"
