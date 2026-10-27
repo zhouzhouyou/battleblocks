@@ -5,6 +5,22 @@ pub const SWAP_TIME: f64 = 0.35;
 pub const CLEAR_TIME: f64 = 0.4;
 pub const FALL_TIME: f64 = 0.4;
 pub const TURN_HOLD: f64 = 0.85;
+/// Single-frame skins breathe and gently shift their weight around planted feet.
+/// Multi-frame original sprites retain their authored animation unchanged.
+pub fn idle_pose(size: Vec2, time: f64, single_frame: bool) -> (Vec2, f32) {
+    if !single_frame {
+        return (size, 0.);
+    }
+    let phase = (time * std::f64::consts::TAU / 2.4) as f32;
+    let breath = phase.sin();
+    (
+        vec2(
+            size.x * (1. - 0.008 * breath),
+            size.y * (0.982 + 0.018 * breath),
+        ),
+        0.009 * (phase * 0.5).sin(),
+    )
+}
 struct Motion {
     from: Vec2,
     to: Vec2,

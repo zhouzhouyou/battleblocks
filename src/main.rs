@@ -168,6 +168,9 @@ fn cost_text(zh: bool, mana: i32, blood: i32) -> String {
         (false, false) => format!("{mana} MP"),
     }
 }
+fn skill_requires_board_click(skill: content::Skill) -> bool {
+    content::targeted(skill)
+}
 fn toggle_skill_target(
     current: Option<content::Skill>,
     skill: content::Skill,
@@ -256,7 +259,7 @@ fn conf() -> macroquad::conf::Conf {
     }
 }
 fn texture(bytes: &[u8]) -> Texture2D {
-    let t = Texture2D::from_file_with_format(bytes, Some(ImageFormat::Png));
+    let t = Texture2D::from_file_with_format(bytes, None);
     t.set_filter(FilterMode::Nearest);
     t
 }
@@ -464,6 +467,8 @@ fn actor(
         .min(area.h / h)
         .min(if h <= 96. { 3. } else { 0.55 });
     let size = vec2(w * scale, h * scale);
+    let (size, rotation) = presentation::idle_pose(size, time, indices.len() == 1);
+    let foot = vec2(area.x + area.w / 2., area.y + area.h);
     draw_texture_ex(
         t,
         area.x + (area.w - size.x) / 2.,
@@ -472,6 +477,8 @@ fn actor(
         DrawTextureParams {
             dest_size: Some(size),
             source: Some(Rect::new(indices[frame] as f32 * w, 0., w, h)),
+            rotation,
+            pivot: Some(foot),
             ..Default::default()
         },
     );
@@ -493,16 +500,16 @@ async fn main() {
             })
         });
     }
-    let defeat = texture(include_bytes!("../assets/defeat.png"));
+    let defeat = texture(include_bytes!("../assets/defeat.webp"));
     let mut zh = true;
     let tiles = [
-        texture(include_bytes!("../assets/balanced.png")),
-        texture(include_bytes!("../assets/hp.png")),
-        texture(include_bytes!("../assets/damage.png")),
-        texture(include_bytes!("../assets/mp.png")),
-        texture(include_bytes!("../assets/hd.png")),
-        texture(include_bytes!("../assets/hm.png")),
-        texture(include_bytes!("../assets/dm.png")),
+        texture(include_bytes!("../assets/balanced.webp")),
+        texture(include_bytes!("../assets/hp.webp")),
+        texture(include_bytes!("../assets/damage.webp")),
+        texture(include_bytes!("../assets/mp.webp")),
+        texture(include_bytes!("../assets/hd.webp")),
+        texture(include_bytes!("../assets/hm.webp")),
+        texture(include_bytes!("../assets/dm.webp")),
     ];
     #[cfg(not(target_arch = "wasm32"))]
     let bench = std::env::var("BATTLEBLOCKS_BENCH_HERO")
@@ -517,7 +524,7 @@ async fn main() {
     #[cfg(target_arch = "wasm32")]
     let startup_commands = false;
     let mut knight = diagnostic_texture(sprites::SPRITES[hero_id].bytes, "no_actors");
-    let thumbs = texture(include_bytes!("../assets/hero-thumbnails.png"));
+    let thumbs = texture(include_bytes!("../assets/hero-thumbnails.webp"));
     let mut preview = menu::Preview::new(hero_id, 0);
     let mut character_page = 0usize;
     let mut enemy_id = (hero_id + 1) % HEROES.len();
@@ -1430,9 +1437,7 @@ async fn main() {
             }
             if !enemy_turn {
                 if let Some(skill) = cast {
-                    if (content::targeted(skill)
-                        || content::payment_in(hero_id, hp, mp, skill, rules!(false))
-                            .is_some_and(|p| p.blood > 0))
+                    if skill_requires_board_click(skill)
                         && content::payment_in(hero_id, hp, mp, skill, rules!(false)).is_some()
                         && command_skill.is_none()
                     {
@@ -3336,6 +3341,34 @@ mod tests {
             }
         }
         b
+    }
+    #[test]
+    fn every_character_webp_decodes_with_its_original_atlas_dimensions() {
+        for asset in sprites::SPRITES.iter().chain(sprites::AWAKENED) {
+            let decoded = image::load_from_memory(asset.bytes).expect("runtime image decoder");
+            let frames = asset.indices.iter().max().unwrap() + 1;
+            assert_eq!(decoded.width(), asset.w as u32 * frames as u32);
+            assert_eq!(decoded.height(), asset.h as u32);
+            assert!(decoded.to_rgba8().pixels().any(|pixel| pixel[3] > 0));
+        }
+    }
+    #[test]
+    fn global_skills_cast_directly_even_when_paid_with_health() {
+        use content::Skill;
+        for awake in [false, true] {
+            let rules = content::Rules {
+                awake,
+                ..Default::default()
+            };
+            for mana in [0, 80, 100] {
+                assert!(content::payment_in(6, 600, mana, Skill::Corrupt, rules).is_some());
+                assert!(!skill_requires_board_click(Skill::Corrupt));
+                assert!(skill_requires_board_click(Skill::Drain));
+            }
+        }
+        assert!(!skill_requires_board_click(Skill::Guard));
+        assert!(!skill_requires_board_click(Skill::Imp));
+        assert!(skill_requires_board_click(Skill::Charge));
     }
     #[test]
     fn hint_clicks_hit_rows_on_the_shown_page_and_board_badges() {
