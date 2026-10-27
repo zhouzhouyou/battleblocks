@@ -6,6 +6,8 @@ const VISIBLE_ROWS: usize = 26;
 
 #[derive(Clone)]
 pub struct Snapshot {
+    pub awakened: [bool; 2],
+    pub reward_skill: Option<crate::content::Skill>,
     pub board: Board,
     pub hero: usize,
     pub enemy: usize,
@@ -34,8 +36,8 @@ pub struct Snapshot {
 }
 impl Snapshot {
     fn json(&self) -> String {
-        format!("{{\"board\":{:?},\"hero\":{},\"enemy\":{},\"hp\":{},\"enemy_hp\":{},\"mp\":{},\"enemy_mp\":{},\"enemy_turn\":{},\"action_done\":{},\"pending\":{},\"deadline\":{},\"enemy_clock\":{},\"bonuses\":{:?},\"armed_sides\":{:?},\"bonus\":{},\"armed\":{},\"chain\":{},\"reward\":{},\"difficulty\":{},\"paused\":{},\"rng_state\":{},\"charge_damage\":{},\"charge_remaining\":{}}}",
-            self.board,self.hero,self.enemy,self.hp,self.enemy_hp,self.mp,self.enemy_mp,self.enemy_turn,self.action_done,
+        format!("{{\"reward_skill\":{},\"awakened\":{:?},\"board\":{:?},\"hero\":{},\"enemy\":{},\"hp\":{},\"enemy_hp\":{},\"mp\":{},\"enemy_mp\":{},\"enemy_turn\":{},\"action_done\":{},\"pending\":{},\"deadline\":{},\"enemy_clock\":{},\"bonuses\":{:?},\"armed_sides\":{:?},\"bonus\":{},\"armed\":{},\"chain\":{},\"reward\":{},\"difficulty\":{},\"paused\":{},\"rng_state\":{},\"charge_damage\":{},\"charge_remaining\":{}}}",
+            self.reward_skill.map(|s|quote(&format!("{s:?}"))).unwrap_or("null".into()),self.awakened,self.board,self.hero,self.enemy,self.hp,self.enemy_hp,self.mp,self.enemy_mp,self.enemy_turn,self.action_done,
             cells_json(&self.pending),self.deadline,self.enemy_clock,self.bonuses,self.armed_sides,self.bonus,self.armed,self.chain,self.reward,self.difficulty,self.paused,self.rng_state,self.charge_damage.map(|(d,e)|format!("[{d},{e}]")).unwrap_or("null".into()),self.charge_remaining)
     }
 }
@@ -262,6 +264,7 @@ fn event_name(event: &str, zh: bool) -> &str {
         "move_rejected" => "交换无效",
         "skill" => "技能",
         "skill_hit" => "技能命中",
+        "awakening" => "觉醒",
         "resolution" => "结算",
         "board_refresh" => "棋盘刷新",
         "turn_start" => "换人",
@@ -746,6 +749,8 @@ mod tests {
     use super::*;
     fn state(enemy_turn: bool, hp: i32) -> Snapshot {
         Snapshot {
+            awakened: [false; 2],
+            reward_skill: None,
             board: [[1; 8]; 8],
             hero: 0,
             enemy: 1,
