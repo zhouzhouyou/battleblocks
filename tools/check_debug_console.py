@@ -64,14 +64,14 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-debug-') as temp:
         send('cast 2')
         data=wait(lambda r:any(e['event']=='skill' and 'Guard' in e['detail'] for e in r))
         guard=next(e for e in data if e['event']=='skill' and 'Guard' in e['detail'])
-        assert guard['after']['hp']==640 and guard['after']['mp']==150
+        assert guard['after']['hp']==640 and guard['after']['mp']==50
         assert guard['after']['action_done'] and not guard['after']['armed']
         expected_cells=[[x,y] for y,row in enumerate(guard['before']['board']) for x,tile in enumerate(row) if tile==1]
         assert guard['after']['pending']==expected_cells and expected_cells
         data=wait(lambda r:any(e['event']=='resolution' and e['action']==guard['action'] for e in r))
         consumed=next(e for e in data if e['event']=='resolution' and e['action']==guard['action'])
         assert consumed['before']['hp']==consumed['after']['hp']==640
-        assert consumed['after']['mp']==150
+        assert consumed['after']['mp']==50
         assert 'reward=false' in consumed['detail']
 
         send('undo player')
@@ -99,9 +99,22 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-debug-') as temp:
         paid=action('cast 2 1 1','skill')
         heal_values=[2,6,0,0,3,3,0]
         healing=2*sum(heal_values[clean[y][x]] for y in range(2) for x in range(2))
-        assert paid['after']['hp']==150+healing
+        assert paid['after']['hp']==341
+        assert paid['after']['awakened']==[True,False]
+        assert any(e['event']=='awakening' and 'cause=blood_payment' in e['detail'] and e['action']==paid['action'] for e in records())
         assert paid['after']['mp']==0
         assert 'blood_cost=50' in paid['detail'] and 'cost=25' in paid['detail']
+        # Next player turn uses the awakened exchange rate, including odd MP deficits.
+        wait(lambda r:any(e['event']=='turn_start' and not e['after']['enemy_turn'] and e['seq']>paid['seq'] for e in r))
+        edit_command('hp player 100')
+        edit_command('mp player 25')
+        edit_command('board load '+' '.join(str(v) for row in clean for v in row))
+        efficient=action('cast 2 1 1','skill')
+        assert efficient['before']['awakened'][0]
+        assert 'blood_cost=13' in efficient['detail']
+        assert efficient['after']['hp']==100-13+healing
+        assert efficient['after']['mp']==0
+        rollback_to(efficient['before'])
         rollback_to(paid['before'])
         for role in (0,1):
             edit_command(f'hero player {role}')
@@ -153,9 +166,66 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-debug-') as temp:
         assert 'blood_cost=100' in escaped['detail']
         assert escaped['before']['board']==clean
         rollback_to(escaped['before'])
+        # A lethal Charge is interrupted by awakening; undo restores both full bars.
+        edit_command('hero player 0')
+        edit_command('hero enemy 0')
+        edit_command('hp enemy 20')
+        edit_command('mp player 100')
+        edit_command('board load '+' '.join(str(v) for row in clean for v in row))
+        lethal=action('cast 1 1 1','skill')
+        data=wait(lambda r:any(e['event']=='skill_hit' and e['action']==lethal['action'] for e in r))
+        hit=next(e for e in data if e['event']=='skill_hit' and e['action']==lethal['action'])
+        assert hit['after']['enemy_hp']==385
+        assert hit['after']['awakened']==[False,True]
+        assert any(e['event']=='awakening' and e['action']==lethal['action'] for e in data)
+        rollback_to(lethal['before'])
+        # Wizard reserve is clamped before awakening and unlocks on the actual hit.
+        edit_command('hero enemy 2')
+        data=edit_command('mp enemy 800')
+        assert data[-1]['after']['enemy_mp']==250
+        edit_command('hp enemy 20')
+        edit_command('mp player 100')
+        unlock=action('cast 1 1 1','skill')
+        data=wait(lambda r:any(e['event']=='skill_hit' and e['action']==unlock['action'] for e in r))
+        hit=next(e for e in data if e['event']=='skill_hit' and e['action']==unlock['action'])
+        assert hit['after']['awakened']==[False,True]
+        assert hit['after']['enemy_mp']==250
+        data=edit_command('mp enemy 800')
+        assert data[-1]['after']['enemy_mp']==400
+        rollback_to(unlock['before'])
+        # Imp blast uses its new direct damage/mana without double-counting clear rewards.
+        edit_command('hero player 4')
+        edit_command('hero enemy 0')
+        edit_command('mp player 60')
+        edit_command('board load '+' '.join(str(v) for row in clean for v in row))
+        blast=action('cast 1','skill')
+        count=sum(v==0 for row in clean for v in row)
+        assert blast['before']['mp']-60+count*4==blast['after']['mp']
+        assert blast['before']['enemy_hp']-blast['after']['enemy_hp']==count*12
+        assert not blast['after']['reward']
+        rollback_to(blast['before'])
+        # Wizard's reserve remains 250/400; its first skill now pays 60 MP.
+        edit_command('hero player 2')
+        edit_command('mp player 60')
+        edit_command('board load '+' '.join(str(v) for row in clean for v in row))
+        recharge=action('cast 1','skill')
+        mana_values=[4,0,0,12,0,7,7]
+        recovered=sum(mana_values[clean[y][x]] for y in range(8) for x in (y,7-y))
+        assert recharge['before']['mp']==60 and recharge['after']['mp']==min(recovered,250)
+        assert 'cost=60' in recharge['detail']
+        rollback_to(recharge['before'])
+        # At the locked full reserve, the wizard's clear heals normally.
+        edit_command('hero player 2')
+        edit_command('hp player 300')
+        edit_command('mp player 250')
+        healing_board=[row[:] for row in clean];healing_board[0][:3]=[1,1,1]
+        edit_command('board load '+' '.join(str(v) for row in healing_board for v in row))
+        wave=action('resolve','resolution')
+        assert wave['after']['hp']-wave['before']['hp']==18
+        assert wave['after']['mp']==250
         data=records()
         assert [e['seq'] for e in data]==list(range(1,len(data)+1))
-        print(f'PASS: {len(data)} JSONL events; role swaps, HP payment, player/enemy moves, cascades, skills and full-state rollbacks')
+        print(f'PASS: {len(data)} JSONL events; awakening (lethal/HP payment), role swaps, cascades, skills and complete phase rollbacks')
     finally:
         process.terminate()
         try:process.communicate(timeout=5)

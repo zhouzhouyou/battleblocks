@@ -29,6 +29,18 @@ fn game(ids: [usize; 2], seed: u64, metrics: &mut [Metrics; 7]) -> (Option<usize
     let mut mp = [0, 0];
     let mut buffs = [0, 0];
     let mut armed = [false, false];
+    let mut awakened = [false; 2];
+    macro_rules! rules {
+        ($side:expr) => {{
+            let side = $side;
+            content::Rules {
+                awake: awakened[side],
+                opponent: Some((ids[1 - side], awakened[1 - side])),
+                opponent_hp: Some(hp[1 - side]),
+                ..content::Rules::default()
+            }
+        }};
+    }
     let mut turn = 0;
     let mut burst = 0;
     for action in 0..240 {
@@ -36,7 +48,8 @@ fn game(ids: [usize; 2], seed: u64, metrics: &mut [Metrics; 7]) -> (Option<usize
         let before = hp[other];
         let mut cells;
         let mut reward;
-        if let Some(skill) = strategy::choose_skill(
+        let mut loot = false;
+        if let Some(skill) = strategy::choose_skill_in(
             &b,
             ids[turn],
             hp[turn],
@@ -44,18 +57,37 @@ fn game(ids: [usize; 2], seed: u64, metrics: &mut [Metrics; 7]) -> (Option<usize
             probe_level(),
             armed[turn],
             buffs[turn],
+            rules!(turn),
         ) {
-            let target =
-                strategy::choose_target(skill, &b, ids[turn], hp[turn], mp[turn], buffs[turn]);
+            let target = strategy::choose_target_in(
+                skill,
+                &b,
+                ids[turn],
+                hp[turn],
+                mp[turn],
+                buffs[turn],
+                rules!(turn),
+            );
             metrics[ids[turn]].skills += 1;
-            let pay = content::payment(ids[turn], hp[turn], mp[turn], skill).unwrap();
+            let pay =
+                content::payment_in(ids[turn], hp[turn], mp[turn], skill, rules!(turn)).unwrap();
+            let cost_hp = hp[turn];
+            let cost_mp = mp[turn];
             mp[turn] -= pay.mana;
-            hp[turn] -= pay.blood;
+            content::take_damage(ids[turn], &mut hp[turn], &mut awakened[turn], pay.blood);
             if pay.blood > 0 {
                 metrics[ids[turn]].blood_casts += 1;
                 metrics[ids[turn]].blood_paid += pay.blood as i64;
             }
-            let e = content::effect_at(skill, &mut b, target);
+            let e = content::effect_at_in(
+                skill,
+                &mut b,
+                target,
+                ids[turn],
+                cost_hp,
+                cost_mp,
+                rules!(turn),
+            );
             record(
                 &mut metrics[ids[turn]],
                 hp[turn],
@@ -65,12 +97,14 @@ fn game(ids: [usize; 2], seed: u64, metrics: &mut [Metrics; 7]) -> (Option<usize
                 e.hp,
                 e.damage,
                 e.mp,
+                awakened[turn],
             );
-            hp[turn] = (hp[turn] + e.hp).min(HEROES[ids[turn]].hp);
-            hp[other] = (hp[other] - e.damage).max(0);
-            mp[turn] = (mp[turn] + e.mp).min(HEROES[ids[turn]].mp);
+            hp[turn] = (hp[turn] + e.hp).min(content::health_cap(ids[turn], awakened[turn]));
+            content::take_damage(ids[other], &mut hp[other], &mut awakened[other], e.damage);
+            mp[turn] = (mp[turn] + e.mp).min(content::mana_cap(ids[turn], awakened[turn]));
             buffs[turn] += e.bonus;
             armed[turn] |= e.armed;
+            loot = skill == content::Skill::Greedy;
             cells = e.cells;
             reward = e.reward;
             if cells.is_empty() {
@@ -80,9 +114,16 @@ fn game(ids: [usize; 2], seed: u64, metrics: &mut [Metrics; 7]) -> (Option<usize
             if e.armed || e.bonus > 0 {
                 continue;
             }
-        } else if let Some((a, c)) =
-            strategy::choose_move(&b, hp[turn], ids[turn], mp[turn], ids[other], probe_level())
-                .or_else(|| armed[turn].then_some(((0, 0), (1, 0))))
+        } else if let Some((a, c)) = strategy::choose_move_in(
+            &b,
+            hp[turn],
+            ids[turn],
+            mp[turn],
+            ids[other],
+            probe_level(),
+            rules!(turn),
+        )
+        .or_else(|| armed[turn].then_some(((0, 0), (1, 0))))
         {
             metrics[ids[turn]].swaps += 1;
             if armed[turn] {
@@ -100,7 +141,7 @@ fn game(ids: [usize; 2], seed: u64, metrics: &mut [Metrics; 7]) -> (Option<usize
         let mut chain = 0;
         while !cells.is_empty() && chain < 64 && hp[turn] > 0 && hp[other] > 0 {
             let (h, d, m) = if reward {
-                content::clear_rewards(
+                content::clear_rewards_in(
                     ids[turn],
                     hp[turn],
                     mp[turn],
@@ -108,6 +149,10 @@ fn game(ids: [usize; 2], seed: u64, metrics: &mut [Metrics; 7]) -> (Option<usize
                     &cells,
                     chain + 1,
                     buffs[turn],
+                    content::Rules {
+                        initial_loot: loot && chain == 0,
+                        ..rules!(turn)
+                    },
                 )
             } else {
                 (0, 0, 0)
@@ -124,10 +169,11 @@ fn game(ids: [usize; 2], seed: u64, metrics: &mut [Metrics; 7]) -> (Option<usize
                 h,
                 d,
                 m,
+                awakened[turn],
             );
-            hp[turn] = (hp[turn] + h).min(HEROES[ids[turn]].hp);
-            hp[other] = (hp[other] - d).max(0);
-            mp[turn] = (mp[turn] + m).min(HEROES[ids[turn]].mp);
+            hp[turn] = (hp[turn] + h).min(content::health_cap(ids[turn], awakened[turn]));
+            content::take_damage(ids[other], &mut hp[other], &mut awakened[other], d);
+            mp[turn] = (mp[turn] + m).min(content::mana_cap(ids[turn], awakened[turn]));
             if reward {
                 buffs[turn] = 0;
             }
@@ -140,18 +186,35 @@ fn game(ids: [usize; 2], seed: u64, metrics: &mut [Metrics; 7]) -> (Option<usize
         if hp[other] == 0 {
             return (Some(turn), action + 1, burst);
         }
-        if content::must_refresh(&b, ids[other], hp[other], mp[other], armed[other]) {
+        if content::must_refresh_in(
+            &b,
+            ids[other],
+            hp[other],
+            mp[other],
+            armed[other],
+            rules!(other),
+        ) {
             b = board::fresh_for(ids[other]);
         }
         turn = other;
     }
     (None, 240, burst)
 }
-fn record(out: &mut Metrics, hp: i32, mp: i32, enemy: i32, id: usize, h: i32, d: i32, m: i32) {
-    out.healing += h.min(HEROES[id].hp - hp) as i64;
+fn record(
+    out: &mut Metrics,
+    hp: i32,
+    mp: i32,
+    enemy: i32,
+    id: usize,
+    h: i32,
+    d: i32,
+    m: i32,
+    awake: bool,
+) {
+    out.healing += h.min(content::health_cap(id, awake) - hp) as i64;
     out.damage += d.min(enemy) as i64;
-    out.mana += m.min(HEROES[id].mp - mp) as i64;
-    out.mana_waste += (mp + m - HEROES[id].mp).max(0) as i64;
+    out.mana += m.min(content::mana_cap(id, awake) - mp) as i64;
+    out.mana_waste += (mp + m - content::mana_cap(id, awake)).max(0) as i64;
 }
 fn probe_level() -> usize {
     std::env::args()
@@ -215,10 +278,13 @@ fn main() {
     lengths.sort();
     bursts.sort();
     println!(
-        "games={total},draws={draws},median_actions={},p90_burst={},first_side_win={:.1}%",
+        "games={total},draws={draws},median_actions={},p90_burst={},first_side_win={:.1}%,p10_actions={},p90_actions={},max_actions={}",
         lengths[lengths.len() / 2],
         bursts[bursts.len() * 9 / 10],
-        starts as f64 / total as f64 * 100.
+        starts as f64 / total as f64 * 100.,
+        lengths[lengths.len()/10],
+        lengths[lengths.len()*9/10],
+        lengths[lengths.len()-1]
     );
     println!("pairwise_win_counts={pairs:?}");
     println!("hero,swaps,skills,blood_casts,blood_paid,actual_damage,actual_healing,actual_mana,wasted_mana");

@@ -15,7 +15,7 @@ use presentation::{CLEAR_TIME, TURN_HOLD};
 mod rng;
 mod strategy;
 mod turns;
-use content::{effect, effect_at, HEROES, VALUES};
+use content::{effect, HEROES, VALUES};
 struct SpriteAsset {
     bytes: &'static [u8],
     w: f32,
@@ -62,10 +62,10 @@ fn side_panel_rect(enemy: bool) -> Rect {
     Rect::new(if enemy { 788. } else { 12. }, 90., 224., 610.)
 }
 fn sprite_rect(enemy: bool) -> Rect {
-    Rect::new(if enemy { 796. } else { 20. }, 212., 208., 184.)
+    Rect::new(if enemy { 796. } else { 20. }, 212., 208., 156.)
 }
 fn passive_rect(enemy: bool) -> Rect {
-    Rect::new(if enemy { 796. } else { 20. }, 402., 208., 24.)
+    Rect::new(if enemy { 796. } else { 20. }, 376., 208., 50.)
 }
 fn player_skill_rect(i: usize) -> Rect {
     Rect::new(20., 434. + i as f32 * 132., 208., 126.)
@@ -111,6 +111,55 @@ fn reward_summary(zh: bool, heal: i32, damage: i32, mana: i32) -> String {
     }
 }
 /// Skill cost in the UI language, including the HP part of a flesh-casting payment.
+fn draw_diamond(x: f32, y: f32, radius: f32, color: Color, filled: bool) {
+    let points = [
+        vec2(x, y - radius),
+        vec2(x + radius, y),
+        vec2(x, y + radius),
+        vec2(x - radius, y),
+    ];
+    if filled {
+        draw_triangle(points[0], points[1], points[2], color);
+        draw_triangle(points[0], points[2], points[3], color);
+    } else {
+        for i in 0..4 {
+            draw_line(
+                points[i].x,
+                points[i].y,
+                points[(i + 1) % 4].x,
+                points[(i + 1) % 4].y,
+                1.5,
+                color,
+            );
+        }
+    }
+}
+fn draw_breaking_lock(x: f32, y: f32, t: f32, color: Color) {
+    let split = ((t - 0.15) / 0.6).clamp(0., 1.);
+    if split == 0. {
+        draw_lock(x, y, color);
+        return;
+    }
+    let c = Color::new(color.r, color.g, color.b, 1. - split);
+    for (direction, offset) in [(-1., 0.), (1., 6.)] {
+        let dx = direction * split * 14.;
+        let dy = -split * 7. + split * split * 17.;
+        draw_rectangle(x + offset + dx, y + 6. + dy, 5., 8., c);
+        draw_line(
+            x + offset + 2. + dx,
+            y + 7. + dy,
+            x + offset + 2. + dx,
+            y + dy,
+            2.,
+            c,
+        );
+    }
+}
+fn draw_lock(x: f32, y: f32, color: Color) {
+    draw_rectangle_lines(x + 2., y, 7., 8., 2., color);
+    draw_rectangle(x, y + 6., 11., 8., color);
+    draw_rectangle(x + 5., y + 8., 2., 4., Color::from_rgba(25, 33, 46, 255));
+}
 fn cost_text(zh: bool, mana: i32, blood: i32) -> String {
     match (zh, blood > 0) {
         (true, true) => format!("{mana} 魔力 + {blood} 生命 !"),
@@ -119,11 +168,8 @@ fn cost_text(zh: bool, mana: i32, blood: i32) -> String {
         (false, false) => format!("{mana} MP"),
     }
 }
-fn passive_name(hero: usize, zh: bool) -> &'static str {
-    content::passive(hero, zh)
-        .split(['：', ':'])
-        .next()
-        .unwrap_or_default()
+fn skill_requires_board_click(skill: content::Skill) -> bool {
+    content::targeted(skill)
 }
 fn toggle_skill_target(
     current: Option<content::Skill>,
@@ -213,7 +259,7 @@ fn conf() -> macroquad::conf::Conf {
     }
 }
 fn texture(bytes: &[u8]) -> Texture2D {
-    let t = Texture2D::from_file_with_format(bytes, Some(ImageFormat::Png));
+    let t = Texture2D::from_file_with_format(bytes, None);
     t.set_filter(FilterMode::Nearest);
     t
 }
@@ -417,8 +463,12 @@ fn actor(
         elapsed -= d;
     }
     // Fit the frame into its slot and stand it on the slot's bottom edge.
-    let scale = (area.w / w).min(area.h / h).min(0.55);
+    let scale = (area.w / w)
+        .min(area.h / h)
+        .min(if h <= 96. { 3. } else { 0.55 });
     let size = vec2(w * scale, h * scale);
+    let (size, rotation) = presentation::idle_pose(size, time, indices.len() == 1);
+    let foot = vec2(area.x + area.w / 2., area.y + area.h);
     draw_texture_ex(
         t,
         area.x + (area.w - size.x) / 2.,
@@ -427,6 +477,8 @@ fn actor(
         DrawTextureParams {
             dest_size: Some(size),
             source: Some(Rect::new(indices[frame] as f32 * w, 0., w, h)),
+            rotation,
+            pivot: Some(foot),
             ..Default::default()
         },
     );
@@ -448,16 +500,16 @@ async fn main() {
             })
         });
     }
-    let defeat = texture(include_bytes!("../assets/defeat.png"));
+    let defeat = texture(include_bytes!("../assets/defeat.webp"));
     let mut zh = true;
     let tiles = [
-        texture(include_bytes!("../assets/balanced.png")),
-        texture(include_bytes!("../assets/hp.png")),
-        texture(include_bytes!("../assets/damage.png")),
-        texture(include_bytes!("../assets/mp.png")),
-        texture(include_bytes!("../assets/hd.png")),
-        texture(include_bytes!("../assets/hm.png")),
-        texture(include_bytes!("../assets/dm.png")),
+        texture(include_bytes!("../assets/balanced.webp")),
+        texture(include_bytes!("../assets/hp.webp")),
+        texture(include_bytes!("../assets/damage.webp")),
+        texture(include_bytes!("../assets/mp.webp")),
+        texture(include_bytes!("../assets/hd.webp")),
+        texture(include_bytes!("../assets/hm.webp")),
+        texture(include_bytes!("../assets/dm.webp")),
     ];
     #[cfg(not(target_arch = "wasm32"))]
     let bench = std::env::var("BATTLEBLOCKS_BENCH_HERO")
@@ -472,8 +524,9 @@ async fn main() {
     #[cfg(target_arch = "wasm32")]
     let startup_commands = false;
     let mut knight = diagnostic_texture(sprites::SPRITES[hero_id].bytes, "no_actors");
-    let thumbs = texture(include_bytes!("../assets/hero-thumbnails.png"));
+    let thumbs = texture(include_bytes!("../assets/hero-thumbnails.webp"));
     let mut preview = menu::Preview::new(hero_id, 0);
+    let mut character_page = 0usize;
     let mut enemy_id = (hero_id + 1) % HEROES.len();
     let mut demon = diagnostic_texture(sprites::SPRITES[enemy_id].bytes, "no_actors");
     let mut choosing = bench.is_none() && !startup_commands;
@@ -515,12 +568,74 @@ async fn main() {
     let mut armed = false;
     let mut console = debug::Console::new(zh);
     let mut game_over_logged = false;
+    let mut awakened = [false; 2];
+    let mut reward_skill = None;
+    let awake_textures: Vec<_> = sprites::AWAKENED
+        .iter()
+        .map(|s| diagnostic_texture(s.bytes, "no_actors"))
+        .collect();
     let mut charge_damage: Option<(i32, bool)> = None;
     let mut presentation = presentation::Presentation::default();
     let mut turn_log = turns::Log::new();
+    macro_rules! rules {
+        ($side:expr) => {{
+            let side: bool = $side;
+            content::Rules {
+                awake: awakened[side as usize],
+                initial_loot: false,
+                opponent_hp: Some(if side { hp } else { enemy }),
+                opponent: Some((
+                    if side { hero_id } else { enemy_id },
+                    awakened[(!side) as usize],
+                )),
+            }
+        }};
+    }
+    macro_rules! damage {
+        ($amount:expr, $target:expr) => {
+            damage!($amount, $target, "damage")
+        };
+        ($amount:expr, $target:expr, $cause:expr) => {{
+            let side: bool = $target;
+            let old = snapshot!();
+            let result = content::take_damage(
+                if side { enemy_id } else { hero_id },
+                if side { &mut enemy } else { &mut hp },
+                &mut awakened[side as usize],
+                $amount,
+            );
+            if result.awakened {
+                let id = if side { enemy_id } else { hero_id };
+                presentation.awakening(
+                    side,
+                    if side { old.enemy_hp } else { old.hp },
+                    content::health_cap(id, false),
+                    content::health_cap(id, true),
+                    result.restored,
+                );
+                console.event(
+                    "awakening",
+                    &format!(
+                        "side={} hero={} damage={} restored={} cap={} cause={}",
+                        if side { "enemy" } else { "player" },
+                        id,
+                        result.damage,
+                        result.restored,
+                        content::health_cap(id, true),
+                        $cause
+                    ),
+                    &old,
+                    &snapshot!(),
+                );
+            }
+            result
+        }};
+    }
     macro_rules! snapshot {
         () => {
             debug::Snapshot {
+                awakened,
+                reward_skill,
                 board: b,
                 hero: hero_id,
                 enemy: enemy_id,
@@ -551,6 +666,8 @@ async fn main() {
     macro_rules! restore {
         ($state:expr) => {{
             let state = $state;
+            awakened = state.awakened;
+            reward_skill = state.reward_skill;
             b = state.board;
             hero_id = state.hero;
             enemy_id = state.enemy;
@@ -626,7 +743,7 @@ async fn main() {
                         Command::Help => console.help(),
                         Command::Status => {
                             let status = if console.zh {
-                                format!("状态：我方 {}({hero_id}) 生命 {hp}/{} 魔力 {mp}/{} · 敌方 {}({enemy_id}) 生命 {enemy}/{} 魔力 {enemy_mp}/{} · 行动方 {} · 待结算 {} 格 · 增幅 {extra_bonus} · 三线 {} · AI {} · 暂停 {}",HEROES[hero_id].zh,HEROES[hero_id].hp,HEROES[hero_id].mp,HEROES[enemy_id].zh,HEROES[enemy_id].hp,HEROES[enemy_id].mp,if enemy_turn{"敌方"}else{"玩家"},pending.len(),if armed{"是"}else{"否"},["入门","标准","进阶"][difficulty],if paused{"是"}else{"否"})
+                                format!("状态：我方 {}({hero_id}) 生命 {hp}/{} 魔力 {mp}/{} · 敌方 {}({enemy_id}) 生命 {enemy}/{} 魔力 {enemy_mp}/{} · 行动方 {} · 待结算 {} 格 · 增幅 {extra_bonus} · 三线 {} · AI {} · 暂停 {}",HEROES[hero_id].zh,HEROES[hero_id].hp,content::mana_cap(hero_id, awakened[0]),HEROES[enemy_id].zh,HEROES[enemy_id].hp,content::mana_cap(enemy_id, awakened[1]),if enemy_turn{"敌方"}else{"玩家"},pending.len(),if armed{"是"}else{"否"},["入门","标准","进阶"][difficulty],if paused{"是"}else{"否"})
                             } else {
                                 format!("Hero={} Enemy={} HP={}/{} MP={}/{} turn={} pending={} buff={} armed={} AI={} paused={}",hero_id,enemy_id,hp,enemy,mp,enemy_mp,if enemy_turn{"enemy"}else{"player"},pending.len(),extra_bonus,armed,difficulty,paused)
                             };
@@ -690,7 +807,9 @@ async fn main() {
                                 || paused
                             {
                                 console.say_tr("Cast requires a live, unpaused player turn with no pending resolution","只能在玩家回合、未暂停且没有待结算时施法");
-                            } else if content::payment(hero_id, hp, mp, skill).is_none() {
+                            } else if content::payment_in(hero_id, hp, mp, skill, rules!(false))
+                                .is_none()
+                            {
                                 console.say_tr("Not enough mana", "魔力不足");
                             } else if (skill == content::Skill::Strike && extra_bonus > 0)
                                 || (skill == content::Skill::Landslide && armed)
@@ -738,6 +857,7 @@ async fn main() {
                                 console.checkpoint_edit(before.clone());
                                 match command {
                                     Command::Hero(side, id) => {
+                                        awakened[side as usize] = false;
                                         if side {
                                             enemy_id = id;
                                             enemy = HEROES[id].hp;
@@ -781,16 +901,19 @@ async fn main() {
                                     Command::Seed(seed) => rng::srand(seed),
                                     Command::Hp(side, value) => {
                                         if side {
-                                            enemy = value.min(HEROES[enemy_id].hp)
+                                            enemy = value
+                                                .min(content::health_cap(enemy_id, awakened[1]))
                                         } else {
-                                            hp = value.min(HEROES[hero_id].hp)
+                                            hp =
+                                                value.min(content::health_cap(hero_id, awakened[0]))
                                         }
                                     }
                                     Command::Mp(side, value) => {
                                         if side {
-                                            enemy_mp = value.min(HEROES[enemy_id].mp)
+                                            enemy_mp =
+                                                value.min(content::mana_cap(enemy_id, awakened[1]))
                                         } else {
-                                            mp = value.min(HEROES[hero_id].mp)
+                                            mp = value.min(content::mana_cap(hero_id, awakened[0]))
                                         }
                                     }
                                     Command::Turn(side) => {
@@ -918,6 +1041,8 @@ async fn main() {
             enemy_turn = false;
             action_done = false;
             bonuses = [0, 0];
+            awakened = [false; 2];
+            reward_skill = None;
             armed_sides = [false, false];
             targeting = None;
             presentation.clear();
@@ -948,6 +1073,12 @@ async fn main() {
                 audio.playing(false);
             }
             if !interface.opponent_step {
+                if clicked(MouseButton::Left) && menu::page_rect(0).contains(pointer) {
+                    character_page = character_page.saturating_sub(1);
+                }
+                if clicked(MouseButton::Left) && menu::page_rect(1).contains(pointer) {
+                    character_page = (character_page + 1).min(2);
+                }
                 let old_hero = hero_id;
                 if key(KeyCode::Down) {
                     hero_id = (hero_id + 1) % HEROES.len();
@@ -1030,6 +1161,8 @@ async fn main() {
                 enemy_turn = false;
                 action_done = false;
                 bonuses = [0, 0];
+                awakened = [false; 2];
+                reward_skill = None;
                 armed_sides = [false, false];
                 targeting = None;
                 presentation.clear();
@@ -1065,7 +1198,17 @@ async fn main() {
                 if interface.opponent_step {
                     interface.draw_opponents(hero_id, zh, &thumbs, pointer, difficulty);
                 } else {
-                    menu::draw(hero_id, zh, &knight, &thumbs, &tiles, &preview, pointer);
+                    menu::draw(
+                        hero_id,
+                        zh,
+                        &knight,
+                        &thumbs,
+                        &tiles,
+                        &preview,
+                        pointer,
+                        character_page,
+                        &awake_textures[hero_id],
+                    );
                 }
                 interface.draw_top(true, muted, paused, pointer, zh);
                 interface.draw_panel(zh, muted, &tiles, pointer);
@@ -1102,16 +1245,8 @@ async fn main() {
             if let Some((damage, enemy_actor)) = charge_damage {
                 let before = snapshot!();
                 charge_damage = None;
-                if enemy_actor {
-                    hp = (hp - damage).max(0);
-                } else {
-                    enemy = (enemy - damage).max(0);
-                }
-                let actual = if enemy_actor {
-                    before.hp - hp
-                } else {
-                    before.enemy_hp - enemy
-                };
+                let hit = damage!(damage, !enemy_actor);
+                let actual = hit.damage;
                 turn_log.current.add(0, actual, 0);
                 presentation.health(
                     [before.hp, before.enemy_hp],
@@ -1165,7 +1300,8 @@ async fn main() {
                     (hero_id, hp, mp)
                 };
                 let no_swaps = board::hero_options(&b, id).is_empty();
-                let automatic = no_swaps && content::must_refresh(&b, id, health, mana, armed);
+                let automatic = no_swaps
+                    && content::must_refresh_in(&b, id, health, mana, armed, rules!(enemy_turn));
                 let voluntary = no_swaps
                     && !enemy_turn
                     && (key(KeyCode::F2)
@@ -1212,7 +1348,7 @@ async fn main() {
             }
             if enemy_turn && enemy_clock >= 1.1 && pending.is_empty() && !action_done {
                 let enemy_before = snapshot!();
-                cast = strategy::choose_skill(
+                cast = strategy::choose_skill_in(
                     &b,
                     enemy_id,
                     enemy,
@@ -1220,11 +1356,19 @@ async fn main() {
                     difficulty,
                     armed,
                     extra_bonus,
+                    rules!(true),
                 );
                 if cast.is_none() {
-                    if let Some((a, c)) =
-                        strategy::choose_move(&b, enemy, enemy_id, enemy_mp, hero_id, difficulty)
-                            .or_else(|| armed.then_some(((0, 0), (1, 0))))
+                    if let Some((a, c)) = strategy::choose_move_in(
+                        &b,
+                        enemy,
+                        enemy_id,
+                        enemy_mp,
+                        hero_id,
+                        difficulty,
+                        rules!(true),
+                    )
+                    .or_else(|| armed.then_some(((0, 0), (1, 0))))
                     {
                         let before = enemy_before.clone();
                         console.checkpoint(before.clone());
@@ -1293,9 +1437,8 @@ async fn main() {
             }
             if !enemy_turn {
                 if let Some(skill) = cast {
-                    if (content::targeted(skill)
-                        || content::payment(hero_id, hp, mp, skill).is_some_and(|p| p.blood > 0))
-                        && content::payment(hero_id, hp, mp, skill).is_some()
+                    if skill_requires_board_click(skill)
+                        && content::payment_in(hero_id, hp, mp, skill, rules!(false)).is_some()
                         && command_skill.is_none()
                     {
                         targeting = toggle_skill_target(targeting, skill);
@@ -1313,37 +1456,50 @@ async fn main() {
             let mut cast_this_frame = false;
             if let Some(skill) = cast {
                 let before = snapshot!();
+                let cast_rules = rules!(enemy_turn);
                 let id = if enemy_turn { enemy_id } else { hero_id };
                 let actor_hp = if enemy_turn { enemy } else { hp };
                 let actor_mp = if enemy_turn { enemy_mp } else { mp };
-                if let Some(pay) = content::payment(id, actor_hp, actor_mp, skill) {
+                if let Some(pay) =
+                    content::payment_in(id, actor_hp, actor_mp, skill, rules!(enemy_turn))
+                {
+                    console.checkpoint(before.clone());
                     if enemy_turn {
                         enemy_mp -= pay.mana;
-                        enemy -= pay.blood;
+                        damage!(pay.blood, true, "blood_payment");
                     } else {
                         mp -= pay.mana;
-                        hp -= pay.blood;
+                        damage!(pay.blood, false, "blood_payment");
                     }
-                    console.checkpoint(before.clone());
                     cast_this_frame = true;
                     move_flash = None;
                     last_cast = Some(skill);
                     last_cast_enemy = enemy_turn;
                     cast_time = 1.4;
                     let target = if enemy_turn {
-                        strategy::choose_target(
+                        strategy::choose_target_in(
                             skill,
                             &b,
                             enemy_id,
                             before.enemy_hp,
                             before.enemy_mp,
                             extra_bonus,
+                            cast_rules,
                         )
                     } else {
                         command_target.or(board_target).unwrap_or((3, 3))
                     };
+                    reward_skill = Some(skill);
                     skill_flash = content::target_cells(skill, &b, target);
-                    let e = effect_at(skill, &mut b, target);
+                    let e = content::effect_at_in(
+                        skill,
+                        &mut b,
+                        target,
+                        id,
+                        actor_hp,
+                        actor_mp,
+                        rules!(enemy_turn),
+                    );
                     let direct_damage = if skill == content::Skill::Charge {
                         charge_damage = Some((e.damage, enemy_turn));
                         presentation.charge(target.0, presentation::CHARGE_TIME);
@@ -1352,24 +1508,21 @@ async fn main() {
                         e.damage
                     };
                     if enemy_turn {
-                        enemy = (enemy + e.hp).min(HEROES[enemy_id].hp);
-                        hp = (hp - direct_damage).max(0);
-                        enemy_mp = (enemy_mp + e.mp).min(HEROES[enemy_id].mp);
+                        enemy = (enemy + e.hp).min(content::health_cap(enemy_id, awakened[1]));
+
+                        enemy_mp = (enemy_mp + e.mp).min(content::mana_cap(enemy_id, awakened[1]));
                     } else {
-                        hp = (hp + e.hp).min(HEROES[hero_id].hp);
-                        enemy = (enemy - direct_damage).max(0);
-                        mp = (mp + e.mp).min(HEROES[hero_id].mp);
+                        hp = (hp + e.hp).min(content::health_cap(hero_id, awakened[0]));
+
+                        mp = (mp + e.mp).min(content::mana_cap(hero_id, awakened[0]));
                     }
+                    let hit = damage!(direct_damage, !enemy_turn);
                     let actual_heal = if enemy_turn {
                         enemy - before.enemy_hp
                     } else {
                         hp - before.hp
                     };
-                    let actual_damage = if enemy_turn {
-                        before.hp - hp
-                    } else {
-                        before.enemy_hp - enemy
-                    };
+                    let actual_damage = hit.damage;
                     let actual_mana = if enemy_turn {
                         enemy_mp - before.enemy_mp + pay.mana
                     } else {
@@ -1457,11 +1610,19 @@ async fn main() {
                 && clicked(MouseButton::Left)
             {
                 // Same ranking as the drawn list, so row and badge numbers match.
-                let hints: Vec<Move> =
-                    content::ranked_moves(&b, hero_id, hp, mp, enemy, extra_bonus, armed)
-                        .into_iter()
-                        .map(|(m, _)| m)
-                        .collect();
+                let hints: Vec<Move> = content::ranked_moves_in(
+                    &b,
+                    hero_id,
+                    hp,
+                    mp,
+                    enemy,
+                    extra_bonus,
+                    armed,
+                    rules!(false),
+                )
+                .into_iter()
+                .map(|(m, _)| m)
+                .collect();
                 if let Some(i) = hint_row_at(pointer, move_hint_page, hints.len()).or_else(|| {
                     is_key_down(KeyCode::H)
                         .then(|| hint_badge_at(pointer, &hints))
@@ -1487,7 +1648,7 @@ async fn main() {
                     let bonus = content::reward_scale(chain.max(1) as usize, extra_bonus);
                     let id = if enemy_turn { enemy_id } else { hero_id };
                     let (heal, damage, mana) = if reward {
-                        content::clear_rewards(
+                        content::clear_rewards_in(
                             id,
                             if enemy_turn { enemy } else { hp },
                             if enemy_turn { enemy_mp } else { mp },
@@ -1495,10 +1656,15 @@ async fn main() {
                             &pending,
                             chain.max(1) as usize,
                             extra_bonus,
+                            content::Rules {
+                                initial_loot: reward_skill == Some(content::Skill::Greedy),
+                                ..rules!(enemy_turn)
+                            },
                         )
                     } else {
                         (0, 0, 0)
                     };
+                    reward_skill = None;
                     if reward {
                         extra_bonus = 0;
                     }
@@ -1506,14 +1672,15 @@ async fn main() {
                         b[y][x] = 255;
                     }
                     if enemy_turn {
-                        enemy = (enemy + heal).min(HEROES[enemy_id].hp);
-                        hp = (hp - damage).max(0);
-                        enemy_mp = (enemy_mp + mana).min(HEROES[enemy_id].mp);
+                        enemy = (enemy + heal).min(content::health_cap(enemy_id, awakened[1]));
+
+                        enemy_mp = (enemy_mp + mana).min(content::mana_cap(enemy_id, awakened[1]));
                     } else {
-                        hp = (hp + heal).min(HEROES[hero_id].hp);
-                        enemy = (enemy - damage).max(0);
-                        mp = (mp + mana).min(HEROES[hero_id].mp);
+                        hp = (hp + heal).min(content::health_cap(hero_id, awakened[0]));
+
+                        mp = (mp + mana).min(content::mana_cap(hero_id, awakened[0]));
                     }
+                    let hit = damage!(damage, !enemy_turn);
                     presentation.health(
                         [before.hp, before.enemy_hp],
                         [hp, enemy],
@@ -1524,11 +1691,7 @@ async fn main() {
                     } else {
                         hp - before.hp
                     };
-                    let actual_damage = if enemy_turn {
-                        before.hp - hp
-                    } else {
-                        before.enemy_hp - enemy
-                    };
+                    let actual_damage = hit.damage;
                     let actual_mana = if enemy_turn {
                         enemy_mp - before.enemy_mp
                     } else {
@@ -1722,14 +1885,29 @@ async fn main() {
                 Color::new(0.6, 1., 0.6, 1.)
             };
             for (row, (name, value, max, color)) in [
-                (tr(zh, "HP", "生命"), health, HEROES[id].hp, health_color),
-                (tr(zh, "MP", "魔力"), mana, HEROES[id].mp, SKYBLUE),
+                (
+                    tr(zh, "HP", "生命"),
+                    health,
+                    content::health_cap(id, awakened[enemy_side as usize]),
+                    health_color,
+                ),
+                (
+                    tr(zh, "MP", "魔力"),
+                    mana,
+                    content::mana_cap(id, awakened[enemy_side as usize]),
+                    SKYBLUE,
+                ),
             ]
             .into_iter()
             .enumerate()
             {
                 let y = 150. + row as f32 * 38.;
-                let amount = format!("{value} / {max}");
+                let (shown, shown_max, extent) = if row == 0 {
+                    presentation.health_bar(enemy_side, value, max)
+                } else {
+                    presentation.mana_bar(enemy_side, value, content::mana_cap(id, false), max)
+                };
+                let amount = format!("{} / {}", shown.round() as i32, shown_max.round() as i32);
                 label(name, x, y, 18., color);
                 label(
                     &amount,
@@ -1738,13 +1916,51 @@ async fn main() {
                     18.,
                     color,
                 );
-                let fill = (value as f32 / max.max(1) as f32).clamp(0., 1.);
-                draw_rectangle(x, y + 7., 200., 9., Color::new(0.1, 0.12, 0.17, 1.));
+                let visual_max = if row == 1 {
+                    content::mana_cap(id, true) as f32
+                } else {
+                    shown_max
+                };
+                let fill = (shown / visual_max.max(1.)).clamp(0., 1.) * extent;
+                draw_rectangle(
+                    x,
+                    y + 7.,
+                    200. * extent,
+                    9.,
+                    Color::new(0.1, 0.12, 0.17, 1.),
+                );
                 draw_rectangle(x, y + 7., 200. * fill, 9., color);
+                if row == 1 && content::mana_cap(id, false) < content::mana_cap(id, true) {
+                    let lock_x = x + 200. * content::mana_cap(id, false) as f32 / visual_max;
+                    if !awakened[enemy_side as usize] {
+                        draw_rectangle(
+                            lock_x,
+                            y + 7.,
+                            200. - (lock_x - x),
+                            9.,
+                            Color::new(0.16, 0.19, 0.25, 1.),
+                        );
+                        draw_lock(lock_x - 5.5, y + 3., SKYBLUE);
+                    } else if let Some(t) = presentation.awakening_progress(enemy_side) {
+                        draw_breaking_lock(lock_x - 5.5, y + 3., t, SKYBLUE);
+                    }
+                }
             }
-            let sprite = &sprites::SPRITES[id];
+            let show_awake =
+                awakened[enemy_side as usize] && presentation.awakened_visible(enemy_side);
+            let sprite = if show_awake {
+                &sprites::AWAKENED[id]
+            } else {
+                &sprites::SPRITES[id]
+            };
             actor(
-                if enemy_side { &demon } else { &knight },
+                if show_awake {
+                    &awake_textures[id]
+                } else if enemy_side {
+                    &demon
+                } else {
+                    &knight
+                },
                 sprite.w,
                 sprite.h,
                 sprite_rect(enemy_side),
@@ -2154,7 +2370,7 @@ async fn main() {
         let hint_opponent = if enemy_turn { hp } else { enemy };
         // Best total reward first; numbers on the board follow the same order.
         let (legal_hints, move_previews): (Vec<Move>, Vec<_>) = if show_moves {
-            content::ranked_moves(
+            content::ranked_moves_in(
                 &b,
                 hint_actor,
                 hint_health,
@@ -2162,6 +2378,7 @@ async fn main() {
                 hint_opponent,
                 extra_bonus,
                 armed,
+                rules!(enemy_turn),
             )
             .into_iter()
             .unzip()
@@ -2294,11 +2511,93 @@ async fn main() {
             );
         }
 
+        if !console.open && interface.panel.is_none() && !paused && !show_moves {
+            for side in [false, true] {
+                let panel = side_panel_rect(side);
+                let id = if side { enemy_id } else { hero_id };
+                let bar = Rect::new(panel.x + 12., 133., 200., 40.);
+                if !awakened[side as usize] {
+                    let tx = bar.x + 200. * content::AWAKENING_LINES[id] as f32 / 100.;
+                    let cx = bar.x + 200. * content::AWAKENING_CAPS[id] as f32 / 100.;
+                    // Independent upper/lower lanes preserve exact values even when equal.
+                    draw_line(tx, 153., tx, 157., 1., GOLD);
+                    draw_diamond(tx, 152., 5., GOLD, true);
+                    draw_line(cx, 166., cx, 170., 1., SKYBLUE);
+                    draw_diamond(cx, 171., 4., SKYBLUE, false);
+                }
+                if bar.contains(pointer) {
+                    let x = if side { 548. } else { 256. };
+                    let r = Rect::new(
+                        x,
+                        128.,
+                        220.,
+                        if awakened[side as usize] { 98. } else { 146. },
+                    );
+                    draw_rectangle(r.x, r.y, r.w, r.h, Color::from_rgba(25, 33, 46, 255));
+                    draw_rectangle_lines(r.x, r.y, r.w, r.h, 1., SKYBLUE);
+                    let text = if awakened[side as usize] {
+                        if zh {
+                            format!("当前生命上限：{}", content::health_cap(id, true))
+                        } else {
+                            format!("Current HP cap: {}", content::health_cap(id, true))
+                        }
+                    } else if zh {
+                        format!("觉醒点：{}（{}%）\n觉醒后上限：{}（{}%）\n受伤触线后恢复生命并强化\n{}", content::awakening_line(id), content::AWAKENING_LINES[id], content::health_cap(id,true),content::AWAKENING_CAPS[id],content::awakening_effect(id,zh))
+                    } else {
+                        format!("Awakening: {} HP ({}%)\nNew HP cap: {} ({}%)\nDamage triggers healing and power\n{}",content::awakening_line(id),content::AWAKENING_LINES[id],content::health_cap(id,true),content::AWAKENING_CAPS[id],content::awakening_effect(id,zh))
+                    };
+                    for (i, line) in wrap_preview_text(&text, 14.).iter().enumerate() {
+                        label(line, x + 10., 150. + i as f32 * 18., 14., GOLD);
+                    }
+                }
+                if content::mana_cap(id, false) < content::mana_cap(id, true)
+                    && !awakened[side as usize]
+                    && Rect::new(panel.x + 12., 174., 200., 40.).contains(pointer)
+                {
+                    let x = if side { 548. } else { 256. };
+                    draw_rectangle(x, 176., 220., 64., Color::from_rgba(25, 33, 46, 255));
+                    label(
+                        &if zh {
+                            format!("魔力上限锁定：{}", content::mana_cap(id, false))
+                        } else {
+                            format!("MP cap locked: {}", content::mana_cap(id, false))
+                        },
+                        x + 10.,
+                        199.,
+                        16.,
+                        SKYBLUE,
+                    );
+                    label(
+                        &if zh {
+                            format!("觉醒后解锁至{}魔力", content::mana_cap(id, true))
+                        } else {
+                            format!("Awakening unlocks {} MP", content::mana_cap(id, true))
+                        },
+                        x + 10.,
+                        223.,
+                        15.,
+                        GOLD,
+                    );
+                }
+            }
+        }
+        presentation.draw_awakening(zh);
         if presentation.charging() {
             let id = if last_cast_enemy { enemy_id } else { hero_id };
-            let asset = &sprites::SPRITES[id];
+            let is_awake = awakened[last_cast_enemy as usize];
+            let asset = if is_awake {
+                &sprites::AWAKENED[id]
+            } else {
+                &sprites::SPRITES[id]
+            };
             presentation.draw_charge(
-                if last_cast_enemy { &demon } else { &knight },
+                if is_awake {
+                    &awake_textures[id]
+                } else if last_cast_enemy {
+                    &demon
+                } else {
+                    &knight
+                },
                 asset.w,
                 asset.h,
                 asset.indices,
@@ -2315,13 +2614,14 @@ async fn main() {
                 draw_rectangle_lines(r.x, r.y, r.w, r.h, 2., ORANGE);
             }
             icons::draw(*skill, r.x + 5., r.y + 5., 28.);
-            let color = if content::payment(enemy_id, enemy, enemy_mp, *skill).is_some() {
-                GOLD
-            } else {
-                GRAY
-            };
+            let color =
+                if content::payment_in(enemy_id, enemy, enemy_mp, *skill, rules!(true)).is_some() {
+                    GOLD
+                } else {
+                    GRAY
+                };
             // Cost right-aligned; the name fits into the space left of it.
-            let cost = cost_text(zh, skill.cost(), 0);
+            let cost = cost_text(zh, content::skill_cost(enemy_id, awakened[1], *skill), 0);
             let cost_width = label_width(&cost, 15.);
             label(&cost, r.x + r.w - 7. - cost_width, r.y + 25., 15., color);
             let name = skill.name(zh);
@@ -2340,7 +2640,7 @@ async fn main() {
                 rect.y,
                 rect.w,
                 rect.h,
-                if content::payment(hero_id, hp, mp, *skill).is_some() {
+                if content::payment_in(hero_id, hp, mp, *skill, rules!(false)).is_some() {
                     Color::new(0.2, 0.28, 0.35, 1.)
                 } else {
                     Color::new(0.1, 0.12, 0.16, 1.)
@@ -2361,21 +2661,32 @@ async fn main() {
                 WHITE,
             );
             label(
-                &if hero_id == 6 && mp < skill.cost() {
-                    cost_text(zh, mp, (skill.cost() - mp) * 2)
+                &if hero_id == 6 && mp < content::skill_cost(hero_id, awakened[0], *skill) {
+                    cost_text(
+                        zh,
+                        mp,
+                        content::blood_cost(
+                            hero_id,
+                            awakened[0],
+                            content::skill_cost(hero_id, awakened[0], *skill) - mp,
+                        ),
+                    )
                 } else {
-                    cost_text(zh, skill.cost(), 0)
+                    cost_text(zh, content::skill_cost(hero_id, awakened[0], *skill), 0)
                 },
                 rect.x + 8.,
                 rect.y + 50.,
                 17.,
-                if hero_id == 6 && mp < skill.cost() {
+                if hero_id == 6 && mp < content::skill_cost(hero_id, awakened[0], *skill) {
                     RED
                 } else {
                     SKYBLUE
                 },
             );
-            for (line, text) in skill.description(zh).lines().enumerate() {
+            for (line, text) in content::skill_description(*skill, awakened[0], zh)
+                .lines()
+                .enumerate()
+            {
                 // Shrink a long line to the box width instead of letting it spill out.
                 label(
                     text,
@@ -2386,56 +2697,112 @@ async fn main() {
                 );
             }
         }
-        // Draw both passive rows before the popup flushes labels; widths are measured here.
+        // Each passive has its own identity, icon, state and hit target.
         let mut passive_popup = None;
         for enemy_side in [false, true] {
             let id = if enemy_side { enemy_id } else { hero_id };
-            let rect = passive_rect(enemy_side);
-            let hovered = !show_moves
-                && targeting.is_none()
-                && hover_context.is_none()
-                && !block_input
-                && !paused
-                && interface.panel.is_none()
-                && rect.contains(pointer);
-            draw_rectangle(
-                rect.x,
-                rect.y,
-                rect.w,
-                rect.h,
-                Color::new(0.13, 0.12, 0.08, 1.),
-            );
-            draw_rectangle_lines(
-                rect.x,
-                rect.y,
-                rect.w,
-                rect.h,
-                if hovered { 2. } else { 1. },
-                if hovered {
-                    GOLD
+            let awake = awakened[enemy_side as usize];
+            let area = passive_rect(enemy_side);
+            let (health, mana) = if enemy_side {
+                (enemy, enemy_mp)
+            } else {
+                (hp, mp)
+            };
+            for (i, &passive) in content::passives(id, awake).iter().enumerate() {
+                let rect = Rect::new(
+                    area.x + (i % 2) as f32 * 106.,
+                    area.y + (i / 2) as f32 * 26.,
+                    102.,
+                    24.,
+                );
+                let hovered = !show_moves
+                    && targeting.is_none()
+                    && hover_context.is_none()
+                    && !block_input
+                    && !paused
+                    && interface.panel.is_none()
+                    && rect.contains(pointer);
+                let status = passive.status(id, health, mana, awake, zh);
+                let color = if status.is_some_and(|(_, on)| !on) {
+                    GRAY
                 } else {
-                    Color::new(0.55, 0.45, 0.2, 1.)
-                },
-            );
-            let tag = tr(zh, "Passive", "被动");
-            label(tag, rect.x + 7., rect.y + 17., 14., GOLD);
-            let name = passive_name(id, zh);
-            let name_x = rect.x + 15. + label_width(tag, 14.);
-            label(name, name_x, rect.y + 17., 15., WHITE);
-            let hint = tr(zh, "hover", "悬停查看");
-            let hint_x = rect.x + rect.w - 7. - label_width(hint, 12.);
-            if hint_x > name_x + label_width(name, 15.) + 6. {
-                label(hint, hint_x, rect.y + 17., 12., GRAY);
-            }
-            if hovered {
-                passive_popup = Some(id);
+                    GOLD
+                };
+                draw_rectangle(
+                    rect.x,
+                    rect.y,
+                    rect.w,
+                    rect.h,
+                    Color::from_rgba(43, 40, 29, 255),
+                );
+                if hovered {
+                    draw_rectangle_lines(rect.x, rect.y, rect.w, rect.h, 1., GOLD);
+                }
+                icons::draw_passive(passive, rect.x + 3., rect.y + 3., 18.);
+                let name = if matches!(
+                    passive,
+                    content::Passive::BloodFury | content::Passive::BoilingBlood
+                ) {
+                    format!(
+                        "{}{}",
+                        passive.short_name(zh),
+                        if status.is_some_and(|(_, on)| on) {
+                            "+25%"
+                        } else {
+                            tr(zh, " · off", "·未触发")
+                        }
+                    )
+                } else {
+                    passive.short_name(zh).to_string()
+                };
+                label(
+                    &name,
+                    rect.x + 25.,
+                    rect.y + 16.,
+                    fit_size(&name, 13., 73.),
+                    color,
+                );
+                if matches!(
+                    passive,
+                    content::Passive::BloodFury | content::Passive::BoilingBlood
+                ) && status.is_some_and(|(_, on)| on)
+                {
+                    draw_circle(rect.x + rect.w - 4., rect.y + 4., 2.5, ORANGE);
+                }
+                if hovered {
+                    passive_popup = Some((passive, id, health, mana, awake));
+                }
             }
         }
-        if let Some(id) = passive_popup {
+        if let Some((passive, id, health, mana, awake)) = passive_popup {
+            let lines = wrap_preview_text(passive.description(zh), 18.);
+            let status = passive.status(id, health, mana, awake, zh);
+            let relation = passive.replaces().map(|old| {
+                if zh {
+                    format!("替代：{}", old.name(zh))
+                } else {
+                    format!("Replaces: {}", old.name(zh))
+                }
+            });
+            let height = 65.
+                + lines.len() as f32 * 26.
+                + if status.is_some() { 26. } else { 0. }
+                + if relation.is_some() { 24. } else { 0. };
             flush_labels();
-            draw_rectangle(270., 225., 485., 145., Color::new(0.04, 0.07, 0.12, 0.98));
-            for (i, line) in content::passive(id, zh).lines().enumerate() {
-                label(line, 287., 260. + i as f32 * 30., 22., GOLD);
+            draw_rectangle(270., 225., 485., height, Color::from_rgba(15, 23, 34, 255));
+            icons::draw_passive(passive, 286., 239., 28.);
+            label(passive.name(zh), 326., 261., 22., GOLD);
+            let mut y = 292.;
+            for line in &lines {
+                label(line, 287., y, 18., WHITE);
+                y += 26.;
+            }
+            if let Some((text, on)) = status {
+                label(text, 287., y, 17., if on { ORANGE } else { GRAY });
+                y += 26.;
+            }
+            if let Some(text) = relation {
+                label(&text, 287., y, 15., SKYBLUE);
             }
         }
         if !enemy_turn
@@ -2607,6 +2974,22 @@ async fn main() {
                     .to_string()
                 });
             label(&footer, 800., 628., 13., LIGHTGRAY);
+            if let Some(p) = focused_preview {
+                let text = if zh {
+                    format!(
+                        "敌方生命 → {}{}",
+                        p.enemy_health_after,
+                        if p.awakens_enemy { " · 将觉醒" } else { "" }
+                    )
+                } else {
+                    format!(
+                        "Enemy HP → {}{}",
+                        p.enemy_health_after,
+                        if p.awakens_enemy { " · Awakening" } else { "" }
+                    )
+                };
+                label(&text, 800., 646., 12., GOLD);
+            }
         }
         presentation.draw_health(zh);
         let detail_context = targeting.map(|skill| (skill, false)).or(hover_context);
@@ -2650,31 +3033,45 @@ async fn main() {
                 GOLD,
             );
             label(
-                &if id == 6 && mana < skill.cost() {
-                    cost_text(zh, mana, (skill.cost() - mana) * 2)
+                &if id == 6 && mana < content::skill_cost(id, awakened[is_enemy as usize], skill) {
+                    cost_text(
+                        zh,
+                        mana,
+                        content::blood_cost(
+                            id,
+                            awakened[is_enemy as usize],
+                            content::skill_cost(id, awakened[is_enemy as usize], skill) - mana,
+                        ),
+                    )
                 } else {
                     format!(
                         "{}{}",
                         tr(zh, "Cost: ", "消耗："),
-                        cost_text(zh, skill.cost(), 0)
+                        cost_text(
+                            zh,
+                            content::skill_cost(id, awakened[is_enemy as usize], skill),
+                            0
+                        )
                     )
                 },
                 x + 10.,
                 266.,
                 18.,
-                if id == 6 && mana < skill.cost() {
+                if id == 6 && mana < content::skill_cost(id, awakened[is_enemy as usize], skill) {
                     RED
                 } else {
                     SKYBLUE
                 },
             );
-            for (line, text) in wrap_preview_text(skill.description(zh), 12.)
+            let description = content::skill_description(skill, awakened[is_enemy as usize], zh);
+            for (line, text) in wrap_preview_text(description, 12.)
                 .iter()
                 .take(7)
                 .enumerate()
             {
                 label(text, x + 10., 292. + line as f32 * 18., 15., LIGHTGRAY);
             }
+
             let exact_target = if !is_enemy
                 && targeting == Some(skill)
                 && pointer.x >= 256.
@@ -2691,48 +3088,53 @@ async fn main() {
             };
             let range = content::targeted(skill) && exact_target.is_none();
             let (low, high) = if range {
-                content::preview_range(
+                content::preview_range_in(
                     skill,
                     &b,
                     id,
                     health,
-                    if content::payment(id, health, mana, skill).is_some() {
+                    if content::payment_in(id, health, mana, skill, rules!(is_enemy)).is_some() {
                         mana
                     } else {
-                        mana.max(skill.cost())
+                        mana.max(content::skill_cost(id, awakened[is_enemy as usize], skill))
                     },
                     opponent,
                     boost,
+                    rules!(is_enemy),
                 )
             } else {
                 (
-                    content::preview_rewards(
+                    content::preview_rewards_in(
                         skill,
                         &b,
                         exact_target.unwrap_or((3, 3)),
                         id,
                         health,
-                        if content::payment(id, health, mana, skill).is_some() {
+                        if content::payment_in(id, health, mana, skill, rules!(is_enemy)).is_some()
+                        {
                             mana
                         } else {
-                            mana.max(skill.cost())
+                            mana.max(content::skill_cost(id, awakened[is_enemy as usize], skill))
                         },
                         opponent,
                         boost,
+                        rules!(is_enemy),
                     ),
-                    content::preview_rewards(
+                    content::preview_rewards_in(
                         skill,
                         &b,
                         exact_target.unwrap_or((3, 3)),
                         id,
                         health,
-                        if content::payment(id, health, mana, skill).is_some() {
+                        if content::payment_in(id, health, mana, skill, rules!(is_enemy)).is_some()
+                        {
                             mana
                         } else {
-                            mana.max(skill.cost())
+                            mana.max(content::skill_cost(id, awakened[is_enemy as usize], skill))
                         },
                         opponent,
                         boost,
+                        rules!(is_enemy),
                     ),
                 )
             };
@@ -2784,7 +3186,7 @@ async fn main() {
                 18.,
                 SKYBLUE,
             );
-            if content::payment(id, health, mana, skill).is_some() {
+            if content::payment_in(id, health, mana, skill, rules!(is_enemy)).is_some() {
                 label(
                     &format!(
                         "{} {mana} → {}",
@@ -2805,7 +3207,9 @@ async fn main() {
                     ORANGE,
                 );
             }
-            if id == 6 && mana < skill.cost() && content::payment(id, health, mana, skill).is_none()
+            if id == 6
+                && mana < content::skill_cost(id, awakened[is_enemy as usize], skill)
+                && content::payment_in(id, health, mana, skill, rules!(is_enemy)).is_none()
             {
                 label(
                     tr(zh, "Not enough HP; must leave 1", "生命不足，支付后须剩1点"),
@@ -2815,7 +3219,9 @@ async fn main() {
                     RED,
                 );
             }
-            if low.blood_cost > 0 && content::payment(id, health, mana, skill).is_some() {
+            if low.blood_cost > 0
+                && content::payment_in(id, health, mana, skill, rules!(is_enemy)).is_some()
+            {
                 label(
                     &if zh {
                         format!("生命 -{} → {} !", low.blood_cost, health - low.blood_cost)
@@ -2839,7 +3245,28 @@ async fn main() {
                     RED,
                 );
             }
-            if exact_target.is_some() {
+            if high.awakens_enemy {
+                let text = if zh {
+                    format!(
+                        "敌方将觉醒：生命 → {}",
+                        amount(low.enemy_health_after, high.enemy_health_after)
+                    )
+                } else {
+                    format!(
+                        "Enemy awakens: HP → {}",
+                        amount(low.enemy_health_after, high.enemy_health_after)
+                    )
+                };
+                label(&text, x + 10., 570., 13., GOLD);
+            } else if high.awakens_self {
+                label(
+                    tr(zh, "HP payment triggers awakening", "生命支付将触发觉醒"),
+                    x + 10.,
+                    570.,
+                    13.,
+                    GOLD,
+                );
+            } else if exact_target.is_some() {
                 label(
                     tr(zh, "Click board to confirm", "点击棋盘确认释放"),
                     x + 10.,
@@ -2916,6 +3343,34 @@ mod tests {
         b
     }
     #[test]
+    fn every_character_webp_decodes_with_its_original_atlas_dimensions() {
+        for asset in sprites::SPRITES.iter().chain(sprites::AWAKENED) {
+            let decoded = image::load_from_memory(asset.bytes).expect("runtime image decoder");
+            let frames = asset.indices.iter().max().unwrap() + 1;
+            assert_eq!(decoded.width(), asset.w as u32 * frames as u32);
+            assert_eq!(decoded.height(), asset.h as u32);
+            assert!(decoded.to_rgba8().pixels().any(|pixel| pixel[3] > 0));
+        }
+    }
+    #[test]
+    fn global_skills_cast_directly_even_when_paid_with_health() {
+        use content::Skill;
+        for awake in [false, true] {
+            let rules = content::Rules {
+                awake,
+                ..Default::default()
+            };
+            for mana in [0, 80, 100] {
+                assert!(content::payment_in(6, 600, mana, Skill::Corrupt, rules).is_some());
+                assert!(!skill_requires_board_click(Skill::Corrupt));
+                assert!(skill_requires_board_click(Skill::Drain));
+            }
+        }
+        assert!(!skill_requires_board_click(Skill::Guard));
+        assert!(!skill_requires_board_click(Skill::Imp));
+        assert!(skill_requires_board_click(Skill::Charge));
+    }
+    #[test]
     fn hint_clicks_hit_rows_on_the_shown_page_and_board_badges() {
         // Rows are 44 units tall from y=278, seven per page.
         assert_eq!(hint_row_at(vec2(800., 280.), 0, 3), Some(0));
@@ -2937,13 +3392,15 @@ mod tests {
     #[test]
     fn sidebar_labels_are_short_and_localized() {
         for id in 0..HEROES.len() {
-            for zh in [false, true] {
-                let name = passive_name(id, zh);
-                assert!(!name.is_empty() && name.len() < content::passive(id, zh).len());
-                assert!(!name.contains(['：', ':', '\n']));
+            for awake in [false, true] {
+                for &passive in content::passives(id, awake) {
+                    for zh in [false, true] {
+                        let name = passive.name(zh);
+                        assert!(!name.is_empty() && !name.contains(['：', ':', '\n']));
+                    }
+                }
             }
         }
-        assert_eq!(passive_name(0, true), "列阵");
         assert_eq!(
             reward_summary(true, 3, 12, 0),
             "生命 +3 · 伤害 12 · 魔力 +0"

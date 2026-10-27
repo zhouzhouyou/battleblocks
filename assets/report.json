@@ -29,7 +29,7 @@
     "unique_frames": 4,
     "original_rgba_bytes": 2867200,
     "atlas_rgba_bytes": 1920000,
-    "atlas_png_bytes": 3641
+    "atlas_webp_bytes": 422
   },
   "elf": {
     "original_size": [
@@ -61,7 +61,7 @@
     "unique_frames": 4,
     "original_rgba_bytes": 2867200,
     "atlas_rgba_bytes": 1638400,
-    "atlas_png_bytes": 3361
+    "atlas_webp_bytes": 448
   },
   "wizzard": {
     "original_size": [
@@ -93,7 +93,7 @@
     "unique_frames": 4,
     "original_rgba_bytes": 2867200,
     "atlas_rgba_bytes": 1920000,
-    "atlas_png_bytes": 3868
+    "atlas_webp_bytes": 496
   },
   "goblin": {
     "original_size": [
@@ -125,7 +125,7 @@
     "unique_frames": 3,
     "original_rgba_bytes": 2867200,
     "atlas_rgba_bytes": 480000,
-    "atlas_png_bytes": 1212
+    "atlas_webp_bytes": 208
   },
   "imp": {
     "original_size": [
@@ -157,7 +157,7 @@
     "unique_frames": 3,
     "original_rgba_bytes": 2867200,
     "atlas_rgba_bytes": 578880,
-    "atlas_png_bytes": 1459
+    "atlas_webp_bytes": 316
   },
   "chort": {
     "original_size": [
@@ -191,7 +191,7 @@
     "unique_frames": 4,
     "original_rgba_bytes": 3584000,
     "atlas_rgba_bytes": 1478400,
-    "atlas_png_bytes": 3097
+    "atlas_webp_bytes": 430
   },
   "big_zombie": {
     "original_size": [
@@ -223,7 +223,7 @@
     "unique_frames": 4,
     "original_rgba_bytes": 2867200,
     "atlas_rgba_bytes": 1543680,
-    "atlas_png_bytes": 4007
+    "atlas_webp_bytes": 716
   },
   "big_demon_ro": {
     "original_size": [
@@ -255,6 +255,6 @@
     "unique_frames": 4,
     "original_rgba_bytes": 2867200,
     "atlas_rgba_bytes": 2227200,
-    "atlas_png_bytes": 24941
+    "atlas_webp_bytes": 5222
   }
 }
