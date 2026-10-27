@@ -1,0 +1,1095 @@
+{
+  "configuration": {
+    "baseline_commit": "4c9fe1d",
+    "final": {
+      "awakening_lines": [
+        45,
+        35,
+        40,
+        50,
+        37,
+        35,
+        30
+      ],
+      "awakening_caps": [
+        55,
+        45,
+        50,
+        55,
+        50,
+        47,
+        44
+      ],
+      "lightning_cost": 60,
+      "imp_blast": [
+        12,
+        14
+      ],
+      "imp_balanced_bonus": [
+        4,
+        6
+      ]
+    },
+    "runs": [
+      {
+        "mode": "standard",
+        "samples": 120,
+        "seed_start": 600000,
+        "level": 1,
+        "sides_swapped": true,
+        "control": "4c9fe1d",
+        "final": "working tree; rules above"
+      },
+      {
+        "mode": "advanced",
+        "samples": 240,
+        "seed_start": 610000,
+        "level": 2,
+        "sides_swapped": true,
+        "control": "4c9fe1d",
+        "final": "working tree; rules above"
+      },
+      {
+        "mode": "beginner",
+        "samples": 48,
+        "seed_start": 620000,
+        "level": 0,
+        "sides_swapped": true,
+        "control": "4c9fe1d",
+        "final": "working tree; rules above"
+      }
+    ],
+    "tuning": [
+      {
+        "id": "a",
+        "caps": [
+          55,
+          45,
+          40,
+          55,
+          45,
+          45,
+          40
+        ],
+        "lines": [
+          45,
+          35,
+          40,
+          50,
+          40,
+          35,
+          30
+        ],
+        "imp_blast": [
+          16,
+          18
+        ],
+        "imp_bonus": [
+          2,
+          4
+        ]
+      },
+      {
+        "id": "b",
+        "caps": [
+          55,
+          45,
+          45,
+          55,
+          50,
+          47,
+          42
+        ],
+        "lines": [
+          45,
+          35,
+          40,
+          50,
+          40,
+          35,
+          30
+        ],
+        "imp_blast": [
+          16,
+          18
+        ],
+        "imp_bonus": [
+          2,
+          4
+        ]
+      },
+      {
+        "id": "c",
+        "caps": [
+          55,
+          45,
+          44,
+          55,
+          50,
+          47,
+          44
+        ],
+        "lines": [
+          45,
+          35,
+          40,
+          50,
+          35,
+          35,
+          30
+        ],
+        "imp_blast": [
+          16,
+          18
+        ],
+        "imp_bonus": [
+          2,
+          4
+        ]
+      },
+      {
+        "id": "d",
+        "caps": [
+          55,
+          45,
+          44,
+          55,
+          50,
+          47,
+          44
+        ],
+        "lines": [
+          45,
+          35,
+          40,
+          50,
+          40,
+          35,
+          30
+        ],
+        "imp_blast": [
+          14,
+          16
+        ],
+        "imp_bonus": [
+          4,
+          6
+        ]
+      },
+      {
+        "id": "e",
+        "caps": [
+          55,
+          45,
+          44,
+          55,
+          50,
+          47,
+          44
+        ],
+        "lines": [
+          45,
+          35,
+          40,
+          50,
+          37,
+          35,
+          30
+        ],
+        "imp_blast": [
+          14,
+          16
+        ],
+        "imp_bonus": [
+          4,
+          6
+        ]
+      },
+      {
+        "id": "f",
+        "caps": [
+          55,
+          45,
+          43,
+          55,
+          50,
+          47,
+          44
+        ],
+        "lines": [
+          45,
+          35,
+          40,
+          50,
+          37,
+          35,
+          30
+        ],
+        "imp_blast": [
+          12,
+          14
+        ],
+        "imp_bonus": [
+          4,
+          6
+        ]
+      },
+      {
+        "id": "g",
+        "caps": [
+          55,
+          45,
+          50,
+          55,
+          50,
+          47,
+          44
+        ],
+        "lines": [
+          45,
+          35,
+          40,
+          50,
+          37,
+          35,
+          30
+        ],
+        "imp_blast": [
+          12,
+          14
+        ],
+        "imp_bonus": [
+          4,
+          6
+        ],
+        "lightning_cost": 60
+      }
+    ],
+    "tuning_seed_ranges": {
+      "before/a/b": {
+        "standard": [
+          48,
+          200000,
+          1
+        ],
+        "advanced": [
+          24,
+          210000,
+          2
+        ]
+      },
+      "baseline/b-large/c/d/g": {
+        "standard": [
+          120,
+          240000,
+          1
+        ],
+        "advanced": [
+          48,
+          250000,
+          2
+        ]
+      },
+      "validation-e": {
+        "standard": [
+          120,
+          300000,
+          1
+        ],
+        "advanced": [
+          72,
+          310000,
+          2
+        ]
+      },
+      "validation-f": {
+        "standard": [
+          120,
+          400000,
+          1
+        ],
+        "advanced": [
+          72,
+          410000,
+          2
+        ],
+        "advanced-large": [
+          240,
+          500000,
+          2
+        ],
+        "beginner": [
+          48,
+          420000,
+          0
+        ]
+      }
+    },
+    "baseline_rules": {
+      "awakening_lines": [
+        45,
+        35,
+        40,
+        50,
+        40,
+        35,
+        30
+      ],
+      "awakening_caps": [
+        55,
+        45,
+        50,
+        55,
+        45,
+        45,
+        40
+      ],
+      "lightning_cost": 40,
+      "imp_blast": [
+        16,
+        18
+      ],
+      "imp_balanced_bonus": [
+        2,
+        4
+      ]
+    }
+  },
+  "results": {
+    "control_standard": {
+      "file": "analysis/awakening-balance-control-standard.csv",
+      "roles": [
+        {
+          "name": "骑士",
+          "wins": 694,
+          "games": 1440,
+          "win_percent": 48.19444444444444
+        },
+        {
+          "name": "精灵",
+          "wins": 757,
+          "games": 1440,
+          "win_percent": 52.56944444444444
+        },
+        {
+          "name": "巫师",
+          "wins": 905,
+          "games": 1440,
+          "win_percent": 62.84722222222222
+        },
+        {
+          "name": "哥布林",
+          "wins": 740,
+          "games": 1440,
+          "win_percent": 51.388888888888886
+        },
+        {
+          "name": "小恶魔",
+          "wins": 599,
+          "games": 1440,
+          "win_percent": 41.59722222222222
+        },
+        {
+          "name": "角魔",
+          "wins": 685,
+          "games": 1440,
+          "win_percent": 47.56944444444444
+        },
+        {
+          "name": "大僵尸",
+          "wins": 660,
+          "games": 1440,
+          "win_percent": 45.833333333333336
+        }
+      ],
+      "summary": {
+        "games": 5040,
+        "draws": 0,
+        "median_actions": 41,
+        "p90_burst": 221,
+        "first_side_win": 52.0
+      },
+      "pair_wins": [
+        [
+          0,
+          106,
+          73,
+          114,
+          134,
+          134,
+          133
+        ],
+        [
+          134,
+          0,
+          95,
+          112,
+          155,
+          142,
+          119
+        ],
+        [
+          167,
+          145,
+          0,
+          173,
+          99,
+          158,
+          163
+        ],
+        [
+          126,
+          128,
+          67,
+          0,
+          185,
+          93,
+          141
+        ],
+        [
+          106,
+          85,
+          141,
+          55,
+          0,
+          134,
+          78
+        ],
+        [
+          106,
+          98,
+          82,
+          147,
+          106,
+          0,
+          146
+        ],
+        [
+          107,
+          121,
+          77,
+          99,
+          162,
+          94,
+          0
+        ]
+      ],
+      "games_per_pair": 240,
+      "max_pair_percent": 77.08333333333334
+    },
+    "final_standard": {
+      "file": "analysis/awakening-balance-final-standard.csv",
+      "roles": [
+        {
+          "name": "骑士",
+          "wins": 680,
+          "games": 1440,
+          "win_percent": 47.22222222222222
+        },
+        {
+          "name": "精灵",
+          "wins": 746,
+          "games": 1440,
+          "win_percent": 51.80555555555556
+        },
+        {
+          "name": "巫师",
+          "wins": 776,
+          "games": 1440,
+          "win_percent": 53.888888888888886
+        },
+        {
+          "name": "哥布林",
+          "wins": 718,
+          "games": 1440,
+          "win_percent": 49.861111111111114
+        },
+        {
+          "name": "小恶魔",
+          "wins": 721,
+          "games": 1440,
+          "win_percent": 50.06944444444444
+        },
+        {
+          "name": "角魔",
+          "wins": 717,
+          "games": 1440,
+          "win_percent": 49.791666666666664
+        },
+        {
+          "name": "大僵尸",
+          "wins": 682,
+          "games": 1440,
+          "win_percent": 47.361111111111114
+        }
+      ],
+      "summary": {
+        "games": 5040,
+        "draws": 0,
+        "median_actions": 42,
+        "p90_burst": 216,
+        "first_side_win": 52.5,
+        "p10_actions": 27,
+        "p90_actions": 60,
+        "max_actions": 115
+      },
+      "pair_wins": [
+        [
+          0,
+          106,
+          94,
+          114,
+          119,
+          128,
+          119
+        ],
+        [
+          134,
+          0,
+          117,
+          112,
+          133,
+          137,
+          113
+        ],
+        [
+          146,
+          123,
+          0,
+          149,
+          75,
+          139,
+          144
+        ],
+        [
+          126,
+          128,
+          91,
+          0,
+          144,
+          94,
+          135
+        ],
+        [
+          121,
+          107,
+          165,
+          96,
+          0,
+          132,
+          100
+        ],
+        [
+          112,
+          103,
+          101,
+          146,
+          108,
+          0,
+          147
+        ],
+        [
+          121,
+          127,
+          96,
+          105,
+          140,
+          93,
+          0
+        ]
+      ],
+      "games_per_pair": 240,
+      "max_pair_percent": 68.75
+    },
+    "control_advanced": {
+      "file": "analysis/awakening-balance-control-advanced.csv",
+      "roles": [
+        {
+          "name": "骑士",
+          "wins": 1397,
+          "games": 2880,
+          "win_percent": 48.50694444444444
+        },
+        {
+          "name": "精灵",
+          "wins": 1505,
+          "games": 2880,
+          "win_percent": 52.25694444444444
+        },
+        {
+          "name": "巫师",
+          "wins": 1786,
+          "games": 2880,
+          "win_percent": 62.013888888888886
+        },
+        {
+          "name": "哥布林",
+          "wins": 1482,
+          "games": 2880,
+          "win_percent": 51.458333333333336
+        },
+        {
+          "name": "小恶魔",
+          "wins": 1227,
+          "games": 2880,
+          "win_percent": 42.604166666666664
+        },
+        {
+          "name": "角魔",
+          "wins": 1301,
+          "games": 2880,
+          "win_percent": 45.173611111111114
+        },
+        {
+          "name": "大僵尸",
+          "wins": 1382,
+          "games": 2880,
+          "win_percent": 47.986111111111114
+        }
+      ],
+      "summary": {
+        "games": 10080,
+        "draws": 0,
+        "median_actions": 40,
+        "p90_burst": 224,
+        "first_side_win": 53.2
+      },
+      "pair_wins": [
+        [
+          0,
+          211,
+          172,
+          222,
+          277,
+          275,
+          240
+        ],
+        [
+          269,
+          0,
+          211,
+          210,
+          293,
+          277,
+          245
+        ],
+        [
+          308,
+          269,
+          0,
+          362,
+          178,
+          331,
+          338
+        ],
+        [
+          258,
+          270,
+          118,
+          0,
+          354,
+          209,
+          273
+        ],
+        [
+          203,
+          187,
+          302,
+          126,
+          0,
+          270,
+          139
+        ],
+        [
+          205,
+          203,
+          149,
+          271,
+          210,
+          0,
+          263
+        ],
+        [
+          240,
+          235,
+          142,
+          207,
+          341,
+          217,
+          0
+        ]
+      ],
+      "games_per_pair": 480,
+      "max_pair_percent": 75.41666666666667
+    },
+    "final_advanced": {
+      "file": "analysis/awakening-balance-final-advanced.csv",
+      "roles": [
+        {
+          "name": "骑士",
+          "wins": 1389,
+          "games": 2880,
+          "win_percent": 48.229166666666664
+        },
+        {
+          "name": "精灵",
+          "wins": 1444,
+          "games": 2880,
+          "win_percent": 50.138888888888886
+        },
+        {
+          "name": "巫师",
+          "wins": 1530,
+          "games": 2880,
+          "win_percent": 53.125
+        },
+        {
+          "name": "哥布林",
+          "wins": 1410,
+          "games": 2880,
+          "win_percent": 48.958333333333336
+        },
+        {
+          "name": "小恶魔",
+          "wins": 1490,
+          "games": 2880,
+          "win_percent": 51.736111111111114
+        },
+        {
+          "name": "角魔",
+          "wins": 1364,
+          "games": 2880,
+          "win_percent": 47.361111111111114
+        },
+        {
+          "name": "大僵尸",
+          "wins": 1453,
+          "games": 2880,
+          "win_percent": 50.451388888888886
+        }
+      ],
+      "summary": {
+        "games": 10080,
+        "draws": 0,
+        "median_actions": 42,
+        "p90_burst": 215,
+        "first_side_win": 54.0,
+        "p10_actions": 27,
+        "p90_actions": 60,
+        "max_actions": 113
+      },
+      "pair_wins": [
+        [
+          0,
+          211,
+          211,
+          222,
+          242,
+          273,
+          230
+        ],
+        [
+          269,
+          0,
+          253,
+          210,
+          213,
+          269,
+          230
+        ],
+        [
+          269,
+          227,
+          0,
+          324,
+          148,
+          282,
+          280
+        ],
+        [
+          258,
+          270,
+          156,
+          0,
+          281,
+          197,
+          248
+        ],
+        [
+          238,
+          267,
+          332,
+          199,
+          0,
+          280,
+          174
+        ],
+        [
+          207,
+          211,
+          198,
+          283,
+          200,
+          0,
+          265
+        ],
+        [
+          250,
+          250,
+          200,
+          232,
+          306,
+          215,
+          0
+        ]
+      ],
+      "games_per_pair": 480,
+      "max_pair_percent": 69.16666666666667
+    },
+    "control_beginner": {
+      "file": "analysis/awakening-balance-control-beginner.csv",
+      "roles": [
+        {
+          "name": "骑士",
+          "wins": 475,
+          "games": 576,
+          "win_percent": 82.46527777777777
+        },
+        {
+          "name": "精灵",
+          "wins": 168,
+          "games": 576,
+          "win_percent": 29.166666666666668
+        },
+        {
+          "name": "巫师",
+          "wins": 206,
+          "games": 576,
+          "win_percent": 35.763888888888886
+        },
+        {
+          "name": "哥布林",
+          "wins": 280,
+          "games": 576,
+          "win_percent": 48.611111111111114
+        },
+        {
+          "name": "小恶魔",
+          "wins": 357,
+          "games": 576,
+          "win_percent": 61.979166666666664
+        },
+        {
+          "name": "角魔",
+          "wins": 340,
+          "games": 576,
+          "win_percent": 59.02777777777778
+        },
+        {
+          "name": "大僵尸",
+          "wins": 187,
+          "games": 576,
+          "win_percent": 32.46527777777778
+        }
+      ],
+      "summary": {
+        "games": 2016,
+        "draws": 3,
+        "median_actions": 68,
+        "p90_burst": 218,
+        "first_side_win": 51.4
+      },
+      "pair_wins": [
+        [
+          0,
+          93,
+          73,
+          86,
+          68,
+          62,
+          93
+        ],
+        [
+          3,
+          0,
+          46,
+          26,
+          13,
+          25,
+          55
+        ],
+        [
+          23,
+          50,
+          0,
+          40,
+          23,
+          31,
+          39
+        ],
+        [
+          10,
+          70,
+          56,
+          0,
+          37,
+          34,
+          73
+        ],
+        [
+          28,
+          83,
+          73,
+          59,
+          0,
+          49,
+          65
+        ],
+        [
+          34,
+          71,
+          65,
+          62,
+          47,
+          0,
+          61
+        ],
+        [
+          3,
+          41,
+          57,
+          20,
+          31,
+          35,
+          0
+        ]
+      ],
+      "games_per_pair": 96,
+      "max_pair_percent": 96.875
+    },
+    "final_beginner": {
+      "file": "analysis/awakening-balance-final-beginner.csv",
+      "roles": [
+        {
+          "name": "骑士",
+          "wins": 473,
+          "games": 576,
+          "win_percent": 82.11805555555556
+        },
+        {
+          "name": "精灵",
+          "wins": 168,
+          "games": 576,
+          "win_percent": 29.166666666666668
+        },
+        {
+          "name": "巫师",
+          "wins": 158,
+          "games": 576,
+          "win_percent": 27.430555555555557
+        },
+        {
+          "name": "哥布林",
+          "wins": 284,
+          "games": 576,
+          "win_percent": 49.30555555555556
+        },
+        {
+          "name": "小恶魔",
+          "wins": 399,
+          "games": 576,
+          "win_percent": 69.27083333333333
+        },
+        {
+          "name": "角魔",
+          "wins": 338,
+          "games": 576,
+          "win_percent": 58.68055555555556
+        },
+        {
+          "name": "大僵尸",
+          "wins": 192,
+          "games": 576,
+          "win_percent": 33.333333333333336
+        }
+      ],
+      "summary": {
+        "games": 2016,
+        "draws": 4,
+        "median_actions": 69,
+        "p90_burst": 211,
+        "first_side_win": 50.8,
+        "p10_actions": 43,
+        "p90_actions": 115,
+        "max_actions": 240
+      },
+      "pair_wins": [
+        [
+          0,
+          93,
+          85,
+          86,
+          58,
+          59,
+          92
+        ],
+        [
+          3,
+          0,
+          49,
+          26,
+          12,
+          25,
+          53
+        ],
+        [
+          11,
+          47,
+          0,
+          37,
+          11,
+          24,
+          28
+        ],
+        [
+          10,
+          70,
+          59,
+          0,
+          39,
+          34,
+          72
+        ],
+        [
+          38,
+          84,
+          85,
+          57,
+          0,
+          62,
+          73
+        ],
+        [
+          37,
+          71,
+          72,
+          62,
+          34,
+          0,
+          62
+        ],
+        [
+          4,
+          43,
+          68,
+          20,
+          23,
+          34,
+          0
+        ]
+      ],
+      "games_per_pair": 96,
+      "max_pair_percent": 96.875
+    }
+  }
+}

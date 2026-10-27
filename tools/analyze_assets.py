@@ -4,7 +4,7 @@ from PIL import Image
 import json
 ROOT = Path(__file__).resolve().parents[1]
 rows = []
-for path in sorted((ROOT/'assets').glob('*.png')):
+for path in sorted((ROOT/'assets').glob('*.webp')):
     image = Image.open(path).convert('RGBA')
     # Invisible RGB is not part of the rendered appearance.
     image.putdata([p if p[3] else (0,0,0,0) for p in image.getdata()])
@@ -27,5 +27,5 @@ for path in sorted((ROOT/'assets').glob('*.png')):
                 x = end
             count += len(runs-active); active = runs
         rectangle_counts.append(count)
-    rows.append(dict(file=path.name,width=image.width,height=image.height,png_bytes=path.stat().st_size,rgba_bytes=len(rgba),lossless_integer_scale=factor,downscaled_rgba_bytes=len(rgba)//factor**2,exact_rectangles_per_unique_frame=rectangle_counts))
+    rows.append(dict(file=path.name,width=image.width,height=image.height,encoded_bytes=path.stat().st_size,rgba_bytes=len(rgba),lossless_integer_scale=factor,downscaled_rgba_bytes=len(rgba)//factor**2,exact_rectangles_per_unique_frame=rectangle_counts))
 (ROOT/'analysis/asset-inventory.json').write_text(json.dumps(rows,indent=2));print(json.dumps(rows,indent=2))
