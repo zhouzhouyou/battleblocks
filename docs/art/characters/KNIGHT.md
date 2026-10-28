@@ -4,6 +4,14 @@
 
 ## K-A4 已选方向与本次修订
 
+### v6 最新修订 · 装备头盔与武器比例
+
+用户原文：「装备-头盔 里面不要带上头发。现在石中剑的三视图和你右上角出现的剑不符合，后者的剑露出的部分明显更多。」
+
+最新图：[K-A4 v6](../../../asset-sources/art-direction/characters/knight/knight-a4-model-sheet-v6.png)。装备头盔独立空心、无头发；石中剑三视图增加外露剑刃，以右上角持剑造型为比例参考，统一三视图插入点和外露长度。近球形石头和无碎石要求不变。当前仍待用户评审；原先面甲跨图一致性和精确机械结构校准待修项保留，不因这次局部修改自动通过。
+
+完整提示词与修订记录：[MODEL-SHEET-A4-V6.md](../../../asset-sources/art-direction/characters/knight/MODEL-SHEET-A4-V6.md)。
+
 ### v5 修复要求
 
 最新修订图：[K-A4 人设稿 v5](../../../asset-sources/art-direction/characters/knight/knight-a4-model-sheet-v5.png)。已修大腿板甲、蓝色双眼并保留开心音符与笑容。面甲开闭增加同尺度侧视图，但小全身与头像开孔／透视仍存在差异，刚体尺寸与旋转结构保留待校准，不视为全部修复完成或用户已通过。

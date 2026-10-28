@@ -1,8 +1,8 @@
 {
   "date": "2026-10-29",
   "policy": "Keep current dwarf model v5 and animation v6 only. Removed drafts remain in Git history, not the working tree. Do not restore from generator cache.",
-  "generated_images_seen": 32,
-  "generated_images_in_worktree": 19,
+  "generated_images_seen": 33,
+  "generated_images_in_worktree": 20,
   "images": [
     {
       "generated_file": "exec-03eba591-9e0e-41ef-bce8-0db8425e9216.png",
@@ -205,6 +205,12 @@
       "sha256": "e7fddb8cbb2368d178b0d7ea2ef4d0ed16760b3c9f2f713273fdbebb2b7b7dc9",
       "status": "present",
       "repository_file": "asset-sources/art-direction/characters/knight/knight-a4-model-sheet-v5.png"
+    },
+    {
+      "generated_file": "exec-67f2a9c3-478b-4362-a993-06d528b283bd.png",
+      "sha256": "fff67eba29737717ad8e8acee95edfdce22b6868008071ec911878c492edb23c",
+      "status": "present",
+      "repository_file": "asset-sources/art-direction/characters/knight/knight-a4-model-sheet-v6.png"
     }
   ],
   "user_references": [
