@@ -1,8 +1,8 @@
 {
   "date": "2026-10-29",
   "policy": "Keep current dwarf model v5 and animation v6 only. Removed drafts remain in Git history, not the working tree. Do not restore from generator cache.",
-  "generated_images_seen": 27,
-  "generated_images_in_worktree": 14,
+  "generated_images_seen": 30,
+  "generated_images_in_worktree": 17,
   "images": [
     {
       "generated_file": "exec-03eba591-9e0e-41ef-bce8-0db8425e9216.png",
@@ -175,6 +175,24 @@
       "status": "removed_from_worktree_by_user_request",
       "former_repository_file": "asset-sources/art-direction/archive/dwarf-first-study-too-detailed.png",
       "recover_from_git": "2aa2b99"
+    },
+    {
+      "generated_file": "exec-e29e9675-b0ef-4cc4-8ead-10932f4ee676.png",
+      "sha256": "7671918fe6ec8003ca067bf18600ad293aefccc46aac6497522ca7a64d40dcb5",
+      "status": "present",
+      "repository_file": "asset-sources/art-direction/characters/knight/knight-black-gold-candidates-v3a-needs-fix.png"
+    },
+    {
+      "generated_file": "exec-cc3a161b-bf38-4a4f-ba5b-ef702c1b3fc4.png",
+      "sha256": "33ff931771914de45295486447904b32508a48bca1539b01a8c5a8ad448ca841",
+      "status": "present",
+      "repository_file": "asset-sources/art-direction/characters/knight/knight-black-gold-candidates-v3b-needs-fix.png"
+    },
+    {
+      "generated_file": "exec-a905a8e4-98c4-470f-aaba-e21c97bdaa84.png",
+      "sha256": "25cb307aff0303cdebbed90300f77e657d873116796c0fbe49afb1420f10e341",
+      "status": "present",
+      "repository_file": "asset-sources/art-direction/characters/knight/knight-black-red-gold-candidates-v3c.png"
     }
   ],
   "user_references": [
