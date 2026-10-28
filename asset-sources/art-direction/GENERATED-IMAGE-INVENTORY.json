@@ -1,8 +1,8 @@
 {
   "date": "2026-10-29",
   "policy": "Keep current dwarf model v5 and animation v6 only. Removed drafts remain in Git history, not the working tree. Do not restore from generator cache.",
-  "generated_images_seen": 35,
-  "generated_images_in_worktree": 22,
+  "generated_images_seen": 36,
+  "generated_images_in_worktree": 23,
   "images": [
     {
       "generated_file": "exec-03eba591-9e0e-41ef-bce8-0db8425e9216.png",
@@ -223,6 +223,12 @@
       "sha256": "44cb7620539c6bc8af2b2c4fb6e1b0baba0f8366962e2d32055f7ea42f639d8b",
       "status": "present",
       "repository_file": "asset-sources/art-direction/characters/knight/knight-helmet-mechanism-v7.png"
+    },
+    {
+      "generated_file": "exec-67a577d3-3f49-4050-8396-c725198a1bd3.png",
+      "sha256": "db50485928d300085b27f34053407664bceb8eefbd88f6162e8327022f4b68e2",
+      "status": "present",
+      "repository_file": "asset-sources/art-direction/characters/knight/knight-a4-model-sheet-v8.png"
     }
   ],
   "user_references": [
