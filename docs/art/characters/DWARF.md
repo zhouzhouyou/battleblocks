@@ -1,6 +1,6 @@
 # 矮人战士 · 锻炉老兵
 
-更新：2026-10-29。用户选定方向 **E-A**；本轮基于 E-A 精修与用户参考图，制作黑红、无头盔的完整人设图。下列最新造型要求覆盖历史头盔、蓝布和旧符文描述；修订图仍待视觉评审。数值与战斗实现尚未完成。
+更新：2026-10-29。用户选定方向 **E-A**；当前唯一造型基础为黑红、无头盔的  人设图；仇恨之书取自该图装备拆分。 垫高动画已重制，人物与书分离。旧稿已按用户要求从工作树移除，历史通过 Git `2aa2b99` 追溯。数值与战斗实现尚未完成。
 
 当前工作边界：用户明确要求「不需要任何编码工作，你现在只需要记录我留下的设定（技能、选择的角色图案等）」。只整理档案和选择记录，不继续制作交互原型、接入游戏或编写能力代码。
 
@@ -10,12 +10,12 @@
 
 角色介绍是所有角色档案的固定字段。后续角色未提供介绍时，在对应评审中提醒用户补写。
 
-## 来源与选稿历史
+## 当前资产与选稿历史
 
-- 已选 E-A：男性、中年、锻炉老兵。初选图：`../../../asset-sources/art-direction/characters/dwarf/dwarf-review-e-.png`，第一列；普通形态为修改基准。**该图下排新增护甲和头顶红色鬃毛的旧觉醒造型已被用户否决。**
-- E 四稿提示词：`../../../asset-sources/art-direction/characters/dwarf/PROMPT-E.md`。
-- 更早 F 四稿保留为历史，不作为当前定稿。
-- 本档与用户最新明确指令优先于旧图、旧提示词和评审索引中的候选描述。
+- 当前人设图：`../../../asset-sources/art-direction/characters/dwarf/dwarf-model-sheet-black-red-.png`；完整装备、三视图和表情。用户要求以此图的仇恨之书为准。
+- 当前动画与分层源素材：[ 记录](../../../asset-sources/art-direction/characters/dwarf/animations//README.md)。
+- 用户选定 E-A 锻炉老兵；旧 F／E 候选、蓝衣头盔、旧符文、旧书与旧动画已移除，不再作为当前素材。其历史文件存在 Git `2aa2b99`，不从生成缓存重新复制回来。
+- 原始设定、后续修订与未决规则保留在本档；删旧图片不删除用户设计记录。
 
 ## 造型锁定
 
@@ -59,9 +59,9 @@
 
 不能确认交换或技能目标。反馈不花费资源、不改变棋盘，不重复刷屏；台词消失后可再次触发。最终接入时覆盖鼠标与键盘选目标。
 
-## 动画设计 
+## 动画设计与当前 
 
-此处动画节奏为历史设计提案；本轮不重做动画或编码。旧头盔／蓝衣人物动画只作历史预览，后续人物素材应换为本轮确认后的黑红无盔造型，独立书动画无需与人物绑定重绘。
+垫高动画已按最新要求重制；人物为  黑红无盔外观，书封面直接取自  装备拆分，非重新设计。此次只制作媒体素材，不做游戏编码。其余待机／技能动作行仍为设计提案，不代表当前均已导出。
 
 | 动画 | 帧／节奏提案 | 行为与约束 |
 | --- | --- | --- |
@@ -82,38 +82,21 @@
 - 合成 GIF／视频仅是评审效果预览，不是正式角色贴图，不可以取代独立源图与独立书动画。允许预览用具体裁切拼合，但不能把它当成生产管线或固定接口。
 - 用户原话：「注意制作矮人垫脚动画的时候不应该绑死矮人和书的素材，因为未来矮人的素材可能还会进行调整。」
 
-2026-10-28 追加原话：「书一本一本垫到角色脚下就行，你不需要搞书本的开合动画」。`grudge-book-study-.png` 是已废弃的开合研究稿，仅保留作历史记录；预览只使用其中合上的书形，不使用打开页的帧。
+### 当前交付（2026-10-29，）
 
-### 当前图片的确认状态
+- 人设图：`../../../asset-sources/art-direction/characters/dwarf/dwarf-model-sheet-black-red-.png`。
+- 合成动画：[dwarf-book-elevation.gif](../../../asset-sources/art-direction/characters/dwarf/animations//dwarf-book-elevation.gif)，720×680、16fps、160帧、10秒。
+- 独立透明书动画：[book-growth-independent.gif](../../../asset-sources/art-direction/characters/dwarf/animations//book-growth-independent.gif)，550×300、16fps、160帧、10秒，不含角色。
+- 人物透明层、书封面／纸页／底封和来源裁切均分别保存在 `animations//`；生成提示词、源图裁切和核对记录见 [README](../../../asset-sources/art-direction/characters/dwarf/animations//README.md)。
+- 书的图案直接使用  装备拆分像素，保留原封面、边框和锤形记号；中途另画的大号 T 书没有采用，已清理。
+- 旧版16个图片／动画文件已从当前工作树移除，历史在 Git `2aa2b99`，历史提示词文档不代表旧图片有效。
+- 旧版空手不明握柄、蓝衣头盔、开合书、多本叠放、过薄书与旧符文要求均已被当前设定覆盖。
 
-**2026-10-29 最新人设图 （已交付，待用户评审）**：
+最新用户原话：
 
-- 人设原图：`../../../asset-sources/art-direction/characters/dwarf/dwarf-model-sheet-black-red-.png`。
-- 原始参考、装备清单、修改要求与完整 ImageGen 提示词：[MODEL-SHEET-.md](../../../asset-sources/art-direction/characters/dwarf/MODEL-SHEET-.md)。
-
-- 从 `dwarf-refined-ka-.png`（E-A 精修）出发，锤子对称、优质、锤形符文，人物无头盔、黑红服装。
-- 人物正／侧／背三视图；武器正／侧／俯三视图；全套装备拆解；平静、开心、生气三个同一角色的面部表情；普通暗刻／觉醒红光的符文对照。
-- 用户参考原图：`../../../asset-sources/art-direction/characters/dwarf/references/user-bareheaded-dwarf-2026-10-29.png`。
-- 以下所有带头盔、蓝衣或旧分叉符文的图片均是历史稿，不可作为最新生产外观。
-
-**历史交付 （头盔／蓝衣已作废，独立书动画方案保留）**：
-
-- 人物：`../../../asset-sources/art-direction/characters/dwarf/animations/dwarf-normal-awake-corrected-.png`。空手已改为张开、离开腰带；普通／觉醒保持装备，符文由暗转红。
-- 书：`../../../asset-sources/art-direction/characters/dwarf/animations/grudge-book-thickness-.png`，同一本厚书的三个阶段。
-- 独立书动画：`../../../asset-sources/art-direction/characters/dwarf/animations/grudge-book-independent-.gif`，不含矮人。
-- 合成动画预览：`../../../asset-sources/art-direction/characters/dwarf/animations/dwarf-grudge-book-preview-.gif`，仅作评审，不是角色与书绑定的正式贴图。
-- 生成提示词、动画设计、素材分离与验收限制：[REVIEW-.md](../../../asset-sources/art-direction/characters/dwarf/animations/REVIEW-.md)。9 秒、144 帧的独立书动画与合成预览已导出，并检查一级／三级画面。未修改游戏代码。
-
-以下保留旧图状态，不能覆盖上述最新修订：
-
-- 已选人物意象：`dwarf-review-e-.png` 第一列上排 E-A。
-- 待修订参考：`../../../asset-sources/art-direction/characters/dwarf/animations/dwarf-idle-runes-.png`。此图的非持锤手仍有疑似不明握柄，**未通过，不是定稿**；不能再询问用户是否保留该物件，必须按空手要求修正。
-- 书本开合研究图：`../../../asset-sources/art-direction/characters/dwarf/animations/grudge-book-study-.png`，开合方案已否决；只保留合上书的物件意象。后续仅记录一本本垫脚／抽走的动画设定。
-- 普通待机、红色符文脉冲和垫书均是动画设计说明，不代表用户已要求编码或已实现。
-
-追加原话：「我依然没懂矮人右手拿着个啥玩意，一定得拿着吗？」对应决定：**不需要持物，空手；不明物件是错误，不是角色设定。**
-
-最新追加原话：「书太薄了，仇恨之书必须厚一点。其实仇恨之书可以只有一本，随着不同阶段一直变厚就行。」对应决定：采用同一本书三级增厚，覆盖之前多本叠放；`grudge-book-closed-.png` 过薄，不采用为当前书设计。
+> 记得移除之前的稿件，重新制作 仇恨之书垫高角色动画。仇恨之书采用你刚才生成的人设图中的设计。
+>
+> 人设图的装备拆分里面有仇恨之书的图案啊，按那个来。
 
 ## 仍待数值／规则阶段确认
 
