@@ -1,8 +1,8 @@
 {
   "date": "2026-10-29",
   "policy": "Keep current dwarf model v5 and animation v6 only. Removed drafts remain in Git history, not the working tree. Do not restore from generator cache.",
-  "generated_images_seen": 36,
-  "generated_images_in_worktree": 23,
+  "generated_images_seen": 39,
+  "generated_images_in_worktree": 26,
   "images": [
     {
       "generated_file": "exec-03eba591-9e0e-41ef-bce8-0db8425e9216.png",
@@ -229,6 +229,24 @@
       "sha256": "db50485928d300085b27f34053407664bceb8eefbd88f6162e8327022f4b68e2",
       "status": "present",
       "repository_file": "asset-sources/art-direction/characters/knight/knight-a4-model-sheet-v8.png"
+    },
+    {
+      "generated_file": "exec-e99dba1b-c80b-4ef3-92db-4793888e67d6.png",
+      "sha256": "0b7d8e0a6daf98cb2dfc9f12a94b0a4775ebbef6f5ccd220f2860cc458193c06",
+      "status": "present",
+      "repository_file": "asset-sources/art-direction/characters/priest/priest-drinking-candidates-e-v1.png"
+    },
+    {
+      "generated_file": "exec-b5368252-beb2-4978-898f-4db2d436d7d4.png",
+      "sha256": "6c84cc302d3f811b9daad47c969c603fb7fc452ae94f6fb42f4cd2f7072582c3",
+      "status": "present",
+      "repository_file": "asset-sources/art-direction/characters/priest/priest-pc-model-sheet-e-v2.png"
+    },
+    {
+      "generated_file": "exec-5d5dade6-3423-4890-81a2-497d23eaec5a.png",
+      "sha256": "a23c48a98155c8c79430f2119e1d8376c4a9e846e4e8c34539900a6fe8aa0e76",
+      "status": "present",
+      "repository_file": "asset-sources/art-direction/characters/priest/priest-pc-model-sheet-e-v3.png"
     }
   ],
   "user_references": [
