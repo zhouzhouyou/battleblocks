@@ -110,7 +110,11 @@ impl Session {
                 content::target_cells_in(skill, &self.b, (x, y), id, health, mana, self.rules(side))
             })
             .unwrap_or_default();
-        if !show_moves && self.targeting.is_none() && !self.enemy_turn && !self.action_done {
+        if !show_moves
+            && (self.targeting.is_none() || self.targeting == Some(content::Skill::Miracle))
+            && !self.enemy_turn
+            && !self.action_done
+        {
             if let Some(a) = self.selected {
                 if frame.pointer.x >= 256.
                     && frame.pointer.x < 768.
