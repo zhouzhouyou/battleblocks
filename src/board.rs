@@ -112,67 +112,9 @@ pub fn fresh() -> Board {
         }
     }
 }
-#[derive(Clone, Debug)]
-pub struct TileFall {
-    pub x: usize,
-    pub from_y: isize,
-    pub to_y: usize,
-    pub kind: u8,
-}
-#[allow(dead_code)] // Used by the headless balance probe and board tests.
-pub fn drop_board(b: &mut Board) {
-    let _ = drop_board_animated(b);
-}
-pub fn drop_board_animated(b: &mut Board) -> Vec<TileFall> {
-    let mut falls = Vec::new();
-    for x in 0..N {
-        let mut dest = N;
-        for y in (0..N).rev() {
-            if b[y][x] != 255 {
-                dest -= 1;
-                let kind = b[y][x];
-                b[dest][x] = kind;
-                if dest != y {
-                    falls.push(TileFall {
-                        x,
-                        from_y: y as isize,
-                        to_y: dest,
-                        kind,
-                    });
-                }
-            }
-        }
-        for y in 0..dest {
-            b[y][x] = rng::gen_range(0, 7);
-            falls.push(TileFall {
-                x,
-                from_y: y as isize - dest as isize,
-                to_y: y,
-                kind: b[y][x],
-            });
-        }
-    }
-    falls
-}
-#[cfg(test)]
-mod fall_tests {
-    use super::*;
-    #[test]
-    fn falling_motion_tracks_survivors_and_refill() {
-        let mut b = [[2; N]; N];
-        b[N - 1][0] = 255;
-        b[N - 2][0] = 3;
-        let falls = drop_board_animated(&mut b);
-        assert_eq!(b[N - 1][0], 3);
-        assert!(falls
-            .iter()
-            .any(|f| f.x == 0 && f.from_y == (N - 2) as isize && f.to_y == N - 1 && f.kind == 3));
-        assert!(falls
-            .iter()
-            .any(|f| f.x == 0 && f.from_y < 0 && f.to_y == 0));
-        assert!(b.iter().flatten().all(|&v| v < 7));
-    }
-}
+#[path = "board/gravity.rs"]
+mod gravity;
+pub use gravity::*;
 
 /// Role-specific swaps are transactional, including invalid coordinates.
 pub fn hero_swap(b: &mut Board, a: (usize, usize), c: (usize, usize), hero: usize) -> bool {

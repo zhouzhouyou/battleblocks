@@ -1,10 +1,10 @@
-//! Snapshot-owned state for new roles. Board changes use the same rules in the
+//! Snapshot-owned character state and turn-local skill preparation. Board changes use the same rules in the
 //! live loop and previews; random choices are supplied by the saved RNG stream.
 use crate::board::{self, Board, N};
 use crate::content::{self, Skill};
 
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
-pub struct NewRoleState {
+pub struct RoleState {
     pub pockets: [Option<u8>; 2],
     pub jumped: bool,
     pub miracle: bool,
@@ -15,7 +15,7 @@ pub struct NewRoleState {
     pub horizontal: bool,
     pub upper_swap: bool,
 }
-impl NewRoleState {
+impl RoleState {
     pub fn select_occupied_pocket(&mut self) {
         if self.pockets[self.pocket_slot].is_none() {
             self.pocket_slot = self.pockets.iter().position(Option::is_some).unwrap_or(0);
@@ -127,7 +127,7 @@ mod tests {
     }
     #[test]
     fn pocket_capacity_and_selection_follow_actual_contents() {
-        let mut state = NewRoleState::default();
+        let mut state = RoleState::default();
         assert!(state.mind_vision(&[2, 3, 3], 2));
         assert_eq!(state.pockets[0], Some(3));
         assert!(state.mind_vision(&[1], 0));
@@ -173,7 +173,7 @@ mod tests {
     fn force_swap_obeys_caster_movement_and_is_transactional() {
         let mut b = board();
         let original = b;
-        let mut s = NewRoleState {
+        let mut s = RoleState {
             force_armed: true,
             ..Default::default()
         };

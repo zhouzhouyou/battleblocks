@@ -3,10 +3,10 @@
 mod board;
 #[path = "../content.rs"]
 mod content;
-#[path = "../new_roles.rs"]
-mod new_roles;
 #[path = "../rng.rs"]
 mod rng;
+#[path = "../role_state.rs"]
+mod role_state;
 #[path = "../strategy.rs"]
 mod strategy;
 #[cfg(test)]

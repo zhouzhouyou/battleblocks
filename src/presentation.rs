@@ -53,7 +53,7 @@ pub struct Presentation {
     swapping: bool,
     charge_column: Option<usize>,
 }
-fn pos(x: usize, y: isize) -> Vec2 {
+fn pos(x: isize, y: isize) -> Vec2 {
     vec2(256. + x as f32 * 64., 110. + y as f32 * 64.)
 }
 impl Presentation {
@@ -248,7 +248,11 @@ impl Presentation {
         }
     }
     pub fn hides(&self, x: usize, y: usize) -> bool {
-        self.busy() && self.motions.iter().any(|m| m.to == pos(x, y as isize))
+        self.busy()
+            && self
+                .motions
+                .iter()
+                .any(|m| m.to == pos(x as isize, y as isize))
     }
     pub fn swap(
         &mut self,
@@ -290,8 +294,8 @@ impl Presentation {
         for (a, b) in pairs {
             for (from, to) in [(a, b), (b, a)] {
                 self.motions.push(Motion {
-                    from: pos(from.0, from.1 as isize),
-                    to: pos(to.0, to.1 as isize),
+                    from: pos(from.0 as isize, from.1 as isize),
+                    to: pos(to.0 as isize, to.1 as isize),
                     kind: before[from.1][from.0],
                 });
             }
@@ -304,8 +308,8 @@ impl Presentation {
         self.motions = falls
             .into_iter()
             .map(|f| Motion {
-                from: pos(f.x, f.from_y),
-                to: pos(f.x, f.to_y as isize),
+                from: pos(f.from.0, f.from.1),
+                to: pos(f.to.0 as isize, f.to.1 as isize),
                 kind: f.kind,
             })
             .collect();
@@ -419,6 +423,21 @@ impl Presentation {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn refill_animation_accepts_horizontal_and_off_board_origins() {
+        let mut p = Presentation::default();
+        p.fall(vec![TileFall {
+            from: (-2, 3),
+            to: (1, 3),
+            kind: 2,
+        }]);
+        assert_eq!(p.motions[0].from, vec2(128., 302.));
+        assert_eq!(p.motions[0].to, vec2(320., 302.));
+        assert!(p.hides(1, 3));
+        assert!(!p.hides(1, 4));
+        p.tick(FALL_TIME + 0.01);
+        assert!(!p.busy());
+    }
     #[test]
     fn charge_sweep_clears_only_selected_columns_in_order() {
         let mut p = Presentation::default();
