@@ -180,7 +180,7 @@ pub fn hero_swap(b: &mut Board, a: (usize, usize), c: (usize, usize), hero: usiz
         return false;
     }
     let original = *b;
-    if hero == 0 && a.1 == c.1 {
+    if matches!(hero, 0 | 7) && a.1 == c.1 {
         for y in 0..N {
             swap(b, (a.0, y), (c.0, y));
         }
@@ -211,7 +211,7 @@ pub fn hero_options(b: &Board, hero: usize) -> Vec<((usize, usize), (usize, usiz
                 if cx < 0 || cy < 0 || cx >= N as isize || cy >= N as isize {
                     continue;
                 }
-                if hero == 0 && dy == 0 && y > 0 {
+                if matches!(hero, 0 | 7) && dy == 0 && y > 0 {
                     continue;
                 }
                 let c = (cx as usize, cy as usize);
@@ -361,7 +361,7 @@ mod hint_tests {
                                 let c = (cx as usize, cy as usize);
                                 let expected = (armed && dx.abs() + dy.abs() == 1)
                                     || hero_swap(&mut b.clone(), a, c, hero);
-                                let canonical = if !armed && hero == 0 && dy == 0 {
+                                let canonical = if !armed && matches!(hero, 0 | 7) && dy == 0 {
                                     ((x, 0), (c.0, 0))
                                 } else {
                                     (a, c)

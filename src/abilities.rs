@@ -25,6 +25,14 @@ pub enum Passive {
     LootMastery,
     BlastMastery,
     BloodSacrifice,
+    KnightStrength,
+    DwarfStrength,
+    Short,
+    Grudge,
+    Clumsy,
+    ClumsyAwake,
+    MindVision,
+    BorrowedSlot,
 }
 use Passive::*;
 pub fn passives(hero: usize, awake: bool) -> &'static [Passive] {
@@ -43,6 +51,12 @@ pub fn passives(hero: usize, awake: bool) -> &'static [Passive] {
         (5, true) => &[BoilingBlood],
         (6, false) => &[FleshCasting],
         (6, true) => &[FleshConversion, BloodSacrifice],
+        (7, false) => &[KnightStrength, Clumsy],
+        (7, true) => &[KnightStrength, ClumsyAwake],
+        (8, false) => &[DwarfStrength, Short],
+        (8, true) => &[DwarfStrength, Short, Grudge],
+        (9, false) => &[MindVision],
+        (9, true) => &[MindVision, BorrowedSlot],
         _ => &[],
     }
 }
@@ -50,8 +64,22 @@ pub fn has_passive(hero: usize, awake: bool, passive: Passive) -> bool {
     passives(hero, awake).contains(&passive)
 }
 impl Passive {
+    fn is_new(self) -> bool {
+        matches!(
+            self,
+            KnightStrength
+                | DwarfStrength
+                | Short
+                | Grudge
+                | Clumsy
+                | ClumsyAwake
+                | MindVision
+                | BorrowedSlot
+        )
+    }
     pub fn replaces(self) -> Option<Self> {
         match self {
+            ClumsyAwake => Some(Clumsy),
             ManaRelease => Some(ManaSeal),
             BalancedResonance => Some(BalancedAffinity),
             BoilingBlood => Some(BloodFury),
@@ -60,7 +88,12 @@ impl Passive {
         }
     }
     pub fn name(self, zh: bool) -> &'static str {
+        if self.is_new() {
+            return super::role_text(&format!("{self:?}.name"), zh);
+        }
         let (cn, en) = match self {
+            KnightStrength | DwarfStrength | Short | Grudge | Clumsy | ClumsyAwake | MindVision
+            | BorrowedSlot => unreachable!(),
             ColumnFormation => ("列阵", "Column formation"),
             BattleTraining => ("战技训练", "Battle training"),
             ForestStep => ("林间穿行", "Forest step"),
@@ -91,10 +124,15 @@ impl Passive {
         }
     }
     pub fn short_name(self, zh: bool) -> &'static str {
+        if self.is_new() {
+            return self.name(zh);
+        }
         if zh {
             return self.name(true);
         }
         match self {
+            KnightStrength | DwarfStrength | Short | Grudge | Clumsy | ClumsyAwake | MindVision
+            | BorrowedSlot => unreachable!(),
             ColumnFormation => "Columns",
             BattleTraining => "Training",
             ForestStep => "Forest step",
@@ -120,12 +158,16 @@ impl Passive {
         }
     }
     pub fn description(self, zh: bool) -> &'static str {
+        if self.is_new() {
+            return super::role_text(&format!("{self:?}.description"), zh);
+        }
         let (cn,en)=match self {
+            KnightStrength | DwarfStrength | Short | Grudge | Clumsy | ClumsyAwake | MindVision | BorrowedSlot => unreachable!(),
             ColumnFormation=>("左右交换相邻两整列\n上下仍交换两个方块","Horizontal swaps move two columns.\nVertical swaps move two tiles."),
             BattleTraining=>("消除治疗、伤害和魔力\n收益增加6%","Clear healing, damage and mana\nincrease by 6%."),
             ForestStep=>("可交换斜向相邻方块\n仍按横向、纵向三消判定","Diagonal adjacent swaps allowed.\nMatches remain horizontal/vertical."),
             ForestPact=>("消除治疗、伤害和魔力\n收益降低7%","Clear healing, damage and mana\ndecrease by 7%."),
-            ArcaneConversion=>("魔力未满时，一半消除治疗\n转为魔力；已满则正常治疗\n转换量向下取整","Below cap, half of clear\nhealing becomes MP (floor).\nAt full MP, heal normally."),
+            ArcaneConversion=>("魔力未满时，50%消除治疗\n转为魔力；已满则正常治疗\n转换量向下取整","Below cap, 50% of clear\nhealing becomes MP (floor).\nAt full MP, heal normally."),
             ManaSeal=>("当前魔力上限锁定为250\n觉醒后解锁至400","MP cap locked at 250.\nAwakening unlocks 400."),
             ManaRelease=>("魔力上限解锁至400","MP cap unlocked to 400."),
             Recycling=>("消除产生的溢出治疗\n每2点转为1魔力，受上限限制","Every 2 overheal from clears\nbecomes 1 MP, obeying the cap."),

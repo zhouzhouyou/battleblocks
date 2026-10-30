@@ -1,6 +1,15 @@
 use crate::content::Skill;
 use macroquad::prelude::*;
 pub fn draw(skill: Skill, x: f32, y: f32, size: f32) {
+    let skill = match skill {
+        Skill::Rush => Skill::Charge,
+        Skill::Miracle | Skill::Jump | Skill::Copy => Skill::Landslide,
+        Skill::Hammer => Skill::Meteor,
+        Skill::Forge => Skill::War,
+        Skill::Entomb => Skill::Greedy,
+        Skill::Resurrect => Skill::Nature,
+        other => other,
+    };
     let color = match skill {
         Skill::Charge | Skill::Landslide => GOLD,
         Skill::Guard => GREEN,
@@ -10,6 +19,7 @@ pub fn draw(skill: Skill, x: f32, y: f32, size: f32) {
         Skill::Imp | Skill::Balance => VIOLET,
         Skill::Chort | Skill::War => RED,
         Skill::Corrupt | Skill::Drain => LIME,
+        _ => GOLD,
     };
     draw_rectangle(
         x,
@@ -147,6 +157,7 @@ pub fn draw(skill: Skill, x: f32, y: f32, size: f32) {
             draw_line(cx - r * 0.6, cy, cx + r * 0.6, cy, 3., color);
             draw_line(cx, cy - r * 0.6, cx, cy + r * 0.6, 3., color);
         }
+        _ => {}
     }
 }
 
@@ -154,6 +165,9 @@ pub fn draw(skill: Skill, x: f32, y: f32, size: f32) {
 pub fn draw_passive(passive: crate::content::Passive, x: f32, y: f32, size: f32) {
     use crate::content::Passive::*;
     let skill = match passive {
+        KnightStrength | DwarfStrength => Skill::Charge,
+        Short | Grudge | Clumsy | ClumsyAwake => Skill::Landslide,
+        MindVision | BorrowedSlot => Skill::Greedy,
         ColumnFormation => Skill::Landslide,
         BattleTraining => Skill::Charge,
         ForestStep => Skill::Nature,
