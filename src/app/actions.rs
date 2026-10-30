@@ -143,7 +143,12 @@ impl Session {
 
         cast
     }
-    pub(super) fn cast_skill(&mut self, frame: &Frame, mut cast: Option<content::Skill>) -> bool {
+    pub(super) fn cast_skill(
+        &mut self,
+        frame: &Frame,
+        mut cast: Option<content::Skill>,
+        commit_force: bool,
+    ) -> bool {
         let board_target = if frame.pointer.x >= 256.
             && frame.pointer.x < 768.
             && frame.pointer.y >= 110.
@@ -168,7 +173,8 @@ impl Session {
         }
         if !self.enemy_turn {
             if let Some(skill) = cast {
-                if content::targeted_in(skill, self.rules(false))
+                if (content::targeted_in(skill, self.rules(false))
+                    || (skill == content::Skill::Miracle && !commit_force))
                     && self.cooldowns.remaining(0, skill) == 0
                     && content::payment_in(self.hero_id, self.hp, self.mp, skill, self.rules(false))
                         .is_some()
@@ -180,7 +186,10 @@ impl Session {
                 }
             }
             if let Some(skill) = self.targeting {
-                if board_target.is_some() && frame.clicked(MouseButton::Left) {
+                if skill != content::Skill::Miracle
+                    && board_target.is_some()
+                    && frame.clicked(MouseButton::Left)
+                {
                     cast = Some(skill);
                     self.targeting = None;
                 }

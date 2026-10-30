@@ -30,7 +30,7 @@ impl Session {
         if active {
             self.advance_turn(frame);
             let cast = self.choose_cast(frame);
-            let cast_this_frame = self.cast_skill(frame, cast);
+            let cast_this_frame = self.cast_skill(frame, cast, false);
             let hint_number = self.hint_action(frame, cast_this_frame);
             if !self.pending.is_empty() {
                 self.resolve_pending(frame.dt);

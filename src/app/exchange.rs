@@ -55,7 +55,7 @@ impl Session {
             && self.hp > 0
             && !self.enemy_turn
             && !self.action_done
-            && self.targeting.is_none()
+            && (self.targeting.is_none() || self.targeting == Some(content::Skill::Miracle))
             && !cast_this_frame
         {
             let (mx, my) = mouse_position();
@@ -82,6 +82,26 @@ impl Session {
                         self.feedback_time = 1.8;
                     }
                 } else if let Some(a) = self.selected {
+                    if self.targeting == Some(content::Skill::Miracle) {
+                        let mut preview = self.b;
+                        if content::legal_swap_region(
+                            self.hero_id,
+                            self.hp,
+                            a,
+                            c,
+                            self.rules(false),
+                        ) && role_state::force_swap(&mut preview, a, c, self.hero_id)
+                        {
+                            self.targeting = None;
+                            if !self.cast_skill(frame, Some(content::Skill::Miracle), true) {
+                                return;
+                            }
+                        } else {
+                            self.selected = Some(c);
+                            self.note = "No match: choose another tile";
+                            return;
+                        }
+                    }
                     let before = self.snapshot();
                     let forced = self.new_role_states[0].force_armed;
                     let reachable =
