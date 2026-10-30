@@ -1,16 +1,11 @@
 use crate::content::Rules;
-use crate::{
-    content::{Skill, HEROES},
-    matches, Board, N,
-};
+use crate::{content::Skill, matches, Board, N};
 type Move = ((usize, usize), (usize, usize));
 fn score(b: &Board, hero: usize, hp: i32, mp: i32, rules: Rules) -> f32 {
     let (h, d, m) = crate::content::clear_rewards_in(hero, hp, mp, b, &matches(b), 1, 0, rules);
     let progress =
         if let (Some((id, mut awake)), Some(mut health)) = (rules.opponent, rules.opponent_hp) {
-            let before = health;
-            crate::content::take_damage(id, &mut health, &mut awake, d);
-            before - health
+            crate::content::take_damage(id, &mut health, &mut awake, d).damage
         } else {
             d
         };
@@ -38,7 +33,7 @@ pub fn choose_move_in(
     level: usize,
     rules: Rules,
 ) -> Option<Move> {
-    let moves = crate::board::hero_options(b, hero);
+    let moves = crate::content::move_options_in(b, hero, hp, rules);
     if moves.is_empty() {
         return None;
     }
@@ -50,7 +45,17 @@ pub fn choose_move_in(
         .map(|(a, c)| {
             let mut copy = *b;
             crate::board::hero_swap(&mut copy, a, c, hero);
-            let mut value = score(&copy, hero, hp, mp, rules);
+            let mut value = score(
+                &copy,
+                hero,
+                hp,
+                mp,
+                Rules {
+                    horizontal: a.1 == c.1,
+                    upper_swap: a.1 < 4 && c.1 < 4,
+                    ..rules
+                },
+            );
             if level == 2 {
                 for (x, y) in matches(&copy) {
                     copy[y][x] = 255;
@@ -94,6 +99,7 @@ pub fn choose_skill(
 ) -> Option<Skill> {
     choose_skill_in(b, id, hp, mp, level, armed, bonus, Rules::default())
 }
+#[allow(dead_code)] // Legacy balance probe entry point.
 pub fn choose_skill_in(
     b: &Board,
     id: usize,
@@ -104,11 +110,31 @@ pub fn choose_skill_in(
     bonus: i32,
     rules: Rules,
 ) -> Option<Skill> {
+    choose_skill_available_in(b, id, hp, mp, level, armed, bonus, rules, &[])
+}
+
+/// Exclude skills that cannot currently be used, before evaluating AI choices.
+pub fn choose_skill_available_in(
+    b: &Board,
+    id: usize,
+    hp: i32,
+    mp: i32,
+    level: usize,
+    armed: bool,
+    bonus: i32,
+    rules: Rules,
+    unavailable: &[Skill],
+) -> Option<Skill> {
     if level == 0 {
-        let affordable: Vec<_> = HEROES[id]
-            .skills
+        let affordable: Vec<_> = crate::content::skills(id, rules.awake)
             .iter()
             .copied()
+            .filter(|s| !unavailable.contains(s))
+            .filter(|s| {
+                (0..N).any(|y| {
+                    (0..N).any(|x| crate::content::legal_target(id, hp, *s, b, (x, y), rules))
+                })
+            })
             .filter(|s| {
                 crate::content::payment_in(id, hp, mp, *s, rules).is_some()
                     && !(matches!(s, Skill::Guard | Skill::Blood)
@@ -137,7 +163,47 @@ pub fn choose_skill_in(
     let utility = |s| {
         let target = choose_target_in(s, b, id, hp, mp, bonus, rules);
         let mut copy = *b;
-        let e = crate::content::effect_at(s, &mut copy, target);
+        let effective = crate::content::effective_skill(s, rules);
+        if effective == Skill::Jump && id == crate::content::DWARF && !rules.jumped {
+            return swap_value as i32 + 8;
+        }
+        if effective == Skill::Miracle {
+            return choose_force_move_in(b, id, hp, mp, bonus, rules)
+                .map(|(a, c)| {
+                    let mut next = *b;
+                    crate::new_roles::force_swap(&mut next, a, c, id);
+                    choose_move_in(
+                        &next,
+                        hp,
+                        id,
+                        mp,
+                        id,
+                        1,
+                        Rules {
+                            miracle: true,
+                            ..rules
+                        },
+                    )
+                    .map(|(p, q)| {
+                        let mut after = next;
+                        crate::board::hero_swap(&mut after, p, q, id);
+                        score(
+                            &after,
+                            id,
+                            hp,
+                            mp,
+                            Rules {
+                                miracle: true,
+                                ..rules
+                            },
+                        ) as i32
+                    })
+                    .unwrap_or(0)
+                })
+                .unwrap_or(0)
+                - crate::content::skill_cost_in(id, s, rules) / 5;
+        }
+        let e = crate::content::effect_at_in(s, &mut copy, target, id, hp, mp, rules);
         let p = crate::content::preview_rewards_in(
             s,
             b,
@@ -149,19 +215,26 @@ pub fn choose_skill_in(
             bonus,
             rules,
         );
+        if effective == Skill::Entomb {
+            return 18 - crate::content::skill_cost_in(id, s, rules) / 5;
+        }
         if e.bonus > 0 {
             return (swap_value - crate::content::skill_cost(id, rules.awake, s) as f32 * 0.5)
                 as i32;
         }
-        ((rules.opponent_hp.unwrap_or(10000) - p.enemy_health_after) as f32
+        (p.damage as f32
             + p.heal as f32 * 0.8
             + (p.mana_after - mp) as f32 * 0.5
             + e.cells.len() as f32 * 0.7) as i32
     };
-    let skill = HEROES[id]
-        .skills
+    let skill = crate::content::skills(id, rules.awake)
         .iter()
         .copied()
+        .filter(|s| !unavailable.contains(s))
+        .filter(|s| {
+            (0..N)
+                .any(|y| (0..N).any(|x| crate::content::legal_target(id, hp, *s, b, (x, y), rules)))
+        })
         .filter(|s| {
             crate::content::payment_in(id, hp, mp, *s, rules).is_some()
                 && !(matches!(s, Skill::Guard | Skill::Blood)
@@ -208,6 +281,7 @@ pub fn choose_target_in(
 ) -> (usize, usize) {
     (0..N)
         .flat_map(|y| (0..N).map(move |x| (x, y)))
+        .filter(|&target| crate::content::legal_target(id, hp, skill, b, target, rules))
         .max_by_key(|&target| {
             let p = crate::content::preview_rewards_in(
                 skill,
@@ -220,9 +294,66 @@ pub fn choose_target_in(
                 bonus,
                 rules,
             );
-            (rules.opponent_hp.unwrap_or(10000) - p.enemy_health_after) * 100
-                + p.heal * 80
-                + (p.mana_after - mp) * 50
+            p.damage * 100 + p.heal * 80 + (p.mana_after - mp) * 50
         })
         .unwrap_or((3, 3))
+}
+
+pub fn choose_force_move_in(
+    b: &Board,
+    id: usize,
+    hp: i32,
+    mp: i32,
+    bonus: i32,
+    rules: Rules,
+) -> Option<Move> {
+    let mut best: Option<(Move, f32)> = None;
+    for y in 0..N {
+        for x in 0..N {
+            for (dx, dy) in [(1, 0), (0, 1)] {
+                let (a, c) = ((x, y), (x + dx, y + dy));
+                if c.0 >= N || c.1 >= N || !crate::content::legal_swap_region(id, hp, a, c, rules) {
+                    continue;
+                }
+                let mut next = *b;
+                if !crate::new_roles::force_swap(&mut next, a, c, id) {
+                    continue;
+                }
+                let value = choose_move_in(
+                    &next,
+                    hp,
+                    id,
+                    mp,
+                    id,
+                    1,
+                    Rules {
+                        miracle: true,
+                        ..rules
+                    },
+                )
+                .map(|(p, q)| {
+                    let mut after = next;
+                    crate::board::hero_swap(&mut after, p, q, id);
+                    score(
+                        &after,
+                        id,
+                        hp,
+                        mp,
+                        Rules {
+                            miracle: true,
+                            horizontal: p.1 == q.1,
+                            upper_swap: p.1 < 4 && q.1 < 4,
+                            ..rules
+                        },
+                    )
+                })
+                .unwrap_or(0.)
+                    + bonus as f32;
+                if best.as_ref().is_none_or(|(_, v)| value > *v) {
+                    best = Some(((a, c), value));
+                }
+            }
+        }
+    }
+    best.map(|(m, _)| m)
 }

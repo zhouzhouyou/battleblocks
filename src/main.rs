@@ -9,6 +9,8 @@ mod debug;
 mod effects;
 mod icons;
 mod menu;
+#[allow(dead_code)]
+mod new_roles;
 mod presentation;
 mod ui;
 use presentation::{CLEAR_TIME, TURN_HOLD};
@@ -62,16 +64,36 @@ fn side_panel_rect(enemy: bool) -> Rect {
     Rect::new(if enemy { 788. } else { 12. }, 90., 224., 610.)
 }
 fn sprite_rect(enemy: bool) -> Rect {
-    Rect::new(if enemy { 796. } else { 20. }, 212., 208., 156.)
+    Rect::new(if enemy { 796. } else { 20. }, 188., 208., 184.)
 }
 fn passive_rect(enemy: bool) -> Rect {
     Rect::new(if enemy { 796. } else { 20. }, 376., 208., 50.)
 }
 fn player_skill_rect(i: usize) -> Rect {
-    Rect::new(20., 434. + i as f32 * 132., 208., 126.)
+    Rect::new(20., 434. + i as f32 * 78., 208., 74.)
 }
 fn enemy_skill_rect(i: usize) -> Rect {
     Rect::new(796., 470. + i as f32 * 44., 208., 38.)
+}
+fn draw_cooldown_overlay(rect: Rect, remaining: u8) {
+    draw_rectangle(rect.x, rect.y, rect.w, rect.h, Color::new(0., 0., 0., 0.72));
+    let center = vec2(rect.x + rect.w / 2., rect.y + rect.h / 2.);
+    let radius = if rect.h < 50. { 15. } else { 25. };
+    draw_circle(
+        center.x,
+        center.y,
+        radius,
+        Color::from_rgba(25, 32, 42, 245),
+    );
+    draw_circle_lines(center.x, center.y, radius, 2., GOLD);
+    let size = if rect.h < 50. { 18. } else { 27. };
+    label_centered(
+        &remaining.to_string(),
+        center.x,
+        center.y + size * 0.36,
+        size,
+        WHITE,
+    );
 }
 // Turn indicator rows above the board frame, between the two sidebars.
 fn previous_turn_rect() -> Rect {
@@ -168,6 +190,7 @@ fn cost_text(zh: bool, mana: i32, blood: i32) -> String {
         (false, false) => format!("{mana} MP"),
     }
 }
+#[cfg(test)]
 fn skill_requires_board_click(skill: content::Skill) -> bool {
     content::targeted(skill)
 }
@@ -440,6 +463,11 @@ fn flush_labels() {
     });
 }
 
+/// New atlas frames share a 96px canvas but their body ends at y=84.
+/// Fit visible equipment bounds rather than shrinking the transparent margins.
+fn role_scale(area: Rect) -> f32 {
+    (area.w / 84.).min(area.h / 83.).min(3.)
+}
 fn actor(
     t: &Texture2D,
     w: f32,
@@ -463,20 +491,34 @@ fn actor(
         elapsed -= d;
     }
     // Fit the frame into its slot and stand it on the slot's bottom edge.
-    let scale = (area.w / w)
-        .min(area.h / h)
-        .min(if h <= 96. { 3. } else { 0.55 });
+    let new_role = w == 384. && h == 384.;
+    let scale = if new_role {
+        role_scale(area) * 96. / w
+    } else {
+        (area.w / w)
+            .min(area.h / h)
+            .min(if h <= 96. { 3. } else { 0.55 })
+    };
     let size = vec2(w * scale, h * scale);
     let (size, rotation) = presentation::idle_pose(size, time, indices.len() == 1);
     let foot = vec2(area.x + area.w / 2., area.y + area.h);
     draw_texture_ex(
         t,
         area.x + (area.w - size.x) / 2.,
-        area.y + area.h - size.y,
+        if new_role {
+            area.y + area.h - 84. * (w / 96.) * scale
+        } else {
+            area.y + area.h - size.y
+        },
         WHITE,
         DrawTextureParams {
             dest_size: Some(size),
-            source: Some(Rect::new(indices[frame] as f32 * w, 0., w, h)),
+            source: Some(Rect::new(
+                (indices[frame] % (t.width() / w) as usize) as f32 * w,
+                (indices[frame] / (t.width() / w) as usize) as f32 * h,
+                w,
+                h,
+            )),
             rotation,
             pivot: Some(foot),
             ..Default::default()
@@ -518,13 +560,20 @@ async fn main() {
         .filter(|&i| i < HEROES.len());
     #[cfg(target_arch = "wasm32")]
     let bench: Option<usize> = None;
-    let mut hero_id = bench.unwrap_or(0);
+    let mut hero_id = bench.unwrap_or(content::KNIGHT);
     #[cfg(not(target_arch = "wasm32"))]
     let startup_commands = std::env::args().any(|arg| arg == "--command");
     #[cfg(target_arch = "wasm32")]
     let startup_commands = false;
+    if startup_commands && bench.is_none() {
+        hero_id = 0;
+    }
     let mut knight = diagnostic_texture(sprites::SPRITES[hero_id].bytes, "no_actors");
     let thumbs = texture(include_bytes!("../assets/hero-thumbnails.webp"));
+    let book_cover = texture(sprites::BOOK_COVER);
+    let book_pages = texture(sprites::BOOK_PAGES);
+    let book_bottom = texture(sprites::BOOK_BOTTOM);
+    let mut book_levels = [0f32; 2];
     let mut preview = menu::Preview::new(hero_id, 0);
     let mut character_page = 0usize;
     let mut enemy_id = (hero_id + 1) % HEROES.len();
@@ -547,6 +596,11 @@ async fn main() {
     let mut enemy_mp = 0;
     let mut enemy_turn = false;
     let mut action_done = false;
+    let mut cooldowns = content::Cooldowns::default();
+    let mut new_role_states = [
+        new_roles::NewRoleState::default(),
+        new_roles::NewRoleState::default(),
+    ];
     let mut difficulty = 1usize;
     let mut bonuses = [0, 0];
     let mut armed_sides = [false, false];
@@ -581,6 +635,15 @@ async fn main() {
         ($side:expr) => {{
             let side: bool = $side;
             content::Rules {
+                jumped: new_role_states[side as usize].jumped,
+                miracle: new_role_states[side as usize].miracle,
+                horizontal: new_role_states[side as usize].horizontal,
+                upper_swap: new_role_states[side as usize].upper_swap,
+                pockets: new_role_states[side as usize].pockets,
+                pocket_slot: new_role_states[side as usize].pocket_slot,
+                copied_skill: new_role_states[side as usize]
+                    .copied_skill
+                    .and_then(content::Skill::from_index),
                 awake: awakened[side as usize],
                 initial_loot: false,
                 opponent_hp: Some(if side { hp } else { enemy }),
@@ -588,6 +651,26 @@ async fn main() {
                     if side { hero_id } else { enemy_id },
                     awakened[(!side) as usize],
                 )),
+            }
+        }};
+    }
+    macro_rules! refresh_copy {
+        ($side:expr) => {{
+            let side: bool = $side;
+            let id = if side { enemy_id } else { hero_id };
+            if id == content::PRIEST && awakened[side as usize] {
+                let other = if side { hero_id } else { enemy_id };
+                let options: Vec<_> = content::skills(other, awakened[(!side) as usize])
+                    .iter()
+                    .copied()
+                    .map(|s| content::effective_skill(s, rules!(!side)))
+                    .filter(|s| *s != content::Skill::Copy)
+                    .collect();
+                new_role_states[side as usize].copied_skill = if options.is_empty() {
+                    None
+                } else {
+                    Some(options[rng::gen_range(0, options.len())].index())
+                };
             }
         }};
     }
@@ -605,6 +688,7 @@ async fn main() {
                 $amount,
             );
             if result.awakened {
+                refresh_copy!(side);
                 let id = if side { enemy_id } else { hero_id };
                 presentation.awakening(
                     side,
@@ -634,6 +718,8 @@ async fn main() {
     macro_rules! snapshot {
         () => {
             debug::Snapshot {
+                cooldowns: cooldowns.clone(),
+                new_role_states: new_role_states.clone(),
                 awakened,
                 reward_skill,
                 board: b,
@@ -667,6 +753,9 @@ async fn main() {
         ($state:expr) => {{
             let state = $state;
             awakened = state.awakened;
+            cooldowns = state.cooldowns;
+            new_role_states = state.new_role_states;
+            book_levels = [0.; 2];
             reward_skill = state.reward_skill;
             b = state.board;
             hero_id = state.hero;
@@ -796,7 +885,11 @@ async fn main() {
                             }
                         }
                         Command::Cast(slot, target) => {
-                            let skill = HEROES[hero_id].skills[slot];
+                            let Some(&skill) = content::skills(hero_id, awakened[0]).get(slot)
+                            else {
+                                console.say_tr("Skill slot is locked", "技能栏尚未解锁");
+                                continue;
+                            };
                             if choosing
                                 || enemy_turn
                                 || action_done
@@ -807,6 +900,8 @@ async fn main() {
                                 || paused
                             {
                                 console.say_tr("Cast requires a live, unpaused player turn with no pending resolution","只能在玩家回合、未暂停且没有待结算时施法");
+                            } else if cooldowns.remaining(0, skill) > 0 {
+                                console.say_tr("Skill is cooling down", "技能冷却中");
                             } else if content::payment_in(hero_id, hp, mp, skill, rules!(false))
                                 .is_none()
                             {
@@ -858,6 +953,8 @@ async fn main() {
                                 match command {
                                     Command::Hero(side, id) => {
                                         awakened[side as usize] = false;
+                                        new_role_states[side as usize] = Default::default();
+                                        cooldowns.0[side as usize] = [0; 23];
                                         if side {
                                             enemy_id = id;
                                             enemy = HEROES[id].hp;
@@ -1033,7 +1130,12 @@ async fn main() {
             b = fresh();
             hp = HEROES[hero_id].hp;
             enemy_id = interface.opponent.unwrap_or_else(|| {
-                (hero_id + 1 + rng::gen_range(0, HEROES.len() - 1)) % HEROES.len()
+                let ids: Vec<_> = content::ROSTER
+                    .iter()
+                    .copied()
+                    .filter(|id| *id != hero_id)
+                    .collect();
+                ids[rng::gen_range(0, ids.len())]
             });
             demon = diagnostic_texture(sprites::SPRITES[enemy_id].bytes, "no_actors");
             enemy = HEROES[enemy_id].hp;
@@ -1042,6 +1144,11 @@ async fn main() {
             action_done = false;
             bonuses = [0, 0];
             awakened = [false; 2];
+            cooldowns = content::Cooldowns::default();
+            new_role_states = [
+                new_roles::NewRoleState::default(),
+                new_roles::NewRoleState::default(),
+            ];
             reward_skill = None;
             armed_sides = [false, false];
             targeting = None;
@@ -1081,15 +1188,26 @@ async fn main() {
                 }
                 let old_hero = hero_id;
                 if key(KeyCode::Down) {
-                    hero_id = (hero_id + 1) % HEROES.len();
+                    hero_id = content::ROSTER[(content::ROSTER
+                        .iter()
+                        .position(|id| *id == hero_id)
+                        .unwrap_or(0)
+                        + 1)
+                        % content::ROSTER.len()];
                 }
                 if key(KeyCode::Up) {
-                    hero_id = (hero_id + HEROES.len() - 1) % HEROES.len();
+                    hero_id = content::ROSTER[(content::ROSTER
+                        .iter()
+                        .position(|id| *id == hero_id)
+                        .unwrap_or(0)
+                        + content::ROSTER.len()
+                        - 1)
+                        % content::ROSTER.len()];
                 }
                 if clicked(MouseButton::Left) {
-                    for i in 0..HEROES.len() {
-                        if menu::hero_rect(i).contains(pointer) {
-                            hero_id = i;
+                    for (slot, &id) in content::ROSTER.iter().enumerate() {
+                        if menu::hero_rect(slot).contains(pointer) {
+                            hero_id = id;
                         }
                     }
                 }
@@ -1097,10 +1215,11 @@ async fn main() {
                     knight = diagnostic_texture(sprites::SPRITES[hero_id].bytes, "no_actors");
                     preview = menu::Preview::new(hero_id, 0);
                 }
-                for i in 0..HEROES[hero_id].skills.len() {
+                for i in 0..content::skills(hero_id, character_page == 2).len() {
                     if (clicked(MouseButton::Left) && menu::skill_rect(i).contains(pointer))
                         || (i == 0 && key(KeyCode::Key1))
                         || (i == 1 && key(KeyCode::Key2))
+                        || (i == 2 && key(KeyCode::Key3))
                     {
                         preview = menu::Preview::new(hero_id, i);
                     }
@@ -1121,13 +1240,21 @@ async fn main() {
                             difficulty = i;
                         }
                     }
-                    for i in 0..8 {
+                    for i in 0..=content::ROSTER.len() {
                         if ui::opponent_rect(i).contains(pointer) {
-                            interface.opponent = if i == 0 { None } else { Some(i - 1) };
+                            interface.opponent = if i == 0 {
+                                None
+                            } else {
+                                Some(content::ROSTER[i - 1])
+                            };
                         }
                     }
                 }
-                let index = interface.opponent.map(|i| i + 1).unwrap_or(0);
+                let index = interface
+                    .opponent
+                    .and_then(|id| content::ROSTER.iter().position(|v| *v == id))
+                    .map(|i| i + 1)
+                    .unwrap_or(0);
                 let delta = if key(KeyCode::Right) {
                     1
                 } else if key(KeyCode::Left) {
@@ -1140,8 +1267,13 @@ async fn main() {
                     0
                 };
                 if delta != 0 {
-                    let i = (index as i32 + delta).rem_euclid(8) as usize;
-                    interface.opponent = if i == 0 { None } else { Some(i - 1) };
+                    let i = (index as i32 + delta).rem_euclid(content::ROSTER.len() as i32 + 1)
+                        as usize;
+                    interface.opponent = if i == 0 {
+                        None
+                    } else {
+                        Some(content::ROSTER[i - 1])
+                    };
                 }
             } else if next {
                 interface.opponent_step = true;
@@ -1153,7 +1285,12 @@ async fn main() {
                 hp = HEROES[hero_id].hp;
                 mp = 0;
                 enemy_id = interface.opponent.unwrap_or_else(|| {
-                    (hero_id + 1 + rng::gen_range(0, HEROES.len() - 1)) % HEROES.len()
+                    let ids: Vec<_> = content::ROSTER
+                        .iter()
+                        .copied()
+                        .filter(|id| *id != hero_id)
+                        .collect();
+                    ids[rng::gen_range(0, ids.len())]
                 });
                 demon = diagnostic_texture(sprites::SPRITES[enemy_id].bytes, "no_actors");
                 enemy = HEROES[enemy_id].hp;
@@ -1162,6 +1299,11 @@ async fn main() {
                 action_done = false;
                 bonuses = [0, 0];
                 awakened = [false; 2];
+                cooldowns = content::Cooldowns::default();
+                new_role_states = [
+                    new_roles::NewRoleState::default(),
+                    new_roles::NewRoleState::default(),
+                ];
                 reward_skill = None;
                 armed_sides = [false, false];
                 targeting = None;
@@ -1275,7 +1417,23 @@ async fn main() {
                 let before = snapshot!();
                 bonuses[enemy_turn as usize] = extra_bonus;
                 armed_sides[enemy_turn as usize] = armed;
+                let receiver = !enemy_turn;
+                let receiver_id = if receiver { enemy_id } else { hero_id };
+                let cleared = new_role_states[enemy_turn as usize].direct_tiles.clone();
+                if receiver_id == content::PRIEST
+                    && new_role_states[receiver as usize]
+                        .pockets
+                        .iter()
+                        .any(Option::is_none)
+                    && !cleared.is_empty()
+                {
+                    let pick = rng::gen_range(0, cleared.len());
+                    new_role_states[receiver as usize].mind_vision(&cleared, pick);
+                }
                 enemy_turn = !enemy_turn;
+                cooldowns.start_turn(enemy_turn as usize);
+                new_role_states[enemy_turn as usize].start_turn();
+                refresh_copy!(enemy_turn);
                 extra_bonus = bonuses[enemy_turn as usize];
                 armed = armed_sides[enemy_turn as usize];
                 turn_log.next(enemy_turn);
@@ -1293,15 +1451,23 @@ async fn main() {
                     &snapshot!(),
                 );
             }
-            if pending.is_empty() && !action_done && targeting.is_none() && !armed {
+            if pending.is_empty()
+                && !action_done
+                && targeting.is_none()
+                && !armed
+                && !new_role_states[enemy_turn as usize].force_armed
+            {
                 let (id, health, mana) = if enemy_turn {
                     (enemy_id, enemy, enemy_mp)
                 } else {
                     (hero_id, hp, mp)
                 };
-                let no_swaps = board::hero_options(&b, id).is_empty();
+                let no_swaps =
+                    content::move_options_in(&b, id, health, rules!(enemy_turn)).is_empty();
                 let automatic = no_swaps
-                    && content::must_refresh_in(&b, id, health, mana, armed, rules!(enemy_turn));
+                    && content::usable_skills_in(&b, id, health, mana, rules!(enemy_turn))
+                        .iter()
+                        .all(|skill| cooldowns.remaining(enemy_turn as usize, *skill) > 0);
                 let voluntary = no_swaps
                     && !enemy_turn
                     && (key(KeyCode::F2)
@@ -1334,12 +1500,14 @@ async fn main() {
             }
             let mut cast = command_skill;
             if pending.is_empty() && hp > 0 && !enemy_turn && !action_done {
-                for (i, skill) in HEROES[hero_id].skills.iter().enumerate() {
+                for (i, skill) in content::skills(hero_id, awakened[0]).iter().enumerate() {
                     let rect = player_skill_rect(i);
-                    if !((matches!(skill, content::Skill::Strike) && extra_bonus > 0)
-                        || (matches!(skill, content::Skill::Landslide) && armed))
+                    if cooldowns.remaining(0, *skill) == 0
+                        && !((matches!(skill, content::Skill::Strike) && extra_bonus > 0)
+                            || (matches!(skill, content::Skill::Landslide) && armed))
                         && ((i == 0 && (key(KeyCode::Key1) || key(KeyCode::Space)))
                             || (i == 1 && key(KeyCode::Key2))
+                            || (i == 2 && key(KeyCode::Key3))
                             || (clicked(MouseButton::Left) && rect.contains(pointer)))
                     {
                         cast = Some(*skill);
@@ -1347,71 +1515,109 @@ async fn main() {
                 }
             }
             if enemy_turn && enemy_clock >= 1.1 && pending.is_empty() && !action_done {
-                let enemy_before = snapshot!();
-                cast = strategy::choose_skill_in(
-                    &b,
-                    enemy_id,
-                    enemy,
-                    enemy_mp,
-                    difficulty,
-                    armed,
-                    extra_bonus,
-                    rules!(true),
-                );
-                if cast.is_none() {
-                    if let Some((a, c)) = strategy::choose_move_in(
+                if new_role_states[1].force_armed {
+                    if let Some((a, c)) = strategy::choose_force_move_in(
                         &b,
-                        enemy,
                         enemy_id,
+                        enemy,
                         enemy_mp,
-                        hero_id,
-                        difficulty,
+                        extra_bonus,
                         rules!(true),
-                    )
-                    .or_else(|| armed.then_some(((0, 0), (1, 0))))
-                    {
-                        let before = enemy_before.clone();
+                    ) {
+                        let before = snapshot!();
                         console.checkpoint(before.clone());
-                        presentation.swap(&before.board, a, c, armed, enemy_turn, enemy_id);
+                        new_role_states[1].complete_force(&mut b, a, c, enemy_id);
+                        presentation.swap(&before.board, a, c, false, true, enemy_id);
                         turn_log.current.actions.push(turns::Action::Swap {
                             from: a,
                             to: c,
-                            columns: enemy_id == 0 && !armed && a.1 == c.1,
+                            columns: matches!(enemy_id, 0 | content::KNIGHT) && a.1 == c.1,
                         });
-                        if armed {
-                            parallel_swap(&mut b, a, c);
-                            armed = false;
-                        } else {
-                            board::hero_swap(&mut b, a, c, enemy_id);
-                        }
-                        pending = matches(&b);
-                        deadline = CLEAR_TIME;
-                        reward = true;
-                        chain = 1;
-                        action_done = true;
-                        move_flash = Some((a, c));
                         console.event(
                             "move",
-                            &format!(
-                                "AI swap [{},{}] -> [{},{}]",
-                                a.0 + 1,
-                                a.1 + 1,
-                                c.0 + 1,
-                                c.1 + 1
-                            ),
+                            "AI forced non-matching movement; turn continues",
                             &before,
                             &snapshot!(),
                         );
                     } else {
-                        let before = snapshot!();
-                        b = board::fresh_for(enemy_id);
-                        turn_log.current.actions.push(turns::Action::Reroll);
-                        console.event(
-                            "board_refresh",
-                            "AI chose reroll instead of a skill",
-                            &before,
-                            &snapshot!(),
-                        );
+                        new_role_states[1].force_armed = false;
+                    }
+                } else {
+                    let enemy_before = snapshot!();
+                    let unavailable: Vec<_> = content::skills(enemy_id, awakened[1])
+                        .iter()
+                        .copied()
+                        .filter(|skill| cooldowns.remaining(1, *skill) > 0)
+                        .collect();
+                    cast = strategy::choose_skill_available_in(
+                        &b,
+                        enemy_id,
+                        enemy,
+                        enemy_mp,
+                        difficulty,
+                        armed,
+                        extra_bonus,
+                        rules!(true),
+                        &unavailable,
+                    );
+                    if cast.is_none() {
+                        if let Some((a, c)) = strategy::choose_move_in(
+                            &b,
+                            enemy,
+                            enemy_id,
+                            enemy_mp,
+                            hero_id,
+                            difficulty,
+                            rules!(true),
+                        )
+                        .or_else(|| armed.then_some(((0, 0), (1, 0))))
+                        {
+                            let before = enemy_before.clone();
+                            console.checkpoint(before.clone());
+                            presentation.swap(&before.board, a, c, armed, enemy_turn, enemy_id);
+                            turn_log.current.actions.push(turns::Action::Swap {
+                                from: a,
+                                to: c,
+                                columns: matches!(enemy_id, 0 | content::KNIGHT)
+                                    && !armed
+                                    && a.1 == c.1,
+                            });
+                            if armed {
+                                parallel_swap(&mut b, a, c);
+                                armed = false;
+                            } else {
+                                board::hero_swap(&mut b, a, c, enemy_id);
+                            }
+                            new_role_states[1].record_swap(a, c);
+                            pending = matches(&b);
+                            deadline = CLEAR_TIME;
+                            reward = true;
+                            chain = 1;
+                            action_done = true;
+                            move_flash = Some((a, c));
+                            console.event(
+                                "move",
+                                &format!(
+                                    "AI swap [{},{}] -> [{},{}]",
+                                    a.0 + 1,
+                                    a.1 + 1,
+                                    c.0 + 1,
+                                    c.1 + 1
+                                ),
+                                &before,
+                                &snapshot!(),
+                            );
+                        } else {
+                            let before = snapshot!();
+                            b = board::fresh_for(enemy_id);
+                            turn_log.current.actions.push(turns::Action::Reroll);
+                            console.event(
+                                "board_refresh",
+                                "AI chose reroll instead of a skill",
+                                &before,
+                                &snapshot!(),
+                            );
+                        }
                     }
                 }
                 enemy_clock = 0.;
@@ -1437,7 +1643,8 @@ async fn main() {
             }
             if !enemy_turn {
                 if let Some(skill) = cast {
-                    if skill_requires_board_click(skill)
+                    if content::targeted_in(skill, rules!(false))
+                        && cooldowns.remaining(0, skill) == 0
                         && content::payment_in(hero_id, hp, mp, skill, rules!(false)).is_some()
                         && command_skill.is_none()
                     {
@@ -1460,8 +1667,37 @@ async fn main() {
                 let id = if enemy_turn { enemy_id } else { hero_id };
                 let actor_hp = if enemy_turn { enemy } else { hp };
                 let actor_mp = if enemy_turn { enemy_mp } else { mp };
-                if let Some(pay) =
-                    content::payment_in(id, actor_hp, actor_mp, skill, rules!(enemy_turn))
+                let effective = content::effective_skill(skill, cast_rules);
+                let target = if effective == content::Skill::Hammer
+                    && cooldowns.remaining(enemy_turn as usize, skill) == 0
+                    && content::payment_in(id, actor_hp, actor_mp, skill, cast_rules).is_some()
+                {
+                    (
+                        rng::gen_range(0, N - 1),
+                        rng::gen_range(
+                            N - content::reachable_rows(id, actor_hp, cast_rules),
+                            N - 1,
+                        ),
+                    )
+                } else if enemy_turn {
+                    strategy::choose_target_in(
+                        skill,
+                        &b,
+                        id,
+                        actor_hp,
+                        actor_mp,
+                        extra_bonus,
+                        cast_rules,
+                    )
+                } else {
+                    command_target.or(board_target).unwrap_or((3, 3))
+                };
+                if let Some(pay) = content::payment_in(id, actor_hp, actor_mp, skill, cast_rules)
+                    .filter(|_| {
+                        cooldowns.remaining(enemy_turn as usize, skill) == 0
+                            && !new_role_states[enemy_turn as usize].force_armed
+                            && content::legal_target(id, actor_hp, skill, &b, target, cast_rules)
+                    })
                 {
                     console.checkpoint(before.clone());
                     if enemy_turn {
@@ -1471,26 +1707,16 @@ async fn main() {
                         mp -= pay.mana;
                         damage!(pay.blood, false, "blood_payment");
                     }
+                    cooldowns.cast(enemy_turn as usize, skill);
                     cast_this_frame = true;
                     move_flash = None;
-                    last_cast = Some(skill);
+                    last_cast = Some(effective);
                     last_cast_enemy = enemy_turn;
                     cast_time = 1.4;
-                    let target = if enemy_turn {
-                        strategy::choose_target_in(
-                            skill,
-                            &b,
-                            enemy_id,
-                            before.enemy_hp,
-                            before.enemy_mp,
-                            extra_bonus,
-                            cast_rules,
-                        )
-                    } else {
-                        command_target.or(board_target).unwrap_or((3, 3))
-                    };
                     reward_skill = Some(skill);
-                    skill_flash = content::target_cells(skill, &b, target);
+                    skill_flash = content::target_cells_in(
+                        skill, &b, target, id, actor_hp, actor_mp, cast_rules,
+                    );
                     let e = content::effect_at_in(
                         skill,
                         &mut b,
@@ -1500,13 +1726,15 @@ async fn main() {
                         actor_mp,
                         rules!(enemy_turn),
                     );
-                    let direct_damage = if skill == content::Skill::Charge {
-                        charge_damage = Some((e.damage, enemy_turn));
-                        presentation.charge(target.0, presentation::CHARGE_TIME);
-                        0
-                    } else {
-                        e.damage
-                    };
+                    new_role_states[enemy_turn as usize].on_cast(effective, &before.board, target);
+                    let direct_damage =
+                        if matches!(effective, content::Skill::Charge | content::Skill::Rush) {
+                            charge_damage = Some((e.damage, enemy_turn));
+                            presentation.charge(target.0, presentation::CHARGE_TIME);
+                            0
+                        } else {
+                            e.damage
+                        };
                     if enemy_turn {
                         enemy = (enemy + e.hp).min(content::health_cap(enemy_id, awakened[1]));
 
@@ -1528,7 +1756,10 @@ async fn main() {
                     } else {
                         mp - before.mp + pay.mana
                     };
-                    turn_log.current.actions.push(turns::Action::Skill(skill));
+                    turn_log
+                        .current
+                        .actions
+                        .push(turns::Action::Skill(effective));
                     turn_log
                         .current
                         .add(actual_heal, actual_damage, actual_mana);
@@ -1575,7 +1806,7 @@ async fn main() {
                         },
                     );
                     feedback_time = 2.5;
-                    action_done = !e.armed && e.bonus == 0;
+                    action_done = effective.ends_turn();
                     extra_bonus += e.bonus;
                     armed |= e.armed;
                     pending = e.cells;
@@ -1592,8 +1823,22 @@ async fn main() {
                     chain = 1;
                     selected = None;
                     note = "Skill cast";
-                    console.event("skill",&format!("{:?} target=[{},{}] cost={} blood_cost={} direct_heal={} direct_damage={} direct_mana={} bonus={} armed={} actual_heal={} actual_damage={} actual_mana={}",skill,target.0+1,target.1+1,pay.mana,pay.blood,e.hp,e.damage,e.mp,e.bonus,e.armed,actual_heal,actual_damage,actual_mana),&before,&snapshot!());
+                    console.event("skill",&format!("{:?} effective={:?} target=[{},{}] cost={} blood_cost={} direct_heal={} direct_damage={} direct_mana={} bonus={} armed={} actual_heal={} actual_damage={} actual_mana={}",skill,effective,target.0+1,target.1+1,pay.mana,pay.blood,e.hp,e.damage,e.mp,e.bonus,e.armed,actual_heal,actual_damage,actual_mana),&before,&snapshot!());
                 } else {
+                    if !enemy_turn
+                        && id == content::DWARF
+                        && !content::legal_target(id, actor_hp, skill, &b, target, cast_rules)
+                    {
+                        if feedback_time <= 0.
+                            || feedback != content::role_text("Dwarf.unreachable", zh)
+                        {
+                            feedback = content::role_text("Dwarf.unreachable", zh).to_string();
+                            feedback_time = 1.8;
+                        }
+                        if content::targeted_in(skill, cast_rules) {
+                            targeting = Some(skill);
+                        }
+                    }
                     note = "Not enough mana";
                 }
             }
@@ -1664,6 +1909,13 @@ async fn main() {
                     } else {
                         (0, 0, 0)
                     };
+                    if reward && chain == 1 {
+                        new_role_states[enemy_turn as usize].direct_tiles.extend(
+                            pending
+                                .iter()
+                                .filter_map(|&(x, y)| (b[y][x] < 7).then_some(b[y][x])),
+                        );
+                    }
                     reward_skill = None;
                     if reward {
                         extra_bonus = 0;
@@ -1742,9 +1994,30 @@ async fn main() {
                     if let Some((a, _)) = command_move {
                         selected = Some(a);
                     }
-                    if let Some(a) = selected {
+                    if hero_id == content::DWARF
+                        && c.1 < N - content::reachable_rows(hero_id, hp, rules!(false))
+                    {
+                        selected = None;
+                        if feedback_time <= 0.
+                            || feedback != content::role_text("Dwarf.unreachable", zh)
+                        {
+                            feedback = content::role_text("Dwarf.unreachable", zh).to_string();
+                            feedback_time = 1.8;
+                        }
+                    } else if let Some(a) = selected {
                         let before = snapshot!();
-                        let legal = if armed && a.0.abs_diff(c.0) + a.1.abs_diff(c.1) == 1 {
+                        let forced = new_role_states[0].force_armed;
+                        let reachable =
+                            content::legal_swap_region(hero_id, hp, a, c, rules!(false));
+                        let legal = if !reachable {
+                            false
+                        } else if forced {
+                            let ok = new_role_states[0].complete_force(&mut b, a, c, hero_id);
+                            if ok {
+                                new_role_states[0].force_armed = false;
+                            }
+                            ok
+                        } else if armed && a.0.abs_diff(c.0) + a.1.abs_diff(c.1) == 1 {
                             parallel_swap(&mut b, a, c);
                             armed = false;
                             true
@@ -1763,10 +2036,13 @@ async fn main() {
                             turn_log.current.actions.push(turns::Action::Swap {
                                 from: a,
                                 to: c,
-                                columns: hero_id == 0 && !before.armed && a.1 == c.1,
+                                columns: matches!(hero_id, 0 | content::KNIGHT)
+                                    && !before.armed
+                                    && a.1 == c.1,
                             });
                             console.checkpoint(before.clone());
-                            action_done = true;
+                            new_role_states[0].record_swap(a, c);
+                            action_done = !forced;
                             move_flash = Some((a, c));
                             pending = matches(&b);
                             reward = true;
@@ -1791,6 +2067,13 @@ async fn main() {
                             );
                         } else {
                             selected = Some(c);
+                            if !reachable
+                                && (feedback_time <= 0.
+                                    || feedback != content::role_text("Dwarf.unreachable", zh))
+                            {
+                                feedback = content::role_text("Dwarf.unreachable", zh).to_string();
+                                feedback_time = 1.8;
+                            }
                             note = "No match: choose another tile";
                             console.event(
                                 "move_rejected",
@@ -1861,7 +2144,7 @@ async fn main() {
             let x = panel.x + 12.;
             let name = if zh { HEROES[id].zh } else { HEROES[id].en };
             let room = panel.w - 24. - if active_side { 88. } else { 0. };
-            label(name, x, 121., fit_size(name, 26., room), WHITE);
+            label(name, x, 116., fit_size(name, 24., room), WHITE);
             if active_side {
                 let tag = Rect::new(panel.x + panel.w - 92., 99., 80., 26.);
                 draw_rectangle(
@@ -1901,7 +2184,7 @@ async fn main() {
             .into_iter()
             .enumerate()
             {
-                let y = 150. + row as f32 * 38.;
+                let y = 139. + row as f32 * 33.;
                 let (shown, shown_max, extent) = if row == 0 {
                     presentation.health_bar(enemy_side, value, max)
                 } else {
@@ -1953,6 +2236,64 @@ async fn main() {
             } else {
                 &sprites::SPRITES[id]
             };
+            let casting = id >= content::KNIGHT
+                && last_cast.is_some()
+                && last_cast_enemy == enemy_side
+                && cast_time > 0.;
+            let cast_indices: &[usize] = if show_awake {
+                &[12, 13, 14, 15]
+            } else {
+                &[8, 9, 10, 11]
+            };
+            let mut area = sprite_rect(enemy_side);
+            if id == content::DWARF {
+                let target = if show_awake {
+                    [80, 60, 40]
+                        .iter()
+                        .filter(|&&v| health * 100 <= content::health_cap(id, true) * v)
+                        .count() as f32
+                } else {
+                    0.
+                };
+                let shown = &mut book_levels[enemy_side as usize];
+                *shown += (target - *shown).clamp(-(dt as f32) * 5., (dt as f32) * 5.);
+                if *shown > 0.01 {
+                    let scale = role_scale(area) * 0.5;
+                    let foot_y = area.y + area.h;
+                    let height = 8. + 3. * (*shown);
+                    let x = area.x + area.w / 2. - 44.;
+                    for (tex, y, h) in [
+                        (&book_cover, foot_y - height * scale, 6. * scale),
+                        (
+                            &book_pages,
+                            foot_y - (height - 6.) * scale,
+                            3. * (*shown) * scale,
+                        ),
+                        (&book_bottom, foot_y - 2. * scale, 2. * scale),
+                    ] {
+                        draw_texture_ex(
+                            tex,
+                            x,
+                            y,
+                            WHITE,
+                            DrawTextureParams {
+                                dest_size: Some(vec2(88., h)),
+                                ..Default::default()
+                            },
+                        );
+                    }
+                    area.h -= height * scale;
+                }
+            }
+            if casting
+                && content::effective_skill(last_cast.unwrap(), rules!(enemy_side))
+                    == content::Skill::Jump
+            {
+                area.y -= ((1.4 - cast_time) as f32 * std::f32::consts::PI / 1.4)
+                    .sin()
+                    .max(0.)
+                    * 12.;
+            }
             actor(
                 if show_awake {
                     &awake_textures[id]
@@ -1963,10 +2304,22 @@ async fn main() {
                 },
                 sprite.w,
                 sprite.h,
-                sprite_rect(enemy_side),
-                get_time(),
-                sprite.durations,
-                sprite.indices,
+                area,
+                if casting {
+                    (1.4 - cast_time).max(0.).min(0.519)
+                } else {
+                    get_time()
+                },
+                if casting {
+                    &[0.13; 4]
+                } else {
+                    sprite.durations
+                },
+                if casting {
+                    cast_indices
+                } else {
+                    sprite.indices
+                },
             );
         }
         // Title centered over the player's sidebar.
@@ -2169,7 +2522,15 @@ async fn main() {
             GOLD,
         );
         // Below the board frame; the hint legend uses this line while hints are shown.
-        if feedback_time > 0. && targeting.is_none() && !hints_shown {
+        if new_role_states[enemy_turn as usize].force_armed && !hints_shown {
+            label(
+                content::role_text("Skill.force_prompt", zh),
+                262.,
+                670.,
+                17.,
+                GOLD,
+            );
+        } else if feedback_time > 0. && targeting.is_none() && !hints_shown {
             label(&feedback, 262., 670., 17., GOLD);
         }
         if !diagnostic("legacy_batches") {
@@ -2213,8 +2574,7 @@ async fn main() {
             && !paused
             && !console.open
         {
-            HEROES[hero_id]
-                .skills
+            content::skills(hero_id, awakened[0])
                 .iter()
                 .enumerate()
                 .find(|(i, _)| player_skill_rect(*i).contains(pointer))
@@ -2223,8 +2583,7 @@ async fn main() {
             None
         };
         let enemy_hover = if !show_moves && !console.open {
-            HEROES[enemy_id]
-                .skills
+            content::skills(enemy_id, awakened[1])
                 .iter()
                 .enumerate()
                 .find(|(i, _)| enemy_skill_rect(*i).contains(pointer))
@@ -2235,9 +2594,11 @@ async fn main() {
         let hover_context = player_hover.or(enemy_hover);
         let hover_skill = hover_context.map(|(skill, _)| skill);
         let mut preview_cells = targeting
-            .or(hover_skill.filter(|s| !content::targeted(*s)))
+            .or(hover_skill.filter(|s| {
+                !content::targeted_in(*s, rules!(hover_context.is_some_and(|(_, side)| side)))
+            }))
             .map(|skill| {
-                if content::targeted(skill)
+                if content::targeted_in(skill, rules!(hover_context.is_some_and(|(_, side)| side)))
                     && !(pointer.x >= 256.
                         && pointer.x < 768.
                         && pointer.y >= 110.
@@ -2247,7 +2608,16 @@ async fn main() {
                 }
                 let x = ((pointer.x - 256.) / 64.).clamp(0., 7.) as usize;
                 let y = ((pointer.y - 110.) / 64.).clamp(0., 7.) as usize;
-                content::target_cells(skill, &b, (x, y))
+                let side = hover_context.is_some_and(|(_, side)| side);
+                let (id, health, mana) = if side {
+                    (enemy_id, enemy, enemy_mp)
+                } else {
+                    (hero_id, hp, mp)
+                };
+                if !content::legal_target(id, health, skill, &b, (x, y), rules!(side)) {
+                    return Vec::new();
+                }
+                content::target_cells_in(skill, &b, (x, y), id, health, mana, rules!(side))
             })
             .unwrap_or_default();
         if !show_moves && targeting.is_none() && !enemy_turn && !action_done {
@@ -2261,7 +2631,10 @@ async fn main() {
                     if board::hero_swap(&mut copy, a, c, hero_id) {
                         preview_cells = matches(&copy);
                     }
-                    if hero_id == 0 && board::adjacent(a, c, hero_id) && a.1 == c.1 {
+                    if matches!(hero_id, 0 | content::KNIGHT)
+                        && board::adjacent(a, c, hero_id)
+                        && a.1 == c.1
+                    {
                         for y in 0..N {
                             for x in [a.0, c.0] {
                                 draw_rectangle_lines(
@@ -2363,6 +2736,34 @@ async fn main() {
             }
         }
         presentation.draw_tiles(&tiles);
+        if hero_id == content::DWARF && !enemy_turn && pending.is_empty() && !action_done {
+            let excluded = N - content::reachable_rows(hero_id, hp, rules!(false));
+            if excluded > 0 {
+                draw_rectangle(
+                    256.,
+                    110.,
+                    512.,
+                    excluded as f32 * 64.,
+                    Color::new(0., 0., 0., 0.35),
+                );
+                draw_line(
+                    256.,
+                    110. + excluded as f32 * 64.,
+                    768.,
+                    110. + excluded as f32 * 64.,
+                    2.,
+                    GOLD,
+                );
+            }
+        }
+        if hero_id == content::DWARF
+            && feedback_time > 0.
+            && feedback == content::role_text("Dwarf.unreachable", zh)
+        {
+            draw_rectangle(22., 202., 204., 30., Color::from_rgba(20, 27, 38, 245));
+            draw_rectangle_lines(22., 202., 204., 30., 1., GOLD);
+            label_centered(&feedback, 124., 223., 16., WHITE);
+        }
         // Hints are derived only from the settled board; drawing never changes
         // selection, RNG, turn state, resources or the action log.
         let hint_health = if enemy_turn { enemy } else { hp };
@@ -2515,15 +2916,15 @@ async fn main() {
             for side in [false, true] {
                 let panel = side_panel_rect(side);
                 let id = if side { enemy_id } else { hero_id };
-                let bar = Rect::new(panel.x + 12., 133., 200., 40.);
+                let bar = Rect::new(panel.x + 12., 124., 200., 39.);
                 if !awakened[side as usize] {
                     let tx = bar.x + 200. * content::AWAKENING_LINES[id] as f32 / 100.;
                     let cx = bar.x + 200. * content::AWAKENING_CAPS[id] as f32 / 100.;
                     // Independent upper/lower lanes preserve exact values even when equal.
-                    draw_line(tx, 153., tx, 157., 1., GOLD);
-                    draw_diamond(tx, 152., 5., GOLD, true);
-                    draw_line(cx, 166., cx, 170., 1., SKYBLUE);
-                    draw_diamond(cx, 171., 4., SKYBLUE, false);
+                    draw_line(tx, 142., tx, 146., 1., GOLD);
+                    draw_diamond(tx, 141., 5., GOLD, true);
+                    draw_line(cx, 155., cx, 159., 1., SKYBLUE);
+                    draw_diamond(cx, 160., 4., SKYBLUE, false);
                 }
                 if bar.contains(pointer) {
                     let x = if side { 548. } else { 256. };
@@ -2552,7 +2953,7 @@ async fn main() {
                 }
                 if content::mana_cap(id, false) < content::mana_cap(id, true)
                     && !awakened[side as usize]
-                    && Rect::new(panel.x + 12., 174., 200., 40.).contains(pointer)
+                    && Rect::new(panel.x + 12., 165., 200., 30.).contains(pointer)
                 {
                     let x = if side { 548. } else { 256. };
                     draw_rectangle(x, 176., 220., 64., Color::from_rgba(25, 33, 46, 255));
@@ -2603,11 +3004,17 @@ async fn main() {
                 asset.indices,
             );
         }
-        if let Some(skill) = last_cast.filter(|s| cast_time > 0. && *s != content::Skill::Charge) {
+        if let Some(skill) = last_cast.filter(|s| {
+            cast_time > 0.
+                && !matches!(
+                    content::effective_skill(*s, rules!(last_cast_enemy)),
+                    content::Skill::Charge | content::Skill::Rush
+                )
+        }) {
             let progress = 1. - cast_time as f32 / 1.4;
             effects::draw(skill, &skill_flash, progress, last_cast_enemy);
         }
-        for (i, skill) in HEROES[enemy_id].skills.iter().enumerate() {
+        for (i, skill) in content::skills(enemy_id, awakened[1]).iter().enumerate() {
             let r = enemy_skill_rect(i);
             draw_rectangle(r.x, r.y, r.w, r.h, Color::new(0.12, 0.15, 0.2, 1.));
             if r.contains(pointer) {
@@ -2621,26 +3028,32 @@ async fn main() {
                     GRAY
                 };
             // Cost right-aligned; the name fits into the space left of it.
-            let cost = cost_text(zh, content::skill_cost(enemy_id, awakened[1], *skill), 0);
+            let cost = cost_text(
+                zh,
+                content::skill_cost_in(enemy_id, *skill, rules!(true)),
+                0,
+            );
             let cost_width = label_width(&cost, 15.);
             label(&cost, r.x + r.w - 7. - cost_width, r.y + 25., 15., color);
-            let name = skill.name(zh);
+            let name = content::skill_name_in(*skill, rules!(true), zh);
             label(
-                name,
+                &name,
                 r.x + 40.,
                 r.y + 25.,
-                fit_size(name, 17., r.w - 54. - cost_width),
+                fit_size(&name, 17., r.w - 54. - cost_width),
                 color,
             );
         }
-        for (i, skill) in HEROES[hero_id].skills.iter().enumerate() {
+        for (i, skill) in content::skills(hero_id, awakened[0]).iter().enumerate() {
             let rect = player_skill_rect(i);
             draw_rectangle(
                 rect.x,
                 rect.y,
                 rect.w,
                 rect.h,
-                if content::payment_in(hero_id, hp, mp, *skill, rules!(false)).is_some() {
+                if cooldowns.remaining(0, *skill) == 0
+                    && content::payment_in(hero_id, hp, mp, *skill, rules!(false)).is_some()
+                {
                     Color::new(0.2, 0.28, 0.35, 1.)
                 } else {
                     Color::new(0.1, 0.12, 0.16, 1.)
@@ -2651,50 +3064,156 @@ async fn main() {
             } else if player_hover.is_some_and(|(s, _)| s == *skill) {
                 draw_rectangle_lines(rect.x, rect.y, rect.w, rect.h, 2., SKYBLUE);
             }
-            icons::draw(*skill, rect.x + 8., rect.y + 8., 26.);
-            let title = format!("{}: {}", i + 1, skill.name(zh));
+            icons::draw(*skill, rect.x + 8., rect.y + 6., 22.);
+            let title = format!(
+                "{}: {}",
+                i + 1,
+                content::skill_name_in(*skill, rules!(false), zh)
+            );
             label(
                 &title,
                 rect.x + 40.,
-                rect.y + 28.,
-                fit_size(&title, 21., rect.w - 48.),
+                rect.y + 23.,
+                fit_size(&title, 18., rect.w - 48.),
                 WHITE,
             );
-            label(
-                &if hero_id == 6 && mp < content::skill_cost(hero_id, awakened[0], *skill) {
+            let details = format!(
+                "{} · {} {}",
+                if hero_id == 6 && mp < content::skill_cost_in(hero_id, *skill, rules!(false)) {
                     cost_text(
                         zh,
                         mp,
                         content::blood_cost(
                             hero_id,
                             awakened[0],
-                            content::skill_cost(hero_id, awakened[0], *skill) - mp,
+                            content::skill_cost_in(hero_id, *skill, rules!(false)) - mp,
                         ),
                     )
                 } else {
-                    cost_text(zh, content::skill_cost(hero_id, awakened[0], *skill), 0)
+                    cost_text(
+                        zh,
+                        content::skill_cost_in(hero_id, *skill, rules!(false)),
+                        0,
+                    )
                 },
+                tr(zh, "CD", "冷却"),
+                skill.cooldown()
+            );
+            label(
+                &details,
                 rect.x + 8.,
-                rect.y + 50.,
-                17.,
-                if hero_id == 6 && mp < content::skill_cost(hero_id, awakened[0], *skill) {
+                rect.y + 40.,
+                fit_size(&details, 14., rect.w - 16.),
+                if hero_id == 6 && mp < content::skill_cost_in(hero_id, *skill, rules!(false)) {
                     RED
                 } else {
                     SKYBLUE
                 },
             );
-            for (line, text) in content::skill_description(*skill, awakened[0], zh)
+            for (line, text) in content::skill_description_in(*skill, rules!(false), zh)
                 .lines()
+                .take(
+                    if content::effective_skill(*skill, rules!(false)).ends_turn() {
+                        2
+                    } else {
+                        1
+                    },
+                )
                 .enumerate()
             {
                 // Shrink a long line to the box width instead of letting it spill out.
                 label(
                     text,
                     rect.x + 8.,
-                    rect.y + 72. + line as f32 * 18.,
-                    fit_size(text, 16., rect.w - 16.),
+                    rect.y + 54. + line as f32 * 14.,
+                    fit_size(text, 13., rect.w - 16.),
                     LIGHTGRAY,
                 );
+            }
+        }
+        for (i, &skill) in content::skills(hero_id, awakened[0]).iter().enumerate() {
+            if !content::effective_skill(skill, rules!(false)).ends_turn() {
+                let rect = player_skill_rect(i);
+                label(
+                    content::role_text("Skill.continue", zh),
+                    rect.x + 8.,
+                    rect.y + 68.,
+                    13.,
+                    GOLD,
+                );
+            }
+        }
+        // Text is queued separately from shapes. Flush the cards first so the dimmer
+        // covers their text and icons as well as their backgrounds.
+        if content::skills(hero_id, awakened[0])
+            .iter()
+            .any(|s| cooldowns.remaining(0, *s) > 0)
+            || content::skills(enemy_id, awakened[1])
+                .iter()
+                .any(|s| cooldowns.remaining(1, *s) > 0)
+        {
+            flush_labels();
+            for (i, skill) in content::skills(hero_id, awakened[0]).iter().enumerate() {
+                let remaining = cooldowns.remaining(0, *skill);
+                if remaining > 0 {
+                    draw_cooldown_overlay(player_skill_rect(i), remaining);
+                }
+            }
+            for (i, skill) in content::skills(enemy_id, awakened[1]).iter().enumerate() {
+                let remaining = cooldowns.remaining(1, *skill);
+                if remaining > 0 {
+                    draw_cooldown_overlay(enemy_skill_rect(i), remaining);
+                }
+            }
+        }
+        for side in [false, true] {
+            let id = if side { enemy_id } else { hero_id };
+            if id == content::PRIEST
+                || new_role_states[side as usize]
+                    .pockets
+                    .iter()
+                    .any(Option::is_some)
+            {
+                for slot in 0..2 {
+                    let r = Rect::new(
+                        if side {
+                            796. + slot as f32 * 105.
+                        } else {
+                            20. + slot as f32 * 105.
+                        },
+                        if side { 610. } else { 670. },
+                        100.,
+                        25.,
+                    );
+                    draw_rectangle(r.x, r.y, r.w, r.h, Color::from_rgba(39, 42, 50, 255));
+                    if !side && new_role_states[0].pocket_slot == slot {
+                        draw_rectangle_lines(r.x, r.y, r.w, r.h, 1.5, GOLD);
+                    }
+                    if let Some(tile) = new_role_states[side as usize].pockets[slot] {
+                        draw_texture_ex(
+                            &tiles[tile as usize],
+                            r.x + 4.,
+                            r.y + 2.,
+                            WHITE,
+                            DrawTextureParams {
+                                dest_size: Some(vec2(21., 21.)),
+                                ..Default::default()
+                            },
+                        );
+                    }
+                    let text = format!("{} {}", tr(zh, "Pocket", "口袋"), slot + 1);
+                    label(&text, r.x + 29., r.y + 18., 13., LIGHTGRAY);
+                    if !side
+                        && !block_input
+                        && !paused
+                        && !enemy_turn
+                        && !action_done
+                        && clicked(MouseButton::Left)
+                        && r.contains(pointer)
+                    {
+                        new_role_states[0].pocket_slot = slot;
+                    }
+                }
             }
         }
         // Each passive has its own identity, icon, state and hit target.
@@ -3025,7 +3544,7 @@ async fn main() {
                     } else {
                         tr(zh, "You", "我方")
                     },
-                    skill.name(zh)
+                    content::skill_name_in(skill, rules!(is_enemy), zh)
                 ),
                 x + 10.,
                 239.,
@@ -3033,37 +3552,33 @@ async fn main() {
                 GOLD,
             );
             label(
-                &if id == 6 && mana < content::skill_cost(id, awakened[is_enemy as usize], skill) {
+                &if id == 6 && mana < content::skill_cost_in(id, skill, rules!(is_enemy)) {
                     cost_text(
                         zh,
                         mana,
                         content::blood_cost(
                             id,
                             awakened[is_enemy as usize],
-                            content::skill_cost(id, awakened[is_enemy as usize], skill) - mana,
+                            content::skill_cost_in(id, skill, rules!(is_enemy)) - mana,
                         ),
                     )
                 } else {
                     format!(
                         "{}{}",
                         tr(zh, "Cost: ", "消耗："),
-                        cost_text(
-                            zh,
-                            content::skill_cost(id, awakened[is_enemy as usize], skill),
-                            0
-                        )
+                        cost_text(zh, content::skill_cost_in(id, skill, rules!(is_enemy)), 0)
                     )
                 },
                 x + 10.,
                 266.,
                 18.,
-                if id == 6 && mana < content::skill_cost(id, awakened[is_enemy as usize], skill) {
+                if id == 6 && mana < content::skill_cost_in(id, skill, rules!(is_enemy)) {
                     RED
                 } else {
                     SKYBLUE
                 },
             );
-            let description = content::skill_description(skill, awakened[is_enemy as usize], zh);
+            let description = content::skill_description_in(skill, rules!(is_enemy), zh);
             for (line, text) in wrap_preview_text(description, 12.)
                 .iter()
                 .take(7)
@@ -3086,7 +3601,9 @@ async fn main() {
             } else {
                 None
             };
-            let range = content::targeted(skill) && exact_target.is_none();
+            let range = (content::targeted_in(skill, rules!(is_enemy))
+                || content::effective_skill(skill, rules!(is_enemy)) == content::Skill::Hammer)
+                && exact_target.is_none();
             let (low, high) = if range {
                 content::preview_range_in(
                     skill,
@@ -3096,7 +3613,7 @@ async fn main() {
                     if content::payment_in(id, health, mana, skill, rules!(is_enemy)).is_some() {
                         mana
                     } else {
-                        mana.max(content::skill_cost(id, awakened[is_enemy as usize], skill))
+                        mana.max(content::skill_cost_in(id, skill, rules!(is_enemy)))
                     },
                     opponent,
                     boost,
@@ -3114,7 +3631,7 @@ async fn main() {
                         {
                             mana
                         } else {
-                            mana.max(content::skill_cost(id, awakened[is_enemy as usize], skill))
+                            mana.max(content::skill_cost_in(id, skill, rules!(is_enemy)))
                         },
                         opponent,
                         boost,
@@ -3130,7 +3647,7 @@ async fn main() {
                         {
                             mana
                         } else {
-                            mana.max(content::skill_cost(id, awakened[is_enemy as usize], skill))
+                            mana.max(content::skill_cost_in(id, skill, rules!(is_enemy)))
                         },
                         opponent,
                         boost,
@@ -3208,7 +3725,7 @@ async fn main() {
                 );
             }
             if id == 6
-                && mana < content::skill_cost(id, awakened[is_enemy as usize], skill)
+                && mana < content::skill_cost_in(id, skill, rules!(is_enemy))
                 && content::payment_in(id, health, mana, skill, rules!(is_enemy)).is_none()
             {
                 label(
@@ -3347,10 +3864,56 @@ mod tests {
         for asset in sprites::SPRITES.iter().chain(sprites::AWAKENED) {
             let decoded = image::load_from_memory(asset.bytes).expect("runtime image decoder");
             let frames = asset.indices.iter().max().unwrap() + 1;
-            assert_eq!(decoded.width(), asset.w as u32 * frames as u32);
-            assert_eq!(decoded.height(), asset.h as u32);
+            assert_eq!(decoded.width() % asset.w as u32, 0);
+            assert_eq!(decoded.height() % asset.h as u32, 0);
+            assert!(
+                decoded.width() / asset.w as u32 * (decoded.height() / asset.h as u32)
+                    >= frames as u32
+            );
             assert!(decoded.to_rgba8().pixels().any(|pixel| pixel[3] > 0));
         }
+    }
+    #[test]
+    fn new_role_atlases_have_all_animation_frames_and_fixed_binary_palettes() {
+        for id in [content::KNIGHT, content::DWARF, content::PRIEST] {
+            let image = image::load_from_memory(sprites::SPRITES[id].bytes)
+                .unwrap()
+                .to_rgba8();
+            assert_eq!(image.dimensions(), (384 * 4, 384 * 4));
+            // Visible idle rows must share the same display height across roles;
+            // transparent canvas padding must not shrink the priest or dwarf.
+            for row in 0..2 {
+                let max_height = (0..4)
+                    .map(|column| {
+                        let occupied: Vec<_> = (0..384)
+                            .filter(|&y| {
+                                (0..384).any(|x| {
+                                    image.get_pixel(column * 384 + x, row * 384 + y)[3] > 0
+                                })
+                            })
+                            .collect();
+                        occupied.last().unwrap() - occupied.first().unwrap() + 1
+                    })
+                    .max()
+                    .unwrap();
+                assert_eq!(max_height, 320, "role {id} idle row {row}");
+            }
+            for frame in 0..16 {
+                let mut colors = std::collections::HashSet::new();
+                for y in frame / 4 * 384..(frame / 4 + 1) * 384 {
+                    for x in frame % 4 * 384..(frame % 4 + 1) * 384 {
+                        let pixel = image.get_pixel(x, y);
+                        assert!(pixel[3] == 0 || pixel[3] == 255);
+                        if pixel[3] > 0 {
+                            colors.insert([pixel[0], pixel[1], pixel[2]]);
+                        }
+                    }
+                }
+                assert!(!colors.is_empty() && colors.len() <= 64);
+            }
+        }
+        let book = image::load_from_memory(sprites::BOOK_BYTES).unwrap();
+        assert_eq!((book.width(), book.height()), (1536, 384));
     }
     #[test]
     fn global_skills_cast_directly_even_when_paid_with_health() {

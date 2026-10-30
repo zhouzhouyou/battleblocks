@@ -7,6 +7,8 @@ const VISIBLE_ROWS: usize = 26;
 #[derive(Clone)]
 pub struct Snapshot {
     pub awakened: [bool; 2],
+    pub cooldowns: crate::content::Cooldowns,
+    pub new_role_states: [crate::new_roles::NewRoleState; 2],
     pub reward_skill: Option<crate::content::Skill>,
     pub board: Board,
     pub hero: usize,
@@ -36,10 +38,20 @@ pub struct Snapshot {
 }
 impl Snapshot {
     fn json(&self) -> String {
-        format!("{{\"reward_skill\":{},\"awakened\":{:?},\"board\":{:?},\"hero\":{},\"enemy\":{},\"hp\":{},\"enemy_hp\":{},\"mp\":{},\"enemy_mp\":{},\"enemy_turn\":{},\"action_done\":{},\"pending\":{},\"deadline\":{},\"enemy_clock\":{},\"bonuses\":{:?},\"armed_sides\":{:?},\"bonus\":{},\"armed\":{},\"chain\":{},\"reward\":{},\"difficulty\":{},\"paused\":{},\"rng_state\":{},\"charge_damage\":{},\"charge_remaining\":{}}}",
-            self.reward_skill.map(|s|quote(&format!("{s:?}"))).unwrap_or("null".into()),self.awakened,self.board,self.hero,self.enemy,self.hp,self.enemy_hp,self.mp,self.enemy_mp,self.enemy_turn,self.action_done,
+        format!("{{\"new_role_states\":[{},{}],\"cooldowns\":{:?},\"reward_skill\":{},\"awakened\":{:?},\"board\":{:?},\"hero\":{},\"enemy\":{},\"hp\":{},\"enemy_hp\":{},\"mp\":{},\"enemy_mp\":{},\"enemy_turn\":{},\"action_done\":{},\"pending\":{},\"deadline\":{},\"enemy_clock\":{},\"bonuses\":{:?},\"armed_sides\":{:?},\"bonus\":{},\"armed\":{},\"chain\":{},\"reward\":{},\"difficulty\":{},\"paused\":{},\"rng_state\":{},\"charge_damage\":{},\"charge_remaining\":{}}}",
+            role_json(&self.new_role_states[0]),role_json(&self.new_role_states[1]),self.cooldowns.0,self.reward_skill.map(|s|quote(&format!("{s:?}"))).unwrap_or("null".into()),self.awakened,self.board,self.hero,self.enemy,self.hp,self.enemy_hp,self.mp,self.enemy_mp,self.enemy_turn,self.action_done,
             cells_json(&self.pending),self.deadline,self.enemy_clock,self.bonuses,self.armed_sides,self.bonus,self.armed,self.chain,self.reward,self.difficulty,self.paused,self.rng_state,self.charge_damage.map(|(d,e)|format!("[{d},{e}]")).unwrap_or("null".into()),self.charge_remaining)
     }
+}
+fn role_json(state: &crate::new_roles::NewRoleState) -> String {
+    let pockets = state
+        .pockets
+        .map(|v| v.map(|v| v.to_string()).unwrap_or_else(|| "null".into()));
+    let copied = state
+        .copied_skill
+        .map(|v| v.to_string())
+        .unwrap_or_else(|| "null".into());
+    format!("{{\"pockets\":[{},{}],\"jumped\":{},\"miracle\":{},\"copied_skill\":{},\"pocket_slot\":{},\"direct_tiles\":{:?},\"force_armed\":{},\"horizontal\":{},\"upper_swap\":{}}}", pockets[0],pockets[1],state.jumped,state.miracle,copied,state.pocket_slot,state.direct_tiles,state.force_armed,state.horizontal,state.upper_swap)
 }
 fn cells_json(cells: &[(usize, usize)]) -> String {
     format!(
@@ -123,7 +135,7 @@ impl ParseError {
                 "用法：buff player|enemy armed on|off",
             ),
             Self::PauseUsage => ("Use pause on|off", "用法：pause on|off"),
-            Self::SkillSlot => ("Skill slot must be 1 or 2", "技能编号只能是 1 或 2"),
+            Self::SkillSlot => ("Skill slot must be 1, 2 or 3", "技能编号只能是 1、2 或 3"),
             Self::LangUsage => (
                 "Use lang zh, lang en or lang auto (follow the game)",
                 "用法：lang zh、lang en 或 lang auto（跟随游戏语言）",
@@ -203,7 +215,7 @@ pub fn parse(input: &str) -> Result<Command, ParseError> {
             }
             Ok(Command::LoadBoard(b))
         }
-        "hero" if words.len() == 3 && (0..7).contains(&n(2)?) => {
+        "hero" if words.len() == 3 && (0..crate::content::HEROES.len() as i32).contains(&n(2)?) => {
             Ok(Command::Hero(side(1)?, n(2)? as usize))
         }
         "buff" if words.len() == 4 && words[2] == "bonus" && (0..=10).contains(&n(3)?) => {
@@ -229,7 +241,7 @@ pub fn parse(input: &str) -> Result<Command, ParseError> {
         )),
         "cast" if words.len() == 2 || words.len() == 4 => {
             let slot = n(1)?;
-            if !(1..=2).contains(&slot) {
+            if !(1..=3).contains(&slot) {
                 return Err(ParseError::SkillSlot);
             }
             Ok(Command::Cast(
@@ -749,6 +761,8 @@ mod tests {
     use super::*;
     fn state(enemy_turn: bool, hp: i32) -> Snapshot {
         Snapshot {
+            cooldowns: Default::default(),
+            new_role_states: Default::default(),
             awakened: [false; 2],
             reward_skill: None,
             board: [[1; 8]; 8],
@@ -835,7 +849,7 @@ mod tests {
             "move 9 1 2 3",
             "ai 3",
             "undo enemy",
-            "cast 3",
+            "cast 4",
             "hp player 5 extra",
         ] {
             assert!(parse(bad).is_err(), "{bad}");
@@ -884,7 +898,7 @@ mod tests {
             ("tile 1 1 7", ParseError::TileType),
             ("hp player -1", ParseError::Negative),
             ("hp boss 1", ParseError::Side),
-            ("cast 3", ParseError::SkillSlot),
+            ("cast 4", ParseError::SkillSlot),
             ("pause maybe", ParseError::PauseUsage),
             ("seed -1", ParseError::Seed),
             ("tile x 1 2", ParseError::ExpectedInteger),

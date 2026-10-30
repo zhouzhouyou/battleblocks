@@ -1,8 +1,8 @@
 {
-  "date": "2026-10-29",
-  "policy": "Keep current dwarf model v5 and animation v6 only. Removed drafts remain in Git history, not the working tree. Do not restore from generator cache.",
-  "generated_images_seen": 39,
-  "generated_images_in_worktree": 26,
+  "date": "2026-10-31",
+  "policy": "Keep current dwarf model v5 and animation v6 only. Removed drafts remain in Git history, not the working tree. Do not restore from generator cache. User-authorized production/v3 animations derive from selected models; current role display height and pixel density are uniform.",
+  "generated_images_seen": 42,
+  "generated_images_in_worktree": 29,
   "images": [
     {
       "generated_file": "exec-03eba591-9e0e-41ef-bce8-0db8425e9216.png",
@@ -247,6 +247,24 @@
       "sha256": "a23c48a98155c8c79430f2119e1d8376c4a9e846e4e8c34539900a6fe8aa0e76",
       "status": "present",
       "repository_file": "asset-sources/art-direction/characters/priest/priest-pc-model-sheet-e-v3.png"
+    },
+    {
+      "generated_file": "exec-91a8c85f-7084-4587-b268-534135042af9.png",
+      "sha256": "c1d446405b87c704dc18e7d0a0578bb0918e9fc50358c0ea59542692de623ee9",
+      "status": "present",
+      "repository_file": "asset-sources/art-direction/characters/knight/production/v3/animation-source.png"
+    },
+    {
+      "generated_file": "exec-8d71db22-1d40-430e-9e18-cdaebbffb955.png",
+      "sha256": "bc60138caffdc04a0f475a80df9b673f5770ee28f7a1f5bb8a91f039f2cf3f72",
+      "status": "present",
+      "repository_file": "asset-sources/art-direction/characters/dwarf/production/v3/animation-source.png"
+    },
+    {
+      "generated_file": "exec-95830c23-bfda-40ab-bb1d-a7c374f3fd18.png",
+      "sha256": "585ef05121f6c819eb8c25eedbaf8309fb377b2d07eabcd72b27ef19964b9225",
+      "status": "present",
+      "repository_file": "asset-sources/art-direction/characters/priest/production/v3/animation-source.png"
     }
   ],
   "user_references": [

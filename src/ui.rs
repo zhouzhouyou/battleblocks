@@ -307,13 +307,13 @@ impl Ui {
                 draw_rectangle_lines(r.x, r.y, r.w, r.h, 2., GOLD);
             }
         }
-        for i in 0..8 {
+        for i in 0..=crate::content::ROSTER.len() {
             let r = opponent_rect(i);
             frame(r, r.contains(pointer));
             let selected = if i == 0 {
                 self.opponent.is_none()
             } else {
-                self.opponent == Some(i - 1)
+                self.opponent == Some(crate::content::ROSTER[i - 1])
             };
             if selected {
                 draw_rectangle_lines(r.x, r.y, r.w, r.h, 2., GOLD);
@@ -329,12 +329,13 @@ impl Ui {
                 label(
                     tr(zh, "Excludes your hero", "随机时不与己方角色重复"),
                     r.x + 14.,
-                    r.y + 65.,
+                    r.y + 61.,
                     17.,
                     LIGHTGRAY,
                 );
             } else {
-                let h = &HEROES[i - 1];
+                let id = crate::content::ROSTER[i - 1];
+                let h = &HEROES[id];
                 draw_texture_ex(
                     thumbs,
                     r.x + 8.,
@@ -342,7 +343,7 @@ impl Ui {
                     WHITE,
                     DrawTextureParams {
                         dest_size: Some(vec2(40., 48.)),
-                        source: Some(Rect::new((i - 1) as f32 * 40., 0., 40., 48.)),
+                        source: Some(Rect::new(id as f32 * 40., 0., 40., 48.)),
                         ..Default::default()
                     },
                 );
@@ -359,7 +360,7 @@ impl Ui {
                         tr(zh, "HP", "生命"),
                         h.hp,
                         tr(zh, "MP", "魔力"),
-                        crate::content::mana_cap(i - 1, false)
+                        crate::content::mana_cap(id, false)
                     ),
                     r.x + 58.,
                     r.y + 51.,
@@ -369,15 +370,15 @@ impl Ui {
                 label(
                     &format!("{} / {}", h.skills[0].name(zh), h.skills[1].name(zh)),
                     r.x + 8.,
-                    r.y + 78.,
+                    r.y + 68.,
                     if zh { 16. } else { 13. },
                     SKYBLUE,
                 );
             }
         }
-        let focus = (1..8)
+        let focus = (1..=crate::content::ROSTER.len())
             .find(|&i| opponent_rect(i).contains(pointer))
-            .map(|i| i - 1)
+            .map(|i| crate::content::ROSTER[i - 1])
             .or(self.opponent);
         if let Some(id) = focus {
             label(
@@ -652,9 +653,9 @@ impl Ui {
 pub fn opponent_rect(i: usize) -> Rect {
     Rect::new(
         230. + (i % 2) as f32 * 288.,
-        176. + (i / 2) as f32 * 106.,
+        176. + (i / 2) as f32 * 88.,
         276.,
-        96.,
+        80.,
     )
 }
 

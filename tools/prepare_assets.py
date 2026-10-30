@@ -69,3 +69,7 @@ for i, (name, meta) in enumerate(list(report.items())[:7]):
     image.thumbnail((40, 48), Image.Resampling.NEAREST)
     thumbs.paste(image, (i * 40 + (40 - image.width) // 2, 48 - image.height))
 thumbs.save(OUT / "hero-thumbnails.webp", lossless=True, exact=True, method=6)
+
+# Rebuild the approved new-role atlases and final combined registry.
+import subprocess, sys
+subprocess.run([sys.executable,str(ROOT/"tools/prepare_role_assets.py")],check=True)

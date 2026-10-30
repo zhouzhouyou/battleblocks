@@ -136,8 +136,8 @@ impl Presentation {
                 DrawTextureParams {
                     dest_size: Some(vec2(width, visible)),
                     source: Some(Rect::new(
-                        index as f32 * w,
-                        top / 72. * h,
+                        (index % (texture.width() / w) as usize) as f32 * w,
+                        (index / (texture.width() / w) as usize) as f32 * h + top / 72. * h,
                         w,
                         visible / 72. * h,
                     )),
@@ -283,7 +283,7 @@ impl Presentation {
                 }
             }
         }
-        if hero == 0 && a.1 == b.1 && !parallel {
+        if matches!(hero, 0 | crate::content::KNIGHT) && a.1 == b.1 && !parallel {
             pairs = (0..N).map(|y| ((a.0, y), (b.0, y))).collect();
         }
         self.motions.clear();
