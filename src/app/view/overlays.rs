@@ -1,0 +1,351 @@
+use super::*;
+impl Session {
+    pub(in crate::app) fn draw_status_tooltips(&mut self, frame: &Frame, show_moves: bool) {
+        if !self.console.open && self.interface.panel.is_none() && !self.paused && !show_moves {
+            for side in [false, true] {
+                let panel = side_panel_rect(side);
+                let id = if side { self.enemy_id } else { self.hero_id };
+                let bar = Rect::new(panel.x + 12., 124., 200., 39.);
+                if !self.awakened[side as usize] {
+                    let tx = bar.x + 200. * content::AWAKENING_LINES[id] as f32 / 100.;
+                    let cx = bar.x + 200. * content::AWAKENING_CAPS[id] as f32 / 100.;
+                    // Independent upper/lower lanes preserve exact values even when equal.
+                    draw_line(tx, 142., tx, 146., 1., GOLD);
+                    draw_diamond(tx, 141., 5., GOLD, true);
+                    draw_line(cx, 155., cx, 159., 1., SKYBLUE);
+                    draw_diamond(cx, 160., 4., SKYBLUE, false);
+                }
+                if bar.contains(frame.pointer) {
+                    let x = if side { 548. } else { 256. };
+                    let r = Rect::new(
+                        x,
+                        128.,
+                        220.,
+                        if self.awakened[side as usize] {
+                            98.
+                        } else {
+                            146.
+                        },
+                    );
+                    draw_rectangle(r.x, r.y, r.w, r.h, Color::from_rgba(25, 33, 46, 255));
+                    draw_rectangle_lines(r.x, r.y, r.w, r.h, 1., SKYBLUE);
+                    let text = if self.awakened[side as usize] {
+                        if self.zh {
+                            format!("当前生命上限：{}", content::health_cap(id, true))
+                        } else {
+                            format!("Current HP cap: {}", content::health_cap(id, true))
+                        }
+                    } else if self.zh {
+                        format!("觉醒点：{}（{}%）\n觉醒后上限：{}（{}%）\n受伤触线后恢复生命并强化\n{}", content::awakening_line(id), content::AWAKENING_LINES[id], content::health_cap(id,true),content::AWAKENING_CAPS[id],content::awakening_effect(id,self.zh))
+                    } else {
+                        format!("Awakening: {} HP ({}%)\nNew HP cap: {} ({}%)\nDamage triggers healing and power\n{}",content::awakening_line(id),content::AWAKENING_LINES[id],content::health_cap(id,true),content::AWAKENING_CAPS[id],content::awakening_effect(id,self.zh))
+                    };
+                    for (i, line) in wrap_preview_text(&text, 14.).iter().enumerate() {
+                        label(line, x + 10., 150. + i as f32 * 18., 14., GOLD);
+                    }
+                }
+                if content::mana_cap(id, false) < content::mana_cap(id, true)
+                    && !self.awakened[side as usize]
+                    && Rect::new(panel.x + 12., 165., 200., 30.).contains(frame.pointer)
+                {
+                    let x = if side { 548. } else { 256. };
+                    draw_rectangle(x, 176., 220., 64., Color::from_rgba(25, 33, 46, 255));
+                    label(
+                        &if self.zh {
+                            format!("魔力上限锁定：{}", content::mana_cap(id, false))
+                        } else {
+                            format!("MP cap locked: {}", content::mana_cap(id, false))
+                        },
+                        x + 10.,
+                        199.,
+                        16.,
+                        SKYBLUE,
+                    );
+                    label(
+                        &if self.zh {
+                            format!("觉醒后解锁至{}魔力", content::mana_cap(id, true))
+                        } else {
+                            format!("Awakening unlocks {} MP", content::mana_cap(id, true))
+                        },
+                        x + 10.,
+                        223.,
+                        15.,
+                        GOLD,
+                    );
+                }
+            }
+        }
+    }
+    pub(in crate::app) fn draw_effects(&mut self) {
+        self.presentation.draw_awakening(self.zh);
+        if self.presentation.charging() {
+            let id = if self.last_cast_enemy {
+                self.enemy_id
+            } else {
+                self.hero_id
+            };
+            let is_awake = self.awakened[self.last_cast_enemy as usize];
+            let asset = if is_awake {
+                &sprites::AWAKENED[id]
+            } else {
+                &sprites::SPRITES[id]
+            };
+            self.presentation.draw_charge(
+                if is_awake {
+                    &self.awake_textures[id]
+                } else if self.last_cast_enemy {
+                    &self.enemy_texture
+                } else {
+                    &self.player_texture
+                },
+                asset.w,
+                asset.h,
+                asset.indices,
+            );
+        }
+        if let Some(skill) = self.last_cast.filter(|s| {
+            self.cast_time > 0.
+                && !matches!(
+                    content::effective_skill(*s, self.rules(self.last_cast_enemy)),
+                    content::Skill::Charge | content::Skill::Rush
+                )
+        }) {
+            let progress = 1. - self.cast_time as f32 / 1.4;
+            effects::draw(skill, &self.skill_flash, progress, self.last_cast_enemy);
+        }
+    }
+    pub(in crate::app) fn draw_pockets(&mut self, frame: &Frame) {
+        for side in [false, true] {
+            let id = if side { self.enemy_id } else { self.hero_id };
+            if id == content::PRIEST
+                || self.new_role_states[side as usize]
+                    .pockets
+                    .iter()
+                    .any(Option::is_some)
+            {
+                for slot in 0..2 {
+                    let r = Rect::new(
+                        if side {
+                            796. + slot as f32 * 105.
+                        } else {
+                            20. + slot as f32 * 105.
+                        },
+                        if side { 610. } else { 670. },
+                        100.,
+                        25.,
+                    );
+                    draw_rectangle(r.x, r.y, r.w, r.h, Color::from_rgba(39, 42, 50, 255));
+                    if !side && self.new_role_states[0].pocket_slot == slot {
+                        draw_rectangle_lines(r.x, r.y, r.w, r.h, 1.5, GOLD);
+                    }
+                    if let Some(tile) = self.new_role_states[side as usize].pockets[slot] {
+                        draw_texture_ex(
+                            &self.tiles[tile as usize],
+                            r.x + 4.,
+                            r.y + 2.,
+                            WHITE,
+                            DrawTextureParams {
+                                dest_size: Some(vec2(21., 21.)),
+                                ..Default::default()
+                            },
+                        );
+                    }
+                    let text = format!("{} {}", tr(self.zh, "Pocket", "口袋"), slot + 1);
+                    label(&text, r.x + 29., r.y + 18., 13., LIGHTGRAY);
+                    if !side
+                        && !frame.block_input
+                        && !self.paused
+                        && !self.enemy_turn
+                        && !self.action_done
+                        && frame.clicked(MouseButton::Left)
+                        && r.contains(frame.pointer)
+                    {
+                        self.new_role_states[0].pocket_slot = slot;
+                    }
+                }
+            }
+        }
+    }
+    pub(in crate::app) fn draw_passives(
+        &mut self,
+        frame: &Frame,
+        show_moves: bool,
+        hover_context: Option<(content::Skill, bool)>,
+    ) {
+        // Each passive has its own identity, icon, state and hit target.
+        let mut passive_popup = None;
+        for enemy_side in [false, true] {
+            let id = if enemy_side {
+                self.enemy_id
+            } else {
+                self.hero_id
+            };
+            let awake = self.awakened[enemy_side as usize];
+            let area = passive_rect(enemy_side);
+            let (health, mana) = if enemy_side {
+                (self.enemy, self.enemy_mp)
+            } else {
+                (self.hp, self.mp)
+            };
+            for (i, &passive) in content::passives(id, awake).iter().enumerate() {
+                let rect = Rect::new(
+                    area.x + (i % 2) as f32 * 106.,
+                    area.y + (i / 2) as f32 * 26.,
+                    102.,
+                    24.,
+                );
+                let hovered = !show_moves
+                    && self.targeting.is_none()
+                    && hover_context.is_none()
+                    && !frame.block_input
+                    && !self.paused
+                    && self.interface.panel.is_none()
+                    && rect.contains(frame.pointer);
+                let status = passive.status(id, health, mana, awake, self.zh);
+                let color = if status.is_some_and(|(_, on)| !on) {
+                    GRAY
+                } else {
+                    GOLD
+                };
+                draw_rectangle(
+                    rect.x,
+                    rect.y,
+                    rect.w,
+                    rect.h,
+                    Color::from_rgba(43, 40, 29, 255),
+                );
+                if hovered {
+                    draw_rectangle_lines(rect.x, rect.y, rect.w, rect.h, 1., GOLD);
+                }
+                icons::draw_passive(passive, rect.x + 3., rect.y + 3., 18.);
+                let name = if matches!(
+                    passive,
+                    content::Passive::BloodFury | content::Passive::BoilingBlood
+                ) {
+                    format!(
+                        "{}{}",
+                        passive.short_name(self.zh),
+                        if status.is_some_and(|(_, on)| on) {
+                            "+25%"
+                        } else {
+                            tr(self.zh, " · off", "·未触发")
+                        }
+                    )
+                } else {
+                    passive.short_name(self.zh).to_string()
+                };
+                label(
+                    &name,
+                    rect.x + 25.,
+                    rect.y + 16.,
+                    fit_size(&name, 13., 73.),
+                    color,
+                );
+                if matches!(
+                    passive,
+                    content::Passive::BloodFury | content::Passive::BoilingBlood
+                ) && status.is_some_and(|(_, on)| on)
+                {
+                    draw_circle(rect.x + rect.w - 4., rect.y + 4., 2.5, ORANGE);
+                }
+                if hovered {
+                    passive_popup = Some((passive, id, health, mana, awake));
+                }
+            }
+        }
+        if let Some((passive, id, health, mana, awake)) = passive_popup {
+            let lines = wrap_preview_text(passive.description(self.zh), 18.);
+            let status = passive.status(id, health, mana, awake, self.zh);
+            let relation = passive.replaces().map(|old| {
+                if self.zh {
+                    format!("替代：{}", old.name(self.zh))
+                } else {
+                    format!("Replaces: {}", old.name(self.zh))
+                }
+            });
+            let height = 65.
+                + lines.len() as f32 * 26.
+                + if status.is_some() { 26. } else { 0. }
+                + if relation.is_some() { 24. } else { 0. };
+            flush_labels();
+            draw_rectangle(270., 225., 485., height, Color::from_rgba(15, 23, 34, 255));
+            icons::draw_passive(passive, 286., 239., 28.);
+            label(passive.name(self.zh), 326., 261., 22., GOLD);
+            let mut y = 292.;
+            for line in &lines {
+                label(line, 287., y, 18., WHITE);
+                y += 26.;
+            }
+            if let Some((text, on)) = status {
+                label(text, 287., y, 17., if on { ORANGE } else { GRAY });
+                y += 26.;
+            }
+            if let Some(text) = relation {
+                label(&text, 287., y, 15., SKYBLUE);
+            }
+        }
+    }
+    pub(in crate::app) fn draw_reroll(&mut self) {
+        if !self.enemy_turn
+            && !self.action_done
+            && self.pending.is_empty()
+            && !self.presentation.busy()
+            && !self.armed
+            && self.hp > 0
+            && self.enemy > 0
+            && self.targeting.is_none()
+            && board::hero_options(&self.b, self.hero_id).is_empty()
+        {
+            let rect = reroll_rect();
+            draw_rectangle(
+                rect.x,
+                rect.y,
+                rect.w,
+                rect.h,
+                Color::new(0.18, 0.24, 0.30, 1.),
+            );
+            draw_rectangle_lines(rect.x, rect.y, rect.w, rect.h, 2., GOLD);
+            label(
+                tr(
+                    self.zh,
+                    "No swaps: cast a skill / reroll (F2)",
+                    "无可交换：可施法 / 点击重排（F2）",
+                ),
+                rect.x + 12.,
+                rect.y + 25.,
+                19.,
+                GOLD,
+            );
+        }
+    }
+    pub(in crate::app) fn draw_overlays(&mut self, frame: &Frame) {
+        if !self.paused && (self.hp == 0 || self.enemy == 0) {
+            flush_labels();
+            draw_rectangle(256., 190., 512., 340., Color::new(0.02, 0.02, 0.03, 0.96));
+            if self.hp == 0 && self.enemy > 0 {
+                draw_texture_ex(
+                    &self.defeat,
+                    422.,
+                    205.,
+                    WHITE,
+                    DrawTextureParams {
+                        dest_size: Some(vec2(180., 183.)),
+                        ..Default::default()
+                    },
+                );
+                label_centered(tr(self.zh, "DEFEAT", "你输了"), 512., 436., 38., GOLD);
+            } else {
+                label_centered(tr(self.zh, "VICTORY!", "胜利！"), 512., 345., 40., GOLD);
+            }
+            ui::draw_game_over_buttons(self.zh, frame.pointer);
+        }
+        if self.paused {
+            ui::draw_pause(self.zh, frame.pointer);
+        }
+        self.interface
+            .draw_panel(self.zh, self.muted, &self.tiles, frame.pointer);
+        self.console.draw();
+        flush_labels();
+        set_default_camera();
+    }
+}

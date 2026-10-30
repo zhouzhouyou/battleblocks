@@ -171,7 +171,7 @@ pub fn choose_skill_available_in(
             return choose_force_move_in(b, id, hp, mp, bonus, rules)
                 .map(|(a, c)| {
                     let mut next = *b;
-                    crate::new_roles::force_swap(&mut next, a, c, id);
+                    crate::role_state::force_swap(&mut next, a, c, id);
                     choose_move_in(
                         &next,
                         hp,
@@ -316,7 +316,7 @@ pub fn choose_force_move_in(
                     continue;
                 }
                 let mut next = *b;
-                if !crate::new_roles::force_swap(&mut next, a, c, id) {
+                if !crate::role_state::force_swap(&mut next, a, c, id) {
                     continue;
                 }
                 let value = choose_move_in(
