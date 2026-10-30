@@ -110,7 +110,7 @@ impl Session {
                         0,
                     )
                 },
-                tr(self.zh, "CD", "冷却"),
+                tr_key(self.zh, "ui.shared.cd"),
                 skill.cooldown()
             );
             label(
@@ -231,9 +231,9 @@ impl Session {
                 &format!(
                     "{} · {}",
                     if is_enemy {
-                        tr(self.zh, "Enemy", "敌方")
+                        tr_key(self.zh, "ui.shared.enemy")
                     } else {
-                        tr(self.zh, "You", "我方")
+                        tr_key(self.zh, "ui.shared.you")
                     },
                     content::skill_name_in(skill, self.rules(is_enemy), self.zh)
                 ),
@@ -256,7 +256,7 @@ impl Session {
                 } else {
                     format!(
                         "{}{}",
-                        tr(self.zh, "Cost: ", "消耗："),
+                        tr_key(self.zh, "ui.skills.draw_skill_details.cost"),
                         cost_text(
                             self.zh,
                             content::skill_cost_in(id, skill, self.rules(is_enemy)),
@@ -358,11 +358,14 @@ impl Session {
                     lo.to_string()
                 } else {
                     // Range over every possible target, e.g. 125～154; not Rust's `..` syntax.
-                    format!("{lo}{}{hi}", tr(self.zh, "–", "～"))
+                    format!(
+                        "{lo}{}{hi}",
+                        tr_key(self.zh, "ui.skills.draw_skill_details.text")
+                    )
                 }
             };
             label(
-                tr(self.zh, "Expected rewards", "预估收益"),
+                tr_key(self.zh, "ui.skills.draw_skill_details.expected_rewards"),
                 x + 10.,
                 433.,
                 19.,
@@ -371,7 +374,7 @@ impl Session {
             label(
                 &format!(
                     "{} {}",
-                    tr(self.zh, "HP change:", "生命变化："),
+                    tr_key(self.zh, "ui.skills.draw_skill_details.hp_change"),
                     amount(low.heal, high.heal)
                 ),
                 x + 10.,
@@ -382,7 +385,7 @@ impl Session {
             label(
                 &format!(
                     "{} {}",
-                    tr(self.zh, "Damage:", "预计伤害："),
+                    tr_key(self.zh, "ui.skills.draw_skill_details.damage"),
                     amount(low.damage, high.damage)
                 ),
                 x + 10.,
@@ -393,7 +396,7 @@ impl Session {
             label(
                 &format!(
                     "{} +{}",
-                    tr(self.zh, "Mana:", "魔力："),
+                    tr_key(self.zh, "ui.skills.draw_skill_details.mana"),
                     amount(low.mana_gain, high.mana_gain)
                 ),
                 x + 10.,
@@ -405,7 +408,7 @@ impl Session {
                 label(
                     &format!(
                         "{} {mana} → {}",
-                        tr(self.zh, "MP", "魔力"),
+                        tr_key(self.zh, "ui.shared.mp"),
                         amount(low.mana_after, high.mana_after)
                     ),
                     x + 10.,
@@ -415,10 +418,9 @@ impl Session {
                 );
             } else {
                 label(
-                    tr(
+                    tr_key(
                         self.zh,
-                        "If funded; mana too low",
-                        "筹足魔力后可获；当前不足",
+                        "ui.skills.draw_skill_details.if_funded_mana_too_low",
                     ),
                     x + 10.,
                     541.,
@@ -431,10 +433,9 @@ impl Session {
                 && content::payment_in(id, health, mana, skill, self.rules(is_enemy)).is_none()
             {
                 label(
-                    tr(
+                    tr_key(
                         self.zh,
-                        "Not enough HP; must leave 1",
-                        "生命不足，支付后须剩1点",
+                        "ui.skills.draw_skill_details.not_enough_hp_must_leave_1",
                     ),
                     x + 10.,
                     598.,
@@ -446,11 +447,14 @@ impl Session {
                 && content::payment_in(id, health, mana, skill, self.rules(is_enemy)).is_some()
             {
                 label(
-                    &if self.zh {
-                        format!("生命 -{} → {} !", low.blood_cost, health - low.blood_cost)
-                    } else {
-                        format!("-{} HP → {} !", low.blood_cost, health - low.blood_cost)
-                    },
+                    &crate::format_text(
+                        self.zh,
+                        "skill.blood_payment_preview",
+                        &[
+                            &low.blood_cost.to_string(),
+                            &(health - low.blood_cost).to_string(),
+                        ],
+                    ),
                     x + 10.,
                     598.,
                     18.,
@@ -459,7 +463,7 @@ impl Session {
                 label(
                     &format!(
                         "{} → {}",
-                        tr(self.zh, "After: HP", "结算后生命"),
+                        tr_key(self.zh, "ui.skills.draw_skill_details.after_hp"),
                         amount(low.health_after, high.health_after)
                     ),
                     x + 10.,
@@ -469,24 +473,15 @@ impl Session {
                 );
             }
             if high.awakens_enemy {
-                let text = if self.zh {
-                    format!(
-                        "敌方将觉醒：生命 → {}",
-                        amount(low.enemy_health_after, high.enemy_health_after)
-                    )
-                } else {
-                    format!(
-                        "Enemy awakens: HP → {}",
-                        amount(low.enemy_health_after, high.enemy_health_after)
-                    )
-                };
+                let health_after = amount(low.enemy_health_after, high.enemy_health_after);
+                let text =
+                    crate::format_text(self.zh, "skill.enemy_awakening_preview", &[&health_after]);
                 label(&text, x + 10., 570., 13., GOLD);
             } else if high.awakens_self {
                 label(
-                    tr(
+                    tr_key(
                         self.zh,
-                        "HP payment triggers awakening",
-                        "生命支付将触发觉醒",
+                        "ui.skills.draw_skill_details.hp_payment_triggers_awakening",
                     ),
                     x + 10.,
                     570.,
@@ -495,7 +490,10 @@ impl Session {
                 );
             } else if exact_target.is_some() {
                 label(
-                    tr(self.zh, "Click board to confirm", "点击棋盘确认释放"),
+                    tr_key(
+                        self.zh,
+                        "ui.skills.draw_skill_details.click_board_to_confirm",
+                    ),
                     x + 10.,
                     570.,
                     15.,
@@ -503,7 +501,10 @@ impl Session {
                 );
             } else if range {
                 label(
-                    tr(self.zh, "Range depends on target", "收益区间依目标而定"),
+                    tr_key(
+                        self.zh,
+                        "ui.skills.draw_skill_details.range_depends_on_target",
+                    ),
                     x + 10.,
                     570.,
                     15.,
@@ -512,7 +513,7 @@ impl Session {
             }
             if skill == content::Skill::Strike {
                 label(
-                    tr(self.zh, "Next clear: +100%", "下次消除收益＋100%"),
+                    tr_key(self.zh, "ui.skills.draw_skill_details.next_clear_100"),
                     x + 10.,
                     570.,
                     15.,
@@ -520,7 +521,10 @@ impl Session {
                 );
             }
             label(
-                tr(self.zh, "Refill cascades excluded", "补充后的连锁未计入"),
+                tr_key(
+                    self.zh,
+                    "ui.skills.draw_skill_details.refill_cascades_excluded",
+                ),
                 x + 10.,
                 641.,
                 13.,

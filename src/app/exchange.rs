@@ -98,7 +98,7 @@ impl Session {
                             }
                         } else {
                             self.selected = Some(c);
-                            self.note = "No match: choose another tile";
+                            self.note = "note.no_match";
                             return;
                         }
                     }
@@ -147,7 +147,7 @@ impl Session {
                         self.deadline = CLEAR_TIME;
                         self.chain = 1;
                         self.selected = None;
-                        self.note = "Match!";
+                        self.note = "note.match";
                         self.console.event(
                             "move",
                             &format!(
@@ -174,7 +174,7 @@ impl Session {
                                 content::role_text("Dwarf.unreachable", self.zh).to_string();
                             self.feedback_time = 1.8;
                         }
-                        self.note = "No match: choose another tile";
+                        self.note = "note.no_match";
                         self.console.event(
                             "move_rejected",
                             &format!(

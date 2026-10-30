@@ -160,7 +160,7 @@ impl Session {
             );
             draw_rectangle_lines(cancel.x, cancel.y, cancel.w, cancel.h, 1., GOLD);
             label(
-                tr(self.zh, "Cancel · Esc / right click", "取消 · Esc / 右键"),
+                tr_key(self.zh, "ui.battlefield.draw_board.cancel_esc_right_click"),
                 805.,
                 665.,
                 18.,

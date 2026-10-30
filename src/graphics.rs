@@ -1,5 +1,7 @@
 use crate::*;
 use std::cell::RefCell;
+use std::collections::HashMap;
+use std::sync::OnceLock;
 
 pub(crate) fn wrap_preview_text(text: &str, limit: f32) -> Vec<String> {
     let mut lines = Vec::new();
@@ -98,11 +100,11 @@ pub(crate) fn hint_badge_at(pointer: Vec2, hints: &[Move]) -> Option<usize> {
 }
 /// Reward part of the action feedback line, in the UI language.
 pub(crate) fn reward_summary(zh: bool, heal: i32, damage: i32, mana: i32) -> String {
-    if zh {
-        format!("生命 +{heal} · 伤害 {damage} · 魔力 +{mana}")
-    } else {
-        format!("+{heal} HP · {damage} damage · +{mana} MP")
-    }
+    format_text(
+        zh,
+        "combat.reward_summary",
+        &[&heal.to_string(), &damage.to_string(), &mana.to_string()],
+    )
 }
 /// Skill cost in the UI language, including the HP part of a flesh-casting payment.
 pub(crate) fn draw_diamond(x: f32, y: f32, radius: f32, color: Color, filled: bool) {
@@ -155,11 +157,12 @@ pub(crate) fn draw_lock(x: f32, y: f32, color: Color) {
     draw_rectangle(x + 5., y + 8., 2., 4., Color::from_rgba(25, 33, 46, 255));
 }
 pub(crate) fn cost_text(zh: bool, mana: i32, blood: i32) -> String {
-    match (zh, blood > 0) {
-        (true, true) => format!("{mana} 魔力 + {blood} 生命 !"),
-        (true, false) => format!("{mana} 魔力"),
-        (false, true) => format!("{mana} MP + {blood} HP !"),
-        (false, false) => format!("{mana} MP"),
+    let mana = mana.to_string();
+    if blood > 0 {
+        let blood = blood.to_string();
+        format_text(zh, "skill.cost_with_blood", &[&mana, &blood])
+    } else {
+        format_text(zh, "skill.cost_mana_only", &[&mana])
     }
 }
 #[cfg(test)]
@@ -249,27 +252,64 @@ struct UiFont {
     pending: usize,
 }
 thread_local! { static UI_FONT: RefCell<Option<UiFont>> = const { RefCell::new(None) }; }
-pub(crate) fn tr(zh: bool, en: &'static str, cn: &'static str) -> &'static str {
+type LocalizationTable = HashMap<&'static str, [String; 2]>;
+static LOCALIZATION: OnceLock<LocalizationTable> = OnceLock::new();
+fn localization() -> &'static LocalizationTable {
+    LOCALIZATION.get_or_init(|| {
+        let mut table = HashMap::new();
+        for (line_number, line) in include_str!("../assets/localization.tsv")
+            .lines()
+            .enumerate()
+        {
+            if line.is_empty() || line.starts_with('#') {
+                continue;
+            }
+            let mut fields = line.splitn(3, '\t');
+            let key = fields.next().expect("localization key");
+            let en = fields.next().expect("English localization");
+            let zh = fields.next().expect("Chinese localization");
+            let unescape = |value: &str| value.replace("\\n", "\n").replace("\\t", "\t");
+            assert!(
+                table.insert(key, [unescape(en), unescape(zh)]).is_none(),
+                "duplicate localization key on line {}: {key}",
+                line_number + 1
+            );
+        }
+        table
+    })
+}
+/// Look up UI copy by stable key. Missing entries fail immediately during development.
+pub(crate) fn tr_key(zh: bool, key: &'static str) -> &'static str {
+    let row = localization()
+        .get(key)
+        .unwrap_or_else(|| panic!("missing localization key: {key}"));
     if zh {
-        cn
+        &row[1]
     } else {
-        en
+        &row[0]
     }
+}
+/// Format a localized resource template using positional placeholders such as `{0}` and `{1}`.
+pub(crate) fn format_text(zh: bool, key: &'static str, args: &[&str]) -> String {
+    let mut text = tr_key(zh, key).to_owned();
+    for (index, value) in args.iter().enumerate() {
+        text = text.replace(&format!("{{{index}}}"), value);
+    }
+    text
 }
 pub(crate) fn localized_note(zh: bool, note: &str) -> &str {
-    if !zh {
-        return note;
-    }
-    match note {
-        "Skill cast" => "技能已释放",
-        "Not enough mana" => "魔力不足",
-        "Blade slash: 100 damage" => "剑刃斩击：造成100伤害",
-        "No moves: board refreshed" => "无可用交换，棋盘已刷新",
-        "Match!" => "消除成功！",
-        "No match: choose another tile" => "未形成三消，请重新选择",
-        _ => "选择两个相邻方块",
-    }
+    let key = match note {
+        "note.skill_cast" => "note.skill_cast",
+        "note.not_enough_mana" => "note.not_enough_mana",
+        "note.no_moves" => "note.no_moves",
+        "note.match" => "note.match",
+        "note.no_match" => "note.no_match",
+        "note.select_adjacent_tiles" => "note.select_adjacent_tiles",
+        _ => return note,
+    };
+    tr_key(zh, key)
 }
+
 pub(crate) fn font_raster_bucket(requested: u16) -> u16 {
     [16u16, 24, 32, 48, 64]
         .into_iter()

@@ -245,10 +245,10 @@ impl Ui {
             if r.contains(pointer) {
                 label(
                     [
-                        tr(zh, "Settings", "设置"),
-                        tr(zh, "Audio / M", "音频 / M"),
-                        tr(zh, "Pause / P", "暂停 / P"),
-                        tr(zh, "Tile guide", "方块说明"),
+                        tr_key(zh, "ui.screen.draw_top.settings"),
+                        tr_key(zh, "ui.screen.draw_top.audio_m"),
+                        tr_key(zh, "ui.screen.draw_top.pause_p"),
+                        tr_key(zh, "ui.screen.draw_top.tile_guide"),
                     ][i],
                     r.x - 45.,
                     84.,
@@ -267,7 +267,7 @@ impl Ui {
         difficulty: usize,
     ) {
         label(
-            tr(zh, "STEP 2 · CHOOSE OPPONENT", "第二步 · 选择对手"),
+            tr_key(zh, "ui.screen.draw_opponents.step_2_choose_opponent"),
             24.,
             58.,
             34.,
@@ -276,7 +276,7 @@ impl Ui {
         label(
             &format!(
                 "{}：{}",
-                tr(zh, "Your hero", "你的角色"),
+                tr_key(zh, "ui.screen.draw_opponents.your_hero"),
                 if zh { HEROES[hero].zh } else { HEROES[hero].en }
             ),
             26.,
@@ -287,16 +287,16 @@ impl Ui {
         // Centered over the column of the back button below.
         let back = back_rect();
         label_centered(
-            tr(zh, "AI difficulty", "AI 难度"),
+            tr_key(zh, "ui.screen.draw_opponents.ai_difficulty"),
             back.x + back.w / 2.,
             140.,
             24.,
             WHITE,
         );
         for (i, name) in [
-            tr(zh, "Beginner", "入门"),
-            tr(zh, "Standard", "标准"),
-            tr(zh, "Advanced", "进阶"),
+            tr_key(zh, "ui.shared.beginner"),
+            tr_key(zh, "ui.shared.standard"),
+            tr_key(zh, "ui.shared.advanced"),
         ]
         .iter()
         .enumerate()
@@ -320,14 +320,14 @@ impl Ui {
             }
             if i == 0 {
                 label(
-                    tr(zh, "Random opponent", "随机对手"),
+                    tr_key(zh, "ui.screen.draw_opponents.random_opponent"),
                     r.x + 14.,
                     r.y + 32.,
                     24.,
                     GOLD,
                 );
                 label(
-                    tr(zh, "Excludes your hero", "随机时不与己方角色重复"),
+                    tr_key(zh, "ui.screen.draw_opponents.excludes_your_hero"),
                     r.x + 14.,
                     r.y + 61.,
                     17.,
@@ -357,9 +357,9 @@ impl Ui {
                 label(
                     &format!(
                         "{} {}  {} {}",
-                        tr(zh, "HP", "生命"),
+                        tr_key(zh, "ui.shared.hp"),
                         h.hp,
-                        tr(zh, "MP", "魔力"),
+                        tr_key(zh, "ui.shared.mp"),
                         crate::content::mana_cap(id, false)
                     ),
                     r.x + 58.,
@@ -388,37 +388,28 @@ impl Ui {
                 22.,
                 GOLD,
             );
-            let text = if zh {
-                format!(
-                    "觉醒点 {}（{}%）\n新生命上限 {}（{}%）\n{}",
-                    content::awakening_line(id),
-                    content::AWAKENING_LINES[id],
-                    content::health_cap(id, true),
-                    content::AWAKENING_CAPS[id],
-                    content::awakening_effect(id, zh)
-                )
-            } else {
-                format!(
-                    "Trigger: {} HP ({}%)\nNew cap: {} HP ({}%)\n{}",
-                    content::awakening_line(id),
-                    content::AWAKENING_LINES[id],
-                    content::health_cap(id, true),
-                    content::AWAKENING_CAPS[id],
-                    content::awakening_effect(id, zh)
-                )
-            };
+            let line = content::awakening_line(id).to_string();
+            let threshold = content::AWAKENING_LINES[id].to_string();
+            let cap = content::health_cap(id, true).to_string();
+            let cap_percent = content::AWAKENING_CAPS[id].to_string();
+            let effect = content::awakening_effect(id, zh);
+            let text = crate::format_text(
+                zh,
+                "hero.opponent_awakening_preview",
+                &[&line, &threshold, &cap, &cap_percent, effect],
+            );
             for (i, line) in wrap_preview_text(&text, 12.).iter().enumerate() {
                 label(line, 24., 251. + i as f32 * 22., 15., LIGHTGRAY);
             }
         }
         button(
             back_rect(),
-            tr(zh, "Back: choose hero", "上一步：选择角色"),
+            tr_key(zh, "ui.screen.draw_opponents.back_choose_hero"),
             pointer,
         );
         button(
             menu::start_rect(),
-            tr(zh, "Enter · Start battle", "回车 / 点击 · 开始对战"),
+            tr_key(zh, "ui.screen.draw_opponents.enter_start_battle"),
             pointer,
         );
     }
@@ -430,8 +421,8 @@ impl Ui {
         draw_rectangle_lines(212., 108., 600., 516., 2., SKYBLUE);
         label(
             match panel {
-                Panel::Settings => tr(zh, "SETTINGS", "游戏设置"),
-                Panel::Help => tr(zh, "TILE GUIDE", "方块说明"),
+                Panel::Settings => tr_key(zh, "ui.screen.draw_panel.settings"),
+                Panel::Help => tr_key(zh, "ui.screen.draw_panel.tile_guide"),
             },
             236.,
             148.,
@@ -441,8 +432,8 @@ impl Ui {
         button(Rect::new(758., 119., 42., 38.), "×", pointer);
         if panel == Panel::Help {
             for (i, text) in [
-                tr(zh, "Tiles & matching", "方块与消除"),
-                tr(zh, "Awakening", "觉醒"),
+                tr_key(zh, "ui.screen.draw_panel.tiles_matching"),
+                tr_key(zh, "ui.screen.draw_panel.awakening"),
             ]
             .iter()
             .enumerate()
@@ -453,10 +444,9 @@ impl Ui {
             }
             if self.help_awakening {
                 label(
-                    tr(
+                    tr_key(
                         zh,
-                        "Damage or HP payment triggers a new skin, healing and power.",
-                        "受伤或支付生命到达血线后，更换皮肤、恢复生命并强化。",
+                        "ui.screen.draw_panel.damage_or_hp_payment_triggers_a_ne",
                     ),
                     236.,
                     214.,
@@ -464,10 +454,9 @@ impl Ui {
                     GOLD,
                 );
                 label(
-                    tr(
+                    tr_key(
                         zh,
-                        "The triggering hit cannot spill over; later hits resolve normally.",
-                        "触发觉醒的攻击不继续扣第二阶段生命；后续伤害正常结算。",
+                        "ui.screen.draw_panel.the_triggering_hit_cannot_spill_ov",
                     ),
                     236.,
                     242.,
@@ -475,11 +464,7 @@ impl Ui {
                     LIGHTGRAY,
                 );
                 label(
-                    tr(
-                        zh,
-                        "Hero                 Trigger / new HP cap",
-                        "角色                         觉醒点 / 新生命上限",
-                    ),
+                    tr_key(zh, "ui.screen.draw_panel.hero_trigger_new_hp_cap"),
                     236.,
                     278.,
                     17.,
@@ -509,19 +494,25 @@ impl Ui {
             Panel::Settings => {
                 let names = [
                     if muted {
-                        tr(zh, "Volume (muted)", "音量（静音）")
+                        tr_key(zh, "ui.screen.draw_panel.volume_muted")
                     } else {
-                        tr(zh, "Volume", "音量")
+                        tr_key(zh, "ui.screen.draw_panel.volume")
                     },
-                    tr(zh, "Fullscreen", "全屏"),
-                    tr(zh, "Window", "窗口"),
-                    tr(zh, "Language", "语言"),
+                    tr_key(zh, "ui.screen.draw_panel.fullscreen"),
+                    tr_key(zh, "ui.screen.draw_panel.window"),
+                    tr_key(zh, "ui.screen.draw_panel.language"),
                 ];
                 let windows = WINDOW_SIZES.map(|(w, h)| format!("{w} × {h}"));
                 let choices = [
-                    [tr(zh, "Off", "关闭"), tr(zh, "On", "开启")],
+                    [
+                        tr_key(zh, "ui.screen.draw_panel.off"),
+                        tr_key(zh, "ui.screen.draw_panel.on"),
+                    ],
                     [windows[0].as_str(), windows[1].as_str()],
-                    ["中文", "English"],
+                    [
+                        tr_key(zh, "settings.language_chinese"),
+                        tr_key(zh, "settings.language_english"),
+                    ],
                 ];
                 for (row, name) in names.iter().enumerate() {
                     let r = settings_row(row);
@@ -566,27 +557,15 @@ impl Ui {
                 label_centered(&format!("{}%", self.volume), 707., y + 7., 20., SKYBLUE);
             }
             Panel::Help => {
-                let names = if zh {
-                    [
-                        "平衡",
-                        "治疗",
-                        "伤害",
-                        "魔力",
-                        "治疗＋伤害",
-                        "治疗＋魔力",
-                        "伤害＋魔力",
-                    ]
-                } else {
-                    [
-                        "Balanced",
-                        "Healing",
-                        "Damage",
-                        "Mana",
-                        "Heal + damage",
-                        "Heal + mana",
-                        "Damage + mana",
-                    ]
-                };
+                let names = [
+                    tr_key(zh, "ui.screen.draw_help.tile_balanced"),
+                    tr_key(zh, "ui.screen.draw_help.tile_healing"),
+                    tr_key(zh, "ui.screen.draw_help.tile_damage"),
+                    tr_key(zh, "ui.screen.draw_help.tile_mana"),
+                    tr_key(zh, "ui.screen.draw_help.tile_heal_damage"),
+                    tr_key(zh, "ui.screen.draw_help.tile_heal_mana"),
+                    tr_key(zh, "ui.screen.draw_help.tile_damage_mana"),
+                ];
                 for i in 0..7 {
                     let y = 202. + i as f32 * 48.;
                     draw_texture_ex(
@@ -604,11 +583,11 @@ impl Ui {
                     label(
                         &format!(
                             "{} +{}   {} {}   {} +{}",
-                            tr(zh, "HP", "生命"),
+                            tr_key(zh, "ui.shared.hp"),
                             v.0,
-                            tr(zh, "DMG", "伤害"),
+                            tr_key(zh, "ui.screen.draw_panel.dmg"),
                             v.1,
-                            tr(zh, "MP", "魔力"),
+                            tr_key(zh, "ui.shared.mp"),
                             v.2
                         ),
                         485.,
@@ -618,10 +597,9 @@ impl Ui {
                     );
                 }
                 label(
-                    tr(
+                    tr_key(
                         zh,
-                        "Match 3+ identical tiles. Damage hits your opponent.",
-                        "连接三个以上同类方块消除；伤害作用于对手。",
+                        "ui.screen.draw_panel.match_3_identical_tiles_damage_hit",
                     ),
                     236.,
                     564.,
@@ -629,10 +607,9 @@ impl Ui {
                     WHITE,
                 );
                 label(
-                    tr(
+                    tr_key(
                         zh,
-                        "Chains: +10% per step, up to 130%. Skills may differ.",
-                        "连锁每层＋10%，最高130%；技能按各自说明结算。",
+                        "ui.screen.draw_panel.chains_10_per_step_up_to_130_skill",
                     ),
                     236.,
                     598.,
@@ -642,7 +619,7 @@ impl Ui {
             }
         }
         label(
-            tr(zh, "Esc: Close", "Esc：关闭"),
+            tr_key(zh, "ui.screen.draw_panel.esc_close"),
             236.,
             650.,
             18.,
@@ -667,12 +644,18 @@ pub fn draw_pause(zh: bool, pointer: Vec2) {
     draw_rectangle(0., 0., 1024., 720., Color::new(0., 0., 0., 0.72));
     draw_rectangle(282., 180., 460., 390., Color::from_rgba(24, 30, 43, 255));
     draw_rectangle_lines(282., 180., 460., 390., 2., SKYBLUE);
-    label(tr(zh, "PAUSED", "已暂停"), 322., 232., 34., GOLD);
+    label(
+        tr_key(zh, "ui.screen.draw_pause.paused"),
+        322.,
+        232.,
+        34.,
+        GOLD,
+    );
     for (i, text) in [
-        tr(zh, "Continue", "继续游戏"),
-        tr(zh, "Abandon & return to main menu", "放弃并回到主菜单"),
-        tr(zh, "Restart battle", "重开本局"),
-        tr(zh, "Settings menu", "设置菜单"),
+        tr_key(zh, "ui.screen.draw_pause.continue"),
+        tr_key(zh, "ui.screen.draw_pause.abandon_return_to_main_menu"),
+        tr_key(zh, "ui.screen.draw_pause.restart_battle"),
+        tr_key(zh, "ui.screen.draw_pause.settings_menu"),
     ]
     .iter()
     .enumerate()
@@ -685,9 +668,12 @@ pub fn game_over_rect(i: usize) -> Rect {
     Rect::new(296. + i as f32 * 232., 462., 200., 48.)
 }
 pub fn draw_game_over_buttons(zh: bool, pointer: Vec2) {
-    for (i, text) in [tr(zh, "Play again", "重来一局"), tr(zh, "Home", "回到首页")]
-        .iter()
-        .enumerate()
+    for (i, text) in [
+        tr_key(zh, "ui.screen.draw_game_over_buttons.play_again"),
+        tr_key(zh, "ui.screen.draw_game_over_buttons.home"),
+    ]
+    .iter()
+    .enumerate()
     {
         button(game_over_rect(i), text, pointer);
     }

@@ -29,16 +29,19 @@ impl Session {
                     );
                     draw_rectangle(r.x, r.y, r.w, r.h, Color::from_rgba(25, 33, 46, 255));
                     draw_rectangle_lines(r.x, r.y, r.w, r.h, 1., SKYBLUE);
+                    let line = content::awakening_line(id).to_string();
+                    let threshold = content::AWAKENING_LINES[id].to_string();
+                    let cap = content::health_cap(id, true).to_string();
+                    let cap_percent = content::AWAKENING_CAPS[id].to_string();
                     let text = if self.awakened[side as usize] {
-                        if self.zh {
-                            format!("当前生命上限：{}", content::health_cap(id, true))
-                        } else {
-                            format!("Current HP cap: {}", content::health_cap(id, true))
-                        }
-                    } else if self.zh {
-                        format!("觉醒点：{}（{}%）\n觉醒后上限：{}（{}%）\n受伤触线后恢复生命并强化\n{}", content::awakening_line(id), content::AWAKENING_LINES[id], content::health_cap(id,true),content::AWAKENING_CAPS[id],content::awakening_effect(id,self.zh))
+                        crate::format_text(self.zh, "hero.current_hp_cap", &[&cap])
                     } else {
-                        format!("Awakening: {} HP ({}%)\nNew HP cap: {} ({}%)\nDamage triggers healing and power\n{}",content::awakening_line(id),content::AWAKENING_LINES[id],content::health_cap(id,true),content::AWAKENING_CAPS[id],content::awakening_effect(id,self.zh))
+                        let effect = content::awakening_effect(id, self.zh);
+                        crate::format_text(
+                            self.zh,
+                            "hero.awakening_overlay",
+                            &[&line, &threshold, &cap, &cap_percent, effect],
+                        )
                     };
                     for (i, line) in wrap_preview_text(&text, 14.).iter().enumerate() {
                         label(line, x + 10., 150. + i as f32 * 18., 14., GOLD);
@@ -51,22 +54,22 @@ impl Session {
                     let x = if side { 548. } else { 256. };
                     draw_rectangle(x, 176., 220., 64., Color::from_rgba(25, 33, 46, 255));
                     label(
-                        &if self.zh {
-                            format!("魔力上限锁定：{}", content::mana_cap(id, false))
-                        } else {
-                            format!("MP cap locked: {}", content::mana_cap(id, false))
-                        },
+                        &crate::format_text(
+                            self.zh,
+                            "hero.mana_locked",
+                            &[&content::mana_cap(id, false).to_string()],
+                        ),
                         x + 10.,
                         199.,
                         16.,
                         SKYBLUE,
                     );
                     label(
-                        &if self.zh {
-                            format!("觉醒后解锁至{}魔力", content::mana_cap(id, true))
-                        } else {
-                            format!("Awakening unlocks {} MP", content::mana_cap(id, true))
-                        },
+                        &crate::format_text(
+                            self.zh,
+                            "hero.mana_unlocks",
+                            &[&content::mana_cap(id, true).to_string()],
+                        ),
                         x + 10.,
                         223.,
                         15.,
@@ -150,7 +153,11 @@ impl Session {
                             },
                         );
                     }
-                    let text = format!("{} {}", tr(self.zh, "Pocket", "口袋"), slot + 1);
+                    let text = format!(
+                        "{} {}",
+                        tr_key(self.zh, "ui.overlays.draw_pockets.pocket"),
+                        slot + 1
+                    );
                     label(&text, r.x + 29., r.y + 18., 13., LIGHTGRAY);
                     if !side
                         && !frame.block_input
@@ -228,7 +235,7 @@ impl Session {
                         if status.is_some_and(|(_, on)| on) {
                             "+25%"
                         } else {
-                            tr(self.zh, " · off", "·未触发")
+                            tr_key(self.zh, "ui.overlays.draw_passives.off")
                         }
                     )
                 } else {
@@ -257,11 +264,7 @@ impl Session {
             let lines = wrap_preview_text(passive.description(self.zh), 18.);
             let status = passive.status(id, health, mana, awake, self.zh);
             let relation = passive.replaces().map(|old| {
-                if self.zh {
-                    format!("替代：{}", old.name(self.zh))
-                } else {
-                    format!("Replaces: {}", old.name(self.zh))
-                }
+                crate::format_text(self.zh, "battle.replace_passive", &[old.name(self.zh)])
             });
             let height = 65.
                 + lines.len() as f32 * 26.
@@ -306,10 +309,9 @@ impl Session {
             );
             draw_rectangle_lines(rect.x, rect.y, rect.w, rect.h, 2., GOLD);
             label(
-                tr(
+                tr_key(
                     self.zh,
-                    "No swaps: cast a skill / reroll (F2)",
-                    "无可交换：可施法 / 点击重排（F2）",
+                    "ui.overlays.draw_reroll.no_swaps_cast_a_skill_reroll_f2",
                 ),
                 rect.x + 12.,
                 rect.y + 25.,
@@ -333,9 +335,21 @@ impl Session {
                         ..Default::default()
                     },
                 );
-                label_centered(tr(self.zh, "DEFEAT", "你输了"), 512., 436., 38., GOLD);
+                label_centered(
+                    tr_key(self.zh, "ui.overlays.draw_overlays.defeat"),
+                    512.,
+                    436.,
+                    38.,
+                    GOLD,
+                );
             } else {
-                label_centered(tr(self.zh, "VICTORY!", "胜利！"), 512., 345., 40., GOLD);
+                label_centered(
+                    tr_key(self.zh, "battle.banner.victory"),
+                    512.,
+                    345.,
+                    40.,
+                    GOLD,
+                );
             }
             ui::draw_game_over_buttons(self.zh, frame.pointer);
         }

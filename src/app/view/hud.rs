@@ -53,7 +53,7 @@ impl Session {
                     Color::new(accent.r * 0.3, accent.g * 0.3, accent.b * 0.3, 1.),
                 );
                 label_centered(
-                    tr(self.zh, "ACTIVE", "行动中"),
+                    tr_key(self.zh, "ui.hud.draw_actors.active"),
                     tag.x + tag.w / 2.,
                     tag.y + 19.,
                     17.,
@@ -67,13 +67,13 @@ impl Session {
             };
             for (row, (name, value, max, color)) in [
                 (
-                    tr(self.zh, "HP", "生命"),
+                    tr_key(self.zh, "ui.shared.hp"),
                     health,
                     content::health_cap(id, self.awakened[enemy_side as usize]),
                     health_color,
                 ),
                 (
-                    tr(self.zh, "MP", "魔力"),
+                    tr_key(self.zh, "ui.shared.mp"),
                     mana,
                     content::mana_cap(id, self.awakened[enemy_side as usize]),
                     SKYBLUE,
@@ -224,7 +224,7 @@ impl Session {
     }
     pub(in crate::app) fn draw_turns(&mut self, frame: &Frame) {
         // Title centered over the player's sidebar.
-        let title = tr(self.zh, "BATTLE BLOCKS", "方块战斗");
+        let title = tr_key(self.zh, "ui.hud.draw_turns.battle_blocks");
         let sidebar = side_panel_rect(false);
         label_centered(
             title,
@@ -270,13 +270,13 @@ impl Session {
         );
         label_centered(
             if self.enemy == 0 {
-                tr(self.zh, "Victory", "胜利")
+                tr_key(self.zh, "battle.outcome.victory")
             } else if self.hp == 0 {
-                tr(self.zh, "Defeat", "失败")
+                tr_key(self.zh, "ui.hud.draw_turns.defeat")
             } else if self.enemy_turn {
-                tr(self.zh, "Enemy turn", "敌方回合")
+                tr_key(self.zh, "ui.hud.draw_turns.enemy_turn")
             } else {
-                tr(self.zh, "Your turn", "你的回合")
+                tr_key(self.zh, "ui.hud.draw_turns.your_turn")
             },
             chip.x + chip.w / 2.,
             chip.y + 23.,
@@ -285,7 +285,7 @@ impl Session {
         );
         let chain_text = format!(
             "{} {chain}",
-            tr(self.zh, "Chain", "连锁"),
+            tr_key(self.zh, "ui.hud.draw_turns.chain"),
             chain = self.chain
         );
         let chain_x = current.x + current.w - 14. - label_width(&chain_text, 18.);
@@ -308,29 +308,29 @@ impl Session {
             text_x += 30.;
         }
         let phase = if over {
-            tr(self.zh, "Battle over", "战斗结束").to_string()
+            tr_key(self.zh, "ui.hud.draw_turns.battle_over").to_string()
         } else if self.presentation.charging() {
-            tr(self.zh, "Charging", "冲锋中").to_string()
+            tr_key(self.zh, "ui.hud.draw_turns.charging").to_string()
         } else if let Some(swap) = self.presentation.swapping() {
             if swap {
-                tr(self.zh, "Swapping", "正在交换")
+                tr_key(self.zh, "ui.hud.draw_turns.swapping")
             } else {
-                tr(self.zh, "Tiles falling", "方块掉落")
+                tr_key(self.zh, "ui.hud.draw_turns.tiles_falling")
             }
             .to_string()
         } else if !self.pending.is_empty() {
-            tr(self.zh, "Clearing matches", "正在消除").to_string()
+            tr_key(self.zh, "ui.hud.draw_turns.clearing_matches").to_string()
         } else if self.action_done {
-            tr(self.zh, "Action resolved", "行动结算完成").to_string()
+            tr_key(self.zh, "ui.hud.draw_turns.action_resolved").to_string()
         } else if self.enemy_turn {
-            tr(self.zh, "Enemy is choosing", "敌方思考中").to_string()
+            tr_key(self.zh, "ui.hud.draw_turns.enemy_is_choosing").to_string()
         } else if self.targeting == Some(content::Skill::Miracle) {
             content::role_text("Skill.force_prompt", self.zh).to_string()
         } else if let Some(skill) = self.targeting {
             format!(
                 "{} · {}",
                 skill.name(self.zh),
-                tr(self.zh, "click a target", "点击棋盘选择目标")
+                tr_key(self.zh, "ui.hud.draw_turns.click_a_target")
             )
         } else {
             localized_note(self.zh, self.note).to_string()
@@ -370,7 +370,7 @@ impl Session {
             Color::new(0.25, 0.28, 0.35, 0.8),
         );
         label_centered(
-            tr(self.zh, "Last turn", "上一回合"),
+            tr_key(self.zh, "ui.hud.draw_turns.last_turn"),
             chip.x + chip.w / 2.,
             previous.y + 21.,
             15.,
@@ -380,11 +380,11 @@ impl Session {
             Some(turn) => {
                 let mut segments = vec![
                     if turn.enemy {
-                        (tr(self.zh, "Enemy", "敌方").to_string(), ORANGE)
+                        (tr_key(self.zh, "ui.shared.enemy").to_string(), ORANGE)
                     } else {
-                        (tr(self.zh, "You", "我方").to_string(), SKYBLUE)
+                        (tr_key(self.zh, "ui.shared.you").to_string(), SKYBLUE)
                     },
-                    (tr(self.zh, ": ", "：").to_string(), GRAY),
+                    (tr_key(self.zh, "ui.hud.draw_turns.text").to_string(), GRAY),
                 ];
                 let actions = turn.actions_text(self.zh);
                 if !actions.is_empty() {
@@ -392,19 +392,27 @@ impl Session {
                     segments.push((" · ".to_string(), GRAY));
                 }
                 segments.push((
-                    turn.results_text(self.zh)
-                        .unwrap_or_else(|| tr(self.zh, "no gain", "无收益").to_string()),
+                    turn.results_text(self.zh).unwrap_or_else(|| {
+                        tr_key(self.zh, "ui.hud.draw_turns.no_gain").to_string()
+                    }),
                     LIGHTGRAY,
                 ));
                 if turn.chain > 1 {
                     segments.push((
-                        format!(" · {} {}", tr(self.zh, "Chain", "连锁"), turn.chain),
+                        format!(
+                            " · {} {}",
+                            tr_key(self.zh, "ui.hud.draw_turns.chain"),
+                            turn.chain
+                        ),
                         GRAY,
                     ));
                 }
                 segments
             }
-            None => vec![(tr(self.zh, "None yet", "暂无").to_string(), GRAY)],
+            None => vec![(
+                tr_key(self.zh, "ui.hud.draw_turns.none_yet").to_string(),
+                GRAY,
+            )],
         };
         let text_x = chip.x + chip.w + 12.;
         label_segments(
@@ -417,11 +425,11 @@ impl Session {
         label(
             &format!(
                 "{}{}",
-                tr(self.zh, "AI: ", "AI 难度："),
+                tr_key(self.zh, "ui.hud.draw_turns.ai"),
                 [
-                    tr(self.zh, "Beginner", "入门"),
-                    tr(self.zh, "Standard", "标准"),
-                    tr(self.zh, "Advanced", "进阶"),
+                    tr_key(self.zh, "ui.shared.beginner"),
+                    tr_key(self.zh, "ui.shared.standard"),
+                    tr_key(self.zh, "ui.shared.advanced"),
                 ][self.difficulty]
             ),
             808.,

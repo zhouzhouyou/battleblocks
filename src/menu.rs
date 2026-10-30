@@ -118,18 +118,14 @@ pub fn draw(
     let dim = Color::from_rgba(29, 33, 43, 255);
     let card = Color::from_rgba(35, 40, 52, 255);
     label(
-        tr(zh, "STEP 1 · CHOOSE YOUR HERO", "第一步 · 选择角色"),
+        tr_key(zh, "ui.menu.draw.step_1_choose_your_hero"),
         24.,
         58.,
         34.,
         GOLD,
     );
     label(
-        tr(
-            zh,
-            "Preview your hero and skills before battle",
-            "查看角色与技能，准备回合制对战",
-        ),
+        tr_key(zh, "ui.menu.draw.preview_your_hero_and_skills_befor"),
         26.,
         88.,
         19.,
@@ -170,9 +166,9 @@ pub fn draw(
         label(
             &format!(
                 "{} {}   {} {}",
-                tr(zh, "HP", "生命"),
+                tr_key(zh, "ui.shared.hp"),
                 h.hp,
-                tr(zh, "MP", "魔力"),
+                tr_key(zh, "ui.shared.mp"),
                 content::mana_cap(i, false)
             ),
             r.x + 67.,
@@ -182,14 +178,14 @@ pub fn draw(
         );
     }
     label(
-        tr(zh, "↑ / ↓: Select hero", "↑ / ↓：选择角色"),
+        tr_key(zh, "ui.menu.draw.select_hero"),
         26.,
         662.,
         18.,
         LIGHTGRAY,
     );
     label(
-        tr(zh, "Click a skill to preview", "点击技能可预览效果"),
+        tr_key(zh, "ui.menu.draw.click_a_skill_to_preview"),
         26.,
         688.,
         18.,
@@ -199,7 +195,7 @@ pub fn draw(
     panel(Rect::new(284., 112., 244., 518.), card);
     label(if zh { h.zh } else { h.en }, 302., 151., 34., GOLD);
     label(
-        tr(zh, "ANIMATED PREVIEW", "角色动画预览"),
+        tr_key(zh, "ui.menu.draw.animated_preview"),
         302.,
         181.,
         16.,
@@ -226,7 +222,13 @@ pub fn draw(
         Rect::new(291., 198., 230., portrait_height),
     );
     if page == 0 {
-        label(tr(zh, "MAX HEALTH", "生命上限"), 304., 412., 17., LIGHTGRAY);
+        label(
+            tr_key(zh, "ui.menu.draw.max_health"),
+            304.,
+            412.,
+            17.,
+            LIGHTGRAY,
+        );
         label(&h.hp.to_string(), 304., 439., 28., GREEN);
         draw_rectangle(304., 449., 204., 9., GREEN);
         let trigger_x = 304. + 204. * content::AWAKENING_LINES[hero] as f32 / 100.;
@@ -236,32 +238,16 @@ pub fn draw(
         crate::draw_diamond(cap_x, 464., 4., SKYBLUE, false);
         crate::draw_diamond(309., 480., 4., GOLD, true);
         crate::draw_diamond(309., 502., 4., SKYBLUE, false);
-        let trigger = if zh {
-            format!(
-                "觉醒点 {}（{}%）",
-                content::awakening_line(hero),
-                content::AWAKENING_LINES[hero]
-            )
-        } else {
-            format!(
-                "Awaken: {} ({}%)",
-                content::awakening_line(hero),
-                content::AWAKENING_LINES[hero]
-            )
-        };
-        let recovered = if zh {
-            format!(
-                "恢复后上限 {}（{}%）",
-                content::health_cap(hero, true),
-                content::AWAKENING_CAPS[hero]
-            )
-        } else {
-            format!(
-                "New HP cap: {} ({}%)",
-                content::health_cap(hero, true),
-                content::AWAKENING_CAPS[hero]
-            )
-        };
+        let awakening_line = content::awakening_line(hero).to_string();
+        let awakening_percent = content::AWAKENING_LINES[hero].to_string();
+        let trigger = crate::format_text(
+            zh,
+            "hero.hp_awaken_trigger",
+            &[&awakening_line, &awakening_percent],
+        );
+        let hp_cap = content::health_cap(hero, true).to_string();
+        let hp_cap_percent = content::AWAKENING_CAPS[hero].to_string();
+        let recovered = crate::format_text(zh, "hero.hp_new_cap", &[&hp_cap, &hp_cap_percent]);
         label(&trigger, 320., 485., fit_size(&trigger, 15., 190.), GOLD);
         label(
             &recovered,
@@ -270,25 +256,34 @@ pub fn draw(
             fit_size(&recovered, 15., 190.),
             SKYBLUE,
         );
-        label(tr(zh, "MAX MANA", "魔力上限"), 304., 540., 17., LIGHTGRAY);
+        label(
+            tr_key(zh, "ui.menu.draw.max_mana"),
+            304.,
+            540.,
+            17.,
+            LIGHTGRAY,
+        );
         let mana = content::mana_cap(hero, false);
         label(&mana.to_string(), 304., 566., 28., SKYBLUE);
         draw_rectangle(304., 578., 204., 9., SKYBLUE);
         if content::mana_cap(hero, false) < content::mana_cap(hero, true) {
             let unlocked = 204. * mana as f32 / content::mana_cap(hero, true) as f32;
             crate::draw_lock(304. + unlocked - 5.5, 574., SKYBLUE);
-            let text = if zh {
-                format!("觉醒后 {}", content::mana_cap(hero, true))
-            } else {
-                format!("Unlock: {}", content::mana_cap(hero, true))
-            };
+            let new_mana = content::mana_cap(hero, true).to_string();
+            let text = crate::format_text(zh, "hero.mana_unlocked", &[&new_mana]);
             label(&text, 508. - label_width(&text, 14.), 566., 14., LIGHTGRAY);
         }
     } else if page == 1 {
-        label(tr(zh, "PASSIVE SKILL", "被动技能"), 304., 373., 22., GOLD);
+        label(
+            tr_key(zh, "ui.menu.draw.passive_skill"),
+            304.,
+            373.,
+            22.,
+            GOLD,
+        );
         draw_passive_entries(content::passives(hero, false), zh, false);
     } else {
-        label(tr(zh, "AWAKENING", "觉醒能力"), 304., 373., 22., GOLD);
+        label(tr_key(zh, "ui.menu.draw.awakening"), 304., 373., 22., GOLD);
         let changes = content::passives(hero, true)
             .iter()
             .copied()
@@ -300,22 +295,23 @@ pub fn draw(
         let old_mana = content::mana_cap(hero, false);
         let new_mana = content::mana_cap(hero, true);
         let hint = if Rect::new(304., 438., 204., 35.).contains(pointer) {
-            Some(if zh {
-                format!("金色菱形：觉醒点 {}（{}%）\n蓝色菱形：恢复后上限 {}（{}%）\n觉醒时恢复至新的生命上限",content::awakening_line(hero),content::AWAKENING_LINES[hero],content::health_cap(hero,true),content::AWAKENING_CAPS[hero])
-            } else {
-                format!("Gold: awakening at {} HP ({}%)\nBlue: new HP cap {} ({}%)\nAwakening restores HP to the new cap",content::awakening_line(hero),content::AWAKENING_LINES[hero],content::health_cap(hero,true),content::AWAKENING_CAPS[hero])
-            })
+            let line = content::awakening_line(hero).to_string();
+            let threshold = content::AWAKENING_LINES[hero].to_string();
+            let cap = content::health_cap(hero, true).to_string();
+            let cap_percent = content::AWAKENING_CAPS[hero].to_string();
+            Some(crate::format_text(
+                zh,
+                "hero.awakening_tooltip",
+                &[&line, &threshold, &cap, &cap_percent],
+            ))
         } else if Rect::new(304., 568., 204., 28.).contains(pointer) {
             Some(if old_mana < new_mana {
-                if zh {
-                    format!("当前魔力上限：{old_mana}\n觉醒后解锁魔力上限：{new_mana}\n锁的位置表示当前可用容量")
-                } else {
-                    format!("Current MP cap: {old_mana}\nAwakening unlocks MP cap: {new_mana}\nLock marks the currently available capacity")
-                }
-            } else if zh {
-                format!("魔力上限：{old_mana}")
+                let old = old_mana.to_string();
+                let new = new_mana.to_string();
+                crate::format_text(zh, "hero.mana_cap_tooltip", &[&old, &new])
             } else {
-                format!("MP cap: {old_mana}")
+                let old = old_mana.to_string();
+                crate::format_text(zh, "hero.mana_cap_basic", &[&old])
             })
         } else {
             None
@@ -325,7 +321,7 @@ pub fn draw(
             resource_hint = Some(text);
         }
     }
-    for (i, text) in [tr(zh, "< Prev", "上一页"), tr(zh, "Next >", "下一页")]
+    for (i, text) in [tr_key(zh, "ui.shared.prev"), tr_key(zh, "ui.shared.next")]
         .iter()
         .enumerate()
     {
@@ -362,8 +358,8 @@ pub fn draw(
         let details = format!(
             "{} {} · {} {}",
             content::skill_cost(hero, page == 2, *skill),
-            tr(zh, "MP", "魔力"),
-            tr(zh, "CD", "冷却"),
+            tr_key(zh, "ui.shared.mp"),
+            tr_key(zh, "ui.shared.cd"),
             skill.cooldown()
         );
         let details_size = fit_size(&details, 18., r.w * 0.46);
@@ -393,29 +389,21 @@ pub fn draw(
     }
     if h.skills.len() == 1 {
         label(
-            tr(zh, "ONE DISTINCTIVE SKILL", "专属技能"),
+            tr_key(zh, "ui.menu.draw.one_distinctive_skill"),
             564.,
             306.,
             23.,
             GOLD,
         );
         label(
-            tr(
-                zh,
-                "Each hero plays differently.",
-                "每个角色都有不同的战斗方式。",
-            ),
+            tr_key(zh, "ui.menu.draw.each_hero_plays_differently"),
             564.,
             341.,
             19.,
             LIGHTGRAY,
         );
         label(
-            tr(
-                zh,
-                "Preview the effect below.",
-                "在下方预览技能影响的方块。",
-            ),
+            tr_key(zh, "ui.menu.draw.preview_the_effect_below"),
             564.,
             369.,
             19.,
@@ -423,7 +411,7 @@ pub fn draw(
         );
     }
     label(
-        tr(zh, "SKILLS · click to preview", "技能 · 点击查看效果"),
+        tr_key(zh, "ui.menu.draw.skills_click_to_preview"),
         550.,
         112.,
         18.,
@@ -477,7 +465,7 @@ pub fn draw(
         }
     }
     label(
-        tr(zh, "EFFECT PREVIEW", "技能效果预览"),
+        tr_key(zh, "ui.menu.draw.effect_preview"),
         766.,
         454.,
         21.,
@@ -487,13 +475,13 @@ pub fn draw(
     label(
         if after {
             match skill {
-                content::Skill::Guard => tr(zh, "HP +20% max", "回复生命上限20%"),
-                content::Skill::Landslide => tr(zh, "Next swap", "下次交换"),
-                content::Skill::Strike => tr(zh, "Next clear: +100%", "下次消除：收益+100%"),
-                _ => tr(zh, "After casting", "释放后"),
+                content::Skill::Guard => tr_key(zh, "ui.menu.draw.hp_20_max"),
+                content::Skill::Landslide => tr_key(zh, "ui.menu.draw.next_swap"),
+                content::Skill::Strike => tr_key(zh, "ui.menu.draw.next_clear_100"),
+                _ => tr_key(zh, "ui.menu.draw.after_casting"),
             }
         } else {
-            tr(zh, "Before casting", "释放前")
+            tr_key(zh, "ui.menu.draw.before_casting")
         },
         766.,
         521.,
@@ -501,7 +489,7 @@ pub fn draw(
         SKYBLUE,
     );
     label(
-        tr(zh, "Outlined: affected tiles", "描边：受影响的方块"),
+        tr_key(zh, "ui.menu.draw.outlined_affected_tiles"),
         766.,
         559.,
         16.,
@@ -517,7 +505,7 @@ pub fn draw(
         },
     );
     label_centered(
-        tr(zh, "NEXT · CHOOSE OPPONENT", "下一步：选择对手"),
+        tr_key(zh, "ui.menu.draw.next_choose_opponent"),
         r.x + r.w / 2.,
         682.,
         25.,
@@ -553,9 +541,9 @@ fn draw_passive_entries(items: &[content::Passive], zh: bool, changes: bool) {
         );
         if changes {
             let kind = if passive.replaces().is_some() {
-                tr(zh, "Replaces", "替换")
+                tr_key(zh, "ui.menu.draw_passive_entries.replaces")
             } else {
-                tr(zh, "New", "新增")
+                tr_key(zh, "ui.menu.draw_passive_entries.new")
             };
             label(kind, 477., y + 16., 12., SKYBLUE);
         }
