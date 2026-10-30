@@ -324,6 +324,8 @@ impl Session {
             tr(self.zh, "Action resolved", "行动结算完成").to_string()
         } else if self.enemy_turn {
             tr(self.zh, "Enemy is choosing", "敌方思考中").to_string()
+        } else if self.targeting == Some(content::Skill::Miracle) {
+            content::role_text("Skill.force_prompt", self.zh).to_string()
         } else if let Some(skill) = self.targeting {
             format!(
                 "{} · {}",
