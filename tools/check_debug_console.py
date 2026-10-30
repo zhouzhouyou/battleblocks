@@ -36,6 +36,7 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-debug-') as temp:
         send('cast 1 2 3')
         data=wait(lambda r:any(e['event']=='skill' for e in r));cast=next(e for e in data if e['event']=='skill')
         assert cast['before']['mp']-cast['after']['mp']==100
+        assert cast['before']['cooldowns'][0][0]==0 and cast['after']['cooldowns'][0][0]==2
         attack=[4,0,12,0,7,0,7]
         expected=60+sum(attack[row[x]] for row in cast['before']['board'] for x in (1,2))
         assert cast['after']['enemy_hp']==cast['before']['enemy_hp'], 'Charge damage waits for visual impact'

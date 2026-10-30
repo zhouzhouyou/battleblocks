@@ -10,7 +10,7 @@ impl Preview {
     pub fn new(hero: usize, skill: usize) -> Self {
         let board = std::array::from_fn(|y| std::array::from_fn(|x| ((x + 2 * y) % 7) as u8));
         let mut changed = board;
-        let effect = effect(HEROES[hero].skills[skill], &mut changed);
+        let effect = effect(content::skills(hero, true)[skill], &mut changed);
         let mut cells = effect.cells;
         for y in 0..N {
             for x in 0..N {
@@ -19,13 +19,13 @@ impl Preview {
                 }
             }
         }
-        if HEROES[hero].skills[skill] == content::Skill::Landslide {
+        if content::skills(hero, true)[skill] == content::Skill::Landslide {
             cells = vec![(2, 3), (3, 3), (2, 2), (3, 2), (2, 4), (3, 4)];
             for y in 2..=4 {
                 swap(&mut changed, (2, y), (3, y));
             }
         }
-        if HEROES[hero].skills[skill] == content::Skill::Strike {
+        if content::skills(hero, true)[skill] == content::Skill::Strike {
             cells = vec![(2, 3), (3, 3), (4, 3)];
             for x in 2..=4 {
                 changed[3][x] = 0;
@@ -41,10 +41,10 @@ impl Preview {
     }
 }
 pub fn hero_rect(i: usize) -> Rect {
-    Rect::new(24., 112. + i as f32 * 73., 232., 64.)
+    Rect::new(24., 112. + i as f32 * 59., 232., 53.)
 }
 pub fn skill_rect(i: usize) -> Rect {
-    Rect::new(548., 126. + i as f32 * 141., 452., 129.)
+    Rect::new(548., 126. + i as f32 * 94., 452., 88.)
 }
 pub fn start_rect() -> Rect {
     Rect::new(284., 651., 716., 48.)
@@ -71,22 +71,31 @@ fn sprite(texture: &Texture2D, asset: &SpriteAsset, area: Rect) {
             break;
         }
     }
-    let scale = (area.w / asset.w).min(area.h / asset.h);
+    let new_role = asset.w == 384. && asset.h == 384.;
+    let scale = if new_role {
+        crate::role_scale(area) * 96. / asset.w
+    } else {
+        (area.w / asset.w).min(area.h / asset.h)
+    };
     let size = vec2(asset.w * scale, asset.h * scale);
     let (size, rotation) =
         crate::presentation::idle_pose(size, get_time(), asset.indices.len() == 1);
     draw_texture_ex(
         texture,
         area.x + (area.w - size.x) / 2.,
-        area.y + area.h - size.y,
+        if new_role {
+            area.y + area.h - 84. * (asset.w / 96.) * scale
+        } else {
+            area.y + area.h - size.y
+        },
         WHITE,
         DrawTextureParams {
             dest_size: Some(size),
             rotation,
             pivot: Some(vec2(area.x + area.w / 2., area.y + area.h)),
             source: Some(Rect::new(
-                asset.indices[frame] as f32 * asset.w,
-                0.,
+                (asset.indices[frame] % (texture.width() / asset.w) as usize) as f32 * asset.w,
+                (asset.indices[frame] / (texture.width() / asset.w) as usize) as f32 * asset.h,
                 asset.w,
                 asset.h,
             )),
@@ -126,8 +135,9 @@ pub fn draw(
         19.,
         LIGHTGRAY,
     );
-    for (i, h) in HEROES.iter().enumerate() {
-        let r = hero_rect(i);
+    for (slot, &i) in content::ROSTER.iter().enumerate() {
+        let h = &HEROES[i];
+        let r = hero_rect(slot);
         panel(
             r,
             if i == hero || r.contains(pointer) {
@@ -145,7 +155,7 @@ pub fn draw(
             r.y + 8.,
             WHITE,
             DrawTextureParams {
-                dest_size: Some(vec2(40., 48.)),
+                dest_size: Some(vec2(32., 38.)),
                 source: Some(Rect::new(i as f32 * 40., 0., 40., 48.)),
                 ..Default::default()
             },
@@ -153,8 +163,8 @@ pub fn draw(
         label(
             if zh { h.zh } else { h.en },
             r.x + 67.,
-            r.y + 27.,
-            23.,
+            r.y + 23.,
+            20.,
             if i == hero { GOLD } else { WHITE },
         );
         label(
@@ -166,8 +176,8 @@ pub fn draw(
                 content::mana_cap(i, false)
             ),
             r.x + 67.,
-            r.y + 51.,
-            16.,
+            r.y + 44.,
+            14.,
             LIGHTGRAY,
         );
     }
@@ -196,7 +206,7 @@ pub fn draw(
         LIGHTGRAY,
     );
     let detail_page = page != 0;
-    let portrait_height = if detail_page { 132. } else { 182. };
+    let portrait_height = if detail_page { 140. } else { 190. };
     let shadow_y = if detail_page { 333. } else { 383. };
     draw_ellipse(
         406.,
@@ -213,7 +223,7 @@ pub fn draw(
         } else {
             &sprites::SPRITES[hero]
         },
-        Rect::new(301., 198., 210., portrait_height),
+        Rect::new(291., 198., 230., portrait_height),
     );
     if page == 0 {
         label(tr(zh, "MAX HEALTH", "生命上限"), 304., 412., 17., LIGHTGRAY);
@@ -334,7 +344,8 @@ pub fn draw(
         );
     }
     label(&format!("{} / 3", page + 1), 388., 623., 14., WHITE);
-    for (i, skill) in h.skills.iter().enumerate() {
+    let visible_skills = content::skills(hero, page == 2);
+    for (i, skill) in visible_skills.iter().enumerate() {
         let r = skill_rect(i);
         panel(
             r,
@@ -348,24 +359,25 @@ pub fn draw(
             draw_rectangle_lines(r.x, r.y, r.w, r.h, 2., GOLD);
         }
         icons::draw(*skill, r.x + 12., r.y + 8., 28.);
+        let details = format!(
+            "{} {} · {} {}",
+            content::skill_cost(hero, page == 2, *skill),
+            tr(zh, "MP", "魔力"),
+            tr(zh, "CD", "冷却"),
+            skill.cooldown()
+        );
+        let details_size = fit_size(&details, 18., r.w * 0.46);
+        let details_width = label_width(&details, details_size);
+        let details_x = r.x + r.w - 14. - details_width;
+        let title = format!("{}  {}", i + 1, skill.name(zh));
         label(
-            &format!("{}  {}", i + 1, skill.name(zh)),
+            &title,
             r.x + 50.,
             r.y + 28.,
-            25.,
+            fit_size(&title, 21., (details_x - (r.x + 58.)).max(1.)),
             WHITE,
         );
-        label(
-            &format!(
-                "{} {}",
-                content::skill_cost(hero, page == 2, *skill),
-                tr(zh, "MP", "魔力")
-            ),
-            r.x + 332.,
-            r.y + 27.,
-            18.,
-            SKYBLUE,
-        );
+        label(&details, details_x, r.y + 27., details_size, SKYBLUE);
         for (line, text) in content::skill_description(*skill, page == 2, zh)
             .lines()
             .enumerate()
@@ -373,8 +385,8 @@ pub fn draw(
             label(
                 text,
                 r.x + 14.,
-                r.y + 55. + line as f32 * 23.,
-                19.,
+                r.y + 49. + line as f32 * 17.,
+                fit_size(text, 16., r.w - 28.),
                 LIGHTGRAY,
             );
         }
@@ -417,7 +429,7 @@ pub fn draw(
         18.,
         LIGHTGRAY,
     );
-    let skill = h.skills[preview.skill];
+    let skill = visible_skills[preview.skill.min(visible_skills.len() - 1)];
     let phase = ((get_time() - preview.since) % 3.0) / 3.;
     let after = phase > 0.45;
     panel(Rect::new(548., 422., 452., 208.), dim);
@@ -430,6 +442,9 @@ pub fn draw(
             | content::Skill::Greedy
             | content::Skill::Imp
             | content::Skill::Chort
+            | content::Skill::Rush
+            | content::Skill::Hammer
+            | content::Skill::Entomb
     );
     for y in 0..N {
         for x in 0..N {
