@@ -91,37 +91,33 @@ impl Passive {
         if self.is_new() {
             return super::role_text(&format!("{self:?}.name"), zh);
         }
-        let (cn, en) = match self {
+        let key = match self {
             KnightStrength | DwarfStrength | Short | Grudge | Clumsy | ClumsyAwake | MindVision
             | BorrowedSlot => unreachable!(),
-            ColumnFormation => ("列阵", "Column formation"),
-            BattleTraining => ("战技训练", "Battle training"),
-            ForestStep => ("林间穿行", "Forest step"),
-            ForestPact => ("森林契约", "Forest pact"),
-            ArcaneConversion => ("奥术转化", "Arcane conversion"),
-            ManaSeal => ("魔力封印", "Mana seal"),
-            ManaRelease => ("魔力解放", "Mana release"),
-            Recycling => ("废物回收", "Scrap recovery"),
-            BalancedAffinity => ("平衡亲和", "Balanced affinity"),
-            BalancedResonance => ("平衡共鸣", "Balanced resonance"),
-            ElementReturn => ("元素回流", "Element return"),
-            BloodFury => ("血怒", "Blood fury"),
-            BoilingBlood => ("沸血", "Boiling blood"),
-            FleshCasting => ("血肉施法", "Flesh casting"),
-            FleshConversion => ("血肉转化", "Flesh conversion"),
-            ChargeMastery => ("冲锋专精", "Charge mastery"),
-            GuardEconomy => ("守护节制", "Guard economy"),
-            ElvenPower => ("精灵之力", "Elven power"),
-            MeteorEconomy => ("陨星节制", "Meteor economy"),
-            LootMastery => ("掠夺专精", "Loot mastery"),
-            BlastMastery => ("爆裂专精", "Blast mastery"),
-            BloodSacrifice => ("血祭", "Blood sacrifice"),
+            ColumnFormation => "passive.name.column_formation",
+            BattleTraining => "passive.name.battle_training",
+            ForestStep => "passive.name.forest_step",
+            ForestPact => "passive.name.forest_pact",
+            ArcaneConversion => "passive.name.arcane_conversion",
+            ManaSeal => "passive.name.mana_seal",
+            ManaRelease => "passive.name.mana_release",
+            Recycling => "passive.name.recycling",
+            BalancedAffinity => "passive.name.balanced_affinity",
+            BalancedResonance => "passive.name.balanced_resonance",
+            ElementReturn => "passive.name.element_return",
+            BloodFury => "passive.name.blood_fury",
+            BoilingBlood => "passive.name.boiling_blood",
+            FleshCasting => "passive.name.flesh_casting",
+            FleshConversion => "passive.name.flesh_conversion",
+            ChargeMastery => "passive.name.charge_mastery",
+            GuardEconomy => "passive.name.guard_economy",
+            ElvenPower => "passive.name.elven_power",
+            MeteorEconomy => "passive.name.meteor_economy",
+            LootMastery => "passive.name.loot_mastery",
+            BlastMastery => "passive.name.blast_mastery",
+            BloodSacrifice => "passive.name.blood_sacrifice",
         };
-        if zh {
-            cn
-        } else {
-            en
-        }
+        crate::tr_key(zh, key)
     }
     pub fn short_name(self, zh: bool) -> &'static str {
         if self.is_new() {
@@ -130,67 +126,65 @@ impl Passive {
         if zh {
             return self.name(true);
         }
-        match self {
+        let key = match self {
             KnightStrength | DwarfStrength | Short | Grudge | Clumsy | ClumsyAwake | MindVision
             | BorrowedSlot => unreachable!(),
-            ColumnFormation => "Columns",
-            BattleTraining => "Training",
-            ForestStep => "Forest step",
-            ForestPact => "Pact",
-            ArcaneConversion => "Conversion",
-            ManaSeal => "MP seal",
-            ManaRelease => "MP release",
-            Recycling => "Recycle",
-            BalancedAffinity => "Affinity",
-            BalancedResonance => "Resonance",
-            ElementReturn => "MP return",
-            BloodFury => "Fury",
-            BoilingBlood => "Boiling",
-            FleshCasting => "HP casting",
-            FleshConversion => "HP casting+",
-            ChargeMastery => "Charge+",
-            GuardEconomy => "Guard cost",
-            ElvenPower => "Elven power",
-            MeteorEconomy => "Meteor cost",
-            LootMastery => "Loot+",
-            BlastMastery => "Blast+",
-            BloodSacrifice => "Blood power",
-        }
+            ColumnFormation => "passive.short_name.column_formation",
+            BattleTraining => "passive.short_name.battle_training",
+            ForestStep => "passive.short_name.forest_step",
+            ForestPact => "passive.short_name.forest_pact",
+            ArcaneConversion => "passive.short_name.arcane_conversion",
+            ManaSeal => "passive.short_name.mana_seal",
+            ManaRelease => "passive.short_name.mana_release",
+            Recycling => "passive.short_name.recycling",
+            BalancedAffinity => "passive.short_name.balanced_affinity",
+            BalancedResonance => "passive.short_name.balanced_resonance",
+            ElementReturn => "passive.short_name.element_return",
+            BloodFury => "passive.short_name.blood_fury",
+            BoilingBlood => "passive.short_name.boiling_blood",
+            FleshCasting => "passive.short_name.flesh_casting",
+            FleshConversion => "passive.short_name.flesh_conversion",
+            ChargeMastery => "passive.short_name.charge_mastery",
+            GuardEconomy => "passive.short_name.guard_economy",
+            ElvenPower => "passive.short_name.elven_power",
+            MeteorEconomy => "passive.short_name.meteor_economy",
+            LootMastery => "passive.short_name.loot_mastery",
+            BlastMastery => "passive.short_name.blast_mastery",
+            BloodSacrifice => "passive.short_name.blood_sacrifice",
+        };
+        crate::tr_key(false, key)
     }
     pub fn description(self, zh: bool) -> &'static str {
         if self.is_new() {
             return super::role_text(&format!("{self:?}.description"), zh);
         }
-        let (cn,en)=match self {
-            KnightStrength | DwarfStrength | Short | Grudge | Clumsy | ClumsyAwake | MindVision | BorrowedSlot => unreachable!(),
-            ColumnFormation=>("左右交换相邻两整列\n上下仍交换两个方块","Horizontal swaps move two columns.\nVertical swaps move two tiles."),
-            BattleTraining=>("消除治疗、伤害和魔力\n收益增加6%","Clear healing, damage and mana\nincrease by 6%."),
-            ForestStep=>("可交换斜向相邻方块\n仍按横向、纵向三消判定","Diagonal adjacent swaps allowed.\nMatches remain horizontal/vertical."),
-            ForestPact=>("消除治疗、伤害和魔力\n收益降低7%","Clear healing, damage and mana\ndecrease by 7%."),
-            ArcaneConversion=>("魔力未满时，50%消除治疗\n转为魔力；已满则正常治疗\n转换量向下取整","Below cap, 50% of clear\nhealing becomes MP (floor).\nAt full MP, heal normally."),
-            ManaSeal=>("当前魔力上限锁定为250\n觉醒后解锁至400","MP cap locked at 250.\nAwakening unlocks 400."),
-            ManaRelease=>("魔力上限解锁至400","MP cap unlocked to 400."),
-            Recycling=>("消除产生的溢出治疗\n每2点转为1魔力，受上限限制","Every 2 overheal from clears\nbecomes 1 MP, obeying the cap."),
-            BalancedAffinity=>("三消时，每个平衡方块\n额外造成4点伤害","On a match, each balanced tile\ndeals 4 extra damage."),
-            BalancedResonance=>("三消时，每个平衡方块\n额外造成6点伤害","On a match, each balanced tile\ndeals 6 extra damage."),
-            ElementReturn=>("三消时，每个平衡方块\n额外回复2魔力","On a match, each balanced tile\nrestores 2 extra MP."),
-            BloodFury=>("生命不高于初始上限35%时\n消除伤害增加25%\n每轮消除前判断","At or below 35% of initial HP,\nclear damage increases by 25%.\nChecked before each clear wave."),
-            BoilingBlood=>("生命不高于初始上限50%时\n消除伤害增加25%\n每轮消除前判断","At or below 50% of initial HP,\nclear damage increases by 25%.\nChecked before each clear wave."),
-            FleshCasting=>("缺少的每1魔力支付2生命\n支付后必须至少剩余1生命","Each missing MP costs 2 HP.\nMust leave at least 1 HP."),
-            FleshConversion=>("1生命抵2点缺少的魔力\n生命消耗向上取整\n支付后必须至少剩余1生命","1 HP pays 2 missing MP.\nRound HP cost up.\nMust leave at least 1 HP."),
-            ChargeMastery=>("骑士冲锋的伤害增加25%","Knight charge damage +25%."),
-            GuardEconomy=>("坚守回复的魔力消耗\n从150降低至80","Guard MP cost reduced\nfrom 150 to 80."),
-            ElvenPower=>("消除伤害额外增加基础值25%\n与消除增幅加算","Clear damage gains 25% of base.\nAdditive with clear amplification."),
-            MeteorEconomy=>("陨星轰击的魔力消耗\n从160降低至140","Meteor MP cost reduced\nfrom 160 to 140."),
-            LootMastery=>("区域掠夺的伤害提高30%\n后续连锁消除不享受此加成","Area loot deals 30% more damage.\nLater cascades get no bonus."),
-            BlastMastery=>("平衡引爆每格额外造成2伤害\n单格伤害由12提高至14","Blast gains 2 damage per tile:\n12 increases to 14."),
-            BloodSacrifice=>("使用生命代付的技能\n直接伤害增加20%\n不放大后续消除伤害","HP-paid skills deal 20% more\ndirect damage; later clears\nare unchanged."),
+        let key = match self {
+            KnightStrength | DwarfStrength | Short | Grudge | Clumsy | ClumsyAwake | MindVision
+            | BorrowedSlot => unreachable!(),
+            ColumnFormation => "passive.description.column_formation",
+            BattleTraining => "passive.description.battle_training",
+            ForestStep => "passive.description.forest_step",
+            ForestPact => "passive.description.forest_pact",
+            ArcaneConversion => "passive.description.arcane_conversion",
+            ManaSeal => "passive.description.mana_seal",
+            ManaRelease => "passive.description.mana_release",
+            Recycling => "passive.description.recycling",
+            BalancedAffinity => "passive.description.balanced_affinity",
+            BalancedResonance => "passive.description.balanced_resonance",
+            ElementReturn => "passive.description.element_return",
+            BloodFury => "passive.description.blood_fury",
+            BoilingBlood => "passive.description.boiling_blood",
+            FleshCasting => "passive.description.flesh_casting",
+            FleshConversion => "passive.description.flesh_conversion",
+            ChargeMastery => "passive.description.charge_mastery",
+            GuardEconomy => "passive.description.guard_economy",
+            ElvenPower => "passive.description.elven_power",
+            MeteorEconomy => "passive.description.meteor_economy",
+            LootMastery => "passive.description.loot_mastery",
+            BlastMastery => "passive.description.blast_mastery",
+            BloodSacrifice => "passive.description.blood_sacrifice",
         };
-        if zh {
-            cn
-        } else {
-            en
-        }
+        crate::tr_key(zh, key)
     }
     pub fn status(
         self,
@@ -206,30 +200,18 @@ impl Passive {
                     && hp * 100 <= HEROES[hero].hp * if self == BoilingBlood { 50 } else { 35 };
                 (
                     if on {
-                        if zh {
-                            "伤害+25%"
-                        } else {
-                            "DMG +25%"
-                        }
-                    } else if zh {
-                        "未触发"
+                        crate::tr_key(zh, "passive.status.blood_fury_active")
                     } else {
-                        "Inactive"
+                        crate::tr_key(zh, "passive.status.inactive")
                     },
                     on,
                 )
             }
             ArcaneConversion => (
                 if mp < super::mana_cap(hero, awake) {
-                    if zh {
-                        "转化中"
-                    } else {
-                        "Converting"
-                    }
-                } else if zh {
-                    "正常治疗"
+                    crate::tr_key(zh, "passive.status.converting")
                 } else {
-                    "Full healing"
+                    crate::tr_key(zh, "passive.status.full_healing")
                 },
                 mp < super::mana_cap(hero, awake),
             ),
@@ -252,15 +234,9 @@ impl Passive {
                 });
                 (
                     if can {
-                        if zh {
-                            "代付时+20%"
-                        } else {
-                            "HP-paid +20%"
-                        }
-                    } else if zh {
-                        "需生命代付"
+                        crate::tr_key(zh, "passive.status.blood_paid_active")
                     } else {
-                        "Needs HP payment"
+                        crate::tr_key(zh, "passive.status.needs_blood_payment")
                     },
                     can,
                 )

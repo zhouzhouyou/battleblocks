@@ -106,15 +106,9 @@ pub fn passive_status(
             });
             return Some((
                 if active {
-                    if zh {
-                        "可代付"
-                    } else {
-                        "HP ready"
-                    }
-                } else if zh {
-                    "代付不足"
+                    crate::tr_key(zh, "health.blood_ready")
                 } else {
-                    "HP too low"
+                    crate::tr_key(zh, "health.blood_too_low")
                 },
                 active,
             ));

@@ -40,7 +40,7 @@ impl Session {
         self.enemy_clock = 0.;
         self.paused = false;
         self.chain = 0;
-        self.note = "Select two adjacent tiles";
+        self.note = "note.select_adjacent_tiles";
         self.armed = false;
         self.extra_bonus = 0;
         self.reward = true;

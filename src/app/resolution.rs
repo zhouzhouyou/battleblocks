@@ -60,7 +60,7 @@ impl Session {
             self.presentation.health(
                 [before.hp, before.enemy_hp],
                 [self.hp, self.enemy],
-                tr(self.zh, "Clear", "消除"),
+                tr_key(self.zh, "ui.resolution.resolve_pending.clear"),
             );
             let actual_heal = if self.enemy_turn {
                 self.enemy - before.enemy_hp
@@ -81,9 +81,9 @@ impl Session {
                 self.feedback = format!(
                     "{} · {}",
                     if self.enemy_turn {
-                        tr(self.zh, "Enemy", "敌方")
+                        tr_key(self.zh, "ui.shared.enemy")
                     } else {
-                        tr(self.zh, "You", "我方")
+                        tr_key(self.zh, "ui.shared.you")
                     },
                     reward_summary(self.zh, actual_heal, actual_damage, actual_mana)
                 );

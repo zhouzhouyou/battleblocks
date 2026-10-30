@@ -195,7 +195,7 @@ impl Session {
         let muted = false;
         let interface = ui::Ui::default();
         let chain = 0;
-        let note = "Select two adjacent tiles";
+        let note = "note.select_adjacent_tiles";
         let reward = true;
         let extra_bonus = 0;
         let armed = false;
