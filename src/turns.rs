@@ -59,7 +59,9 @@ impl Turn {
             .map(|action| match *action {
                 Action::Swap { from, to, columns } => swap_text(zh, from, to, columns),
                 Action::Skill(skill) => skill.name(zh).to_string(),
-                Action::Reroll => crate::tr(zh, "Board reroll", "重排棋盘").to_string(),
+                Action::Reroll => {
+                    crate::tr_key(zh, "ui.turns.actions_text.board_reroll").to_string()
+                }
             })
             .collect::<Vec<_>>()
             .join(" → ")
@@ -67,9 +69,13 @@ impl Turn {
     /// The non-zero results, e.g. "伤害 24 · 魔力 +12"; `None` when nothing changed.
     pub fn results_text(&self, zh: bool) -> Option<String> {
         let parts: Vec<String> = [
-            (self.heal, crate::tr(zh, "HP", "生命"), true),
-            (self.damage, crate::tr(zh, "damage", "伤害"), false),
-            (self.mana, crate::tr(zh, "MP", "魔力"), true),
+            (self.heal, crate::tr_key(zh, "ui.shared.hp"), true),
+            (
+                self.damage,
+                crate::tr_key(zh, "ui.turns.results_text.damage"),
+                false,
+            ),
+            (self.mana, crate::tr_key(zh, "ui.shared.mp"), true),
         ]
         .into_iter()
         .filter(|&(value, _, _)| value != 0)
@@ -93,7 +99,7 @@ pub fn swap_text(zh: bool, a: (usize, usize), c: (usize, usize), columns: bool) 
         c.0 + 1,
         c.1 + 1,
         if columns {
-            crate::tr(zh, " COL", " 整列")
+            crate::tr_key(zh, "ui.turns.swap_text.col")
         } else {
             ""
         }

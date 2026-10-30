@@ -229,14 +229,18 @@ impl Presentation {
             };
             let x = panel.x + panel.w / 2.;
             crate::label_centered(
-                if zh { "觉醒" } else { "AWAKENING" },
+                crate::tr_key(zh, "combat.awakening_banner"),
                 x,
                 255. - t * 9.,
                 24.,
                 Color::new(1., 0.8, 0.4, alpha),
             );
             if t > 0.45 {
-                let text = format!("+{} {}", a.new_max - a.hit, if zh { "生命" } else { "HP" });
+                let text = crate::format_text(
+                    zh,
+                    "combat.health_gain",
+                    &[&(a.new_max - a.hit).to_string()],
+                );
                 crate::label_centered(
                     &text,
                     x,
@@ -386,22 +390,14 @@ impl Presentation {
                 let color = if delta < 0 { ORANGE } else { GREEN };
                 draw_rectangle(x, y - 22., 200., 52., Color::new(0.04, 0.05, 0.08, 0.93));
                 label(
-                    &format!(
-                        "{} {}",
+                    &crate::format_text(
+                        zh,
                         if delta < 0 {
-                            if zh {
-                                "受伤"
-                            } else {
-                                "Damage"
-                            }
+                            "combat.popup_damage"
                         } else {
-                            if zh {
-                                "回复"
-                            } else {
-                                "Heal"
-                            }
+                            "combat.popup_heal"
                         },
-                        delta.abs()
+                        &[&delta.abs().to_string()],
                     ),
                     x + 5.,
                     y,

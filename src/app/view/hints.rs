@@ -90,17 +90,12 @@ impl Session {
             if !legal_hints.is_empty() {
                 label(
                     if hints_playable {
-                        tr(
+                        tr_key(
                             self.zh,
-                            "Blue: tiles · Gold: columns · hold H + click a number",
-                            "蓝色：两格交换 / 金色：整列交换 · 按住 H 点编号即可执行",
+                            "ui.hints.draw_hints.blue_tiles_gold_columns_hold_h_cli",
                         )
                     } else {
-                        tr(
-                            self.zh,
-                            "Blue: tiles / Gold: whole columns",
-                            "蓝色：两格交换 / 金色：整列交换",
-                        )
+                        tr_key(self.zh, "ui.hints.draw_hints.blue_tiles_gold_whole_columns")
                     },
                     256.,
                     674.,
@@ -126,7 +121,7 @@ impl Session {
                 if show_moves { GOLD } else { GRAY },
             );
             label(
-                tr(self.zh, "Moves · hold H", "可行移动 · 按住 H"),
+                tr_key(self.zh, "ui.hints.draw_hints.moves_hold_h"),
                 hints_rect.x + 8.,
                 hints_rect.y + 19.,
                 16.,
@@ -145,15 +140,10 @@ impl Session {
                         HEROES[hint_actor].en
                     },
                     legal_hints.len(),
-                    tr(self.zh, "moves", "种交换")
+                    tr_key(self.zh, "ui.hints.draw_hints.moves")
                 )
             } else {
-                tr(
-                    self.zh,
-                    "Hover to list · click to play",
-                    "悬停查看 · 点击条目执行",
-                )
-                .to_string()
+                tr_key(self.zh, "ui.hints.draw_hints.hover_to_list_click_to_play").to_string()
             };
             label(
                 &detail,
@@ -169,7 +159,7 @@ impl Session {
             draw_rectangle(790., 208., 220., 430., Color::new(0.04, 0.07, 0.12, 0.98));
             draw_rectangle_lines(790., 208., 220., 430., 2., SKYBLUE);
             label(
-                tr(self.zh, "Move rewards", "移动收益"),
+                tr_key(self.zh, "ui.hints.draw_hints.move_rewards"),
                 800.,
                 232.,
                 20.,
@@ -187,11 +177,7 @@ impl Session {
                 WHITE,
             );
             label(
-                tr(
-                    self.zh,
-                    "First clear; no refill chains",
-                    "首轮收益，不含补充连锁",
-                ),
+                tr_key(self.zh, "ui.hints.draw_hints.first_clear_no_refill_chains"),
                 800.,
                 270.,
                 13.,
@@ -205,7 +191,7 @@ impl Session {
                     if hints_playable {
                         draw_rectangle_lines(798., row_y, 204., 43., 1., GOLD);
                         label(
-                            tr(self.zh, "click", "点击执行"),
+                            tr_key(self.zh, "ui.hints.draw_hints.click"),
                             950.,
                             row_y + 35.,
                             12.,
@@ -226,11 +212,11 @@ impl Session {
                     label(
                         &format!(
                             "{}{}  {}{}  {}{}",
-                            tr(self.zh, "Dmg ", "伤"),
+                            tr_key(self.zh, "ui.hints.draw_hints.dmg"),
                             p.damage,
-                            tr(self.zh, "HP+", "治"),
+                            tr_key(self.zh, "ui.hints.draw_hints.hp"),
                             p.heal,
-                            tr(self.zh, "MP+", "魔"),
+                            tr_key(self.zh, "ui.hints.draw_hints.mp"),
                             p.mana_gain
                         ),
                         800.,
@@ -242,7 +228,7 @@ impl Session {
             }
             if legal_hints.is_empty() {
                 label(
-                    tr(self.zh, "No legal exchanges", "当前无可行交换"),
+                    tr_key(self.zh, "ui.hints.draw_hints.no_legal_exchanges"),
                     800.,
                     305.,
                     17.,
@@ -253,12 +239,12 @@ impl Session {
                 (
                     previous_page_rect,
                     self.move_hint_page > 0,
-                    tr(self.zh, "< Prev", "上一页"),
+                    tr_key(self.zh, "ui.shared.prev"),
                 ),
                 (
                     next_page_rect,
                     self.move_hint_page + 1 < pages,
-                    tr(self.zh, "Next >", "下一页"),
+                    tr_key(self.zh, "ui.shared.next"),
                 ),
             ] {
                 draw_rectangle(
@@ -296,39 +282,30 @@ impl Session {
                 .map(|p| {
                     format!(
                         "{} {hint_health}→{}  {} {hint_mana}→{}",
-                        tr(self.zh, "HP", "生命"),
+                        tr_key(self.zh, "ui.shared.hp"),
                         p.health_after,
-                        tr(self.zh, "MP", "魔力"),
+                        tr_key(self.zh, "ui.shared.mp"),
                         p.mana_after
                     )
                 })
                 .unwrap_or_else(|| {
                     if hints_playable {
-                        tr(
-                            self.zh,
-                            "Click a row to play · ← → pages",
-                            "点击条目即可执行 · ← → 翻页",
-                        )
+                        tr_key(self.zh, "ui.hints.draw_hints.click_a_row_to_play_pages")
                     } else {
-                        tr(self.zh, "Enemy moves: view only", "敌方的交换，仅供查看")
+                        tr_key(self.zh, "ui.hints.draw_hints.enemy_moves_view_only")
                     }
                     .to_string()
                 });
             label(&footer, 800., 628., 13., LIGHTGRAY);
             if let Some(p) = focused_preview {
-                let text = if self.zh {
-                    format!(
-                        "敌方生命 → {}{}",
-                        p.enemy_health_after,
-                        if p.awakens_enemy { " · 将觉醒" } else { "" }
-                    )
+                let health = p.enemy_health_after.to_string();
+                let awakening = if p.awakens_enemy {
+                    crate::tr_key(self.zh, "battle.enemy_hp_awakening_suffix")
                 } else {
-                    format!(
-                        "Enemy HP → {}{}",
-                        p.enemy_health_after,
-                        if p.awakens_enemy { " · Awakening" } else { "" }
-                    )
+                    ""
                 };
+                let text =
+                    crate::format_text(self.zh, "battle.enemy_hp_preview", &[&health, awakening]);
                 label(&text, 800., 646., 12., GOLD);
             }
         }

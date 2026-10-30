@@ -4,6 +4,7 @@ fn main() {
     println!("cargo:rerun-if-changed=assets/skills.txt");
     println!("cargo:rerun-if-changed=assets/heroes.txt");
     println!("cargo:rerun-if-changed=assets/role-text.txt");
+    println!("cargo:rerun-if-changed=assets/localization.tsv");
     println!("cargo:rerun-if-changed=tools/prepare_font.py");
     println!("cargo:rerun-if-changed=.build-tools/NotoSansSC.ttf");
     println!("cargo:rerun-if-changed=.build-tools/python-path.txt");

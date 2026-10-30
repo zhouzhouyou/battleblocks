@@ -15,7 +15,7 @@ impl Session {
             self.feedback = format!(
                 "{} · {} {}",
                 content::Skill::Charge.name(self.zh),
-                tr(self.zh, "Damage:", "伤害："),
+                tr_key(self.zh, "ui.turn.advance_turn.damage"),
                 actual
             );
             self.feedback_time = 2.5;
@@ -65,7 +65,7 @@ impl Session {
             self.armed = self.armed_sides[self.enemy_turn as usize];
             self.turn_log.next(self.enemy_turn);
             // The last turn has its own row; prompt the new actor afresh.
-            self.note = "Select two adjacent tiles";
+            self.note = "note.select_adjacent_tiles";
             self.action_done = false;
             self.selected = None;
             self.enemy_clock = 0.;
@@ -116,7 +116,7 @@ impl Session {
                 self.selected = None;
                 self.move_flash = None;
                 self.presentation.stop_motion();
-                self.note = "No moves: board refreshed";
+                self.note = "note.no_moves";
                 self.console.event(
                     "board_refresh",
                     if voluntary {

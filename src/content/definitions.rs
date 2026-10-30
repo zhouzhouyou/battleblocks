@@ -275,35 +275,16 @@ pub fn awakening_effect(hero: usize, zh: bool) -> &'static str {
     if hero == PRIEST {
         return role_text("Priest.awakening", zh);
     }
-    let (en, cn) = match hero {
-        0 => (
-            "Charge damage +25%; Guard heals 20% of new HP cap; costs 80 MP",
-            "冲锋伤害增加25%；坚守回复按新上限治疗20%，消耗80魔力",
-        ),
-        1 => (
-            "Clear damage +25% of base (additive)",
-            "消除伤害额外增加基础值25%（加算）",
-        ),
-        2 => (
-            "MP cap: 250 → 400; Meteor cost: 160 → 140",
-            "魔力上限250 → 400；陨星消耗160 → 140",
-        ),
-        3 => ("Area loot damage +30%", "区域掠夺伤害增加30%"),
-        4 => (
-            "Balanced bonus: +4 → +6; Blast: 12 → 14 per tile",
-            "平衡方块额外伤害4 → 6；引爆每格伤害12 → 14",
-        ),
-        5 => ("Blood fury threshold: 35% → 50%", "血怒触发线35% → 50%"),
-        _ => (
-            "1 HP pays 2 MP (round HP up); blood-paid damage +20%",
-            "1生命抵2魔力（生命向上取整）；代付技能伤害+20%",
-        ),
+    let key = match hero {
+        0 => "hero.awakening.knight",
+        1 => "hero.awakening.elf",
+        2 => "hero.awakening.wizard",
+        3 => "hero.awakening.goblin",
+        4 => "hero.awakening.imp",
+        5 => "hero.awakening.chort",
+        _ => "hero.awakening.zombie",
     };
-    if zh {
-        cn
-    } else {
-        en
-    }
+    crate::tr_key(zh, key)
 }
 pub fn skill_description(skill: Skill, awake: bool, zh: bool) -> &'static str {
     let d = skill.definition();

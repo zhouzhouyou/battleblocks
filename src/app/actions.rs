@@ -315,11 +315,7 @@ impl Session {
                     self.feedback = format!(
                         "{} · {} {}",
                         skill.name(self.zh),
-                        tr(
-                            self.zh,
-                            "Charging · expected damage:",
-                            "冲锋中 · 预计伤害："
-                        ),
+                        tr_key(self.zh, "ui.actions.cast_skill.charging_expected_damage"),
                         e.damage
                             .min(if self.enemy_turn { self.hp } else { self.enemy })
                     );
@@ -330,23 +326,23 @@ impl Session {
                     } else {
                         (self.hp, self.mp)
                     };
-                    self.feedback = if self.zh {
-                        format!(
-                                "血肉施法 生命 -{} · 生命 {actor_hp} → {hp_now} · 魔力 {actor_mp} → {mp_now}",
-                                pay.blood
-                            )
-                    } else {
-                        format!(
-                                "Flesh casting -{} HP · HP {actor_hp} → {hp_now} · MP {actor_mp} → {mp_now}",
-                                pay.blood
-                            )
-                    };
+                    self.feedback = crate::format_text(
+                        self.zh,
+                        "feedback.blood_cast",
+                        &[
+                            &pay.blood.to_string(),
+                            &actor_hp.to_string(),
+                            &hp_now.to_string(),
+                            &actor_mp.to_string(),
+                            &mp_now.to_string(),
+                        ],
+                    );
                 }
                 self.presentation.health(
                     [before.hp, before.enemy_hp],
                     [self.hp, self.enemy],
                     if pay.blood > 0 {
-                        tr(self.zh, "Flesh casting", "血肉施法")
+                        tr_key(self.zh, "ui.actions.cast_skill.flesh_casting")
                     } else {
                         skill.name(self.zh)
                     },
@@ -368,7 +364,7 @@ impl Session {
                 };
                 self.chain = 1;
                 self.selected = None;
-                self.note = "Skill cast";
+                self.note = "note.skill_cast";
                 self.console.event("skill",&format!("{:?} effective={:?} target=[{},{}] cost={} blood_cost={} direct_heal={} direct_damage={} direct_mana={} bonus={} armed={} actual_heal={} actual_damage={} actual_mana={}",skill,effective,target.0+1,target.1+1,pay.mana,pay.blood,e.hp,e.damage,e.mp,e.bonus,e.armed,actual_heal,actual_damage,actual_mana),&before,&self.snapshot());
             } else {
                 if !self.enemy_turn
@@ -386,7 +382,7 @@ impl Session {
                         self.targeting = Some(skill);
                     }
                 }
-                self.note = "Not enough mana";
+                self.note = "note.not_enough_mana";
             }
         }
 
