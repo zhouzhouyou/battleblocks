@@ -22,7 +22,7 @@ impl Session {
                     Color::new(accent.r, accent.g, accent.b, 0.07),
                 );
             }
-            draw_rectangle_lines(
+            outline(
                 panel.x,
                 panel.y,
                 panel.w,
@@ -261,7 +261,7 @@ impl Session {
             current.h,
             Color::new(0.07, 0.10, 0.16, 0.98),
         );
-        draw_rectangle_lines(current.x, current.y, current.w, current.h, 2., turn_color);
+        outline(current.x, current.y, current.w, current.h, 2., turn_color);
         let chip = Rect::new(current.x + 5., current.y + 5., 104., current.h - 10.);
         draw_rectangle(
             chip.x,
@@ -371,7 +371,7 @@ impl Session {
             previous.h,
             Color::new(0.05, 0.06, 0.09, 0.92),
         );
-        draw_rectangle_lines(
+        outline(
             previous.x,
             previous.y,
             previous.w,
@@ -470,7 +470,7 @@ impl Session {
                     strip.h,
                     Color::from_rgba(45, 29, 35, 245),
                 );
-                draw_rectangle_lines(strip.x, strip.y, strip.w, strip.h, 1., color);
+                outline(strip.x, strip.y, strip.w, strip.h, 1., color);
                 label_centered(
                     &text,
                     strip.x + strip.w / 2.,

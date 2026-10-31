@@ -138,7 +138,7 @@ impl Session {
                     {
                         for y in 0..N {
                             for x in [a.0, c.0] {
-                                draw_rectangle_lines(
+                                outline(
                                     256. + x as f32 * 64.,
                                     110. + y as f32 * 64.,
                                     64.,
@@ -161,7 +161,7 @@ impl Session {
                 cancel.h,
                 Color::new(0.24, 0.16, 0.18, 1.),
             );
-            draw_rectangle_lines(cancel.x, cancel.y, cancel.w, cancel.h, 1., GOLD);
+            outline(cancel.x, cancel.y, cancel.w, cancel.h, 1., GOLD);
             label(
                 tr_key(self.zh, "ui.battlefield.draw_board.cancel_esc_right_click"),
                 805.,
@@ -205,7 +205,7 @@ impl Session {
                         );
                     }
                     if preview_cells.contains(&(x, y)) {
-                        draw_rectangle_lines(pos.x + 3., pos.y + 3., 58., 58., 3., SKYBLUE);
+                        outline(pos.x + 3., pos.y + 3., 58., 58., 3., SKYBLUE);
                     }
                     if clearing {
                         let pulse = (get_time() as f32 * 14.).sin().abs();
@@ -223,7 +223,7 @@ impl Session {
                             .move_flash
                             .is_some_and(|(a, c)| a == (x, y) || c == (x, y))
                     {
-                        draw_rectangle_lines(
+                        outline(
                             pos.x + 2.,
                             pos.y + 2.,
                             60.,
@@ -233,7 +233,7 @@ impl Session {
                         );
                     }
                     if self.selected == Some((x, y)) {
-                        draw_rectangle_lines(pos.x, pos.y, 62., 62., 3., GOLD);
+                        outline(pos.x, pos.y, 62., 62., 3., GOLD);
                     }
                 }
             }
@@ -268,14 +268,14 @@ impl Session {
             && self.feedback == self.rejection_message(false)
         {
             draw_rectangle(22., 202., 204., 30., Color::from_rgba(20, 27, 38, 245));
-            draw_rectangle_lines(22., 202., 204., 30., 1., GOLD);
+            outline(22., 202., 204., 30., 1., GOLD);
             label_centered(&self.feedback, 124., 223., 16., WHITE);
         }
         for (side, reaction) in self.reactions.iter().enumerate() {
             if let Some((text, _)) = reaction {
                 let x = if side == 0 { 22. } else { 798. };
                 draw_rectangle(x, 202., 204., 30., Color::from_rgba(20, 27, 38, 245));
-                draw_rectangle_lines(x, 202., 204., 30., 1., GOLD);
+                outline(x, 202., 204., 30., 1., GOLD);
                 label_centered(text, x + 102., 223., 16., WHITE);
             }
         }

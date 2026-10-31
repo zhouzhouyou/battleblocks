@@ -15,6 +15,24 @@ const PANEL_PAD: f32 = 24.;
 /// Left edge and usable width of the panel content area.
 const PANEL_LEFT: f32 = PANEL.x + PANEL_PAD;
 const PANEL_INNER: f32 = PANEL.w - 2. * PANEL_PAD;
+/// Tabs of the help panel and the gap between them.
+pub const HELP_TAB_COUNT: usize = 2;
+const HELP_TABS: usize = HELP_TAB_COUNT;
+const TAB_GAP: f32 = 10.;
+const TAB_TOP: f32 = 158.;
+const TAB_HEIGHT: f32 = 30.;
+/// Tabs share the content width, so the strip always ends on the panel's inner edge
+/// no matter how many tabs exist. Input and drawing use this one geometry.
+pub fn help_tab_rect(i: usize) -> Rect {
+    let count = HELP_TABS.max(1) as f32;
+    let w = (PANEL_INNER - TAB_GAP * (count - 1.)) / count;
+    Rect::new(
+        PANEL_LEFT + i as f32 * (w + TAB_GAP),
+        TAB_TOP,
+        w,
+        TAB_HEIGHT,
+    )
+}
 /// Fully visible rows of the opponent grid; further rows scroll.
 pub const OPPONENT_VISIBLE_ROWS: usize = 5;
 pub struct Ui {
@@ -24,7 +42,7 @@ pub struct Ui {
     // First visible row of each selectable list. Both clamp to the current roster.
     pub hero_scroll: usize,
     pub opponent_scroll: usize,
-    help_awakening: bool,
+    help_tab: usize,
     fullscreen: bool,
     // Index into WINDOW_SIZES.
     window: usize,
@@ -38,7 +56,7 @@ impl Default for Ui {
             opponent_step: false,
             hero_scroll: 0,
             opponent_scroll: 0,
-            help_awakening: false,
+            help_tab: 0,
             fullscreen: false,
             window: 1,
             volume: 100,
@@ -57,7 +75,7 @@ fn frame(r: Rect, hovered: bool) {
             Color::from_rgba(39, 47, 64, 255)
         },
     );
-    draw_rectangle_lines(r.x, r.y, r.w, r.h, 1., GRAY);
+    outline(r.x, r.y, r.w, r.h, 1., GRAY);
 }
 fn button(r: Rect, text: &str, pointer: Vec2) {
     frame(r, r.contains(pointer));
@@ -101,13 +119,11 @@ impl Ui {
         }
         if click {
             if self.panel == Some(Panel::Help) {
-                if Rect::new(236., 158., 180., 30.).contains(pointer) {
-                    self.help_awakening = false;
-                    return true;
-                }
-                if Rect::new(426., 158., 180., 30.).contains(pointer) {
-                    self.help_awakening = true;
-                    return true;
+                for i in 0..HELP_TABS {
+                    if help_tab_rect(i).contains(pointer) {
+                        self.help_tab = i;
+                        return true;
+                    }
                 }
             }
             if top(0).contains(pointer) {
@@ -322,7 +338,7 @@ impl Ui {
             let r = difficulty_rect(i);
             button(r, name, pointer);
             if i == difficulty {
-                draw_rectangle_lines(r.x, r.y, r.w, r.h, 2., GOLD);
+                outline(r.x, r.y, r.w, r.h, 2., GOLD);
             }
         }
         // Only fully visible grid rows are drawn and clickable, so the last row can
@@ -341,7 +357,7 @@ impl Ui {
                     self.opponent == Some(crate::content::ROSTER[i - 1])
                 };
                 if selected {
-                    draw_rectangle_lines(r.x, r.y, r.w, r.h, 2., GOLD);
+                    outline(r.x, r.y, r.w, r.h, 2., GOLD);
                 }
                 if i == 0 {
                     label(
@@ -455,7 +471,7 @@ impl Ui {
             PANEL.h,
             Color::from_rgba(24, 30, 43, 255),
         );
-        draw_rectangle_lines(PANEL.x, PANEL.y, PANEL.w, PANEL.h, 2., SKYBLUE);
+        outline(PANEL.x, PANEL.y, PANEL.w, PANEL.h, 2., SKYBLUE);
         label(
             match panel {
                 Panel::Settings => tr_key(zh, "ui.screen.draw_panel.settings"),
@@ -475,11 +491,11 @@ impl Ui {
             .iter()
             .enumerate()
             {
-                let r = Rect::new(236. + i as f32 * 190., 158., 180., 30.);
-                frame(r, self.help_awakening == (i == 1));
+                let r = help_tab_rect(i);
+                frame(r, self.help_tab == i);
                 label(text, r.x + 10., r.y + 21., 17., WHITE);
             }
-            if self.help_awakening {
+            if self.help_tab == 1 {
                 // Explanation only: every hero's numbers live on its own awakening page.
                 for (i, (text, color)) in [
                     (
@@ -551,7 +567,7 @@ impl Ui {
                         let o = option_rect(row, i);
                         draw_rectangle(o.x, o.y, o.w, o.h, Color::from_rgba(24, 30, 43, 255));
                         let on = i == selected;
-                        draw_rectangle_lines(
+                        outline(
                             o.x,
                             o.y,
                             o.w,
@@ -733,7 +749,7 @@ pub fn draw_pause(zh: bool, pointer: Vec2) {
     flush_labels();
     draw_rectangle(0., 0., 1024., 720., Color::new(0., 0., 0., 0.72));
     draw_rectangle(282., 180., 460., 390., Color::from_rgba(24, 30, 43, 255));
-    draw_rectangle_lines(282., 180., 460., 390., 2., SKYBLUE);
+    outline(282., 180., 460., 390., 2., SKYBLUE);
     label(
         tr_key(zh, "ui.screen.draw_pause.paused"),
         322.,

@@ -1,4 +1,5 @@
 use crate::content::Skill;
+use crate::outline;
 use macroquad::prelude::*;
 pub fn draw(skill: Skill, x: f32, y: f32, size: f32) {
     let skill = match skill {
@@ -31,7 +32,7 @@ pub fn draw(skill: Skill, x: f32, y: f32, size: f32) {
         size,
         Color::new(color.r * 0.15, color.g * 0.15, color.b * 0.15, 1.),
     );
-    draw_rectangle_lines(x + 1., y + 1., size - 2., size - 2., 1., color);
+    outline(x + 1., y + 1., size - 2., size - 2., 1., color);
     let cx = x + size / 2.;
     let cy = y + size / 2.;
     let r = size * 0.3;

@@ -1,4 +1,4 @@
-use crate::{label, Board};
+use crate::{label, outline, Board};
 use macroquad::prelude::*;
 use std::collections::VecDeque;
 /// Output rows visible at once in the full-screen console.
@@ -500,7 +500,7 @@ impl Console {
         crate::flush_labels();
         // An opaque full-screen sheet, so no battle text shows through or around it.
         draw_rectangle(0., 0., 1024., 720., Color::new(0.02, 0.03, 0.06, 1.));
-        draw_rectangle_lines(8., 8., 1008., 704., 2., Color::new(0.25, 0.4, 0.55, 1.));
+        outline(8., 8., 1008., 704., 2., Color::new(0.25, 0.4, 0.55, 1.));
         label(
             self.tr(
                 "DEBUG CONSOLE · ~ / F1 toggle · Esc close · wheel / PgUp PgDn scroll",
