@@ -50,6 +50,8 @@ ui.hints.draw_hints.dmg	Dmg 	伤
 ui.screen.draw_panel.dmg	DMG	伤害
 ui.menu.draw.each_hero_plays_differently	Each hero plays differently.	每个角色都有不同的战斗方式。
 ui.menu.draw.effect_preview	EFFECT PREVIEW	技能效果预览
+ui.menu.draw.character_form	Character form	角色形态
+ui.menu.draw.cast_animation	Cast animation	施法动作
 ui.shared.enemy	Enemy	敌方
 ui.hud.draw_turns.enemy_is_choosing	Enemy is choosing	敌方思考中
 ui.hints.draw_hints.enemy_moves_view_only	Enemy moves: view only	敌方的交换，仅供查看
