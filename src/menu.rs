@@ -66,7 +66,7 @@ pub fn start_rect() -> Rect {
 }
 fn panel(rect: Rect, color: Color) {
     draw_rectangle(rect.x, rect.y, rect.w, rect.h, color);
-    draw_rectangle_lines(
+    outline(
         rect.x,
         rect.y,
         rect.w,
@@ -399,7 +399,7 @@ pub fn draw(
                 },
             );
             if i == preview.skill {
-                draw_rectangle_lines(r.x, r.y, r.w, r.h, 2., GOLD);
+                outline(r.x, r.y, r.w, r.h, 2., GOLD);
             }
             icons::draw(*skill, r.x + 12., r.y + 8., 28.);
             let details = format!(
@@ -507,7 +507,7 @@ pub fn draw(
                     },
                 );
                 if affected {
-                    draw_rectangle_lines(px, py, 22., 22., 1.5, if after { SKYBLUE } else { GOLD });
+                    outline(px, py, 22., 22., 1.5, if after { SKYBLUE } else { GOLD });
                 }
             }
         }

@@ -28,7 +28,7 @@ impl Session {
                         },
                     );
                     draw_rectangle(r.x, r.y, r.w, r.h, Color::from_rgba(25, 33, 46, 255));
-                    draw_rectangle_lines(r.x, r.y, r.w, r.h, 1., SKYBLUE);
+                    outline(r.x, r.y, r.w, r.h, 1., SKYBLUE);
                     let line = content::awakening_line(id).to_string();
                     let threshold = content::AWAKENING_LINES[id].to_string();
                     let cap = content::health_cap(id, true).to_string();
@@ -136,7 +136,7 @@ impl Session {
                     );
                     draw_rectangle(r.x, r.y, r.w, r.h, Color::from_rgba(39, 42, 50, 255));
                     if !side && self.new_role_states[0].pocket_slot == slot {
-                        draw_rectangle_lines(r.x, r.y, r.w, r.h, 1.5, GOLD);
+                        outline(r.x, r.y, r.w, r.h, 1.5, GOLD);
                     }
                     if let Some(tile) = self.new_role_states[side as usize].pockets[slot] {
                         draw_texture_ex(
@@ -295,7 +295,7 @@ impl Session {
                     Color::from_rgba(43, 40, 29, 255),
                 );
                 if hovered {
-                    draw_rectangle_lines(rect.x, rect.y, rect.w, rect.h, 1., GOLD);
+                    outline(rect.x, rect.y, rect.w, rect.h, 1., GOLD);
                 }
                 icons::draw_passive(passive, rect.x + 3., rect.y + 3., 18.);
                 let name = passive.badge_name(self.zh, status);
@@ -387,7 +387,7 @@ impl Session {
                 rect.h,
                 Color::new(0.18, 0.24, 0.30, 1.),
             );
-            draw_rectangle_lines(rect.x, rect.y, rect.w, rect.h, 2., GOLD);
+            outline(rect.x, rect.y, rect.w, rect.h, 2., GOLD);
             label(
                 tr_key(
                     self.zh,

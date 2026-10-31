@@ -1,5 +1,6 @@
 //! Skill-specific, deterministic visuals. Rendering never touches battle state or RNG.
 use crate::content::Skill;
+use crate::outline;
 use macroquad::prelude::*;
 fn tint(c: Color, a: f32) -> Color {
     Color::new(c.r, c.g, c.b, a.clamp(0., 1.))
@@ -244,7 +245,7 @@ pub fn draw(skill: Skill, cells: &[(usize, usize)], progress: f32, enemy: bool) 
             }
             Skill::Guard => {
                 // The board contribution is consumption, not additional healing.
-                draw_rectangle_lines(
+                outline(
                     c.x - 24. * (1. - q),
                     c.y - 24. * (1. - q),
                     48. * (1. - q),

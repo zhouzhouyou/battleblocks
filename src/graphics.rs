@@ -167,8 +167,41 @@ pub(crate) fn draw_breaking_lock(x: f32, y: f32, t: f32, color: Color) {
         );
     }
 }
+/// World units per device pixel for the camera the UI draws through.
+pub(crate) fn device_scale() -> f32 {
+    (screen_width() / 1024.)
+        .min(screen_height() / 720.)
+        .max(0.001)
+}
+fn snap_to_pixel(value: f32, scale: f32) -> f32 {
+    (value * scale).round() / scale
+}
+/// Rectangle outline that is guaranteed to stay visible at every window size.
+///
+/// `draw_rectangle_lines` draws a half-thickness outline inside the rectangle, so a
+/// "1px" border can fall between two pixel centers and vanish completely when the
+/// window scale is fractional. That is why borders kept disappearing on one side
+/// (most often the right one). Drawing the four edges as filled strips, snapped to
+/// whole device pixels, keeps every edge crisp and present at any scale.
+pub(crate) fn outline(x: f32, y: f32, w: f32, h: f32, thickness: f32, color: Color) {
+    let scale = device_scale();
+    let left = snap_to_pixel(x, scale);
+    let top = snap_to_pixel(y, scale);
+    let right = snap_to_pixel(x + w, scale);
+    let bottom = snap_to_pixel(y + h, scale);
+    let (w, h) = (right - left, bottom - top);
+    if w <= 0. || h <= 0. {
+        return;
+    }
+    // At least one device pixel wide, never thicker than the smaller half side.
+    let t = ((thickness * scale).round().max(1.) / scale).min(w.min(h) / 2.);
+    draw_rectangle(left, top, w, t, color);
+    draw_rectangle(left, bottom - t, w, t, color);
+    draw_rectangle(left, top + t, t, h - 2. * t, color);
+    draw_rectangle(right - t, top + t, t, h - 2. * t, color);
+}
 pub(crate) fn draw_lock(x: f32, y: f32, color: Color) {
-    draw_rectangle_lines(x + 2., y, 7., 8., 2., color);
+    outline(x + 2., y, 7., 8., 2., color);
     draw_rectangle(x, y + 6., 11., 8., color);
     draw_rectangle(x + 5., y + 8., 2., 4., Color::from_rgba(25, 33, 46, 255));
 }
@@ -223,7 +256,7 @@ pub(crate) fn procedural_board() {
     let light = Color::from_rgba(214, 193, 167, 255);
     draw_rectangle(236., 90., 552., 552., dark);
     draw_rectangle(241., 95., 542., 542., mid);
-    draw_rectangle_lines(241., 95., 542., 542., 3., light);
+    outline(241., 95., 542., 542., 3., light);
     for i in 0..18 {
         let p = i as f32 * 30.;
         draw_line(241. + p, 95., 241. + p, 108., 3., dark);
@@ -234,8 +267,8 @@ pub(crate) fn procedural_board() {
 }
 pub(crate) fn procedural_cell(x: f32, y: f32) {
     draw_rectangle(x, y, 64., 64., Color::from_rgba(172, 127, 115, 255));
-    draw_rectangle_lines(x, y, 64., 64., 3., Color::from_rgba(43, 37, 33, 255));
-    draw_rectangle_lines(
+    outline(x, y, 64., 64., 3., Color::from_rgba(43, 37, 33, 255));
+    outline(
         x + 4.,
         y + 4.,
         56.,
