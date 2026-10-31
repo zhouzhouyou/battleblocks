@@ -41,7 +41,7 @@ impl Preview {
     }
 }
 pub fn hero_rect(i: usize) -> Rect {
-    Rect::new(24., 112. + i as f32 * 59., 232., 53.)
+    Rect::new(24., 112. + i as f32 * 53., 232., 48.)
 }
 pub fn skill_rect(i: usize) -> Rect {
     Rect::new(548., 126. + i as f32 * 94., 452., 88.)

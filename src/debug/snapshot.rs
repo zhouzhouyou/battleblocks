@@ -46,7 +46,7 @@ fn role_json(state: &crate::role_state::RoleState) -> String {
         .copied_skill
         .map(|v| v.to_string())
         .unwrap_or_else(|| "null".into());
-    format!("{{\"pockets\":[{},{}],\"jumped\":{},\"miracle\":{},\"copied_skill\":{},\"pocket_slot\":{},\"direct_tiles\":{:?},\"force_armed\":{},\"horizontal\":{},\"upper_swap\":{}}}", pockets[0],pockets[1],state.jumped,state.miracle,copied,state.pocket_slot,state.direct_tiles,state.force_armed,state.horizontal,state.upper_swap)
+    format!("{{\"pockets\":[{},{}],\"jumped\":{},\"miracle\":{},\"copied_skill\":{},\"pocket_slot\":{},\"direct_tiles\":{:?},\"force_armed\":{},\"horizontal\":{},\"upper_swap\":{},\"turn_mode\":\"{:?}\"}}", pockets[0],pockets[1],state.jumped,state.miracle,copied,state.pocket_slot,state.direct_tiles,state.force_armed,state.horizontal,state.upper_swap,state.turn_mode)
 }
 fn cells_json(cells: &[(usize, usize)]) -> String {
     format!(

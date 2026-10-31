@@ -284,6 +284,7 @@ impl Session {
             copied_skill: self.new_role_states[side as usize]
                 .copied_skill
                 .and_then(content::Skill::from_index),
+            turn_mode: self.new_role_states[side as usize].turn_mode,
             awake: self.awakened[side as usize],
             initial_loot: false,
             opponent_hp: Some(if side { self.hp } else { self.enemy }),
@@ -345,22 +346,37 @@ impl Session {
         }
         result
     }
-    fn apply_rewards(&mut self, gains: (i32, i32, i32)) -> content::DamageResult {
+    fn apply_rewards(
+        &mut self,
+        gains: (i32, i32, i32),
+        opponent_heal: i32,
+    ) -> content::DamageResult {
         let side = self.enemy_turn;
         let (id, hp, mp) = if side {
             (self.enemy_id, self.enemy, self.enemy_mp)
         } else {
             (self.hero_id, self.hp, self.mp)
         };
-        let (hp, mp, damage) = content::settle_rewards(id, hp, mp, gains, self.rules(side));
+        let opponent_hp = if side { self.hp } else { self.enemy };
+        let settled = content::settle_rewards_in(
+            id,
+            hp,
+            mp,
+            opponent_hp,
+            gains,
+            opponent_heal,
+            self.rules(side),
+        );
         if side {
-            self.enemy = hp;
-            self.enemy_mp = mp;
+            self.enemy = settled.actor_hp;
+            self.enemy_mp = settled.actor_mp;
+            self.hp = settled.opponent_hp;
         } else {
-            self.hp = hp;
-            self.mp = mp;
+            self.hp = settled.actor_hp;
+            self.mp = settled.actor_mp;
+            self.enemy = settled.opponent_hp;
         }
-        self.damage(damage, !side, "damage")
+        self.damage(settled.damage, !side, "damage")
     }
     fn snapshot(&self) -> debug::Snapshot {
         debug::Snapshot {

@@ -72,18 +72,30 @@ pub fn preview_rewards_in(
         health -= pay.blood;
         DamageResult::default()
     };
-    let rules = Rules {
+    let mut rules = Rules {
         awake: actor_awake,
         ..rules
     };
     let e = effect_at_in(skill, &mut copy, target, hero, hp, mp, rules);
-    let (next_health, next_mana, direct_damage) =
-        settle_rewards(hero, health, mp - pay.mana, (e.hp, e.damage, e.mp), rules);
-    health = next_health;
-    let mut opponent = enemy_hp;
-    let (mut damage, mut hit_rules) = preview_hit(rules, &mut opponent, direct_damage);
+    rules.turn_mode = match effective_skill(skill, rules) {
+        Skill::Frenzy => TurnMode::Frenzy,
+        Skill::Rational => TurnMode::Rational,
+        _ => rules.turn_mode,
+    };
+    let settled = settle_rewards_in(
+        hero,
+        health,
+        mp - pay.mana,
+        enemy_hp,
+        (e.hp, e.damage, e.mp),
+        e.opponent_heal,
+        rules,
+    );
+    health = settled.actor_hp;
+    let mut opponent = settled.opponent_hp;
+    let (mut damage, mut hit_rules) = preview_hit(rules, &mut opponent, settled.damage);
     let spent = mp - pay.mana;
-    let mut mana = next_mana;
+    let mut mana = settled.actor_mp;
     let (cells, rewarded) = if e.cells.is_empty() {
         (crate::matches(&copy), true)
     } else {
@@ -104,12 +116,13 @@ pub fn preview_rewards_in(
             bonus + e.bonus,
             clear_rules,
         );
-        let (next_health, next_mana, d) = settle_rewards(hero, health, mana, (h, d, m), rules);
-        health = next_health;
-        let (actual, next) = preview_hit(hit_rules, &mut opponent, d);
+        let settled = settle_rewards_in(hero, health, mana, opponent, (h, d, m), 0, rules);
+        health = settled.actor_hp;
+        opponent = settled.opponent_hp;
+        let (actual, next) = preview_hit(hit_rules, &mut opponent, settled.damage);
         damage += actual;
         hit_rules = next;
-        mana = next_mana;
+        mana = settled.actor_mp;
     }
     SkillPreview {
         awakens_self: paid_hit.awakened,
@@ -254,9 +267,11 @@ pub fn preview_move_in(
     };
     let cells = crate::matches(&copy);
     let (h, d, m) = clear_rewards_in(hero, hp, mp, &copy, &cells, 1, bonus, rules);
-    let (health_after, mana_after, d) = settle_rewards(hero, hp, mp, (h, d, m), rules);
-    let mut opponent = enemy_hp;
-    let (damage, hit_rules) = preview_hit(rules, &mut opponent, d);
+    let settled = settle_rewards_in(hero, hp, mp, enemy_hp, (h, d, m), 0, rules);
+    let health_after = settled.actor_hp;
+    let mana_after = settled.actor_mp;
+    let mut opponent = settled.opponent_hp;
+    let (damage, hit_rules) = preview_hit(rules, &mut opponent, settled.damage);
     Some(MovePreview {
         heal: health_after - hp,
         damage,

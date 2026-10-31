@@ -215,6 +215,22 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-debug-') as temp:
         assert recharge['before']['mp']==60 and recharge['after']['mp']==min(recovered,250)
         assert 'cost=60' in recharge['detail']
         rollback_to(recharge['before'])
+        # The nun's preparation changes this turn's direct healing into damage.
+        edit_command('hero player 10')
+        edit_command('hero enemy 8')
+        edit_command('hp player 400')
+        edit_command('hp enemy 600')
+        edit_command('mp player 180')
+        prepare=action('cast 1','skill')
+        assert prepare['after']['new_role_states'][0]['turn_mode']=='Frenzy'
+        assert not prepare['after']['armed']
+        assert prepare['after']['mp']==150 and not prepare['after']['action_done']
+        prayer=action('cast 2','skill')
+        assert prayer['after']['hp']==465
+        assert prayer['after']['enemy_hp']==465
+        assert prayer['after']['mp']==90
+        rollback_to(prayer['before'])
+        rollback_to(prepare['before'])
         # At the locked full reserve, the wizard's clear heals normally.
         edit_command('hero player 2')
         edit_command('hp player 300')

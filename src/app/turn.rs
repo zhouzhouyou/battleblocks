@@ -35,6 +35,40 @@ impl Session {
             && !self.presentation.busy()
             && self.deadline <= 0.
         {
+            let actor_id = if self.enemy_turn {
+                self.enemy_id
+            } else {
+                self.hero_id
+            };
+            if actor_id == content::NUN {
+                let before_recovery = self.snapshot();
+                let hit = self.apply_rewards((10, 0, 10), 0);
+                let heal = if self.enemy_turn {
+                    self.enemy - before_recovery.enemy_hp
+                } else {
+                    self.hp - before_recovery.hp
+                };
+                let mana = if self.enemy_turn {
+                    self.enemy_mp - before_recovery.enemy_mp
+                } else {
+                    self.mp - before_recovery.mp
+                };
+                self.turn_log.current.add(heal, hit.damage, mana);
+                self.presentation.health(
+                    [before_recovery.hp, before_recovery.enemy_hp],
+                    [self.hp, self.enemy],
+                    content::role_text("AutoRecovery.name", self.zh),
+                );
+                self.console.event(
+                    "auto_recovery",
+                    &format!("heal={heal} damage={} mana={mana}", hit.damage),
+                    &before_recovery,
+                    &self.snapshot(),
+                );
+                if self.hp == 0 || self.enemy == 0 {
+                    return;
+                }
+            }
             let before = self.snapshot();
             self.bonuses[self.enemy_turn as usize] = self.extra_bonus;
             self.armed_sides[self.enemy_turn as usize] = self.armed;
@@ -57,6 +91,7 @@ impl Session {
                 let pick = rng::gen_range(0, cleared.len());
                 self.new_role_states[receiver as usize].mind_vision(&cleared, pick);
             }
+            self.new_role_states[self.enemy_turn as usize].end_turn();
             self.enemy_turn = !self.enemy_turn;
             self.cooldowns.start_turn(self.enemy_turn as usize);
             self.new_role_states[self.enemy_turn as usize].start_turn();

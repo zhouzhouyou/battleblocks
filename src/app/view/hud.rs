@@ -130,7 +130,12 @@ impl Session {
             }
             let show_awake = self.awakened[enemy_side as usize]
                 && self.presentation.awakened_visible(enemy_side);
-            let sprite = if show_awake {
+            let show_shadow = sprites::shadow_form(
+                id,
+                show_awake,
+                self.new_role_states[enemy_side as usize].turn_mode,
+            );
+            let sprite = if show_shadow {
                 &sprites::AWAKENED[id]
             } else {
                 &sprites::SPRITES[id]
@@ -139,7 +144,7 @@ impl Session {
                 && self.last_cast.is_some()
                 && self.last_cast_enemy == enemy_side
                 && self.cast_time > 0.;
-            let cast_indices: &[usize] = if show_awake {
+            let cast_indices: &[usize] = if show_shadow {
                 &[12, 13, 14, 15]
             } else {
                 &[8, 9, 10, 11]
@@ -194,7 +199,7 @@ impl Session {
                     * 12.;
             }
             actor(
-                if show_awake {
+                if show_shadow {
                     &self.awake_textures[id]
                 } else if enemy_side {
                     &self.enemy_texture

@@ -33,6 +33,9 @@ pub enum Passive {
     ClumsyAwake,
     MindVision,
     BorrowedSlot,
+    FriendMilk,
+    AutoRecovery,
+    Madness,
 }
 use Passive::*;
 pub fn passives(hero: usize, awake: bool) -> &'static [Passive] {
@@ -57,6 +60,8 @@ pub fn passives(hero: usize, awake: bool) -> &'static [Passive] {
         (8, true) => &[DwarfStrength, Short, Grudge],
         (9, false) => &[MindVision],
         (9, true) => &[MindVision, BorrowedSlot],
+        (10, false) => &[FriendMilk, AutoRecovery],
+        (10, true) => &[Madness, AutoRecovery],
         _ => &[],
     }
 }
@@ -75,6 +80,9 @@ impl Passive {
                 | ClumsyAwake
                 | MindVision
                 | BorrowedSlot
+                | FriendMilk
+                | AutoRecovery
+                | Madness
         )
     }
     pub fn replaces(self) -> Option<Self> {
@@ -84,6 +92,7 @@ impl Passive {
             BalancedResonance => Some(BalancedAffinity),
             BoilingBlood => Some(BloodFury),
             FleshConversion => Some(FleshCasting),
+            Madness => Some(FriendMilk),
             _ => None,
         }
     }
@@ -93,7 +102,7 @@ impl Passive {
         }
         let key = match self {
             KnightStrength | DwarfStrength | Short | Grudge | Clumsy | ClumsyAwake | MindVision
-            | BorrowedSlot => unreachable!(),
+            | BorrowedSlot | FriendMilk | AutoRecovery | Madness => unreachable!(),
             ColumnFormation => "passive.name.column_formation",
             BattleTraining => "passive.name.battle_training",
             ForestStep => "passive.name.forest_step",
@@ -128,7 +137,7 @@ impl Passive {
         }
         let key = match self {
             KnightStrength | DwarfStrength | Short | Grudge | Clumsy | ClumsyAwake | MindVision
-            | BorrowedSlot => unreachable!(),
+            | BorrowedSlot | FriendMilk | AutoRecovery | Madness => unreachable!(),
             ColumnFormation => "passive.short_name.column_formation",
             BattleTraining => "passive.short_name.battle_training",
             ForestStep => "passive.short_name.forest_step",
@@ -160,7 +169,7 @@ impl Passive {
         }
         let key = match self {
             KnightStrength | DwarfStrength | Short | Grudge | Clumsy | ClumsyAwake | MindVision
-            | BorrowedSlot => unreachable!(),
+            | BorrowedSlot | FriendMilk | AutoRecovery | Madness => unreachable!(),
             ColumnFormation => "passive.description.column_formation",
             BattleTraining => "passive.description.battle_training",
             ForestStep => "passive.description.forest_step",
