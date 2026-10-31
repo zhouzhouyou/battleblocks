@@ -1,6 +1,6 @@
 {
   "date": "2026-11-01",
-  "policy": "Keep current dwarf model v5, animation v6, and the selected role model sheets only. On 2026-11-01 the obsolete production v1/v2 images, duplicate grid previews, and superseded knight/priest/nun candidates were removed from the working tree and from Git history; commit dates were preserved and origin/main remains an ancestor of the current branch. Do not restore removed drafts from the generator cache. User-authorized production/v3 animations derive from selected models; current role display height and pixel density are uniform.",
+  "policy": "Keep current dwarf model v5, animation v6, and the selected role model sheets only. On 2026-11-01 the dwarf old drafts, obsolete production v1/v2 images, duplicate grid previews, and superseded knight/priest/nun candidates were removed from the working tree and from Git history; commit dates were preserved and origin/main remains an ancestor of the current branch. Git history no longer contains any removed draft. Do not restore removed drafts from the generator cache. User-authorized production/v3 animations derive from selected models; current role display height and pixel density are uniform.",
   "generated_images_seen": 42,
   "generated_images_in_worktree": 20,
   "images": [
@@ -15,7 +15,8 @@
       "sha256": "1cfa5f41af40b05e21eb7f08006820008f4e39f5b3c0e0fe6e154be5b0bb1978",
       "status": "removed_from_worktree_by_user_request",
       "former_repository_file": "asset-sources/art-direction/characters/dwarf/animations/grudge-book-thickness-v3.png",
-      "recover_from_git": "9ccc459"
+      "removed_at": "2026-11-01",
+      "note": "Removed from the working tree and Git history during the 2026-11-01 cleanup."
     },
     {
       "generated_file": "exec-0b4d2392-cbf4-401f-97b6-670d67861d3b.png",
@@ -46,7 +47,8 @@
       "sha256": "13c9d5ccd155e8a0914d9434b6514d7f2c844240fb2189d8bd209870b3939031",
       "status": "removed_from_worktree_by_user_request",
       "former_repository_file": "asset-sources/art-direction/characters/dwarf/dwarf-review-v1.png",
-      "recover_from_git": "9ccc459"
+      "removed_at": "2026-11-01",
+      "note": "Removed from the working tree and Git history during the 2026-11-01 cleanup."
     },
     {
       "generated_file": "exec-55c69988-64dc-4ab2-b9bf-acdde4a9e3f9.png",
@@ -65,7 +67,8 @@
       "sha256": "1e5406d810c024fb30950250bc1e1ecd34f802ccf2f401430c2e01ab04e8da8a",
       "status": "removed_from_worktree_by_user_request",
       "former_repository_file": "asset-sources/art-direction/characters/dwarf/dwarf-refined-ka-v4.png",
-      "recover_from_git": "9ccc459"
+      "removed_at": "2026-11-01",
+      "note": "Removed from the working tree and Git history during the 2026-11-01 cleanup."
     },
     {
       "generated_file": "exec-75e10404-7709-4050-890a-772714827926.png",
@@ -78,7 +81,8 @@
       "sha256": "ac61635d34476cc6620d4e9add5c3170ef708d92c80c5e986fd2c8fc2648b5fc",
       "status": "removed_from_worktree_by_user_request",
       "former_repository_file": "asset-sources/art-direction/archive/dwarf-ka-detail-study-too-smooth.png",
-      "recover_from_git": "9ccc459"
+      "removed_at": "2026-11-01",
+      "note": "Removed from the working tree and Git history during the 2026-11-01 cleanup."
     },
     {
       "generated_file": "exec-7d1433ba-b20c-4c0f-9d76-53806bb98d78.png",
@@ -97,7 +101,8 @@
       "sha256": "dcdb3c96f9817ce9ddcc08ed010ddbdfc8b3ddd65fe1250262079b82c9316df7",
       "status": "removed_from_worktree_by_user_request",
       "former_repository_file": "asset-sources/art-direction/characters/dwarf/dwarf-review-e-v1.png",
-      "recover_from_git": "9ccc459"
+      "removed_at": "2026-11-01",
+      "note": "Removed from the working tree and Git history during the 2026-11-01 cleanup."
     },
     {
       "generated_file": "exec-9112a263-b415-4455-93a4-74f471a2264a.png",
@@ -122,7 +127,8 @@
       "sha256": "5ed4a85adc3df969cb50bbead6946b0efb3a44dc66285995ee8a9b0a4f712c3f",
       "status": "removed_from_worktree_by_user_request",
       "former_repository_file": "asset-sources/art-direction/characters/dwarf/animations/grudge-book-closed-v2.png",
-      "recover_from_git": "9ccc459"
+      "removed_at": "2026-11-01",
+      "note": "Removed from the working tree and Git history during the 2026-11-01 cleanup."
     },
     {
       "generated_file": "exec-a16b68f9-fcb2-42a6-93aa-55a75264857e.png",
@@ -137,7 +143,8 @@
       "sha256": "728617b1699977e30ca3dcbcdf981858dc19b80637d2dd22e3a8ffe60386c4a1",
       "status": "removed_from_worktree_by_user_request",
       "former_repository_file": "asset-sources/art-direction/characters/dwarf/animations/grudge-book-study-v1.png",
-      "recover_from_git": "9ccc459"
+      "removed_at": "2026-11-01",
+      "note": "Removed from the working tree and Git history during the 2026-11-01 cleanup."
     },
     {
       "generated_file": "exec-cd99b18b-667c-47fd-96dd-d8358f0f79b3.png",
@@ -150,7 +157,8 @@
       "sha256": "d9f024c7aede2ceac3c244b1ac502ddfa7bb7be362127fb0bc42f2d279bca6ab",
       "status": "removed_from_worktree_by_user_request",
       "former_repository_file": "asset-sources/art-direction/characters/dwarf/animations/dwarf-idle-runes-v1.png",
-      "recover_from_git": "9ccc459"
+      "removed_at": "2026-11-01",
+      "note": "Removed from the working tree and Git history during the 2026-11-01 cleanup."
     },
     {
       "generated_file": "exec-de89aede-9837-4d63-b413-6a0de8ecc2d0.png",
@@ -163,7 +171,8 @@
       "sha256": "673d5513ba51492a1fbb0cbb742b4bdb146f880f0368b2fa519dfe9dc740d11b",
       "status": "removed_from_worktree_by_user_request",
       "former_repository_file": "asset-sources/art-direction/characters/dwarf/animations/dwarf-normal-awake-corrected-v2.png",
-      "recover_from_git": "9ccc459"
+      "removed_at": "2026-11-01",
+      "note": "Removed from the working tree and Git history during the 2026-11-01 cleanup."
     },
     {
       "generated_file": "exec-f60797f3-9f67-470c-aa18-fefaec840f9e.png",
@@ -176,7 +185,8 @@
       "sha256": "5809dc551c267731d41343f8bff4ab4c61dba4b4bd9106ccb724b069d357cca5",
       "status": "removed_from_worktree_by_user_request",
       "former_repository_file": "asset-sources/art-direction/archive/dwarf-first-study-too-detailed.png",
-      "recover_from_git": "9ccc459"
+      "removed_at": "2026-11-01",
+      "note": "Removed from the working tree and Git history during the 2026-11-01 cleanup."
     },
     {
       "generated_file": "exec-e29e9675-b0ef-4cc4-8ead-10932f4ee676.png",
