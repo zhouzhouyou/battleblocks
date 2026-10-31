@@ -86,7 +86,34 @@ with tempfile.TemporaryDirectory(prefix="battleblocks-headless-") as temp:
     assert any(e["event"] == "restart" for e in records)
     assert "调试控制台" not in result.stdout
     assert "reward_event" not in result.stdout
+
+    batch = subprocess.run(
+        [
+            str(BIN),
+            "--headless",
+            "--autoplay",
+            "--samples",
+            "1",
+            "--seed",
+            "77",
+            "--level",
+            "1",
+            "--roster",
+            "8,7",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    assert batch.returncode == 0, batch.stderr + batch.stdout
+    assert "hero,wins,games,win_percent" in batch.stdout, batch.stdout
+    assert "games=2" in batch.stdout, batch.stdout
+    assert "roster=Dwarf,Knight" in batch.stdout, batch.stdout
+    assert "pairwise_win_counts=" in batch.stdout, batch.stdout
+
     print(
         "PASS: headless core generated "
-        f"{len(records)} JSONL events across console edits, move, cast, rollback, AI turn and resolve"
+        f"{len(records)} JSONL events across console edits, move, cast, rollback, AI turn and resolve; "
+        "autoplay produced a four-column CSV for two matches"
     )

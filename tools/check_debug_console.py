@@ -219,16 +219,16 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-debug-') as temp:
         edit_command('hero player 10')
         edit_command('hero enemy 8')
         edit_command('hp player 400')
-        edit_command('hp enemy 600')
-        edit_command('mp player 180')
+        edit_command('hp enemy 500')
+        edit_command('mp player 160')
         prepare=action('cast 1','skill')
         assert any(s['id']=='Frenzy' for s in prepare['after']['new_role_states'][0]['statuses'])
         assert not prepare['after']['armed']
-        assert prepare['after']['mp']==150 and not prepare['after']['action_done']
+        assert prepare['after']['mp']==130 and not prepare['after']['action_done']
         prayer=action('cast 2','skill')
-        assert prayer['after']['hp']==465
-        assert prayer['after']['enemy_hp']==465
-        assert prayer['after']['mp']==90
+        assert prayer['after']['hp']==443
+        assert prayer['after']['enemy_hp']==415
+        assert prayer['after']['mp']==70
         traced=[e['payload'] for e in records() if e['event']=='reward_event' and e['action']==prayer['action'] and e.get('payload') and e['payload']['resource']=='Damage']
         assert any([step['source'].get('id') for step in event['source_chain']]==['Healing','FriendMilk','Frenzy'] for event in traced)
         rollback_to(prayer['before'])

@@ -4,15 +4,31 @@ use std::collections::HashMap;
 use std::sync::OnceLock;
 
 pub(crate) fn wrap_preview_text(text: &str, limit: f32) -> Vec<String> {
+    fn width_of(text: &str) -> f32 {
+        text.chars()
+            .map(|c| if c.is_ascii() { 0.55 } else { 1. })
+            .sum()
+    }
     let mut lines = Vec::new();
     for source in text.lines() {
         let mut line = String::new();
         let mut width = 0.;
         for c in source.chars() {
             let w = if c.is_ascii() { 0.55 } else { 1. };
-            if width + w > limit && !line.is_empty() {
-                lines.push(std::mem::take(&mut line));
-                width = 0.;
+            // Prefer the last word boundary; CJK text without spaces still wraps by character.
+            while width + w > limit && !line.is_empty() {
+                if let Some(space) = line.rfind(' ') {
+                    let rest = line.split_off(space + 1);
+                    let head = line.trim_end().to_string();
+                    if !head.is_empty() {
+                        lines.push(head);
+                    }
+                    line = rest.trim_start().to_string();
+                    width = width_of(&line);
+                } else {
+                    lines.push(std::mem::take(&mut line));
+                    width = 0.;
+                }
             }
             line.push(c);
             width += w;

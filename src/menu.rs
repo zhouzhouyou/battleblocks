@@ -46,6 +46,8 @@ impl Preview {
         }
     }
 }
+/// Final page is the character file; pages 0..2 are resources, passives and awakening.
+pub const CHARACTER_PAGE_COUNT: usize = 4;
 /// Rows of the hero list that fit without covering the key hints below it.
 pub const HERO_VISIBLE_ROWS: usize = 9;
 pub const HERO_ROW_STEP: f32 = 53.;
@@ -305,7 +307,7 @@ pub fn draw(
             GOLD,
         );
         draw_passive_entries(content::passives(hero, false), zh, false);
-    } else {
+    } else if page == 2 {
         label(tr_key(zh, "ui.menu.draw.awakening"), 304., 373., 22., GOLD);
         let changes = content::passives(hero, true)
             .iter()
@@ -313,6 +315,19 @@ pub fn draw(
             .filter(|p| !content::passives(hero, false).contains(p))
             .collect::<Vec<_>>();
         draw_passive_entries(&changes, zh, true);
+    } else {
+        label(tr_key(zh, "ui.menu.draw.lore_intro"), 304., 373., 22., GOLD);
+        if let Some(lore) = content::role_lore(hero) {
+            let (size, step, limit, max) = if zh {
+                (13., 17., 15.4, 12)
+            } else {
+                (12., 15., 16.8, 14)
+            };
+            let lines = wrap_preview_text(lore.intro(zh), limit);
+            for (i, text) in lines.iter().take(max).enumerate() {
+                label(text, 304., 401. + i as f32 * step, size, LIGHTGRAY);
+            }
+        }
     }
     if page == 0 {
         let old_mana = content::mana_cap(hero, false);
@@ -355,169 +370,179 @@ pub fn draw(
             r.x + 7.,
             r.y + 16.,
             14.,
-            if (i == 0 && page == 0) || (i == 1 && page == 2) {
+            if (i == 0 && page == 0) || (i == 1 && page == CHARACTER_PAGE_COUNT - 1) {
                 GRAY
             } else {
                 SKYBLUE
             },
         );
     }
-    label(&format!("{} / 3", page + 1), 388., 623., 14., WHITE);
-    let visible_skills = content::skills(hero, page == 2);
-    for (i, skill) in visible_skills.iter().enumerate() {
-        let r = skill_rect(i);
-        panel(
-            r,
+    label(
+        &format!("{} / {}", page + 1, CHARACTER_PAGE_COUNT),
+        388.,
+        623.,
+        14.,
+        WHITE,
+    );
+    if page == CHARACTER_PAGE_COUNT - 1 {
+        draw_lore(hero, zh);
+    } else {
+        let visible_skills = content::skills(hero, page == 2);
+        for (i, skill) in visible_skills.iter().enumerate() {
+            let r = skill_rect(i);
+            panel(
+                r,
+                if i == preview.skill {
+                    Color::from_rgba(44, 48, 59, 255)
+                } else {
+                    dim
+                },
+            );
             if i == preview.skill {
-                Color::from_rgba(44, 48, 59, 255)
-            } else {
-                dim
-            },
-        );
-        if i == preview.skill {
-            draw_rectangle_lines(r.x, r.y, r.w, r.h, 2., GOLD);
-        }
-        icons::draw(*skill, r.x + 12., r.y + 8., 28.);
-        let details = format!(
-            "{} {} · {} {}",
-            content::skill_cost(hero, page == 2, *skill),
-            tr_key(zh, "ui.shared.mp"),
-            tr_key(zh, "ui.shared.cd"),
-            skill.cooldown()
-        );
-        let details_size = fit_size(&details, 18., r.w * 0.46);
-        let details_width = label_width(&details, details_size);
-        let details_x = r.x + r.w - 14. - details_width;
-        let title = format!("{}  {}", i + 1, skill.name(zh));
-        label(
-            &title,
-            r.x + 50.,
-            r.y + 28.,
-            fit_size(&title, 21., (details_x - (r.x + 58.)).max(1.)),
-            WHITE,
-        );
-        label(&details, details_x, r.y + 27., details_size, SKYBLUE);
-        for (line, text) in content::skill_description(*skill, page == 2, zh)
-            .lines()
-            .enumerate()
-        {
+                draw_rectangle_lines(r.x, r.y, r.w, r.h, 2., GOLD);
+            }
+            icons::draw(*skill, r.x + 12., r.y + 8., 28.);
+            let details = format!(
+                "{} {} · {} {}",
+                content::skill_cost(hero, page == 2, *skill),
+                tr_key(zh, "ui.shared.mp"),
+                tr_key(zh, "ui.shared.cd"),
+                skill.cooldown()
+            );
+            let details_size = fit_size(&details, 18., r.w * 0.46);
+            let details_width = label_width(&details, details_size);
+            let details_x = r.x + r.w - 14. - details_width;
+            let title = format!("{}  {}", i + 1, skill.name(zh));
             label(
-                text,
-                r.x + 14.,
-                r.y + 49. + line as f32 * 17.,
-                fit_size(text, 16., r.w - 28.),
+                &title,
+                r.x + 50.,
+                r.y + 28.,
+                fit_size(&title, 21., (details_x - (r.x + 58.)).max(1.)),
+                WHITE,
+            );
+            label(&details, details_x, r.y + 27., details_size, SKYBLUE);
+            for (line, text) in content::skill_description(*skill, page == 2, zh)
+                .lines()
+                .enumerate()
+            {
+                label(
+                    text,
+                    r.x + 14.,
+                    r.y + 49. + line as f32 * 17.,
+                    fit_size(text, 16., r.w - 28.),
+                    LIGHTGRAY,
+                );
+            }
+        }
+        if h.skills.len() == 1 {
+            label(
+                tr_key(zh, "ui.menu.draw.one_distinctive_skill"),
+                564.,
+                306.,
+                23.,
+                GOLD,
+            );
+            label(
+                tr_key(zh, "ui.menu.draw.each_hero_plays_differently"),
+                564.,
+                341.,
+                19.,
+                LIGHTGRAY,
+            );
+            label(
+                tr_key(zh, "ui.menu.draw.preview_the_effect_below"),
+                564.,
+                369.,
+                19.,
                 LIGHTGRAY,
             );
         }
-    }
-    if h.skills.len() == 1 {
         label(
-            tr_key(zh, "ui.menu.draw.one_distinctive_skill"),
-            564.,
-            306.,
-            23.,
-            GOLD,
-        );
-        label(
-            tr_key(zh, "ui.menu.draw.each_hero_plays_differently"),
-            564.,
-            341.,
-            19.,
+            tr_key(zh, "ui.menu.draw.skills_click_to_preview"),
+            550.,
+            112.,
+            18.,
             LIGHTGRAY,
         );
-        label(
-            tr_key(zh, "ui.menu.draw.preview_the_effect_below"),
-            564.,
-            369.,
-            19.,
-            LIGHTGRAY,
+        let skill = visible_skills[preview.skill.min(visible_skills.len() - 1)];
+        let phase = ((get_time() - preview.since) % 3.0) / 3.;
+        let after = phase > 0.45;
+        panel(Rect::new(548., 422., 452., 208.), dim);
+        let clear = matches!(
+            skill,
+            content::Skill::Charge
+                | content::Skill::Guard
+                | content::Skill::Lightning
+                | content::Skill::Meteor
+                | content::Skill::Greedy
+                | content::Skill::Imp
+                | content::Skill::Chort
+                | content::Skill::Rush
+                | content::Skill::Hammer
+                | content::Skill::Entomb
         );
-    }
-    label(
-        tr_key(zh, "ui.menu.draw.skills_click_to_preview"),
-        550.,
-        112.,
-        18.,
-        LIGHTGRAY,
-    );
-    let skill = visible_skills[preview.skill.min(visible_skills.len() - 1)];
-    let phase = ((get_time() - preview.since) % 3.0) / 3.;
-    let after = phase > 0.45;
-    panel(Rect::new(548., 422., 452., 208.), dim);
-    let clear = matches!(
-        skill,
-        content::Skill::Charge
-            | content::Skill::Guard
-            | content::Skill::Lightning
-            | content::Skill::Meteor
-            | content::Skill::Greedy
-            | content::Skill::Imp
-            | content::Skill::Chort
-            | content::Skill::Rush
-            | content::Skill::Hammer
-            | content::Skill::Entomb
-    );
-    for y in 0..N {
-        for x in 0..N {
-            let px = 565. + x as f32 * 23.;
-            let py = 434. + y as f32 * 23.;
-            draw_rectangle(px, py, 22., 22., Color::from_rgba(77, 69, 64, 255));
-            let affected = preview.cells.contains(&(x, y));
-            let board = if after {
-                &preview.changed
-            } else {
-                &preview.board
-            };
-            draw_texture_ex(
-                &tiles[board[y][x] as usize],
-                px,
-                py,
-                if after && clear && affected {
-                    Color::new(1., 1., 1., 0.15)
+        for y in 0..N {
+            for x in 0..N {
+                let px = 565. + x as f32 * 23.;
+                let py = 434. + y as f32 * 23.;
+                draw_rectangle(px, py, 22., 22., Color::from_rgba(77, 69, 64, 255));
+                let affected = preview.cells.contains(&(x, y));
+                let board = if after {
+                    &preview.changed
                 } else {
-                    WHITE
-                },
-                DrawTextureParams {
-                    dest_size: Some(vec2(22., 22.)),
-                    ..Default::default()
-                },
-            );
-            if affected {
-                draw_rectangle_lines(px, py, 22., 22., 1.5, if after { SKYBLUE } else { GOLD });
+                    &preview.board
+                };
+                draw_texture_ex(
+                    &tiles[board[y][x] as usize],
+                    px,
+                    py,
+                    if after && clear && affected {
+                        Color::new(1., 1., 1., 0.15)
+                    } else {
+                        WHITE
+                    },
+                    DrawTextureParams {
+                        dest_size: Some(vec2(22., 22.)),
+                        ..Default::default()
+                    },
+                );
+                if affected {
+                    draw_rectangle_lines(px, py, 22., 22., 1.5, if after { SKYBLUE } else { GOLD });
+                }
             }
         }
+        label(
+            tr_key(zh, "ui.menu.draw.effect_preview"),
+            766.,
+            454.,
+            21.,
+            GOLD,
+        );
+        label(skill.name(zh), 766., 486., 20., WHITE);
+        label(
+            if after {
+                match skill {
+                    content::Skill::Guard => tr_key(zh, "ui.menu.draw.hp_20_max"),
+                    content::Skill::Landslide => tr_key(zh, "ui.menu.draw.next_swap"),
+                    content::Skill::Strike => tr_key(zh, "ui.menu.draw.next_clear_100"),
+                    _ => tr_key(zh, "ui.menu.draw.after_casting"),
+                }
+            } else {
+                tr_key(zh, "ui.menu.draw.before_casting")
+            },
+            766.,
+            521.,
+            21.,
+            SKYBLUE,
+        );
+        label(
+            tr_key(zh, "ui.menu.draw.outlined_affected_tiles"),
+            766.,
+            559.,
+            16.,
+            LIGHTGRAY,
+        );
     }
-    label(
-        tr_key(zh, "ui.menu.draw.effect_preview"),
-        766.,
-        454.,
-        21.,
-        GOLD,
-    );
-    label(skill.name(zh), 766., 486., 20., WHITE);
-    label(
-        if after {
-            match skill {
-                content::Skill::Guard => tr_key(zh, "ui.menu.draw.hp_20_max"),
-                content::Skill::Landslide => tr_key(zh, "ui.menu.draw.next_swap"),
-                content::Skill::Strike => tr_key(zh, "ui.menu.draw.next_clear_100"),
-                _ => tr_key(zh, "ui.menu.draw.after_casting"),
-            }
-        } else {
-            tr_key(zh, "ui.menu.draw.before_casting")
-        },
-        766.,
-        521.,
-        21.,
-        SKYBLUE,
-    );
-    label(
-        tr_key(zh, "ui.menu.draw.outlined_affected_tiles"),
-        766.,
-        559.,
-        16.,
-        LIGHTGRAY,
-    );
     let r = start_rect();
     panel(
         r,
@@ -546,6 +571,66 @@ pub fn draw(
         );
         for (i, (line, size)) in lines.iter().enumerate() {
             label(line, 562., 450. + i as f32 * 24., *size, LIGHTGRAY);
+        }
+    }
+}
+
+fn draw_lore(hero: usize, zh: bool) {
+    let Some(lore) = content::role_lore(hero) else {
+        return;
+    };
+    let card = Color::from_rgba(35, 40, 52, 255);
+    panel(Rect::new(548., 112., 452., 518.), card);
+    label(
+        tr_key(zh, "ui.menu.draw.lore_file"),
+        566.,
+        138.,
+        16.,
+        LIGHTGRAY,
+    );
+    label(
+        lore.title(zh),
+        566.,
+        172.,
+        fit_size(lore.title(zh), 27., 416.),
+        GOLD,
+    );
+    label(
+        tr_key(zh, "ui.menu.draw.lore_traits"),
+        566.,
+        206.,
+        14.,
+        SKYBLUE,
+    );
+    let mut y = 228.;
+    for i in 0..8 {
+        let Some(text) = lore.trait_text(i, zh) else {
+            break;
+        };
+        for part in wrap_preview_text(&format!("· {text}"), 28.6) {
+            if y > 300. {
+                break;
+            }
+            label(&part, 566., y, 14., LIGHTGRAY);
+            y += 17.;
+        }
+    }
+    label(tr_key(zh, "ui.menu.draw.lore_lines"), 566., 312., 18., GOLD);
+    let lines: Vec<_> = lore.lines(zh).collect();
+    let split = lines.len().div_ceil(2);
+    for (column, chunk) in lines.chunks(split.max(1)).enumerate() {
+        let x = if column == 0 { 566. } else { 786. };
+        let mut line_y = 338.;
+        for text in chunk {
+            let quoted = format!("“{text}”");
+            for part in wrap_preview_text(&quoted, 15.4) {
+                if line_y > 612. {
+                    break;
+                }
+                label(&part, x, line_y, 13., LIGHTGRAY);
+                line_y += 16.;
+            }
+            line_y += 3.;
         }
     }
 }

@@ -9,25 +9,6 @@ pub fn handle(
         return;
     };
     match (status, event) {
-        (StatusId::ForcedMove, RuleEvent::ForceCompleted { state }) => {
-            if let Some(effect) = state
-                .statuses
-                .0
-                .iter()
-                .flatten()
-                .find(|s| s.id == status)
-                .copied()
-            {
-                state.statuses.remove(status);
-                state.statuses.insert(
-                    StatusId::ClearPenalty,
-                    effect.applied_by,
-                    StatusDuration::OwnerTurnEnd(1),
-                );
-            }
-            state.force_armed = false;
-        }
-
         (
             StatusId::Rational,
             RuleEvent::AbilityEnabled {
@@ -58,7 +39,6 @@ pub fn handle(
         (StatusId::Frenzy, RuleEvent::Appearance { dark }) => **dark = true,
         (StatusId::Rational, RuleEvent::Appearance { dark }) => **dark = false,
         (StatusId::ExtraReach, RuleEvent::Reach { rows }) => **rows += 1,
-        (StatusId::ClearPenalty, RuleEvent::ClearScale { scale, .. }) => **scale -= 20,
         _ => {}
     }
 }

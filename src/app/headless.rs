@@ -2,8 +2,182 @@ use super::*;
 
 /// Fixed simulation step used by the canonical headless model.
 pub(crate) const HEADLESS_DT: f64 = 1.0 / 60.0;
+/// Batch runs do not need animation pacing; one tick still resolves one cascade.
+pub(crate) const HEADLESS_BATCH_DT: f64 = 1.0;
+
+/// Result of one unattended match; `winner` is 0 for the first side, 1 for the second.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) struct BatchOutcome {
+    pub winner: Option<usize>,
+    pub rounds: u32,
+    pub steps: u64,
+    pub hp: i32,
+    pub enemy_hp: i32,
+}
 
 impl Session {
+    /// Put the canonical model into unattended mode: no rollback history and no JSONL.
+    pub(crate) fn prepare_headless_batch(&mut self) {
+        self.zh = false;
+        self.paused = false;
+        self.choosing = false;
+        self.hints_shown = false;
+        self.interface.opponent_step = false;
+        self.interface.panel = None;
+        self.console.open = false;
+        self.console.set_batch(true);
+        self.console.set_quiet_events(true);
+    }
+
+    /// Play one seeded match to completion with the shared strategy on both sides.
+    /// The model, event dispatch, cooldowns, pockets and rewards are the normal game rules.
+    pub(crate) fn headless_batch_match(
+        &mut self,
+        hero: usize,
+        enemy: usize,
+        seed: u64,
+        level: usize,
+        max_steps: u64,
+    ) -> BatchOutcome {
+        self.headless_batch_match_at_dt(hero, enemy, seed, level, max_steps, HEADLESS_BATCH_DT)
+    }
+
+    /// Same as [`Self::headless_batch_match`] with an explicit frame step, used to test
+    /// that skipping animation pacing does not change the seeded result.
+    pub(crate) fn headless_batch_match_at_dt(
+        &mut self,
+        hero: usize,
+        enemy: usize,
+        seed: u64,
+        level: usize,
+        max_steps: u64,
+        dt: f64,
+    ) -> BatchOutcome {
+        self.zh = false;
+        self.console.open = false;
+        self.console.set_batch(true);
+        self.console.set_quiet_events(true);
+        self.hero_id = hero;
+        self.enemy_id = enemy;
+        self.difficulty = level;
+        self.interface.opponent = Some(enemy);
+        rng::srand(seed);
+        self.reset_battle();
+        self.paused = false;
+        self.choosing = false;
+        self.hints_shown = false;
+        self.interface.panel = None;
+        self.targeting = None;
+        self.selected = None;
+
+        let mut frame = Frame::headless(dt);
+        let mut steps = 0;
+        while self.hp > 0 && self.enemy > 0 && steps < max_steps {
+            frame.command_move = None;
+            frame.command_skill = None;
+            frame.command_target = None;
+            self.headless_auto_command(&mut frame);
+            self.tick(&mut frame);
+            steps += 1;
+        }
+        let winner = if self.hp <= 0 && self.enemy <= 0 {
+            None
+        } else if self.enemy <= 0 {
+            Some(0)
+        } else if self.hp <= 0 {
+            Some(1)
+        } else {
+            None
+        };
+        BatchOutcome {
+            winner,
+            rounds: self.round,
+            steps,
+            hp: self.hp,
+            enemy_hp: self.enemy,
+        }
+    }
+
+    /// Inject one normal player command chosen by the same strategy used by the enemy AI.
+    fn headless_auto_command(&mut self, frame: &mut Frame) {
+        if self.enemy_turn
+            || self.paused
+            || self.hp == 0
+            || self.enemy == 0
+            || !self.pending.is_empty()
+            || self.action_done
+            || self.presentation.busy()
+            || self.console.open
+            || self.interface.panel.is_some()
+        {
+            return;
+        }
+        self.targeting = None;
+        if self.new_role_states[0].force_armed {
+            if let Some(m) = strategy::choose_force_move_in(
+                &self.b,
+                self.hero_id,
+                self.hp,
+                self.mp,
+                self.extra_bonus,
+                self.rules(false),
+            ) {
+                frame.command_move = Some(m);
+            } else {
+                self.new_role_states[0].force_armed = false;
+            }
+            return;
+        }
+        let unavailable: Vec<_> = content::skills(self.hero_id, self.awakened[0])
+            .iter()
+            .copied()
+            .filter(|skill| self.cooldowns.remaining(0, *skill) > 0)
+            .collect();
+        if let Some(skill) = strategy::choose_skill_available_in(
+            &self.b,
+            self.hero_id,
+            self.hp,
+            self.mp,
+            self.difficulty,
+            self.armed,
+            self.extra_bonus,
+            self.rules(false),
+            &unavailable,
+        ) {
+            frame.command_target = Some(strategy::choose_target_in(
+                skill,
+                &self.b,
+                self.hero_id,
+                self.hp,
+                self.mp,
+                self.extra_bonus,
+                self.rules(false),
+            ));
+            frame.command_skill = Some(skill);
+            return;
+        }
+        if let Some(m) = strategy::choose_move_in(
+            &self.b,
+            self.hp,
+            self.hero_id,
+            self.mp,
+            self.enemy_id,
+            self.difficulty,
+            self.rules(false),
+        ) {
+            frame.command_move = Some(m);
+        } else if self.armed {
+            // Match the enemy AI fallback for a three-line swap with no scoring move.
+            frame.command_move = Some(((0, 0), (1, 0)));
+        } else {
+            // Match the enemy AI reroll when neither a skill nor a swap is chosen.
+            self.b = board::fresh_for(self.hero_id);
+            self.turn_log.current.actions.push(turns::Action::Reroll);
+            self.selected = None;
+            self.presentation.stop_motion();
+        }
+    }
+
     pub(crate) fn queue_headless_command(&mut self, line: String) {
         self.console.commands.push_back(line);
     }

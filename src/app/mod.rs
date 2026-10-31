@@ -74,6 +74,7 @@ pub(crate) struct Session {
     charge_damage: Option<content::PendingImpact>,
     presentation: presentation::Presentation,
     turn_log: turns::Log,
+    round: u32,
 }
 
 /// Result of one reward settlement, including the latest health-affecting source per side.
@@ -161,7 +162,9 @@ impl Session {
         Self::create(false)
     }
     fn create(rendering: bool) -> Self {
-        let zh = true;
+        let zh = std::env::var("BATTLEBLOCKS_LANG")
+            .map(|value| value != "en")
+            .unwrap_or(true);
         let defeat = rendering.then(|| texture(include_bytes!("../../assets/defeat.webp")));
         let tiles = rendering.then(|| {
             [
@@ -181,7 +184,11 @@ impl Session {
             .filter(|&i| i < HEROES.len());
         #[cfg(target_arch = "wasm32")]
         let bench: Option<usize> = None;
-        let mut hero_id = bench.unwrap_or(content::KNIGHT);
+        let menu_hero = std::env::var("BATTLEBLOCKS_MENU_HERO")
+            .ok()
+            .and_then(|value| value.parse::<usize>().ok())
+            .filter(|&id| id < HEROES.len());
+        let mut hero_id = bench.or(menu_hero).unwrap_or(content::KNIGHT);
         #[cfg(not(target_arch = "wasm32"))]
         let startup_commands = std::env::args().any(|arg| arg == "--command");
         #[cfg(target_arch = "wasm32")]
@@ -202,7 +209,11 @@ impl Session {
         } else {
             menu::Preview::new_static(hero_id, 0)
         };
-        let character_page = 0usize;
+        let character_page = std::env::var("BATTLEBLOCKS_MENU_PAGE")
+            .ok()
+            .and_then(|value| value.parse::<usize>().ok())
+            .unwrap_or(0)
+            .min(menu::CHARACTER_PAGE_COUNT - 1);
         let enemy_id = (hero_id + 1) % HEROES.len();
         let enemy_texture =
             rendering.then(|| diagnostic_texture(sprites::SPRITES[enemy_id].bytes, "no_actors"));
@@ -275,6 +286,7 @@ impl Session {
         let charge_damage: Option<content::PendingImpact> = None;
         let presentation = presentation::Presentation::default();
         let turn_log = turns::Log::new();
+        let round = 1u32;
 
         Self {
             rendering,
@@ -338,6 +350,7 @@ impl Session {
             charge_damage,
             presentation,
             turn_log,
+            round,
         }
     }
     fn required_texture(texture: &Option<Texture2D>) -> &Texture2D {
@@ -400,6 +413,7 @@ impl Session {
                 .copied_skill
                 .and_then(content::Skill::from_index),
             statuses: self.new_role_states[side as usize].statuses,
+            repeat_casts: self.new_role_states[side as usize].repeat_casts,
             awake: self.awakened[side as usize],
             initial_loot: false,
             opponent_hp: Some(if side { self.hp } else { self.enemy }),
@@ -409,6 +423,7 @@ impl Session {
                 if side { self.hero_id } else { self.enemy_id },
                 self.awakened[(!side) as usize],
             )),
+            round: self.round,
         }
     }
     fn rejection_message(&self, side: bool) -> &'static str {
@@ -615,6 +630,7 @@ impl Session {
             charge_damage: self.charge_damage.clone(),
             charge_remaining: self.presentation.charge_remaining(),
             turns: self.turn_log.clone(),
+            round: self.round,
         }
     }
     fn restore(&mut self, state: debug::Snapshot) {
@@ -649,6 +665,7 @@ impl Session {
         self.presentation.clear();
         self.charge_damage = state.charge_damage;
         self.turn_log = state.turns;
+        self.round = state.round;
         self.last_cast_enemy = self
             .charge_damage
             .as_ref()

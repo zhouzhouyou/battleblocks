@@ -255,3 +255,10 @@ skill.cost_mana_only	{0} MP	{0} 魔力
 settings.language_chinese	中文	中文
 settings.language_english	English	English
 note.select_adjacent_tiles	Select two adjacent tiles	选择两个相邻方块
+ui.menu.draw.lore_file	CHARACTER FILE	人物档案
+ui.menu.draw.lore_intro	CHARACTER	人物介绍
+ui.menu.draw.lore_traits	TRAITS	人物特质
+ui.menu.draw.lore_lines	VOICE LINES	台词
+ui.screen.draw_panel.fatigue	After round 12: +12% damage and -10% healing each round.	第12回合后：每回合伤害+12%、治疗−10%
+ui.hud.draw_turns.fatigue_warning	Next round: +{0}% damage / −{1}% healing per round	下回合起：每回合伤害+{0}%、治疗−{1}%
+ui.hud.draw_turns.fatigue_active	Fatigue: +{0}% damage · −{1}% healing	终局加压：伤害+{0}% · 治疗−{1}%

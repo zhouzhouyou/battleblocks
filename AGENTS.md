@@ -20,8 +20,14 @@
     --command 'pause on' --command 'board load ...' --command 'move 1 1 2 1'
   ```
   命令较多时使用脚本：`--script path/to/commands.txt`；`--script -` 从 stdin 读取。默认只输出命令反馈和最终摘要；`--verbose` 才把逐条事件打印到终端，完整事件始终写入 `--log` 指定的 JSONL。`--headless-max-steps N` 防止模拟死循环并以退出码 2 报错；`BATTLEBLOCKS_HEADLESS_SEED` 固定随机种子。
-- 非 UI 改动先运行 `cargo test` 和 `tools/check_headless.py`。`check_headless.py` 会无窗口验证控制台调试编辑、移动、施法、回滚、AI 回合和待结算消除。
-- 只有输入、绘制、动画、音频或窗口行为变更时，才运行需要窗口的 `tools/check_debug_console.py`、`tools/check_ability_events.py`、`tools/check_new_roles.py`；能力事件或状态逻辑变更仍应同时用 headless 组合验证来源链、目标被动、状态和回滚。
+- 非 UI 改动先运行 `cargo test` 和 `tools/check_headless.py`。`check_headless.py` 会无窗口验证控制台调试编辑、移动、施法、回滚、AI 回合、待结算消除及批量对局。
+- 批量平衡与规则验证使用无窗口 `--headless --autoplay`，不要为了跑对局启动 GUI：
+  ```bash
+  cargo run --release -- --headless --autoplay --samples 48 --seed 900000 --level 1 \
+    --roster 8,7,9,10,1,2 --out analysis/autoplay.csv
+  ```
+  它逐局调用同一个 `Session` 和 `strategy`，冷却、口袋、状态、连续施法加价与终局加压都走正常结算，只跳过动画和 JSONL 回滚快照。`--level 0/1/2` 对应入门／标准／进阶。
+- 只有输入、绘制、动画、音频或窗口交互本身变更时，才运行需要窗口的 `tools/check_debug_console.py`、`tools/check_ability_events.py`、`tools/check_new_roles.py`；能力事件或状态逻辑变更应优先用 `cargo test`、`tools/check_headless.py` 和 `--autoplay` 组合验证来源链、目标被动、状态和回滚。
 
 ## 技能文案
 

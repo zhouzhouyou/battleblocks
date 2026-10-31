@@ -46,13 +46,13 @@ pub fn handle(
             batch.push(
                 Resource::Healing,
                 EventSide::Actor,
-                10,
+                6,
                 EventSource::Passive(Passive::AutoRecovery),
             );
             batch.push(
                 Resource::Mana,
                 EventSide::Actor,
-                10,
+                8,
                 EventSource::Passive(Passive::AutoRecovery),
             );
             trigger(out, EventSide::Actor, id, None);

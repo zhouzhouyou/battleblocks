@@ -4,8 +4,6 @@ pub enum StatusId {
     Frenzy,
     Rational,
     ExtraReach,
-    ForcedMove,
-    ClearPenalty,
     DoubleRewards,
     ParallelSwap,
 }
@@ -16,8 +14,6 @@ impl StatusId {
                 Self::Frenzy => "Status.frenzy.description",
                 Self::Rational => "Status.rational.description",
                 Self::ExtraReach => "Status.reach.description",
-                Self::ForcedMove => "Status.force.description",
-                Self::ClearPenalty => "Status.penalty.description",
                 Self::DoubleRewards => "Status.double.description",
                 Self::ParallelSwap => "Status.parallel.description",
             },
@@ -30,8 +26,6 @@ impl StatusId {
                 Self::Frenzy => "Status.frenzy",
                 Self::Rational => "Status.rational",
                 Self::ExtraReach => "Status.reach",
-                Self::ForcedMove => "Status.force",
-                Self::ClearPenalty => "Status.penalty",
                 Self::DoubleRewards => "Status.double",
                 Self::ParallelSwap => "Status.parallel",
             },
@@ -84,13 +78,6 @@ impl StatusSet {
         }
     }
 
-    pub fn remove(&mut self, id: StatusId) {
-        for s in &mut self.0 {
-            if s.is_some_and(|s| s.id == id) {
-                *s = None;
-            }
-        }
-    }
     pub fn consume(&mut self, duration: StatusDuration) {
         for s in &mut self.0 {
             if s.is_some_and(|s| s.duration == duration) {
