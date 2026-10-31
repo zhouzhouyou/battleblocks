@@ -322,6 +322,10 @@ fn skill_preview_shows_the_hero_when_no_tile_changes() {
     assert!(charge.affects_tiles);
     let miracle = menu::Preview::new_static(content::KNIGHT, 1, false);
     assert!(!miracle.affects_tiles);
+    // The jump skill lifts the hero in the character preview; other casts do not.
+    let jump = menu::Preview::new_static(content::DWARF, 0, false);
+    assert!(jump.hop && !jump.affects_tiles);
+    assert!(!miracle.hop && !charge.hop);
 }
 
 #[test]

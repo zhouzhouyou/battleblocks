@@ -11,6 +11,8 @@ pub struct Preview {
     pub dark: bool,
     /// Status the cast puts on the hero, shown with the character preview.
     pub status: Option<content::StatusId>,
+    /// The cast lifts the hero off the ground (the jump skill).
+    pub hop: bool,
 }
 impl Preview {
     /// `awakened` selects the skill list the menu is showing: the awakening page can
@@ -53,6 +55,7 @@ impl Preview {
         state.on_cast(cast, &board, (2, 3));
         let status = state.statuses.0.iter().flatten().map(|s| s.id).next();
         let dark = sprites::shadow_form(hero, false, state.statuses);
+        let hop = content::skill_profile(cast, content::Rules::default()).hop;
         let affects_tiles = !cells.is_empty() || changed != board;
         Self {
             skill,
@@ -63,6 +66,7 @@ impl Preview {
             affects_tiles,
             dark,
             status,
+            hop,
         }
     }
 }
@@ -151,18 +155,24 @@ fn draw_skill_actor(
     let area = Rect::new(558., 428., 200., 184.);
     let center = area.x + area.w / 2.;
     let dark = after && preview.dark;
+    let t = (((get_time() - preview.since) % 3.) / 3. - 0.45) / 0.55;
+    let t = t.clamp(0., 1.) as f32;
+    // The jump skill lifts the hero; its shadow and the cast ring stay on the ground.
+    let lift = if after && preview.hop {
+        (std::f32::consts::PI * (t * 1.6).min(1.)).sin() * 30.
+    } else {
+        0.
+    };
     draw_ellipse(
         center,
         area.y + area.h,
-        74.,
-        11.,
+        74. - lift * 0.5,
+        11. - lift * 0.08,
         0.,
         Color::from_rgba(20, 23, 31, 255),
     );
     if after {
         // Cast burst: a ring expanding from the feet, red while the form turns hostile.
-        let t = (((get_time() - preview.since) % 3.) / 3. - 0.45) / 0.55;
-        let t = t.clamp(0., 1.) as f32;
         let fade = 1. - t;
         let color = if preview.dark {
             Color::new(0.9, 0.3, 0.35, 0.7 * fade)
@@ -182,7 +192,11 @@ fn draw_skill_actor(
     } else {
         (texture, &sprites::SPRITES[hero])
     };
-    sprite(texture, asset, area);
+    sprite(
+        texture,
+        asset,
+        Rect::new(area.x, area.y - lift, area.w, area.h),
+    );
 }
 pub fn draw(
     hero: usize,
