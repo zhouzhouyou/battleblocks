@@ -306,3 +306,38 @@ fn help_tabs_share_the_panel_width_without_leaving_it() {
         }
     }
 }
+#[test]
+fn skill_preview_shows_the_hero_when_no_tile_changes() {
+    // The nun's frenzy never touches the board, so the preview shows her new form.
+    let frenzy = menu::Preview::new_static(content::NUN, 0, false);
+    assert!(!frenzy.affects_tiles);
+    assert!(frenzy.dark);
+    assert_eq!(frenzy.status, Some(content::StatusId::Frenzy));
+    // Single-target heals and preparations also leave the board alone.
+    let heal = menu::Preview::new_static(content::NUN, 1, false);
+    assert!(!heal.affects_tiles);
+    assert!(!heal.dark);
+    // Board skills keep the tile grid.
+    let charge = menu::Preview::new_static(content::KNIGHT, 0, false);
+    assert!(charge.affects_tiles);
+    let miracle = menu::Preview::new_static(content::KNIGHT, 1, false);
+    assert!(!miracle.affects_tiles);
+}
+
+#[test]
+fn awakening_page_previews_the_awakened_active() {
+    // The nun's awakening swaps frenzy for returning to reason.
+    assert_eq!(
+        content::skills(content::NUN, false)[0],
+        content::Skill::Frenzy
+    );
+    assert_eq!(
+        content::skills(content::NUN, true)[0],
+        content::Skill::Rational
+    );
+    let base = menu::Preview::new_static(content::NUN, 0, false);
+    let awakened = menu::Preview::new_static(content::NUN, 0, true);
+    assert_eq!(base.status, Some(content::StatusId::Frenzy));
+    assert_eq!(awakened.status, Some(content::StatusId::Rational));
+    assert!(base.dark && !awakened.dark);
+}

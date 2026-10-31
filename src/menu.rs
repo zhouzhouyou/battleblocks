@@ -5,18 +5,27 @@ pub struct Preview {
     pub changed: Board,
     pub cells: Vec<(usize, usize)>,
     pub since: f64,
+    /// False for skills that leave every tile in place; those preview the hero instead.
+    pub affects_tiles: bool,
+    /// The cast changes the hero's silhouette (e.g. the nun's frenzy form).
+    pub dark: bool,
+    /// Status the cast puts on the hero, shown with the character preview.
+    pub status: Option<content::StatusId>,
 }
 impl Preview {
-    pub fn new(hero: usize, skill: usize) -> Self {
-        Self::with_time(hero, skill, get_time())
+    /// `awakened` selects the skill list the menu is showing: the awakening page can
+    /// replace an active, so the preview must follow the page instead of always
+    /// reading the awakened list.
+    pub fn new(hero: usize, skill: usize, awakened: bool) -> Self {
+        Self::with_time(hero, skill, awakened, get_time())
     }
-    pub fn new_static(hero: usize, skill: usize) -> Self {
-        Self::with_time(hero, skill, 0.)
+    pub fn new_static(hero: usize, skill: usize, awakened: bool) -> Self {
+        Self::with_time(hero, skill, awakened, 0.)
     }
-    fn with_time(hero: usize, skill: usize, since: f64) -> Self {
+    fn with_time(hero: usize, skill: usize, awakened: bool, since: f64) -> Self {
         let board = std::array::from_fn(|y| std::array::from_fn(|x| ((x + 2 * y) % 7) as u8));
         let mut changed = board;
-        let effect = effect(content::skills(hero, true)[skill], &mut changed);
+        let effect = effect(content::skills(hero, awakened)[skill], &mut changed);
         let mut cells = effect.cells;
         for y in 0..N {
             for x in 0..N {
@@ -25,24 +34,35 @@ impl Preview {
                 }
             }
         }
-        if content::skills(hero, true)[skill] == content::Skill::Landslide {
+        if content::skills(hero, awakened)[skill] == content::Skill::Landslide {
             cells = vec![(2, 3), (3, 3), (2, 2), (3, 2), (2, 4), (3, 4)];
             for y in 2..=4 {
                 swap(&mut changed, (2, y), (3, y));
             }
         }
-        if content::skills(hero, true)[skill] == content::Skill::Strike {
+        if content::skills(hero, awakened)[skill] == content::Skill::Strike {
             cells = vec![(2, 3), (3, 3), (4, 3)];
             for x in 2..=4 {
                 changed[3][x] = 0;
             }
         }
+        // The skill's own cast rules decide both the resulting status and whether the
+        // hero changes form, so the preview never grows a per-skill branch.
+        let cast = content::skills(hero, awakened)[skill];
+        let mut state = crate::role_state::RoleState::default();
+        state.on_cast(cast, &board, (2, 3));
+        let status = state.statuses.0.iter().flatten().map(|s| s.id).next();
+        let dark = sprites::shadow_form(hero, false, state.statuses);
+        let affects_tiles = !cells.is_empty() || changed != board;
         Self {
             skill,
             board,
             changed,
             cells,
             since,
+            affects_tiles,
+            dark,
+            status,
         }
     }
 }
@@ -117,6 +137,52 @@ fn sprite(texture: &Texture2D, asset: &SpriteAsset, area: Rect) {
             ..Default::default()
         },
     );
+}
+/// Preview for a skill that leaves the board alone: the hero casts and, when the
+/// skill changes the hero's form, switches silhouette after the cast point.
+fn draw_skill_actor(
+    hero: usize,
+    page: usize,
+    preview: &Preview,
+    after: bool,
+    texture: &Texture2D,
+    awakened: &Texture2D,
+) {
+    let area = Rect::new(558., 428., 200., 184.);
+    let center = area.x + area.w / 2.;
+    let dark = after && preview.dark;
+    draw_ellipse(
+        center,
+        area.y + area.h,
+        74.,
+        11.,
+        0.,
+        Color::from_rgba(20, 23, 31, 255),
+    );
+    if after {
+        // Cast burst: a ring expanding from the feet, red while the form turns hostile.
+        let t = (((get_time() - preview.since) % 3.) / 3. - 0.45) / 0.55;
+        let t = t.clamp(0., 1.) as f32;
+        let fade = 1. - t;
+        let color = if preview.dark {
+            Color::new(0.9, 0.3, 0.35, 0.7 * fade)
+        } else {
+            Color::new(0.45, 0.72, 1., 0.6 * fade)
+        };
+        draw_circle(
+            center,
+            area.y + area.h - 54.,
+            46. + t * 10.,
+            Color::new(color.r, color.g, color.b, color.a * 0.28),
+        );
+        draw_circle_lines(center, area.y + area.h - 54., 30. + t * 26., 2., color);
+    }
+    let (texture, asset) = if dark || page == 2 {
+        (awakened, &sprites::AWAKENED[hero])
+    } else {
+        (texture, &sprites::SPRITES[hero])
+    };
+    sprite(texture, asset, area);
 }
 pub fn draw(
     hero: usize,
@@ -468,48 +534,53 @@ pub fn draw(
         let phase = ((get_time() - preview.since) % 3.0) / 3.;
         let after = phase > 0.45;
         panel(Rect::new(548., 422., 452., 208.), dim);
-        let clear = matches!(
-            skill,
-            content::Skill::Charge
-                | content::Skill::Guard
-                | content::Skill::Lightning
-                | content::Skill::Meteor
-                | content::Skill::Greedy
-                | content::Skill::Imp
-                | content::Skill::Chort
-                | content::Skill::Rush
-                | content::Skill::Hammer
-                | content::Skill::Entomb
-        );
-        for y in 0..N {
-            for x in 0..N {
-                let px = 565. + x as f32 * 23.;
-                let py = 434. + y as f32 * 23.;
-                draw_rectangle(px, py, 22., 22., Color::from_rgba(77, 69, 64, 255));
-                let affected = preview.cells.contains(&(x, y));
-                let board = if after {
-                    &preview.changed
-                } else {
-                    &preview.board
-                };
-                draw_texture_ex(
-                    &tiles[board[y][x] as usize],
-                    px,
-                    py,
-                    if after && clear && affected {
-                        Color::new(1., 1., 1., 0.15)
+        if preview.affects_tiles {
+            let clear = matches!(
+                skill,
+                content::Skill::Charge
+                    | content::Skill::Guard
+                    | content::Skill::Lightning
+                    | content::Skill::Meteor
+                    | content::Skill::Greedy
+                    | content::Skill::Imp
+                    | content::Skill::Chort
+                    | content::Skill::Rush
+                    | content::Skill::Hammer
+                    | content::Skill::Entomb
+            );
+            for y in 0..N {
+                for x in 0..N {
+                    let px = 565. + x as f32 * 23.;
+                    let py = 434. + y as f32 * 23.;
+                    draw_rectangle(px, py, 22., 22., Color::from_rgba(77, 69, 64, 255));
+                    let affected = preview.cells.contains(&(x, y));
+                    let board = if after {
+                        &preview.changed
                     } else {
-                        WHITE
-                    },
-                    DrawTextureParams {
-                        dest_size: Some(vec2(22., 22.)),
-                        ..Default::default()
-                    },
-                );
-                if affected {
-                    outline(px, py, 22., 22., 1.5, if after { SKYBLUE } else { GOLD });
+                        &preview.board
+                    };
+                    draw_texture_ex(
+                        &tiles[board[y][x] as usize],
+                        px,
+                        py,
+                        if after && clear && affected {
+                            Color::new(1., 1., 1., 0.15)
+                        } else {
+                            WHITE
+                        },
+                        DrawTextureParams {
+                            dest_size: Some(vec2(22., 22.)),
+                            ..Default::default()
+                        },
+                    );
+                    if affected {
+                        outline(px, py, 22., 22., 1.5, if after { SKYBLUE } else { GOLD });
+                    }
                 }
             }
+        } else {
+            // The board would not change, so preview the hero acting instead of tiles.
+            draw_skill_actor(hero, page, preview, after, texture, awakened_texture);
         }
         label(
             tr_key(zh, "ui.menu.draw.effect_preview"),
@@ -535,13 +606,21 @@ pub fn draw(
             21.,
             SKYBLUE,
         );
-        label(
-            tr_key(zh, "ui.menu.draw.outlined_affected_tiles"),
-            766.,
-            559.,
-            16.,
-            LIGHTGRAY,
-        );
+        let hint = if !preview.affects_tiles {
+            match (preview.dark, preview.status) {
+                (true, Some(status)) => format!(
+                    "{}：{}",
+                    tr_key(zh, "ui.menu.draw.character_form"),
+                    status.name(zh)
+                ),
+                _ => tr_key(zh, "ui.menu.draw.cast_animation").to_string(),
+            }
+        } else {
+            tr_key(zh, "ui.menu.draw.outlined_affected_tiles").to_string()
+        };
+        for (i, line) in wrap_preview_text(&hint, 17.5).iter().enumerate() {
+            label(line, 766., 559. + i as f32 * 19., 16., LIGHTGRAY);
+        }
     }
     let r = start_rect();
     panel(

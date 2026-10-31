@@ -204,16 +204,16 @@ impl Session {
         let book_pages = rendering.then(|| texture(sprites::BOOK_PAGES));
         let book_bottom = rendering.then(|| texture(sprites::BOOK_BOTTOM));
         let book_levels = [0f32; 2];
-        let preview = if rendering {
-            menu::Preview::new(hero_id, 0)
-        } else {
-            menu::Preview::new_static(hero_id, 0)
-        };
         let character_page = std::env::var("BATTLEBLOCKS_MENU_PAGE")
             .ok()
             .and_then(|value| value.parse::<usize>().ok())
             .unwrap_or(0)
             .min(menu::CHARACTER_PAGE_COUNT - 1);
+        let preview = if rendering {
+            menu::Preview::new(hero_id, 0, character_page == 2)
+        } else {
+            menu::Preview::new_static(hero_id, 0, character_page == 2)
+        };
         let enemy_id = (hero_id + 1) % HEROES.len();
         let enemy_texture =
             rendering.then(|| diagnostic_texture(sprites::SPRITES[enemy_id].bytes, "no_actors"));
@@ -397,10 +397,11 @@ impl Session {
         }
     }
     fn refresh_preview(&mut self, skill: usize) {
+        let awakened = self.character_page == 2;
         self.preview = if self.rendering {
-            menu::Preview::new(self.hero_id, skill)
+            menu::Preview::new(self.hero_id, skill, awakened)
         } else {
-            menu::Preview::new_static(self.hero_id, skill)
+            menu::Preview::new_static(self.hero_id, skill, awakened)
         };
     }
     fn rules(&self, side: bool) -> content::Rules {

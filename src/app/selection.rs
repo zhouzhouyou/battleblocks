@@ -6,12 +6,17 @@ impl Session {
                 audio.playing(false);
             }
             if !self.interface.opponent_step {
+                let old_page = self.character_page;
                 if frame.clicked(MouseButton::Left) && menu::page_rect(0).contains(frame.pointer) {
                     self.character_page = self.character_page.saturating_sub(1);
                 }
                 if frame.clicked(MouseButton::Left) && menu::page_rect(1).contains(frame.pointer) {
                     self.character_page =
                         (self.character_page + 1).min(menu::CHARACTER_PAGE_COUNT - 1);
+                }
+                if self.character_page != old_page {
+                    // The awakening page lists different actives; preview the new list.
+                    self.refresh_preview(0);
                 }
                 let roster_len = content::ROSTER.len();
                 self.interface.hero_scroll = ui::clamp_scroll(
