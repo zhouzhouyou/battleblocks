@@ -89,6 +89,9 @@ impl Session {
             self.choosing = true;
             self.interface.opponent_step = false;
         }
+        self.apply_restart_command(frame);
+    }
+    pub(super) fn apply_restart_command(&mut self, frame: &Frame) {
         if frame.key(KeyCode::R) || frame.restart_command {
             let before = self.snapshot();
             self.reset_battle();

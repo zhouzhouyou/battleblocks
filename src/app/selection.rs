@@ -38,9 +38,8 @@ impl Session {
                     }
                 }
                 if self.hero_id != old_hero {
-                    self.player_texture =
-                        diagnostic_texture(sprites::SPRITES[self.hero_id].bytes, "no_actors");
-                    self.preview = menu::Preview::new(self.hero_id, 0);
+                    self.refresh_actor_textures();
+                    self.refresh_preview(0);
                 }
                 for i in 0..content::skills(self.hero_id, self.character_page == 2).len() {
                     if (frame.clicked(MouseButton::Left)
@@ -49,7 +48,7 @@ impl Session {
                         || (i == 1 && frame.key(KeyCode::Key2))
                         || (i == 2 && frame.key(KeyCode::Key3))
                     {
-                        self.preview = menu::Preview::new(self.hero_id, i);
+                        self.refresh_preview(i);
                     }
                 }
             }
@@ -125,7 +124,7 @@ impl Session {
                     self.interface.draw_opponents(
                         self.hero_id,
                         self.zh,
-                        &self.thumbs,
+                        self.thumbs(),
                         frame.pointer,
                         self.difficulty,
                     );
@@ -133,9 +132,9 @@ impl Session {
                     menu::draw(
                         self.hero_id,
                         self.zh,
-                        &self.player_texture,
-                        &self.thumbs,
-                        &self.tiles,
+                        self.player_texture(),
+                        self.thumbs(),
+                        self.tiles(),
                         &self.preview,
                         frame.pointer,
                         self.character_page,
@@ -145,7 +144,7 @@ impl Session {
                 self.interface
                     .draw_top(true, self.muted, self.paused, frame.pointer, self.zh);
                 self.interface
-                    .draw_panel(self.zh, self.muted, &self.tiles, frame.pointer);
+                    .draw_panel(self.zh, self.muted, self.tiles(), frame.pointer);
                 self.console.draw();
                 flush_labels();
                 set_default_camera();

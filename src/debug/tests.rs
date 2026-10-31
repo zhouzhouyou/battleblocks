@@ -45,6 +45,8 @@ fn console() -> Console {
         history: Vec::new(),
         records: Vec::new(),
         seq: 0,
+        started: std::time::Instant::now(),
+        quiet_events: false,
         action: 0,
         next_action: 0,
         file: None,

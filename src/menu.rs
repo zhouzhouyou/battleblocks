@@ -8,6 +8,12 @@ pub struct Preview {
 }
 impl Preview {
     pub fn new(hero: usize, skill: usize) -> Self {
+        Self::with_time(hero, skill, get_time())
+    }
+    pub fn new_static(hero: usize, skill: usize) -> Self {
+        Self::with_time(hero, skill, 0.)
+    }
+    fn with_time(hero: usize, skill: usize, since: f64) -> Self {
         let board = std::array::from_fn(|y| std::array::from_fn(|x| ((x + 2 * y) % 7) as u8));
         let mut changed = board;
         let effect = effect(content::skills(hero, true)[skill], &mut changed);
@@ -36,7 +42,7 @@ impl Preview {
             board,
             changed,
             cells,
-            since: get_time(),
+            since,
         }
     }
 }

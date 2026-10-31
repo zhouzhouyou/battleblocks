@@ -31,6 +31,7 @@ use macroquad::prelude::*;
 mod graphics;
 use graphics::*;
 mod app;
+mod headless;
 fn conf() -> macroquad::conf::Conf {
     let (window_width, window_height) = if diagnostic("small_window") {
         (512, 360)
@@ -60,8 +61,15 @@ fn conf() -> macroquad::conf::Conf {
     }
 }
 
-#[macroquad::main(conf)]
-async fn main() {
+fn main() {
+    if std::env::args().any(|arg| arg == "--headless") {
+        headless::run();
+    } else {
+        macroquad::Window::from_config(conf(), gui_main());
+    }
+}
+
+async fn gui_main() {
     init_font();
     let mut session = app::Session::new();
     session.start();

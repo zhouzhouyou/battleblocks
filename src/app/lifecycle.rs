@@ -11,7 +11,7 @@ impl Session {
                 .collect();
             ids[rng::gen_range(0, ids.len())]
         });
-        self.enemy_texture = diagnostic_texture(sprites::SPRITES[self.enemy_id].bytes, "no_actors");
+        self.refresh_actor_textures();
         self.enemy = HEROES[self.enemy_id].hp;
         self.enemy_mp = 0;
         self.enemy_turn = false;

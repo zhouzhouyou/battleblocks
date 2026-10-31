@@ -5,6 +5,7 @@ mod combat;
 mod console;
 mod controls;
 mod exchange;
+mod headless;
 mod lifecycle;
 mod resolution;
 mod selection;
@@ -12,20 +13,21 @@ mod turn;
 mod view;
 
 pub(crate) struct Session {
-    defeat: Texture2D,
+    rendering: bool,
+    defeat: Option<Texture2D>,
     zh: bool,
-    tiles: [Texture2D; 7],
+    tiles: Option<[Texture2D; 7]>,
     hero_id: usize,
-    player_texture: Texture2D,
-    thumbs: Texture2D,
-    book_cover: Texture2D,
-    book_pages: Texture2D,
-    book_bottom: Texture2D,
+    player_texture: Option<Texture2D>,
+    thumbs: Option<Texture2D>,
+    book_cover: Option<Texture2D>,
+    book_pages: Option<Texture2D>,
+    book_bottom: Option<Texture2D>,
     book_levels: [f32; 2],
     preview: menu::Preview,
     character_page: usize,
     enemy_id: usize,
-    enemy_texture: Texture2D,
+    enemy_texture: Option<Texture2D>,
     choosing: bool,
     audio: Option<audio::Audio>,
     b: Board,
@@ -83,6 +85,7 @@ struct AppliedRewards {
 
 struct Frame {
     dt: f64,
+    interactive: bool,
     cam: Camera2D,
     pointer: Vec2,
     was_console_open: bool,
@@ -107,6 +110,7 @@ impl Frame {
         let pointer = cam.screen_to_world(vec2(mx, my));
         Self {
             dt: get_frame_time() as f64,
+            interactive: true,
             cam,
             pointer,
             was_console_open: false,
@@ -120,26 +124,56 @@ impl Frame {
             block_input: false,
         }
     }
+    fn headless(dt: f64) -> Self {
+        Self {
+            dt,
+            interactive: false,
+            cam: Camera2D {
+                target: vec2(512., 360.),
+                zoom: vec2(2. / 1024., 2. / 720.),
+                ..Default::default()
+            },
+            pointer: vec2(-1., -1.),
+            was_console_open: false,
+            command_move: None,
+            command_skill: None,
+            command_target: None,
+            restart_command: false,
+            ui_consumed: false,
+            pause_click: false,
+            over_click: false,
+            block_input: false,
+        }
+    }
     fn key(&self, code: KeyCode) -> bool {
-        !self.block_input && is_key_pressed(code)
+        self.interactive && !self.block_input && is_key_pressed(code)
     }
     fn clicked(&self, button: MouseButton) -> bool {
-        !self.block_input && is_mouse_button_pressed(button)
+        self.interactive && !self.block_input && is_mouse_button_pressed(button)
     }
 }
 impl Session {
     pub(crate) fn new() -> Self {
-        let defeat = texture(include_bytes!("../../assets/defeat.webp"));
+        Self::create(true)
+    }
+    /// Build the canonical headless game model without touching a graphics or audio context.
+    pub(crate) fn new_headless() -> Self {
+        Self::create(false)
+    }
+    fn create(rendering: bool) -> Self {
         let zh = true;
-        let tiles = [
-            texture(include_bytes!("../../assets/balanced.webp")),
-            texture(include_bytes!("../../assets/hp.webp")),
-            texture(include_bytes!("../../assets/damage.webp")),
-            texture(include_bytes!("../../assets/mp.webp")),
-            texture(include_bytes!("../../assets/hd.webp")),
-            texture(include_bytes!("../../assets/hm.webp")),
-            texture(include_bytes!("../../assets/dm.webp")),
-        ];
+        let defeat = rendering.then(|| texture(include_bytes!("../../assets/defeat.webp")));
+        let tiles = rendering.then(|| {
+            [
+                texture(include_bytes!("../../assets/balanced.webp")),
+                texture(include_bytes!("../../assets/hp.webp")),
+                texture(include_bytes!("../../assets/damage.webp")),
+                texture(include_bytes!("../../assets/mp.webp")),
+                texture(include_bytes!("../../assets/hd.webp")),
+                texture(include_bytes!("../../assets/hm.webp")),
+                texture(include_bytes!("../../assets/dm.webp")),
+            ]
+        });
         #[cfg(not(target_arch = "wasm32"))]
         let bench = std::env::var("BATTLEBLOCKS_BENCH_HERO")
             .ok()
@@ -155,21 +189,40 @@ impl Session {
         if startup_commands && bench.is_none() {
             hero_id = 0;
         }
-        let player_texture = diagnostic_texture(sprites::SPRITES[hero_id].bytes, "no_actors");
-        let thumbs = texture(include_bytes!("../../assets/hero-thumbnails.webp"));
-        let book_cover = texture(sprites::BOOK_COVER);
-        let book_pages = texture(sprites::BOOK_PAGES);
-        let book_bottom = texture(sprites::BOOK_BOTTOM);
+        let player_texture =
+            rendering.then(|| diagnostic_texture(sprites::SPRITES[hero_id].bytes, "no_actors"));
+        let thumbs =
+            rendering.then(|| texture(include_bytes!("../../assets/hero-thumbnails.webp")));
+        let book_cover = rendering.then(|| texture(sprites::BOOK_COVER));
+        let book_pages = rendering.then(|| texture(sprites::BOOK_PAGES));
+        let book_bottom = rendering.then(|| texture(sprites::BOOK_BOTTOM));
         let book_levels = [0f32; 2];
-        let preview = menu::Preview::new(hero_id, 0);
+        let preview = if rendering {
+            menu::Preview::new(hero_id, 0)
+        } else {
+            menu::Preview::new_static(hero_id, 0)
+        };
         let character_page = 0usize;
         let enemy_id = (hero_id + 1) % HEROES.len();
-        let enemy_texture = diagnostic_texture(sprites::SPRITES[enemy_id].bytes, "no_actors");
-        let choosing = bench.is_none() && !startup_commands;
-        let audio = audio::Audio::new(!diagnostic("no_music"), !diagnostic("no_sound"))
-            .map_err(|error| eprintln!("Audio unavailable: {error}"))
-            .ok();
-        rng::srand((get_time() * 1e9) as u64);
+        let enemy_texture =
+            rendering.then(|| diagnostic_texture(sprites::SPRITES[enemy_id].bytes, "no_actors"));
+        let choosing = rendering && bench.is_none() && !startup_commands;
+        let audio = rendering
+            .then(|| {
+                audio::Audio::new(!diagnostic("no_music"), !diagnostic("no_sound"))
+                    .map_err(|error| eprintln!("Audio unavailable: {error}"))
+                    .ok()
+            })
+            .flatten();
+        let headless_seed = std::env::var("BATTLEBLOCKS_HEADLESS_SEED")
+            .ok()
+            .and_then(|seed| seed.parse().ok())
+            .unwrap_or(1);
+        rng::srand(if rendering {
+            (get_time() * 1e9) as u64
+        } else {
+            headless_seed
+        });
         let b = fresh();
         let selected: Option<(usize, usize)> = None;
         let move_hint_page = 0usize;
@@ -211,15 +264,20 @@ impl Session {
         let game_over_logged = false;
         let awakened = [false; 2];
         let reward_skill = None;
-        let awake_textures: Vec<_> = sprites::AWAKENED
-            .iter()
-            .map(|s| diagnostic_texture(s.bytes, "no_actors"))
-            .collect();
+        let awake_textures: Vec<_> = if rendering {
+            sprites::AWAKENED
+                .iter()
+                .map(|s| diagnostic_texture(s.bytes, "no_actors"))
+                .collect()
+        } else {
+            Vec::new()
+        };
         let charge_damage: Option<content::PendingImpact> = None;
         let presentation = presentation::Presentation::default();
         let turn_log = turns::Log::new();
 
         Self {
+            rendering,
             defeat,
             zh,
             tiles,
@@ -281,6 +339,56 @@ impl Session {
             presentation,
             turn_log,
         }
+    }
+    fn required_texture(texture: &Option<Texture2D>) -> &Texture2D {
+        texture
+            .as_ref()
+            .expect("render-only texture used in headless mode")
+    }
+    fn tiles(&self) -> &[Texture2D; 7] {
+        self.tiles
+            .as_ref()
+            .expect("render-only texture used in headless mode")
+    }
+    fn player_texture(&self) -> &Texture2D {
+        Self::required_texture(&self.player_texture)
+    }
+    fn enemy_texture(&self) -> &Texture2D {
+        Self::required_texture(&self.enemy_texture)
+    }
+    fn thumbs(&self) -> &Texture2D {
+        Self::required_texture(&self.thumbs)
+    }
+    fn book_cover(&self) -> &Texture2D {
+        Self::required_texture(&self.book_cover)
+    }
+    fn book_pages(&self) -> &Texture2D {
+        Self::required_texture(&self.book_pages)
+    }
+    fn book_bottom(&self) -> &Texture2D {
+        Self::required_texture(&self.book_bottom)
+    }
+    fn defeat(&self) -> &Texture2D {
+        Self::required_texture(&self.defeat)
+    }
+    fn refresh_actor_textures(&mut self) {
+        if self.rendering {
+            self.player_texture = Some(diagnostic_texture(
+                sprites::SPRITES[self.hero_id].bytes,
+                "no_actors",
+            ));
+            self.enemy_texture = Some(diagnostic_texture(
+                sprites::SPRITES[self.enemy_id].bytes,
+                "no_actors",
+            ));
+        }
+    }
+    fn refresh_preview(&mut self, skill: usize) {
+        self.preview = if self.rendering {
+            menu::Preview::new(self.hero_id, skill)
+        } else {
+            menu::Preview::new_static(self.hero_id, skill)
+        };
     }
     fn rules(&self, side: bool) -> content::Rules {
         content::Rules {
@@ -558,9 +666,8 @@ impl Session {
         self.feedback.clear();
         self.feedback_time = 0.;
         self.move_flash = None;
-        self.player_texture = diagnostic_texture(sprites::SPRITES[self.hero_id].bytes, "no_actors");
-        self.enemy_texture = diagnostic_texture(sprites::SPRITES[self.enemy_id].bytes, "no_actors");
-        self.preview = menu::Preview::new(self.hero_id, 0);
+        self.refresh_actor_textures();
+        self.refresh_preview(0);
         self.choosing = false;
         self.game_over_logged = false;
     }
