@@ -154,7 +154,8 @@ impl Session {
                                     Command::Hero(side, id) => {
                                         self.awakened[side as usize] = false;
                                         self.new_role_states[side as usize] = Default::default();
-                                        self.cooldowns.0[side as usize] = [0; 23];
+                                        self.cooldowns.0[side as usize] =
+                                            [0; content::Skill::ALL.len()];
                                         if side {
                                             self.enemy_id = id;
                                             self.enemy = HEROES[id].hp;

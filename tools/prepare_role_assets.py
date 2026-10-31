@@ -115,7 +115,7 @@ report['book']={'frame_size':[384,384],'frames':4,'heights':[0,11,14,17],'source
 # Generate a registry including the three new roles. Keep legacy entries for
 # diagnostics; the public roster is declared separately in content::ROSTER.
 legacy=json.loads((ROOT/'assets/report.json').read_text())
-normal=[]; awakened=[]; thumbs=Image.new('RGBA',(400,48))
+normal=[]; awakened=[]; thumbs=Image.new('RGBA',(440,48))
 for i,name in enumerate(['knight','elf','wizzard','goblin','imp','chort','big_zombie']):
  meta=legacy[name]; w,h=meta['frame_size']
  normal.append(f'    SpriteAsset {{bytes:include_bytes!("../assets/{name}.webp"),w:{w}.,h:{h}.,durations:&{meta["durations"]},indices:&{meta["indices"]}}},')
@@ -124,7 +124,7 @@ for i,name in enumerate(['knight','elf','wizzard','goblin','imp','chort','big_zo
 for name in ['knight','elf','wizard','goblin','imp','chort','zombie']:
  path=ROOT/f'assets/awakened/{name}-awakening.webp'; w,h=Image.open(path).size
  awakened.append(f'    SpriteAsset {{bytes:include_bytes!("../assets/awakened/{name}-awakening.webp"),w:{w}.,h:{h}.,durations:&[1.],indices:&[0]}},')
-for i,name in enumerate(['knight','dwarf','priest'],7):
+for i,name in enumerate(['knight','dwarf','priest','nun'],7):
  for entries,indices in [(normal,'[0,1,2,3]'),(awakened,'[4,5,6,7]')]:
   entries.append(f'    SpriteAsset {{bytes:include_bytes!("../assets/roles/{name}.webp"),w:384.,h:384.,durations:&[0.18;4],indices:&{indices}}},')
  frame=Image.open(OUT/f'{name}.webp').crop((0,0,384,384)).resize((48,48),Image.Resampling.NEAREST)

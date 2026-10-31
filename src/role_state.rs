@@ -1,7 +1,7 @@
 //! Snapshot-owned character state and turn-local skill preparation. Board changes use the same rules in the
 //! live loop and previews; random choices are supplied by the saved RNG stream.
 use crate::board::{self, Board, N};
-use crate::content::{self, Skill};
+use crate::content::{self, Skill, TurnMode};
 
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct RoleState {
@@ -14,6 +14,7 @@ pub struct RoleState {
     pub force_armed: bool,
     pub horizontal: bool,
     pub upper_swap: bool,
+    pub turn_mode: TurnMode,
 }
 impl RoleState {
     pub fn select_occupied_pocket(&mut self) {
@@ -25,6 +26,8 @@ impl RoleState {
         self.horizontal = false;
         self.upper_swap = false;
         match effective {
+            Skill::Frenzy => self.turn_mode = TurnMode::Frenzy,
+            Skill::Rational => self.turn_mode = TurnMode::Rational,
             Skill::Jump => self.jumped = true,
             Skill::Miracle => self.force_armed = true,
             Skill::Entomb => {
@@ -42,6 +45,7 @@ impl RoleState {
         self.upper_swap = a.1 < 4 && b.1 < 4;
     }
     pub fn start_turn(&mut self) {
+        self.turn_mode = TurnMode::Normal;
         self.jumped = false;
         self.miracle = false;
         self.force_armed = false;
@@ -49,6 +53,9 @@ impl RoleState {
         self.upper_swap = false;
         self.direct_tiles.clear();
         self.select_occupied_pocket();
+    }
+    pub fn end_turn(&mut self) {
+        self.turn_mode = TurnMode::Normal;
     }
     /// Select from the multiset of directly eliminated tiles, not distinct types.
     pub fn mind_vision(&mut self, direct_tiles: &[u8], pick: usize) -> bool {
@@ -189,5 +196,20 @@ mod tests {
         let before = priest;
         assert!(!force_swap(&mut priest, (0, 0), (7, 7), content::PRIEST));
         assert_eq!(priest, before);
+    }
+    #[test]
+    fn conversion_mode_is_snapshot_owned_and_expires_at_turn_end() {
+        let mut state = RoleState::default();
+        state.on_cast(Skill::Frenzy, &board(), (0, 0));
+        assert_eq!(state.turn_mode, TurnMode::Frenzy);
+        let snapshot = state.clone();
+        state.end_turn();
+        assert_eq!(state.turn_mode, TurnMode::Normal);
+        state = snapshot;
+        assert_eq!(state.turn_mode, TurnMode::Frenzy);
+        state.on_cast(Skill::Rational, &board(), (0, 0));
+        assert_eq!(state.turn_mode, TurnMode::Rational);
+        state.start_turn();
+        assert_eq!(state.turn_mode, TurnMode::Normal);
     }
 }

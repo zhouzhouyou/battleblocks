@@ -144,20 +144,49 @@ pub fn payment_in(hero: usize, hp: i32, mp: i32, skill: Skill, rules: Rules) -> 
     }
 }
 
-/// Apply resource caps after reward calculation. Keep all incoming healing here,
-/// so turn-wide reward conversions can be shared by live play and previews.
-/// Returns (health after, mana after, outgoing damage); damage/awakening is separate.
-pub fn settle_rewards(
+/// Apply one source event once, before either side's health cap. Converted
+/// results are terminal values: they cannot trigger another conversion.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct RewardSettlement {
+    pub actor_hp: i32,
+    pub actor_mp: i32,
+    pub opponent_hp: i32,
+    pub damage: i32,
+}
+pub fn settle_rewards_in(
     hero: usize,
     hp: i32,
     mp: i32,
+    opponent_hp: i32,
     gains: (i32, i32, i32),
+    direct_opponent_heal: i32,
     rules: Rules,
-) -> (i32, i32, i32) {
-    let (heal, damage, mana) = gains;
-    (
-        (hp + heal).min(health_cap(hero, rules.awake)),
-        (mp + mana).min(mana_cap(hero, rules.awake)),
+) -> RewardSettlement {
+    let (mut heal, mut damage, mana) = gains;
+    let mut opponent_heal = direct_opponent_heal;
+    if hero == NUN && !rules.awake {
+        opponent_heal += heal;
+    }
+    if rules.turn_mode == TurnMode::Rational {
+        heal += damage;
+        opponent_heal += damage;
+        damage = 0;
+    } else if hero == NUN && rules.awake {
+        damage += heal + opponent_heal;
+        heal = 0;
+        opponent_heal = 0;
+    } else if rules.turn_mode == TurnMode::Frenzy {
+        damage += opponent_heal;
+        opponent_heal = 0;
+    }
+    let opponent_cap = rules
+        .opponent
+        .map(|(id, awake)| health_cap(id, awake))
+        .unwrap_or(i32::MAX);
+    RewardSettlement {
+        actor_hp: (hp + heal).min(health_cap(hero, rules.awake)),
+        actor_mp: (mp + mana).min(mana_cap(hero, rules.awake)),
+        opponent_hp: (opponent_hp + opponent_heal).min(opponent_cap),
         damage,
-    )
+    }
 }

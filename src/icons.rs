@@ -8,6 +8,9 @@ pub fn draw(skill: Skill, x: f32, y: f32, size: f32) {
         Skill::Forge => Skill::War,
         Skill::Entomb => Skill::Greedy,
         Skill::Resurrect => Skill::Nature,
+        Skill::Frenzy => Skill::Imp,
+        Skill::Healing => Skill::Guard,
+        Skill::Rational => Skill::Nature,
         other => other,
     };
     let color = match skill {
@@ -168,6 +171,9 @@ pub fn draw_passive(passive: crate::content::Passive, x: f32, y: f32, size: f32)
         KnightStrength | DwarfStrength => Skill::Charge,
         Short | Grudge | Clumsy | ClumsyAwake => Skill::Landslide,
         MindVision | BorrowedSlot => Skill::Greedy,
+        FriendMilk => Skill::Healing,
+        AutoRecovery => Skill::Guard,
+        Madness => Skill::Frenzy,
         ColumnFormation => Skill::Landslide,
         BattleTraining => Skill::Charge,
         ForestStep => Skill::Nature,

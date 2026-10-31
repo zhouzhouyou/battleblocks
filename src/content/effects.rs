@@ -5,6 +5,8 @@ mod dwarf;
 mod knight;
 #[path = "skills/legacy.rs"]
 mod legacy;
+#[path = "skills/nun.rs"]
+mod nun;
 #[path = "skills/priest.rs"]
 mod priest;
 
@@ -21,6 +23,7 @@ pub const VALUES: [(i32, i32, i32); 7] = [
 pub struct Effect {
     pub cells: Vec<(usize, usize)>,
     pub hp: i32,
+    pub opponent_heal: i32,
     pub damage: i32,
     pub mp: i32,
     pub reward: bool,
@@ -107,6 +110,7 @@ pub fn effect_at(skill: Skill, b: &mut Board, target: (usize, usize)) -> Effect 
         Skill::Rush | Skill::Miracle | Skill::Hammer => knight::effect(skill, target),
         Skill::Jump | Skill::Forge => dwarf::effect(skill, b, target),
         Skill::Entomb | Skill::Resurrect | Skill::Copy => priest::effect(skill, target),
+        Skill::Frenzy | Skill::Healing | Skill::Rational => nun::effect(skill),
         _ => legacy::effect(skill, b, target),
     }
 }
@@ -130,6 +134,13 @@ pub fn effect_at_in(
     let mut e = effect_at(skill, b, target);
     if skill == Skill::Guard {
         e.hp = health_cap(hero, rules.awake) / 5;
+    }
+    if skill == Skill::Healing {
+        e.hp = health_cap(hero, rules.awake) / 10;
+        e.opponent_heal = rules
+            .opponent
+            .map(|(id, awake)| health_cap(id, awake) / 10)
+            .unwrap_or(0);
     }
     if rules.awake {
         if hero == 0 && skill == Skill::Guard {

@@ -13,6 +13,24 @@ mod strategy;
 use board::fresh;
 use board::{matches, Board, N};
 use content::HEROES;
+// Shared role tests use localized status text even in this headless probe.
+fn tr_key(zh: bool, key: &'static str) -> &'static str {
+    static TEXT: std::sync::LazyLock<std::collections::HashMap<&'static str, [&'static str; 2]>> =
+        std::sync::LazyLock::new(|| {
+            include_str!("../../assets/localization.tsv")
+                .lines()
+                .filter(|line| !line.is_empty() && !line.starts_with('#'))
+                .map(|line| {
+                    let mut fields = line.splitn(3, '\t');
+                    (
+                        fields.next().unwrap(),
+                        [fields.next().unwrap(), fields.next().unwrap()],
+                    )
+                })
+                .collect()
+        });
+    TEXT[key][zh as usize]
+}
 #[derive(Clone, Copy, Default, Debug)]
 struct Metrics {
     swaps: u64,

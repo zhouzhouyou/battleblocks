@@ -56,7 +56,7 @@ impl Session {
             for &(x, y) in &self.pending {
                 self.b[y][x] = 255;
             }
-            let hit = self.apply_rewards((heal, damage, mana));
+            let hit = self.apply_rewards((heal, damage, mana), 0);
             self.presentation.health(
                 [before.hp, before.enemy_hp],
                 [self.hp, self.enemy],

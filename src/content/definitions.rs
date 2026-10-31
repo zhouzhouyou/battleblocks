@@ -25,6 +25,9 @@ pub enum Skill {
     Entomb,
     Resurrect,
     Copy,
+    Frenzy,
+    Healing,
+    Rational,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TileOperation {
@@ -83,6 +86,9 @@ impl Skill {
         Skill::Entomb,
         Skill::Resurrect,
         Skill::Copy,
+        Skill::Frenzy,
+        Skill::Healing,
+        Skill::Rational,
     ];
     pub fn from_index(index: usize) -> Option<Self> {
         Self::ALL.get(index).copied()
@@ -211,6 +217,7 @@ pub fn skills(hero: usize, awake: bool) -> &'static [Skill] {
     match (hero, awake) {
         (KNIGHT, true) => &[Skill::Rush, Skill::Miracle, Skill::Hammer],
         (PRIEST, true) => &[Skill::Entomb, Skill::Resurrect, Skill::Copy],
+        (NUN, true) => &[Skill::Rational, Skill::Healing],
         _ => HEROES[hero].skills,
     }
 }
@@ -274,6 +281,9 @@ pub fn awakening_effect(hero: usize, zh: bool) -> &'static str {
     }
     if hero == PRIEST {
         return role_text("Priest.awakening", zh);
+    }
+    if hero == NUN {
+        return role_text("Nun.awakening", zh);
     }
     let key = match hero {
         0 => "hero.awakening.knight",

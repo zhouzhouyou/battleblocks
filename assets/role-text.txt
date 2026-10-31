@@ -18,6 +18,13 @@ BorrowedSlot.description|A third active slot copies an enemy active each turn.\n
 Knight.awakening|Horizontal direct clears +10%; unlock Hammer 80.|左右移动的直接消除效果+10%；解锁大锤80
 Dwarf.awakening|The book increases reach at 80%, 60%, 40% HP.|仇恨之书在80%／60%／40%血量阶段增加范围
 Priest.awakening|Unlock a third slot that copies an enemy active each turn.|新增每回合随机复制对手主动的技能栏
+FriendMilk.name|Friendship milk|友谊之奶
+FriendMilk.description|Each healing effect on yourself also heals the opponent by its original amount, even at full HP.|每次对自己触发治疗，也按原始治疗量治疗对手，不受生命缺口影响
+AutoRecovery.name|Automatic recovery|自动恢复
+AutoRecovery.description|At turn end, restore 10 HP and 10 mana. The healing triggers other healing effects.|回合结束时回复10生命与10魔力；治疗照常触发其他效果
+Madness.name|Madness|癫狂
+Madness.description|All healing effects become damage to the opponent. You do not heal.|所有治疗效果改为对手受到伤害，自己不回血
+Nun.awakening|Friendship milk becomes Madness. Into frenzy becomes Return to reason.|友谊之奶替换为癫狂，陷入癫狂替换为回归理性
 Dwarf.unreachable|Damn, I cannot reach that.|该死，我够不到
 Skill.continue|Does not end turn|不结束回合
 Skill.force_prompt|Select an adjacent non-matching movement.|请选择一次不产生消除的相邻移动
