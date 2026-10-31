@@ -55,7 +55,10 @@ impl Session {
             && self.hp > 0
             && !self.enemy_turn
             && !self.action_done
-            && (self.targeting.is_none() || self.targeting == Some(content::Skill::Miracle))
+            && (self.targeting.is_none()
+                || self
+                    .targeting
+                    .is_some_and(|s| content::skill_profile(s, self.rules(false)).force_move))
             && !cast_this_frame
         {
             let (mx, my) = mouse_position();
@@ -70,19 +73,19 @@ impl Session {
                 if let Some((a, _)) = frame.command_move {
                     self.selected = Some(a);
                 }
-                if self.hero_id == content::DWARF
+                if content::reachable_rows(self.hero_id, self.hp, self.rules(false)) < N
                     && c.1 < N - content::reachable_rows(self.hero_id, self.hp, self.rules(false))
                 {
                     self.selected = None;
-                    if self.feedback_time <= 0.
-                        || self.feedback != content::role_text("Dwarf.unreachable", self.zh)
-                    {
-                        self.feedback =
-                            content::role_text("Dwarf.unreachable", self.zh).to_string();
+                    if self.feedback_time <= 0. || self.feedback != self.rejection_message(false) {
+                        self.feedback = self.rejection_message(false).to_string();
                         self.feedback_time = 1.8;
                     }
                 } else if let Some(a) = self.selected {
-                    if self.targeting == Some(content::Skill::Miracle) {
+                    if self
+                        .targeting
+                        .is_some_and(|s| content::skill_profile(s, self.rules(false)).force_move)
+                    {
                         let mut preview = self.b;
                         if content::legal_swap_region(
                             self.hero_id,
@@ -92,8 +95,9 @@ impl Session {
                             self.rules(false),
                         ) && role_state::force_swap(&mut preview, a, c, self.hero_id)
                         {
+                            let force_skill = self.targeting;
                             self.targeting = None;
-                            if !self.cast_skill(frame, Some(content::Skill::Miracle), true) {
+                            if !self.cast_skill(frame, force_skill, true) {
                                 return;
                             }
                         } else {
@@ -118,6 +122,9 @@ impl Session {
                     } else if self.armed && a.0.abs_diff(c.0) + a.1.abs_diff(c.1) == 1 {
                         parallel_swap(&mut self.b, a, c);
                         self.armed = false;
+                        self.new_role_states[self.enemy_turn as usize]
+                            .statuses
+                            .consume(content::StatusDuration::UntilSwap);
                         true
                     } else {
                         board::hero_swap(&mut self.b, a, c, self.hero_id)
@@ -134,7 +141,7 @@ impl Session {
                         self.turn_log.current.actions.push(turns::Action::Swap {
                             from: a,
                             to: c,
-                            columns: matches!(self.hero_id, 0 | content::KNIGHT)
+                            columns: content::movement_profile(self.hero_id).columns
                                 && !before.armed
                                 && a.1 == c.1,
                         });
@@ -167,11 +174,9 @@ impl Session {
                         self.selected = Some(c);
                         if !reachable
                             && (self.feedback_time <= 0.
-                                || self.feedback
-                                    != content::role_text("Dwarf.unreachable", self.zh))
+                                || self.feedback != self.rejection_message(false))
                         {
-                            self.feedback =
-                                content::role_text("Dwarf.unreachable", self.zh).to_string();
+                            self.feedback = self.rejection_message(false).to_string();
                             self.feedback_time = 1.8;
                         }
                         self.note = "note.no_match";

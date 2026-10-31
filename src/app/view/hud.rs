@@ -133,7 +133,7 @@ impl Session {
             let show_shadow = sprites::shadow_form(
                 id,
                 show_awake,
-                self.new_role_states[enemy_side as usize].turn_mode,
+                self.new_role_states[enemy_side as usize].statuses,
             );
             let sprite = if show_shadow {
                 &sprites::AWAKENED[id]
@@ -150,7 +150,7 @@ impl Session {
                 &[8, 9, 10, 11]
             };
             let mut area = sprite_rect(enemy_side);
-            if id == content::DWARF {
+            if content::ability_capabilities(id, self.rules(enemy_side)).reach_visual {
                 let target = if show_awake {
                     [80, 60, 40]
                         .iter()
@@ -190,8 +190,7 @@ impl Session {
                 }
             }
             if casting
-                && content::effective_skill(self.last_cast.unwrap(), self.rules(enemy_side))
-                    == content::Skill::Jump
+                && content::skill_profile(self.last_cast.unwrap(), self.rules(enemy_side)).hop
             {
                 area.y -= ((1.4 - self.cast_time) as f32 * std::f32::consts::PI / 1.4)
                     .sin()
@@ -329,7 +328,10 @@ impl Session {
             tr_key(self.zh, "ui.hud.draw_turns.action_resolved").to_string()
         } else if self.enemy_turn {
             tr_key(self.zh, "ui.hud.draw_turns.enemy_is_choosing").to_string()
-        } else if self.targeting == Some(content::Skill::Miracle) {
+        } else if self
+            .targeting
+            .is_some_and(|s| content::skill_profile(s, self.rules(false)).force_move)
+        {
             content::role_text("Skill.force_prompt", self.zh).to_string()
         } else if let Some(skill) = self.targeting {
             format!(

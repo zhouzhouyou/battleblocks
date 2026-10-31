@@ -111,7 +111,10 @@ impl Session {
             })
             .unwrap_or_default();
         if !show_moves
-            && (self.targeting.is_none() || self.targeting == Some(content::Skill::Miracle))
+            && (self.targeting.is_none()
+                || self
+                    .targeting
+                    .is_some_and(|s| content::skill_profile(s, self.rules(false)).force_move))
             && !self.enemy_turn
             && !self.action_done
         {
@@ -129,7 +132,7 @@ impl Session {
                     if board::hero_swap(&mut copy, a, c, self.hero_id) {
                         preview_cells = matches(&copy);
                     }
-                    if matches!(self.hero_id, 0 | content::KNIGHT)
+                    if content::movement_profile(self.hero_id).columns
                         && board::adjacent(a, c, self.hero_id)
                         && a.1 == c.1
                     {
@@ -236,7 +239,7 @@ impl Session {
             }
         }
         self.presentation.draw_tiles(&self.tiles);
-        if self.hero_id == content::DWARF
+        if content::reachable_rows(self.hero_id, self.hp, self.rules(false)) < N
             && !self.enemy_turn
             && self.pending.is_empty()
             && !self.action_done
@@ -260,13 +263,21 @@ impl Session {
                 );
             }
         }
-        if self.hero_id == content::DWARF
+        if content::reachable_rows(self.hero_id, self.hp, self.rules(false)) < N
             && self.feedback_time > 0.
-            && self.feedback == content::role_text("Dwarf.unreachable", self.zh)
+            && self.feedback == self.rejection_message(false)
         {
             draw_rectangle(22., 202., 204., 30., Color::from_rgba(20, 27, 38, 245));
             draw_rectangle_lines(22., 202., 204., 30., 1., GOLD);
             label_centered(&self.feedback, 124., 223., 16., WHITE);
+        }
+        for (side, reaction) in self.reactions.iter().enumerate() {
+            if let Some((text, _)) = reaction {
+                let x = if side == 0 { 22. } else { 798. };
+                draw_rectangle(x, 202., 204., 30., Color::from_rgba(20, 27, 38, 245));
+                draw_rectangle_lines(x, 202., 204., 30., 1., GOLD);
+                label_centered(text, x + 102., 223., 16., WHITE);
+            }
         }
     }
 }

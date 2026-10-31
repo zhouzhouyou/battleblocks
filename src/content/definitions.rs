@@ -214,28 +214,30 @@ pub static HEROES: std::sync::LazyLock<Vec<Hero>> = std::sync::LazyLock::new(|| 
         .collect()
 });
 pub fn skills(hero: usize, awake: bool) -> &'static [Skill] {
-    match (hero, awake) {
-        (KNIGHT, true) => &[Skill::Rush, Skill::Miracle, Skill::Hammer],
-        (PRIEST, true) => &[Skill::Entomb, Skill::Resurrect, Skill::Copy],
-        (NUN, true) => &[Skill::Rational, Skill::Healing],
-        _ => HEROES[hero].skills,
-    }
-}
-pub fn effective_skill(skill: Skill, rules: Rules) -> Skill {
-    if skill == Skill::Copy {
-        rules
-            .copied_skill
-            .filter(|s| *s != Skill::Copy)
-            .unwrap_or(Skill::Copy)
+    let configured = ability_loadout(hero).awake_skills;
+    if awake && !configured.is_empty() {
+        configured
     } else {
-        skill
+        HEROES[hero].skills
     }
 }
+
+pub fn effective_skill(skill: Skill, rules: Rules) -> Skill {
+    let mut value = skill;
+    dispatch_active(
+        skill,
+        &EventContext::new(0, 0, 0, rules),
+        &mut RuleEvent::ResolveSkill { value: &mut value },
+        &mut Vec::new(),
+    );
+    value
+}
+
 pub fn skill_cost_in(hero: usize, skill: Skill, rules: Rules) -> i32 {
     skill_cost(hero, rules.awake, effective_skill(skill, rules))
 }
 pub fn skill_name_in(skill: Skill, rules: Rules, zh: bool) -> String {
-    if skill == Skill::Copy && effective_skill(skill, rules) != Skill::Copy {
+    if effective_skill(skill, rules) != skill {
         format!(
             "{} · {}",
             skill.name(zh),
@@ -273,29 +275,14 @@ pub fn role_text(key: &str, zh: bool) -> &'static str {
     }
 }
 pub fn awakening_effect(hero: usize, zh: bool) -> &'static str {
-    if hero == KNIGHT {
-        return role_text("Knight.awakening", zh);
+    let key = ability_loadout(hero).awakening;
+    if key.starts_with("hero.") {
+        crate::tr_key(zh, key)
+    } else {
+        role_text(key, zh)
     }
-    if hero == DWARF {
-        return role_text("Dwarf.awakening", zh);
-    }
-    if hero == PRIEST {
-        return role_text("Priest.awakening", zh);
-    }
-    if hero == NUN {
-        return role_text("Nun.awakening", zh);
-    }
-    let key = match hero {
-        0 => "hero.awakening.knight",
-        1 => "hero.awakening.elf",
-        2 => "hero.awakening.wizard",
-        3 => "hero.awakening.goblin",
-        4 => "hero.awakening.imp",
-        5 => "hero.awakening.chort",
-        _ => "hero.awakening.zombie",
-    };
-    crate::tr_key(zh, key)
 }
+
 pub fn skill_description(skill: Skill, awake: bool, zh: bool) -> &'static str {
     let d = skill.definition();
     let awakened = if zh { &d.awake_zh } else { &d.awake_en };

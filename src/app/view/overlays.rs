@@ -108,10 +108,7 @@ impl Session {
         }
         if let Some(skill) = self.last_cast.filter(|s| {
             self.cast_time > 0.
-                && !matches!(
-                    content::effective_skill(*s, self.rules(self.last_cast_enemy)),
-                    content::Skill::Charge | content::Skill::Rush
-                )
+                && !content::skill_profile(*s, self.rules(self.last_cast_enemy)).delayed_damage
         }) {
             let progress = 1. - self.cast_time as f32 / 1.4;
             effects::draw(skill, &self.skill_flash, progress, self.last_cast_enemy);
@@ -120,7 +117,7 @@ impl Session {
     pub(in crate::app) fn draw_pockets(&mut self, frame: &Frame) {
         for side in [false, true] {
             let id = if side { self.enemy_id } else { self.hero_id };
-            if id == content::PRIEST
+            if content::ability_capabilities(id, self.rules(side)).pockets
                 || self.new_role_states[side as usize]
                     .pockets
                     .iter()
@@ -181,6 +178,7 @@ impl Session {
     ) {
         // Each passive has its own identity, icon, state and hit target.
         let mut passive_popup = None;
+        let mut status_popup: Option<Vec<String>> = None;
         for enemy_side in [false, true] {
             let id = if enemy_side {
                 self.enemy_id
@@ -194,6 +192,74 @@ impl Session {
             } else {
                 (self.hp, self.mp)
             };
+            let status_names: Vec<_> = self.new_role_states[enemy_side as usize]
+                .statuses
+                .0
+                .iter()
+                .flatten()
+                .map(|s| {
+                    let duration = match s.duration {
+                        content::StatusDuration::OwnerTurnEnd(n) => {
+                            if self.zh {
+                                format!("{n}回合")
+                            } else {
+                                format!("{n} turn")
+                            }
+                        }
+                        content::StatusDuration::UntilSwap => {
+                            if self.zh {
+                                "下次交换".into()
+                            } else {
+                                "next swap".into()
+                            }
+                        }
+                        content::StatusDuration::UntilClear => {
+                            if self.zh {
+                                "下次消除".into()
+                            } else {
+                                "next clear".into()
+                            }
+                        }
+                    };
+                    format!("{}·{}", s.id.name(self.zh), duration)
+                })
+                .collect();
+            if !status_names.is_empty() {
+                let text = format!(
+                    "{} {}",
+                    if self.zh { "状态" } else { "Effects" },
+                    status_names.join(" / ")
+                );
+                draw_rectangle(area.x, 430., 208., 24., Color::from_rgba(38, 29, 54, 255));
+                label(
+                    &text,
+                    area.x + 4.,
+                    447.,
+                    fit_size(&text, 12., 200.),
+                    Color::from_rgba(211, 181, 255, 255),
+                );
+                if !show_moves
+                    && !frame.block_input
+                    && Rect::new(area.x, 430., 208., 24.).contains(frame.pointer)
+                {
+                    let mut lines = Vec::new();
+                    for status in self.new_role_states[enemy_side as usize]
+                        .statuses
+                        .0
+                        .iter()
+                        .flatten()
+                    {
+                        lines.push(format!(
+                            "{} · {} {}",
+                            status.id.name(self.zh),
+                            if self.zh { "来源：" } else { "From:" },
+                            status.applied_by.name(self.zh)
+                        ));
+                        lines.extend(wrap_preview_text(status.id.description(self.zh), 22.));
+                    }
+                    status_popup = Some(lines);
+                }
+            }
             for (i, &passive) in content::passives(id, awake).iter().enumerate() {
                 let rect = Rect::new(
                     area.x + (i % 2) as f32 * 106.,
@@ -208,7 +274,14 @@ impl Session {
                     && !self.paused
                     && self.interface.panel.is_none()
                     && rect.contains(frame.pointer);
-                let status = passive.status(id, health, mana, awake, self.zh);
+                let status = if content::ability_enabled(
+                    &content::EventContext::new(id, health, mana, self.rules(enemy_side)),
+                    content::AbilityId::Passive(passive),
+                ) {
+                    passive.status(id, health, mana, awake, self.zh)
+                } else {
+                    Some((if self.zh { "已禁用" } else { "Disabled" }, false))
+                };
                 let color = if status.is_some_and(|(_, on)| !on) {
                     GRAY
                 } else {
@@ -225,22 +298,7 @@ impl Session {
                     draw_rectangle_lines(rect.x, rect.y, rect.w, rect.h, 1., GOLD);
                 }
                 icons::draw_passive(passive, rect.x + 3., rect.y + 3., 18.);
-                let name = if matches!(
-                    passive,
-                    content::Passive::BloodFury | content::Passive::BoilingBlood
-                ) {
-                    format!(
-                        "{}{}",
-                        passive.short_name(self.zh),
-                        if status.is_some_and(|(_, on)| on) {
-                            "+25%"
-                        } else {
-                            tr_key(self.zh, "ui.overlays.draw_passives.off")
-                        }
-                    )
-                } else {
-                    passive.short_name(self.zh).to_string()
-                };
+                let name = passive.badge_name(self.zh, status);
                 label(
                     &name,
                     rect.x + 25.,
@@ -248,21 +306,24 @@ impl Session {
                     fit_size(&name, 13., 73.),
                     color,
                 );
-                if matches!(
-                    passive,
-                    content::Passive::BloodFury | content::Passive::BoilingBlood
-                ) && status.is_some_and(|(_, on)| on)
-                {
+                if passive.badge_highlight(status) {
                     draw_circle(rect.x + rect.w - 4., rect.y + 4., 2.5, ORANGE);
                 }
                 if hovered {
-                    passive_popup = Some((passive, id, health, mana, awake));
+                    passive_popup = Some((passive, id, health, mana, awake, enemy_side));
                 }
             }
         }
-        if let Some((passive, id, health, mana, awake)) = passive_popup {
+        if let Some((passive, id, health, mana, awake, enemy_side)) = passive_popup {
             let lines = wrap_preview_text(passive.description(self.zh), 18.);
-            let status = passive.status(id, health, mana, awake, self.zh);
+            let status = if content::ability_enabled(
+                &content::EventContext::new(id, health, mana, self.rules(enemy_side)),
+                content::AbilityId::Passive(passive),
+            ) {
+                passive.status(id, health, mana, awake, self.zh)
+            } else {
+                Some((if self.zh { "已禁用" } else { "Disabled" }, false))
+            };
             let relation = passive.replaces().map(|old| {
                 crate::format_text(self.zh, "battle.replace_passive", &[old.name(self.zh)])
             });
@@ -285,6 +346,25 @@ impl Session {
             }
             if let Some(text) = relation {
                 label(&text, 287., y, 15., SKYBLUE);
+            }
+        }
+        if let Some(lines) = status_popup {
+            flush_labels();
+            draw_rectangle(
+                270.,
+                225.,
+                485.,
+                30. + lines.len() as f32 * 24.,
+                Color::from_rgba(23, 20, 36, 250),
+            );
+            for (i, line) in lines.iter().enumerate() {
+                label(
+                    line,
+                    286.,
+                    251. + i as f32 * 24.,
+                    17.,
+                    Color::from_rgba(211, 181, 255, 255),
+                );
             }
         }
     }

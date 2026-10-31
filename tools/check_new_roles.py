@@ -1,6 +1,6 @@
 """Exercise the new characters through the actual native game loop and JSON log."""
 from pathlib import Path
-import json, subprocess, tempfile, time
+import json, re, subprocess, tempfile, time
 ROOT=Path(__file__).resolve().parents[1]
 CLEAN=[[(x+2*y)%7 for x in range(8)] for y in range(8)]
 ATTACK=[row[:] for row in CLEAN];ATTACK[0][:3]=[2,1,2];ATTACK[1][1]=2
@@ -37,26 +37,31 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-new-roles-') as directory:
   edit('hero player 8');edit('hero enemy 2');edit('mp player 100');load(CLEAN);edit('pause off')
   jump=cast(1)
   assert 'Jump' in jump['detail'];assert jump['after']['mp']==jump['before']['mp']==100
-  assert not jump['after']['action_done'] and jump['after']['new_role_states'][0]['jumped']
+  assert not jump['after']['action_done'] and any(s['id']=='ExtraReach' for s in jump['after']['new_role_states'][0]['statuses'])
   assert jump['after']['cooldowns'][0][18]==2
   forge=cast(2,1,4)
   assert forge['after']['mp']==50 and forge['after']['action_done']
   for y in (3,4):
    for x in (0,1):assert forge['after']['board'][y][x]==2
   turn=player_turn(forge['seq']);assert turn['after']['cooldowns'][0][18]==1
-  assert not turn['after']['new_role_states'][0]['jumped']
+  assert not any(s['id']=='ExtraReach' for s in turn['after']['new_role_states'][0]['statuses'])
   print('PASS dwarf jump, reach expansion, forge, owner-turn cooldown',flush=True)
 
-  # A top-half enemy exchange cannot damage the dwarf, including cascades.
+  # A swap clear checks each eliminated tile's current row for dwarf immunity.
   edit('hero player 8');edit('hero enemy 2');edit('pause on');load(ATTACK);marker=edit('turn enemy');edit('pause off')
   data=wait(lambda r:any(e['event']=='move' and e['actor']=='enemy' and e['seq']>marker['seq'] for e in r))
   move=next(e for e in data if e['event']=='move' and e['actor']=='enemy' and e['seq']>marker['seq'])
-  assert move['after']['new_role_states'][1]['upper_swap'], (move['seq'],move['detail'],move['before']['enemy'],move['before']['board'])
+  assert move['after']['new_role_states'][1]['swap_clear'], (move['seq'],move['detail'],move['before']['enemy'],move['before']['board'])
   turn=player_turn(move['seq'])
+  attacks=[4,0,12,0,7,0,7]
   for e in records():
    if move['seq']<e['seq']<turn['seq'] and e['event']=='resolution' and e['actor']=='enemy':
-    assert e['before']['hp']==e['after']['hp'],'upper exchange/cascades must not damage dwarf'
-  print('PASS dwarf upper-half damage immunity',flush=True)
+    coords=[(int(x)-1,int(y)-1) for x,y in re.findall(r'\((\d+), (\d+)\)',e['detail'].split(' reward=')[0])]
+    scale=int(re.search(r'multiplier_percent=(\d+)',e['detail']).group(1))
+    expected=sum(attacks[e['before']['board'][y][x]] for x,y in coords if y>=4)*scale//100
+    actual=int(re.search(r' actual_damage=(\d+)',e['detail']).group(1))
+    assert actual==expected,(e['detail'],expected,actual)
+  print('PASS dwarf per-tile row damage immunity through cascades',flush=True)
 
   edit('hero player 9');edit('hero enemy 2');edit('mp player 100');load(CLEAN)
   buried=cast(1,3,3)
@@ -83,7 +88,7 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-new-roles-') as directory:
   miracle=cast(2)
   assert miracle['after']['new_role_states'][0]['force_armed'] and not miracle['after']['action_done']
   forced=event('move 1 1 2 1','move')
-  assert not forced['after']['action_done'] and forced['after']['new_role_states'][0]['miracle']
+  assert not forced['after']['action_done'] and any(s['id']=='ClearPenalty' for s in forced['after']['new_role_states'][0]['statuses'])
   for y in range(8):assert forced['after']['board'][y][0]==forced['before']['board'][y][1]
   rollback(forced['before']);rollback(miracle['before'])
   rush=cast(1,1,1)

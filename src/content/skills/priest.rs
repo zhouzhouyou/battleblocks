@@ -16,3 +16,25 @@ pub(super) fn insert(b: &mut Board, target: (usize, usize), tile: u8) {
     }
     b[target.1][target.0] = tile;
 }
+
+pub(super) fn cast(
+    skill: Skill,
+    b: &mut Board,
+    target: (usize, usize),
+    ctx: &EventContext,
+) -> Effect {
+    if skill == Skill::Resurrect {
+        if let Some(tile) = ctx
+            .rules
+            .pockets
+            .get(ctx.rules.pocket_slot)
+            .copied()
+            .flatten()
+        {
+            insert(b, target, tile);
+        }
+        Effect::default()
+    } else {
+        effect(skill, target)
+    }
+}

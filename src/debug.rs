@@ -370,8 +370,18 @@ impl Console {
         self.action = 0;
     }
     pub fn event(&mut self, event: &str, detail: &str, before: &Snapshot, after: &Snapshot) {
+        self.event_payload(event, detail, None, before, after);
+    }
+    pub fn event_payload(
+        &mut self,
+        event: &str,
+        detail: &str,
+        payload: Option<&str>,
+        before: &Snapshot,
+        after: &Snapshot,
+    ) {
         self.seq += 1;
-        let record=format!("{{\"seq\":{},\"action\":{},\"time\":{},\"event\":{},\"actor\":{},\"detail\":{},\"before\":{},\"after\":{}}}",self.seq,self.action,get_time(),quote(event),quote(if before.enemy_turn{"enemy"}else{"player"}),quote(detail),before.json(),after.json());
+        let record=format!("{{\"seq\":{},\"action\":{},\"time\":{},\"event\":{},\"actor\":{},\"detail\":{},\"before\":{},\"after\":{},\"payload\":{}}}",self.seq,self.action,get_time(),quote(event),quote(if before.enemy_turn{"enemy"}else{"player"}),quote(detail),before.json(),after.json(),payload.unwrap_or("null"));
         #[cfg(not(target_arch = "wasm32"))]
         {
             use std::io::Write;

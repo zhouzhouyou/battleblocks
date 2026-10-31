@@ -12,6 +12,14 @@ impl Session {
         }
         // Visual lifetimes continue after victory/defeat and are independent of rewards.
         self.feedback_time = (self.feedback_time - frame.dt).max(0.);
+        for reaction in &mut self.reactions {
+            if let Some((_, remaining)) = reaction {
+                *remaining = (*remaining - frame.dt).max(0.);
+                if *remaining == 0. {
+                    *reaction = None;
+                }
+            }
+        }
         self.cast_time = (self.cast_time - frame.dt).max(0.);
         if self.cast_time == 0. {
             self.skill_flash.clear();

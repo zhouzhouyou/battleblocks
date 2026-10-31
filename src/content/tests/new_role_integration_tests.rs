@@ -54,7 +54,11 @@ fn strength_and_horizontal_awakened_bonus_are_exact_and_do_not_leak_to_cascades(
             1,
             0,
             Rules {
-                miracle: true,
+                statuses: StatusSet::single(
+                    StatusId::ClearPenalty,
+                    Skill::Miracle,
+                    StatusDuration::OwnerTurnEnd(1)
+                ),
                 ..awake
             }
         )
@@ -71,7 +75,11 @@ fn strength_and_horizontal_awakened_bonus_are_exact_and_do_not_leak_to_cascades(
             2,
             0,
             Rules {
-                miracle: true,
+                statuses: StatusSet::single(
+                    StatusId::ClearPenalty,
+                    Skill::Miracle,
+                    StatusDuration::OwnerTurnEnd(1)
+                ),
                 ..awake
             }
         )
@@ -106,7 +114,11 @@ fn dwarf_reach_tracks_current_health_and_jump_and_preserves_rejected_targets() {
                 DWARF,
                 cap * percent / 100,
                 Rules {
-                    jumped: true,
+                    statuses: StatusSet::single(
+                        StatusId::ExtraReach,
+                        Skill::Jump,
+                        StatusDuration::OwnerTurnEnd(1)
+                    ),
                     ..rules
                 }
             ),
@@ -128,7 +140,11 @@ fn dwarf_reach_tracks_current_health_and_jump_and_preserves_rejected_targets() {
         &b,
         (1, 3),
         Rules {
-            jumped: true,
+            statuses: StatusSet::single(
+                StatusId::ExtraReach,
+                Skill::Jump,
+                StatusDuration::OwnerTurnEnd(1)
+            ),
             ..Default::default()
         }
     ));
@@ -145,7 +161,11 @@ fn dwarf_reach_tracks_current_health_and_jump_and_preserves_rejected_targets() {
         (1, 3),
         (1, 4),
         Rules {
-            jumped: true,
+            statuses: StatusSet::single(
+                StatusId::ExtraReach,
+                Skill::Jump,
+                StatusDuration::OwnerTurnEnd(1)
+            ),
             ..Default::default()
         }
     ));
@@ -167,55 +187,66 @@ fn dwarf_reach_tracks_current_health_and_jump_and_preserves_rejected_targets() {
     assert_eq!(b, original);
 }
 #[test]
-fn upper_half_swap_immunity_depends_on_target_and_not_other_rewards() {
+fn dwarf_swap_immunity_tracks_each_cleared_tiles_row_and_preserves_other_rewards() {
     let b = [[0; N]; N];
-    let cells = [(0, 0), (1, 0), (2, 0)];
-    let blocked = Rules {
+    let top = [(0, 0), (1, 0), (2, 0)];
+    let bottom = [(0, 5), (1, 5), (2, 5)];
+    let rules = Rules {
         opponent: Some((DWARF, false)),
-        upper_swap: true,
+        swap_clear: true,
         ..Default::default()
     };
-    let (h, d, m) = clear_rewards_in(KNIGHT, 500, 0, &b, &cells, 1, 0, blocked);
-    assert_eq!((h, d, m), (6, 0, 12));
-    assert_eq!(
-        clear_rewards_in(KNIGHT, 500, 0, &b, &cells, 2, 0, blocked).1,
-        0
-    );
-    assert_eq!(
-        clear_rewards_in(
-            KNIGHT,
+    let settle = |hero, cells: &[(usize, usize)], rules| {
+        settle_batch_in(
+            hero,
             500,
             0,
-            &b,
-            &cells,
-            1,
-            0,
+            500,
+            clear_batch_in(hero, 500, 0, &b, cells, 1, 0, rules),
+            rules,
+        )
+    };
+    assert_eq!(
+        clear_rewards_in(KNIGHT, 500, 0, &b, &top, 1, 0, rules),
+        (6, 21, 12)
+    );
+    let top_hit = settle(KNIGHT, &top, rules);
+    assert_eq!(top_hit.damage, 0);
+    assert_eq!((top_hit.actor_hp, top_hit.actor_mp), (506, 12));
+    assert!(top_hit
+        .triggers
+        .iter()
+        .any(|t| t.message == Some("Dwarf.evade")));
+    let imp = settle(4, &top, rules);
+    assert_eq!((imp.damage, imp.actor_mp), (0, 18));
+    assert_eq!(settle(KNIGHT, &bottom, rules).damage, 21);
+    assert_eq!(settle(KNIGHT, &[(0, 0), (1, 5), (2, 6)], rules).damage, 14);
+    assert_eq!(
+        settle(
+            KNIGHT,
+            &top,
             Rules {
-                upper_swap: false,
-                ..blocked
+                swap_clear: false,
+                ..rules
             }
         )
-        .1,
+        .damage,
         21
     );
     assert_eq!(
-        clear_rewards_in(
+        settle(
             KNIGHT,
-            500,
-            0,
-            &b,
-            &cells,
-            1,
-            0,
+            &top,
             Rules {
                 opponent: Some((PRIEST, false)),
-                ..blocked
+                ..rules
             }
         )
-        .1,
+        .damage,
         21
     );
 }
+
 #[test]
 fn copied_skill_uses_native_cost_and_end_turn_rule_but_slot_cooldown_is_one() {
     let b = board();

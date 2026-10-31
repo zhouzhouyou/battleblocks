@@ -222,13 +222,15 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-debug-') as temp:
         edit_command('hp enemy 600')
         edit_command('mp player 180')
         prepare=action('cast 1','skill')
-        assert prepare['after']['new_role_states'][0]['turn_mode']=='Frenzy'
+        assert any(s['id']=='Frenzy' for s in prepare['after']['new_role_states'][0]['statuses'])
         assert not prepare['after']['armed']
         assert prepare['after']['mp']==150 and not prepare['after']['action_done']
         prayer=action('cast 2','skill')
         assert prayer['after']['hp']==465
         assert prayer['after']['enemy_hp']==465
         assert prayer['after']['mp']==90
+        traced=[e['payload'] for e in records() if e['event']=='reward_event' and e['action']==prayer['action'] and e.get('payload') and e['payload']['resource']=='Damage']
+        assert any([step['source'].get('id') for step in event['source_chain']]==['Healing','FriendMilk','Frenzy'] for event in traced)
         rollback_to(prayer['before'])
         rollback_to(prepare['before'])
         # At the locked full reserve, the wizard's clear heals normally.

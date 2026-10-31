@@ -19,8 +19,8 @@ impl Session {
             } else {
                 self.hero_id
             };
-            let (heal, damage, mana) = if self.reward {
-                content::clear_rewards_in(
+            let batch = if self.reward {
+                content::clear_batch_in(
                     id,
                     if self.enemy_turn { self.enemy } else { self.hp },
                     if self.enemy_turn {
@@ -33,13 +33,16 @@ impl Session {
                     self.chain.max(1) as usize,
                     self.extra_bonus,
                     content::Rules {
-                        initial_loot: self.reward_skill == Some(content::Skill::Greedy),
+                        initial_loot: self.reward_skill.is_some_and(|s| {
+                            content::skill_profile(s, self.rules(self.enemy_turn)).initial_loot
+                        }),
                         ..self.rules(self.enemy_turn)
                     },
                 )
             } else {
-                (0, 0, 0)
+                content::RewardBatch::default()
             };
+            let (heal, damage, mana) = batch.totals();
             if self.reward && self.chain == 1 {
                 self.new_role_states[self.enemy_turn as usize]
                     .direct_tiles
@@ -52,22 +55,34 @@ impl Session {
             self.reward_skill = None;
             if self.reward {
                 self.extra_bonus = 0;
+                self.new_role_states[self.enemy_turn as usize]
+                    .statuses
+                    .consume(content::StatusDuration::UntilClear);
             }
             for &(x, y) in &self.pending {
                 self.b[y][x] = 255;
             }
-            let hit = self.apply_rewards((heal, damage, mana), 0);
-            self.presentation.health(
+            let applied = self.apply_batch_rewards(batch);
+            let fallback = tr_key(self.zh, "ui.resolution.resolve_pending.clear");
+            let actor_source = applied
+                .actor_health_source
+                .map(|source| source.name(self.zh))
+                .unwrap_or(fallback);
+            let opponent_source = applied
+                .opponent_health_source
+                .map(|source| source.name(self.zh))
+                .unwrap_or(fallback);
+            self.presentation.health_sources(
                 [before.hp, before.enemy_hp],
                 [self.hp, self.enemy],
-                tr_key(self.zh, "ui.resolution.resolve_pending.clear"),
+                [actor_source, opponent_source],
             );
             let actual_heal = if self.enemy_turn {
                 self.enemy - before.enemy_hp
             } else {
                 self.hp - before.hp
             };
-            let actual_damage = hit.damage;
+            let actual_damage = applied.hit.damage;
             let actual_mana = if self.enemy_turn {
                 self.enemy_mp - before.enemy_mp
             } else {

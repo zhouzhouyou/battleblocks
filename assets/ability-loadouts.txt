@@ -1,0 +1,12 @@
+# hero|normal passives|awakened passives|awakened actives (indices; blank inherits)|awakening text
+0|ColumnFormation,BattleTraining|ColumnFormation,BattleTraining,ChargeMastery,GuardEconomy||hero.awakening.knight
+1|ForestStep,ForestPact|ForestStep,ForestPact,ElvenPower||hero.awakening.elf
+2|ArcaneConversion,ManaSeal|ArcaneConversion,ManaRelease,MeteorEconomy||hero.awakening.wizard
+3|Recycling|Recycling,LootMastery||hero.awakening.goblin
+4|BalancedAffinity,ElementReturn|BalancedResonance,ElementReturn,BlastMastery||hero.awakening.imp
+5|BloodFury|BoilingBlood||hero.awakening.chort
+6|FleshCasting|FleshConversion,BloodSacrifice||hero.awakening.zombie
+7|KnightStrength,Clumsy|KnightStrength,ClumsyAwake|15,16,17|Knight.awakening
+8|DwarfStrength,Short|DwarfStrength,Short,Grudge||Dwarf.awakening
+9|MindVision|MindVision,BorrowedSlot|20,21,22|Priest.awakening
+10|FriendMilk,AutoRecovery|FriendMilk,Madness,AutoRecovery|25,24|Nun.awakening
