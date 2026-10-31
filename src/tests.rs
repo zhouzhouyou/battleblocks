@@ -343,5 +343,8 @@ fn awakening_page_previews_the_awakened_active() {
     let awakened = menu::Preview::new_static(content::NUN, 0, true);
     assert_eq!(base.status, Some(content::StatusId::Frenzy));
     assert_eq!(awakened.status, Some(content::StatusId::Rational));
-    assert!(base.dark && !awakened.dark);
+    // Frenzy darkens a normal nun; returning to reason restores the awakened nun's
+    // warm lantern instead of leaving her in the shadow form.
+    assert!(!base.base_dark && base.dark);
+    assert!(awakened.base_dark && !awakened.dark);
 }
