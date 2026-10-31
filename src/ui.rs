@@ -8,6 +8,13 @@ pub enum Panel {
 pub const WINDOW_SIZES: [(i32, i32); 2] = [(1024, 720), (1280, 900)];
 // Horizontal extent of the volume slider in the first settings row.
 const VOLUME_TRACK: (f32, f32) = (462., 662.);
+/// Modal panel frame. Every panel row is laid out inside it with this much padding,
+/// so content can neither touch the border nor spill past it.
+pub const PANEL: Rect = Rect::new(212., 108., 600., 516.);
+const PANEL_PAD: f32 = 24.;
+/// Left edge and usable width of the panel content area.
+const PANEL_LEFT: f32 = PANEL.x + PANEL_PAD;
+const PANEL_INNER: f32 = PANEL.w - 2. * PANEL_PAD;
 /// Fully visible rows of the opponent grid; further rows scroll.
 pub const OPPONENT_VISIBLE_ROWS: usize = 5;
 pub struct Ui {
@@ -441,14 +448,20 @@ impl Ui {
         let Some(panel) = self.panel else { return };
         flush_labels();
         draw_rectangle(0., 0., 1024., 720., Color::new(0., 0., 0., 0.78));
-        draw_rectangle(212., 108., 600., 516., Color::from_rgba(24, 30, 43, 255));
-        draw_rectangle_lines(212., 108., 600., 516., 2., SKYBLUE);
+        draw_rectangle(
+            PANEL.x,
+            PANEL.y,
+            PANEL.w,
+            PANEL.h,
+            Color::from_rgba(24, 30, 43, 255),
+        );
+        draw_rectangle_lines(PANEL.x, PANEL.y, PANEL.w, PANEL.h, 2., SKYBLUE);
         label(
             match panel {
                 Panel::Settings => tr_key(zh, "ui.screen.draw_panel.settings"),
                 Panel::Help => tr_key(zh, "ui.screen.draw_panel.tile_guide"),
             },
-            236.,
+            PANEL_LEFT,
             148.,
             28.,
             GOLD,
@@ -467,49 +480,37 @@ impl Ui {
                 label(text, r.x + 10., r.y + 21., 17., WHITE);
             }
             if self.help_awakening {
-                label(
-                    tr_key(
-                        zh,
-                        "ui.screen.draw_panel.damage_or_hp_payment_triggers_a_ne",
-                    ),
-                    236.,
-                    214.,
-                    16.,
-                    GOLD,
-                );
-                label(
-                    tr_key(
-                        zh,
-                        "ui.screen.draw_panel.the_triggering_hit_cannot_spill_ov",
-                    ),
-                    236.,
-                    242.,
-                    16.,
-                    LIGHTGRAY,
-                );
-                label(
-                    tr_key(zh, "ui.screen.draw_panel.hero_trigger_new_hp_cap"),
-                    236.,
-                    278.,
-                    17.,
-                    SKYBLUE,
-                );
-                for (id, h) in HEROES.iter().enumerate() {
-                    let y = 307. + id as f32 * 40.;
-                    label(if zh { h.zh } else { h.en }, 236., y, 16., WHITE);
-                    label(
-                        &format!(
-                            "{} / {}",
-                            content::awakening_line(id),
-                            content::health_cap(id, true)
+                // Explanation only: every hero's numbers live on its own awakening page.
+                for (i, (text, color)) in [
+                    (
+                        tr_key(
+                            zh,
+                            "ui.screen.draw_panel.damage_or_hp_payment_triggers_a_ne",
                         ),
-                        380.,
-                        y,
-                        16.,
-                        GREEN,
+                        GOLD,
+                    ),
+                    (
+                        tr_key(
+                            zh,
+                            "ui.screen.draw_panel.the_triggering_hit_cannot_spill_ov",
+                        ),
+                        LIGHTGRAY,
+                    ),
+                    (
+                        tr_key(zh, "ui.screen.draw_panel.awakening_numbers"),
+                        SKYBLUE,
+                    ),
+                ]
+                .iter()
+                .enumerate()
+                {
+                    label(
+                        text,
+                        PANEL_LEFT,
+                        224. + i as f32 * 38.,
+                        fit_size(text, 17., PANEL_INNER),
+                        *color,
                     );
-                    let text = content::awakening_effect(id, zh);
-                    label(text, 236., y + 18., fit_size(text, 13., 550.), GOLD);
                 }
                 return;
             }
