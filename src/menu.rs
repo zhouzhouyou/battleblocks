@@ -106,10 +106,28 @@ fn panel(rect: Rect, color: Color) {
     );
 }
 fn sprite(texture: &Texture2D, asset: &SpriteAsset, area: Rect) {
-    let time = get_time() % asset.durations.iter().sum::<f64>();
+    sprite_frames(
+        texture,
+        asset,
+        area,
+        get_time(),
+        asset.durations,
+        asset.indices,
+    );
+}
+/// Draw one frame of an arbitrary atlas row (e.g. the hero's cast row).
+fn sprite_frames(
+    texture: &Texture2D,
+    asset: &SpriteAsset,
+    area: Rect,
+    time: f64,
+    durations: &[f64],
+    indices: &[usize],
+) {
+    let time = time % durations.iter().sum::<f64>();
     let mut end = 0.;
     let mut frame = 0;
-    for (i, d) in asset.durations.iter().enumerate() {
+    for (i, d) in durations.iter().enumerate() {
         end += d;
         if time < end {
             frame = i;
@@ -123,8 +141,7 @@ fn sprite(texture: &Texture2D, asset: &SpriteAsset, area: Rect) {
         (area.w / asset.w).min(area.h / asset.h)
     };
     let size = vec2(asset.w * scale, asset.h * scale);
-    let (size, rotation) =
-        crate::presentation::idle_pose(size, get_time(), asset.indices.len() == 1);
+    let (size, rotation) = crate::presentation::idle_pose(size, get_time(), indices.len() == 1);
     draw_texture_ex(
         texture,
         area.x + (area.w - size.x) / 2.,
@@ -139,8 +156,8 @@ fn sprite(texture: &Texture2D, asset: &SpriteAsset, area: Rect) {
             rotation,
             pivot: Some(vec2(area.x + area.w / 2., area.y + area.h)),
             source: Some(Rect::new(
-                (asset.indices[frame] % (texture.width() / asset.w) as usize) as f32 * asset.w,
-                (asset.indices[frame] / (texture.width() / asset.w) as usize) as f32 * asset.h,
+                (indices[frame] % (texture.width() / asset.w) as usize) as f32 * asset.w,
+                (indices[frame] / (texture.width() / asset.w) as usize) as f32 * asset.h,
                 asset.w,
                 asset.h,
             )),
@@ -201,11 +218,21 @@ fn draw_skill_actor(
     } else {
         (texture, &sprites::SPRITES[hero])
     };
-    sprite(
-        texture,
-        asset,
-        Rect::new(area.x, area.y - lift, area.w, area.h),
-    );
+    let area = Rect::new(area.x, area.y - lift, area.w, area.h);
+    // After the cast point the hero performs the skill: play its cast row (the same
+    // frames the battle uses) instead of standing in the idle loop.
+    match sprites::cast_frames(hero, dark).filter(|_| after) {
+        Some(frames) => sprite_frames(
+            texture,
+            asset,
+            area,
+            // One cast gesture, then hold its last key for the rest of the phase.
+            (t as f64 * 1.65).min(presentation::CAST_TIME - 0.001),
+            &sprites::CAST_FRAME_TIME,
+            frames,
+        ),
+        None => sprite(texture, asset, area),
+    }
 }
 pub fn draw(
     hero: usize,

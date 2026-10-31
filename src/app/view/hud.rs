@@ -140,15 +140,12 @@ impl Session {
             } else {
                 &sprites::SPRITES[id]
             };
-            let casting = id >= content::KNIGHT
+            // New-role atlases carry a cast row per form; legacy sheets stay on idle.
+            let cast_indices = sprites::cast_frames(id, show_shadow);
+            let casting = cast_indices.is_some()
                 && self.last_cast.is_some()
                 && self.last_cast_enemy == enemy_side
                 && self.cast_time > 0.;
-            let cast_indices: &[usize] = if show_shadow {
-                &[12, 13, 14, 15]
-            } else {
-                &[8, 9, 10, 11]
-            };
             let mut area = sprite_rect(enemy_side);
             if content::ability_capabilities(id, self.rules(enemy_side)).reach_visual {
                 let target = if show_awake {
@@ -192,10 +189,12 @@ impl Session {
                     area.h -= height * scale;
                 }
             }
+            let cast_elapsed = presentation::CAST_TIME - self.cast_time;
             if casting
                 && content::skill_profile(self.last_cast.unwrap(), self.rules(enemy_side)).hop
             {
-                area.y -= ((1.4 - self.cast_time) as f32 * std::f32::consts::PI / 1.4)
+                area.y -= (cast_elapsed as f32 * std::f32::consts::PI
+                    / presentation::CAST_TIME as f32)
                     .sin()
                     .max(0.)
                     * 12.;
@@ -211,18 +210,14 @@ impl Session {
                 sprite.w,
                 sprite.h,
                 area,
+                if casting { cast_elapsed } else { get_time() },
                 if casting {
-                    (1.4 - self.cast_time).max(0.).min(0.519)
-                } else {
-                    get_time()
-                },
-                if casting {
-                    &[0.13; 4]
+                    &sprites::CAST_FRAME_TIME
                 } else {
                     sprite.durations
                 },
                 if casting {
-                    cast_indices
+                    cast_indices.unwrap()
                 } else {
                     sprite.indices
                 },
