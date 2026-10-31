@@ -77,7 +77,7 @@ impl Session {
             }
             if let Some(p) = focused_hint.and_then(|i| move_previews[i].as_ref()) {
                 for &(x, y) in &p.cells {
-                    draw_rectangle_lines(
+                    outline(
                         259. + x as f32 * 64.,
                         113. + y as f32 * 64.,
                         58.,
@@ -112,7 +112,7 @@ impl Session {
                 hints_rect.h,
                 Color::new(0.10, 0.17, 0.23, 1.),
             );
-            draw_rectangle_lines(
+            outline(
                 hints_rect.x,
                 hints_rect.y,
                 hints_rect.w,
@@ -157,7 +157,7 @@ impl Session {
         if show_moves {
             flush_labels();
             draw_rectangle(790., 208., 220., 430., Color::new(0.04, 0.07, 0.12, 0.98));
-            draw_rectangle_lines(790., 208., 220., 430., 2., SKYBLUE);
+            outline(790., 208., 220., 430., 2., SKYBLUE);
             label(
                 tr_key(self.zh, "ui.hints.draw_hints.move_rewards"),
                 800.,
@@ -189,7 +189,7 @@ impl Session {
                 if focused_hint == Some(i) {
                     draw_rectangle(798., row_y, 204., 43., Color::new(0.16, 0.25, 0.30, 1.));
                     if hints_playable {
-                        draw_rectangle_lines(798., row_y, 204., 43., 1., GOLD);
+                        outline(798., row_y, 204., 43., 1., GOLD);
                         label(
                             tr_key(self.zh, "ui.hints.draw_hints.click"),
                             950.,
@@ -254,7 +254,7 @@ impl Session {
                     rect.h,
                     Color::new(0.13, 0.20, 0.28, 1.),
                 );
-                draw_rectangle_lines(
+                outline(
                     rect.x,
                     rect.y,
                     rect.w,

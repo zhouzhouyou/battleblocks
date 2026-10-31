@@ -12,7 +12,7 @@ impl Session {
             let r = enemy_skill_rect(i);
             draw_rectangle(r.x, r.y, r.w, r.h, Color::new(0.12, 0.15, 0.2, 1.));
             if r.contains(frame.pointer) {
-                draw_rectangle_lines(r.x, r.y, r.w, r.h, 2., ORANGE);
+                outline(r.x, r.y, r.w, r.h, 2., ORANGE);
             }
             icons::draw(*skill, r.x + 5., r.y + 5., 28.);
             let color = if content::payment_in(
@@ -71,9 +71,9 @@ impl Session {
                 },
             );
             if self.targeting == Some(*skill) {
-                draw_rectangle_lines(rect.x, rect.y, rect.w, rect.h, 2., GOLD);
+                outline(rect.x, rect.y, rect.w, rect.h, 2., GOLD);
             } else if player_hover.is_some_and(|(s, _)| s == *skill) {
-                draw_rectangle_lines(rect.x, rect.y, rect.w, rect.h, 2., SKYBLUE);
+                outline(rect.x, rect.y, rect.w, rect.h, 2., SKYBLUE);
             }
             icons::draw(*skill, rect.x + 8., rect.y + 6., 22.);
             let title = format!(
@@ -219,7 +219,7 @@ impl Session {
             let x = if is_enemy { 14. } else { 790. };
             flush_labels();
             draw_rectangle(x, 208., 220., 438., Color::new(0.04, 0.07, 0.12, 0.98));
-            draw_rectangle_lines(
+            outline(
                 x,
                 208.,
                 220.,

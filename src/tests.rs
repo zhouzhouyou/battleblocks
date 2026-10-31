@@ -285,3 +285,24 @@ fn headless_autoplay_finishes_and_replays_the_same_seed() {
     assert!(first.steps < 10_000, "{first:?}");
     assert!(first.rounds >= 1, "{first:?}");
 }
+#[test]
+fn help_tabs_share_the_panel_width_without_leaving_it() {
+    let panel = ui::PANEL;
+    let inset = ui::help_tab_rect(0).x - panel.x;
+    let inner_right = panel.x + panel.w - inset;
+    for i in 0..ui::HELP_TAB_COUNT {
+        let r = ui::help_tab_rect(i);
+        assert!(r.x >= panel.x, "tab {i} starts before the panel");
+        assert!(
+            r.x + r.w <= inner_right,
+            "tab {i} runs past the panel content"
+        );
+        if i > 0 {
+            let previous = ui::help_tab_rect(i - 1);
+            assert!(
+                previous.x + previous.w < r.x,
+                "tab {i} overlaps the previous tab"
+            );
+        }
+    }
+}

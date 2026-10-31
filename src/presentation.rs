@@ -1,4 +1,4 @@
-use crate::{board::TileFall, label, Board, N};
+use crate::{board::TileFall, label, outline, Board, N};
 use macroquad::prelude::*;
 pub const CHARGE_TIME: f64 = 0.95;
 pub const SWAP_TIME: f64 = 0.35;
@@ -364,7 +364,7 @@ impl Presentation {
                 },
             );
             if self.swapping {
-                draw_rectangle_lines(
+                outline(
                     p.x + 2.,
                     p.y + 2.,
                     60.,
@@ -503,7 +503,7 @@ pub fn draw_move_hint(
     };
     if columns {
         for x in [a.0, b.0] {
-            draw_rectangle_lines(256. + x as f32 * 64. + 5., 115., 54., 502., 2., GOLD);
+            outline(256. + x as f32 * 64. + 5., 115., 54., 502., 2., GOLD);
         }
     }
     let dir = (to - from).normalize();
