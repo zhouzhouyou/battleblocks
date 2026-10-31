@@ -329,6 +329,28 @@ fn skill_preview_shows_the_hero_when_no_tile_changes() {
 }
 
 #[test]
+fn only_new_role_atlases_have_cast_rows() {
+    // 4×4 new-role sheets: idle, awakened idle, cast, awakened cast.
+    assert_eq!(
+        sprites::cast_frames(content::NUN, false),
+        Some([8, 9, 10, 11].as_slice())
+    );
+    assert_eq!(
+        sprites::cast_frames(content::NUN, true),
+        Some([12, 13, 14, 15].as_slice())
+    );
+    assert_eq!(
+        sprites::cast_frames(content::DWARF, false).map(|f| f.len()),
+        Some(4)
+    );
+    // Legacy sheets have no cast row, so battle and preview keep their idle frames.
+    assert_eq!(sprites::cast_frames(0, false), None);
+    assert_eq!(sprites::cast_frames(6, true), None);
+    let total: f64 = sprites::CAST_FRAME_TIME.iter().sum();
+    assert!((total - presentation::CAST_TIME).abs() < 1e-9);
+}
+
+#[test]
 fn awakening_page_previews_the_awakened_active() {
     // The nun's awakening swaps frenzy for returning to reason.
     assert_eq!(
