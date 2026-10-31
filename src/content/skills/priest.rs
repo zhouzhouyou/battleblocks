@@ -32,6 +32,18 @@ pub(super) fn cast(
             .flatten()
         {
             insert(b, target, tile);
+            let mut batch = RewardBatch::default();
+            batch.push(
+                Resource::Damage,
+                EventSide::Opponent,
+                6,
+                EventSource::Skill(skill),
+            );
+            return Effect {
+                damage: 6,
+                events: Some(batch),
+                ..Default::default()
+            };
         }
         Effect::default()
     } else {

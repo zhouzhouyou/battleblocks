@@ -28,6 +28,7 @@ fn state(enemy_turn: bool, hp: i32) -> Snapshot {
         rng_state: 42,
         charge_damage: None,
         charge_remaining: 0.,
+        round: 3,
         turns: crate::turns::Log::new(),
     }
 }
@@ -47,6 +48,7 @@ fn console() -> Console {
         seq: 0,
         started: std::time::Instant::now(),
         quiet_events: false,
+        batch: false,
         action: 0,
         next_action: 0,
         file: None,

@@ -16,10 +16,10 @@
 
 | 顺序 | 角色 | 状态 |
 | --- | --- | --- |
-| 1 | 矮人战士（1c） | 已接入游戏；v5 造型、production/v3 高密度 16 帧、v6 独立书层；统一显示尺寸；[权威角色档案](characters/DWARF.md) |
-| 2 | 骑士（1a） | 已接入游戏；K-A4 v8 造型、production/v3 高密度 16 帧，闭面罩比例与单辫已修正；[角色档案](characters/KNIGHT.md) |
-| 3 | 牧师（2a） | 已接入游戏；P-C v3 造型、production/v3 高密度 16 帧，与骑士等高；埋葬／复生、双口袋、心灵视界与觉醒复制技能栏已记录；复生插入时向下挤出底部方块，详见[角色档案](characters/PRIEST.md) |
-| 4 | 修女（2b） | 已选 E 方案 N-A；[人设图](../../asset-sources/art-direction/characters/nun/nun-na-model-sheet-e-v1.png)及[立绘／动画资源 v1](../../asset-sources/art-direction/characters/nun/production/v1/README.md)待视觉评审；已接入游戏，数值待平衡；[角色档案](characters/NUN.md) |
+| 1 | 矮人战士（1c） | 已接入并完成 2026-11-01 平衡；v5 造型、production/v3 高密度 16 帧、v6 独立书层；统一显示尺寸；选角尾页人物档案与矮人笑话已接入；[权威角色档案](characters/DWARF.md) |
+| 2 | 骑士（1a） | 已接入并完成 2026-11-01 平衡；K-A4 v8 造型、production/v3 高密度 16 帧，闭面罩比例与单辫已修正；冲锋改为摧毁并触发攻击／魔力，石中剑背景档案页已接入；[角色档案](characters/KNIGHT.md) |
+| 3 | 牧师（2a） | 已接入并完成 2026-11-01 平衡；P-C v3 造型、production/v3 高密度 16 帧，与骑士等高；埋葬／复生付费、复生触发攻击、双口袋、心灵视界、觉醒复制与脏牧档案页已接入；[角色档案](characters/PRIEST.md) |
+| 4 | 修女（2b） | 已选 E 方案 N-A；[人设图](../../asset-sources/art-direction/characters/nun/nun-na-model-sheet-e-v1.png)及[立绘／动画资源 v1](../../asset-sources/art-direction/characters/nun/production/v1/README.md)待视觉评审；已接入并完成 2026-11-01 平衡，台词与人物档案页已接入；[角色档案](characters/NUN.md) |
 | 5 | 巫师（3a） | 待评审 |
 | 6 | 女巫（3b） | 待评审 |
 | 7 | 吸血鬼伯爵（4a） | 待评审 |

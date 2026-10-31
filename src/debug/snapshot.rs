@@ -30,12 +30,13 @@ pub struct Snapshot {
     pub charge_remaining: f64,
     // Turn indicator records: restored by undo, left out of the log.
     pub turns: crate::turns::Log,
+    pub round: u32,
 }
 impl Snapshot {
     pub(super) fn json(&self) -> String {
-        format!("{{\"new_role_states\":[{},{}],\"cooldowns\":{:?},\"reward_skill\":{},\"awakened\":{:?},\"board\":{:?},\"hero\":{},\"enemy\":{},\"hp\":{},\"enemy_hp\":{},\"mp\":{},\"enemy_mp\":{},\"enemy_turn\":{},\"action_done\":{},\"pending\":{},\"deadline\":{},\"enemy_clock\":{},\"bonuses\":{:?},\"armed_sides\":{:?},\"bonus\":{},\"armed\":{},\"chain\":{},\"reward\":{},\"difficulty\":{},\"paused\":{},\"rng_state\":{},\"charge_damage\":{},\"charge_remaining\":{}}}",
+        format!("{{\"new_role_states\":[{},{}],\"cooldowns\":{:?},\"reward_skill\":{},\"awakened\":{:?},\"board\":{:?},\"hero\":{},\"enemy\":{},\"hp\":{},\"enemy_hp\":{},\"mp\":{},\"enemy_mp\":{},\"enemy_turn\":{},\"action_done\":{},\"pending\":{},\"deadline\":{},\"enemy_clock\":{},\"bonuses\":{:?},\"armed_sides\":{:?},\"bonus\":{},\"armed\":{},\"chain\":{},\"reward\":{},\"difficulty\":{},\"paused\":{},\"rng_state\":{},\"charge_damage\":{},\"charge_remaining\":{},\"round\":{}}}",
             role_json(&self.new_role_states[0]),role_json(&self.new_role_states[1]),self.cooldowns.0,self.reward_skill.map(|s|quote(&format!("{s:?}"))).unwrap_or("null".into()),self.awakened,self.board,self.hero,self.enemy,self.hp,self.enemy_hp,self.mp,self.enemy_mp,self.enemy_turn,self.action_done,
-            cells_json(&self.pending),self.deadline,self.enemy_clock,self.bonuses,self.armed_sides,self.bonus,self.armed,self.chain,self.reward,self.difficulty,self.paused,self.rng_state,self.charge_damage.as_ref().map(|p|p.json()).unwrap_or("null".into()),self.charge_remaining)
+            cells_json(&self.pending),self.deadline,self.enemy_clock,self.bonuses,self.armed_sides,self.bonus,self.armed,self.chain,self.reward,self.difficulty,self.paused,self.rng_state,self.charge_damage.as_ref().map(|p|p.json()).unwrap_or("null".into()),self.charge_remaining,self.round)
     }
 }
 fn role_json(state: &crate::role_state::RoleState) -> String {
@@ -46,7 +47,7 @@ fn role_json(state: &crate::role_state::RoleState) -> String {
         .copied_skill
         .map(|v| v.to_string())
         .unwrap_or_else(|| "null".into());
-    format!("{{\"pockets\":[{},{}],\"copied_skill\":{},\"pocket_slot\":{},\"direct_tiles\":{:?},\"force_armed\":{},\"horizontal\":{},\"swap_clear\":{},\"statuses\":{}}}", pockets[0],pockets[1],copied,state.pocket_slot,state.direct_tiles,state.force_armed,state.horizontal,state.swap_clear,statuses_json(state.statuses))
+    format!("{{\"pockets\":[{},{}],\"copied_skill\":{},\"pocket_slot\":{},\"direct_tiles\":{:?},\"repeat_casts\":{:?},\"force_armed\":{},\"horizontal\":{},\"swap_clear\":{},\"statuses\":{}}}", pockets[0],pockets[1],copied,state.pocket_slot,state.direct_tiles,state.repeat_casts,state.force_armed,state.horizontal,state.swap_clear,statuses_json(state.statuses))
 }
 fn cells_json(cells: &[(usize, usize)]) -> String {
     format!(

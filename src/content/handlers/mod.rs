@@ -9,7 +9,9 @@ mod priest;
 pub fn passive_handler(p: Passive) -> RuleHandler {
     match p {
         Passive::DwarfStrength | Passive::Short | Passive::Grudge => dwarf::handle,
-        Passive::KnightStrength | Passive::Clumsy | Passive::ClumsyAwake => knight::handle,
+        Passive::KnightStrength | Passive::Might | Passive::Clumsy | Passive::ClumsyAwake => {
+            knight::handle
+        }
         Passive::FriendMilk | Passive::Madness | Passive::AutoRecovery => nun::handle,
         Passive::MindVision | Passive::BorrowedSlot => priest::handle,
         Passive::ColumnFormation
@@ -72,8 +74,6 @@ pub fn status_handler(status: StatusId) -> RuleHandler {
         StatusId::Frenzy
         | StatusId::Rational
         | StatusId::ExtraReach
-        | StatusId::ForcedMove
-        | StatusId::ClearPenalty
         | StatusId::DoubleRewards
         | StatusId::ParallelSwap => statuses::handle,
     }

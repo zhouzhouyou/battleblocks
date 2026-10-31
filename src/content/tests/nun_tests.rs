@@ -39,12 +39,12 @@ fn friendship_uses_raw_healing_even_when_full_and_frenzy_changes_only_opponent_h
     let ordinary = settle_rewards_in(NUN, 650, 0, 500, (18, 0, 0), 0, rules(false, Mode::Normal));
     assert_eq!(
         (ordinary.actor_hp, ordinary.opponent_hp, ordinary.damage),
-        (650, 518, 0)
+        (620, 518, 0)
     );
     let frenzy = settle_rewards_in(NUN, 650, 0, 500, (18, 0, 0), 0, rules(false, Mode::Frenzy));
     assert_eq!(
         (frenzy.actor_hp, frenzy.opponent_hp, frenzy.damage),
-        (650, 500, 18)
+        (620, 500, 18)
     );
     let capped = settle_rewards_in(NUN, 650, 0, 700, (18, 0, 0), 0, rules(false, Mode::Frenzy));
     assert_eq!(capped.damage, 18);
@@ -112,15 +112,15 @@ fn ordinary_match_healing_runs_through_friendship_settlement() {
     let cells = crate::matches(&board);
     assert_eq!(cells.len(), 3);
     let rules = rules(false, Mode::Normal);
-    let (heal, damage, mana) = clear_rewards_in(NUN, 650, 0, &board, &cells, 1, 0, rules);
+    let (heal, damage, mana) = clear_rewards_in(NUN, 620, 0, &board, &cells, 1, 0, rules);
     assert_eq!((heal, damage, mana), (18, 0, 0));
-    let settled = settle_rewards_in(NUN, 650, 0, 400, (heal, damage, mana), 0, rules);
-    assert_eq!((settled.actor_hp, settled.opponent_hp), (650, 418));
+    let settled = settle_rewards_in(NUN, 620, 0, 400, (heal, damage, mana), 0, rules);
+    assert_eq!((settled.actor_hp, settled.opponent_hp), (620, 418));
 
     let mut original = std::array::from_fn(|y| std::array::from_fn(|x| ((x + 2 * y) % 7) as u8));
     original[0][..4].copy_from_slice(&[1, 0, 1, 1]);
     let preview =
-        preview_move_in(&original, NUN, 650, 0, 400, 0, false, (0, 0), (1, 0), rules).unwrap();
+        preview_move_in(&original, NUN, 620, 0, 400, 0, false, (0, 0), (1, 0), rules).unwrap();
     assert_eq!((preview.heal, preview.enemy_health_after), (0, 418));
 }
 
@@ -136,7 +136,7 @@ fn healing_prayer_counts_each_side_maximum_and_friendship_adds_a_second_enemy_he
         100,
         rules(false, Mode::Normal),
     );
-    assert_eq!((e.hp, e.opponent_heal), (65, 70));
+    assert_eq!((e.hp, e.opponent_heal), (43, 49));
     let normal = settle_rewards_in(
         NUN,
         400,
@@ -148,7 +148,7 @@ fn healing_prayer_counts_each_side_maximum_and_friendship_adds_a_second_enemy_he
     );
     assert_eq!(
         (normal.actor_hp, normal.opponent_hp, normal.damage),
-        (465, 535, 0)
+        (443, 492, 0)
     );
     let frenzy = settle_rewards_in(
         NUN,
@@ -161,7 +161,7 @@ fn healing_prayer_counts_each_side_maximum_and_friendship_adds_a_second_enemy_he
     );
     assert_eq!(
         (frenzy.actor_hp, frenzy.opponent_hp, frenzy.damage),
-        (465, 400, 135)
+        (443, 400, 92)
     );
     assert_eq!(Skill::Healing.cost(), 60);
     assert_eq!(Skill::Healing.cooldown(), 3);
@@ -193,44 +193,20 @@ fn awakening_keeps_friendship_and_reason_only_disables_madness() {
 
 #[test]
 fn automatic_recovery_restores_mana_to_cap_and_converts_its_ten_healing() {
-    let normal = settle_rewards_in(
-        NUN,
-        640,
-        175,
-        500,
-        (10, 0, 10),
-        0,
-        rules(false, Mode::Normal),
-    );
+    let normal = settle_rewards_in(NUN, 640, 175, 500, (6, 0, 8), 0, rules(false, Mode::Normal));
     assert_eq!(
         (normal.actor_hp, normal.actor_mp, normal.opponent_hp),
-        (650, 180, 510)
+        (620, 160, 506)
     );
-    let frenzy = settle_rewards_in(
-        NUN,
-        640,
-        175,
-        500,
-        (10, 0, 10),
-        0,
-        rules(false, Mode::Frenzy),
-    );
+    let frenzy = settle_rewards_in(NUN, 640, 175, 500, (6, 0, 8), 0, rules(false, Mode::Frenzy));
     assert_eq!(
         (frenzy.actor_hp, frenzy.actor_mp, frenzy.damage),
-        (650, 180, 10)
+        (620, 160, 6)
     );
-    let awake = settle_rewards_in(
-        NUN,
-        300,
-        175,
-        500,
-        (10, 0, 10),
-        0,
-        rules(true, Mode::Normal),
-    );
+    let awake = settle_rewards_in(NUN, 300, 175, 500, (6, 0, 8), 0, rules(true, Mode::Normal));
     assert_eq!(
         (awake.actor_hp, awake.actor_mp, awake.damage),
-        (300, 180, 20)
+        (300, 160, 12)
     );
 }
 
@@ -256,7 +232,7 @@ fn preview_is_pure_and_matches_direct_healing_and_conversion() {
             normal.enemy_health_after,
             normal.mana_after
         ),
-        (465, 635, 40)
+        (443, 592, 40)
     );
     let frenzy = preview_rewards_in(
         Skill::Healing,
@@ -275,7 +251,7 @@ fn preview_is_pure_and_matches_direct_healing_and_conversion() {
             frenzy.damage,
             frenzy.enemy_health_after
         ),
-        (465, 135, 365)
+        (443, 92, 408)
     );
     assert_eq!(board, original);
     assert_eq!(crate::rng::state(), seed);
@@ -402,7 +378,7 @@ fn automatic_recovery_converted_by_madness_reports_madness_as_immediate_source()
         rules,
     );
 
-    assert_eq!(settled.damage, 20);
+    assert_eq!(settled.damage, 12);
     let damage: Vec<_> = settled
         .events
         .iter()

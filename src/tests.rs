@@ -241,3 +241,47 @@ fn selection_scroll_keeps_rows_inside_their_viewport() {
     );
     assert_eq!(ui::clamp_scroll(9, 3, 5), 0);
 }
+
+#[test]
+fn character_file_is_the_fourth_and_final_selection_page() {
+    assert_eq!(menu::CHARACTER_PAGE_COUNT, 4);
+    assert_eq!(menu::page_rect(0).y, menu::page_rect(1).y);
+    assert!(menu::page_rect(1).x > menu::page_rect(0).x);
+}
+
+#[test]
+fn english_wrapping_keeps_words_whole_while_cjk_still_wraps_by_character() {
+    let source = "The quick brown fox jumps over the lazy dog";
+    let rows = wrap_preview_text(source, 10.);
+    assert!(rows.len() > 1);
+    assert_eq!(
+        rows.join(" ").split_whitespace().collect::<Vec<_>>(),
+        source.split_whitespace().collect::<Vec<_>>()
+    );
+    assert!(rows.iter().all(|row| !row.contains("  ")));
+    let cjk = "矮人把每一笔仇恨写进书里，把每一个答案抡进锤子里。";
+    let rows = wrap_preview_text(cjk, 8.);
+    assert!(rows.len() > 1);
+    assert_eq!(rows.concat(), cjk);
+}
+
+#[test]
+fn headless_autoplay_finishes_and_replays_the_same_seed() {
+    let mut session = app::Session::new_headless();
+    session.prepare_headless_batch();
+    let first = session.headless_batch_match(content::DWARF, content::KNIGHT, 1234, 1, 10_000);
+    let second = session.headless_batch_match_at_dt(
+        content::DWARF,
+        content::KNIGHT,
+        1234,
+        1,
+        10_000,
+        1. / 60.,
+    );
+    assert_eq!(first.winner, second.winner);
+    assert_eq!(first.rounds, second.rounds);
+    assert_eq!((first.hp, first.enemy_hp), (second.hp, second.enemy_hp));
+    assert!(first.winner.is_some(), "{first:?}");
+    assert!(first.steps < 10_000, "{first:?}");
+    assert!(first.rounds >= 1, "{first:?}");
+}

@@ -25,7 +25,7 @@ fn strength_and_horizontal_awakened_bonus_are_exact_and_do_not_leak_to_cascades(
     let cells = [(0, 0), (1, 0), (2, 0)]; // base 12 + 7 + 7 = 26
     assert_eq!(
         clear_rewards_in(KNIGHT, 600, 0, &b, &cells, 1, 0, Rules::default()).1,
-        35
+        32
     );
     assert_eq!(
         clear_rewards_in(DWARF, 600, 0, &b, &cells, 1, 0, Rules::default()).1,
@@ -38,54 +38,12 @@ fn strength_and_horizontal_awakened_bonus_are_exact_and_do_not_leak_to_cascades(
     };
     assert_eq!(
         clear_rewards_in(KNIGHT, 300, 0, &b, &cells, 1, 0, awake).1,
-        38
+        37
     );
     assert_eq!(
         clear_rewards_in(KNIGHT, 300, 0, &b, &cells, 2, 0, awake).1,
-        38
-    ); // 110% cascade, no extra +10%
-    assert_eq!(
-        clear_rewards_in(
-            KNIGHT,
-            300,
-            0,
-            &b,
-            &cells,
-            1,
-            0,
-            Rules {
-                statuses: StatusSet::single(
-                    StatusId::ClearPenalty,
-                    Skill::Miracle,
-                    StatusDuration::OwnerTurnEnd(1)
-                ),
-                ..awake
-            }
-        )
-        .1,
-        31
-    ); // 90%, additive
-    assert_eq!(
-        clear_rewards_in(
-            KNIGHT,
-            300,
-            0,
-            &b,
-            &cells,
-            2,
-            0,
-            Rules {
-                statuses: StatusSet::single(
-                    StatusId::ClearPenalty,
-                    Skill::Miracle,
-                    StatusDuration::OwnerTurnEnd(1)
-                ),
-                ..awake
-            }
-        )
-        .1,
-        31
-    ); // cascade 110 - 20
+        35
+    ); // 110% cascade, no extra horizontal bonus
 }
 #[test]
 fn dwarf_reach_tracks_current_health_and_jump_and_preserves_rejected_targets() {
@@ -208,7 +166,7 @@ fn dwarf_swap_immunity_tracks_each_cleared_tiles_row_and_preserves_other_rewards
     };
     assert_eq!(
         clear_rewards_in(KNIGHT, 500, 0, &b, &top, 1, 0, rules),
-        (6, 21, 12)
+        (6, 18, 12)
     );
     let top_hit = settle(KNIGHT, &top, rules);
     assert_eq!(top_hit.damage, 0);
@@ -219,8 +177,8 @@ fn dwarf_swap_immunity_tracks_each_cleared_tiles_row_and_preserves_other_rewards
         .any(|t| t.message == Some("Dwarf.evade")));
     let imp = settle(4, &top, rules);
     assert_eq!((imp.damage, imp.actor_mp), (0, 18));
-    assert_eq!(settle(KNIGHT, &bottom, rules).damage, 21);
-    assert_eq!(settle(KNIGHT, &[(0, 0), (1, 5), (2, 6)], rules).damage, 14);
+    assert_eq!(settle(KNIGHT, &bottom, rules).damage, 18);
+    assert_eq!(settle(KNIGHT, &[(0, 0), (1, 5), (2, 6)], rules).damage, 12);
     assert_eq!(
         settle(
             KNIGHT,
@@ -231,7 +189,7 @@ fn dwarf_swap_immunity_tracks_each_cleared_tiles_row_and_preserves_other_rewards
             }
         )
         .damage,
-        21
+        18
     );
     assert_eq!(
         settle(
@@ -243,7 +201,7 @@ fn dwarf_swap_immunity_tracks_each_cleared_tiles_row_and_preserves_other_rewards
             }
         )
         .damage,
-        21
+        18
     );
 }
 
@@ -257,8 +215,8 @@ fn copied_skill_uses_native_cost_and_end_turn_rule_but_slot_cooldown_is_one() {
     };
     assert_eq!(effective_skill(Skill::Copy, rules), Skill::Resurrect);
     assert_eq!(
-        payment_in(PRIEST, 400, 0, Skill::Copy, rules),
-        Some(Payment { mana: 0, blood: 0 })
+        payment_in(PRIEST, 400, 25, Skill::Copy, rules),
+        Some(Payment { mana: 25, blood: 0 })
     );
     assert!(!effective_skill(Skill::Copy, rules).ends_turn());
     assert!(legal_target(PRIEST, 400, Skill::Copy, &b, (0, 0), rules));
@@ -297,13 +255,13 @@ fn priest_previews_are_pure_and_obey_capacity_costs_and_resource_caps() {
         (2, 2),
         PRIEST,
         649,
-        180,
+        160,
         700,
         0,
         rules,
     );
     assert_eq!(p.health_after, 650);
-    assert_eq!(p.mana_after, 180);
+    assert_eq!(p.mana_after, 135);
     assert!(p.heal <= 1);
     assert!(!legal_target(
         PRIEST,
@@ -324,7 +282,7 @@ fn priest_previews_are_pure_and_obey_capacity_costs_and_resource_caps() {
         (0, 0),
         Rules::default()
     ));
-    assert!(payment_in(PRIEST, 600, 34, Skill::Entomb, rules).is_none());
+    assert!(payment_in(PRIEST, 600, 54, Skill::Entomb, rules).is_none());
     let e = effect_at_in(
         Skill::Entomb,
         &mut b.clone(),
@@ -372,7 +330,7 @@ fn hammer_is_normal_elimination_plus_eighty_and_preview_never_draws_randomness()
             ..Default::default()
         },
     );
-    assert_eq!(p.damage, 80 + 4 * (12 + 3));
+    assert_eq!(p.damage, 80 + 4 * (12 + 2));
     assert_eq!(p.mana_after, 70);
     let _ = preview_range_in(
         Skill::Hammer,

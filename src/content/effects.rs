@@ -133,7 +133,7 @@ pub fn effect_at_in(
         },
         &mut Vec::new(),
     );
-    let mut triggers = Vec::new();
+    let mut triggers = std::mem::take(&mut effect.triggers);
     dispatch_rules(
         &ctx,
         &mut RuleEvent::SkillEffect {

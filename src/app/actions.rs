@@ -256,6 +256,7 @@ impl Session {
                     self.apply_health_cost(pay.blood, false, effective);
                 }
                 self.cooldowns.cast(self.enemy_turn as usize, skill);
+                self.new_role_states[self.enemy_turn as usize].record_cast(skill);
                 cast_this_frame = true;
                 self.move_flash = None;
                 self.last_cast = Some(effective);

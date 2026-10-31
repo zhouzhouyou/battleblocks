@@ -235,9 +235,6 @@ pub enum StateCommand {
     CopySkill { options: Vec<Skill> },
 }
 pub enum RuleEvent<'a> {
-    ForceCompleted {
-        state: &'a mut crate::role_state::RoleState,
-    },
     AbilityEnabled {
         ability: AbilityId,
         enabled: &'a mut bool,

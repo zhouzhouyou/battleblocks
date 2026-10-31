@@ -1,7 +1,7 @@
 use super::*;
 #[test]
 fn keywords_are_configured_and_percentage_triggers_floor_after_aggregation() {
-    assert_eq!(Skill::Rush.operation(), TileOperation::Eliminate);
+    assert_eq!(Skill::Rush.operation(), TileOperation::Destroy);
     assert_eq!(Skill::Meteor.operation(), TileOperation::Destroy);
     assert_eq!(Skill::Forge.operation(), TileOperation::Transform);
     let b = [[4; N]; N];

@@ -105,6 +105,8 @@ pub struct Console {
     seq: u64,
     started: std::time::Instant,
     quiet_events: bool,
+    /// Unattended batch runs skip snapshots, history and JSONL output.
+    batch: bool,
     pub action: u64,
     next_action: u64,
     #[cfg(not(target_arch = "wasm32"))]
@@ -196,6 +198,7 @@ impl Console {
             seq: 0,
             started: std::time::Instant::now(),
             quiet_events,
+            batch: false,
             action: 0,
             next_action: 0,
             #[cfg(not(target_arch = "wasm32"))]
@@ -350,6 +353,9 @@ impl Console {
         self.checkpoint_kind(state, false)
     }
     fn checkpoint_kind(&mut self, state: Snapshot, gameplay: bool) -> u64 {
+        if self.batch {
+            return 0;
+        }
         self.next_action += 1;
         self.action = self.next_action;
         self.history.push(Checkpoint {
@@ -391,6 +397,9 @@ impl Console {
         before: &Snapshot,
         after: &Snapshot,
     ) {
+        if self.batch {
+            return;
+        }
         self.seq += 1;
         let record=format!("{{\"seq\":{},\"action\":{},\"time\":{},\"event\":{},\"actor\":{},\"detail\":{},\"before\":{},\"after\":{},\"payload\":{}}}",self.seq,self.action,self.started.elapsed().as_secs_f64(),quote(event),quote(if before.enemy_turn{"enemy"}else{"player"}),quote(detail),before.json(),after.json(),payload.unwrap_or("null"));
         #[cfg(not(target_arch = "wasm32"))]
@@ -435,6 +444,10 @@ impl Console {
     }
     pub fn set_quiet_events(&mut self, quiet: bool) {
         self.quiet_events = quiet;
+    }
+    /// Unattended batch runs do not need undo snapshots or a JSONL transcript.
+    pub fn set_batch(&mut self, batch: bool) {
+        self.batch = batch;
     }
     pub fn quiet(&self) -> bool {
         self.quiet_events

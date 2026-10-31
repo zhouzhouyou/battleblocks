@@ -40,7 +40,7 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-new-roles-') as directory:
   assert not jump['after']['action_done'] and any(s['id']=='ExtraReach' for s in jump['after']['new_role_states'][0]['statuses'])
   assert jump['after']['cooldowns'][0][18]==2
   forge=cast(2,1,4)
-  assert forge['after']['mp']==50 and forge['after']['action_done']
+  assert forge['after']['mp']==20 and forge['after']['action_done']
   for y in (3,4):
    for x in (0,1):assert forge['after']['board'][y][x]==2
   turn=player_turn(forge['seq']);assert turn['after']['cooldowns'][0][18]==1
@@ -65,7 +65,7 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-new-roles-') as directory:
 
   edit('hero player 9');edit('hero enemy 2');edit('mp player 100');load(CLEAN)
   buried=cast(1,3,3)
-  assert buried['after']['mp']==65 and buried['after']['new_role_states'][0]['pockets'][0]==CLEAN[2][2]
+  assert buried['after']['mp']==45 and buried['after']['new_role_states'][0]['pockets'][0]==CLEAN[2][2]
   assert buried['after']['pending']==[[2,2]] and not buried['after']['reward']
   turn=player_turn(buried['seq'])
   pockets=turn['after']['new_role_states'][0]['pockets'];assert all(v is not None for v in pockets)
@@ -80,7 +80,7 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-new-roles-') as directory:
   before=risen['before'];after=risen['after'];tile=before['new_role_states'][0]['pockets'][0]
   assert after['board'][3][3]==tile
   for y in range(4,8):assert after['board'][y][3]==before['board'][y-1][3]
-  assert after['mp']==before['mp'] and after['new_role_states'][0]['pockets'][0] is None
+  assert after['mp']==before['mp']-25 and after['new_role_states'][0]['pockets'][0] is None
   rollback(before)
   print('PASS priest entomb, mind vision, insertion, capacity, pure destruction, full rollback',flush=True)
 
@@ -88,17 +88,17 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-new-roles-') as directory:
   miracle=cast(2)
   assert miracle['after']['new_role_states'][0]['force_armed'] and not miracle['after']['action_done']
   forced=event('move 1 1 2 1','move')
-  assert not forced['after']['action_done'] and any(s['id']=='ClearPenalty' for s in forced['after']['new_role_states'][0]['statuses'])
+  assert not forced['after']['action_done']
   for y in range(8):assert forced['after']['board'][y][0]==forced['before']['board'][y][1]
   rollback(forced['before']);rollback(miracle['before'])
   rush=cast(1,1,1)
-  assert rush['after']['reward'] and len(rush['after']['pending'])==16
-  assert rush['after']['cooldowns'][0][15]==2
-  data=wait(lambda r:any(e['event']=='resolution' and e['action']==rush['action'] for e in r))
-  resolved=next(e for e in data if e['event']=='resolution' and e['action']==rush['action'])
+  assert not rush['after']['reward'] and len(rush['after']['pending'])==16
+  assert rush['after']['cooldowns'][0][15]==3
+  data=wait(lambda r:any(e['event']=='skill_hit' and e['action']==rush['action'] for e in r))
+  resolved=next(e for e in data if e['event']=='skill_hit' and e['action']==rush['action'])
   attacks=[4,0,12,0,7,0,7]
-  damage=sum(attacks[row[x]]+(3 if attacks[row[x]] else 0) for row in rush['before']['board'] for x in (0,1))
-  assert f'damage={damage}' in resolved['detail']
+  damage=sum(attacks[row[x]]+(2 if attacks[row[x]] else 0) for row in rush['before']['board'] for x in (0,1))
+  assert f'actual_damage={damage}' in resolved['detail']
   rollback(rush['before'])
   print('PASS knight force movement, normal elimination, strength and cooldown rollback',flush=True)
 
@@ -126,11 +126,12 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-new-roles-') as directory:
    state=turn['after']['new_role_states'][0]
    if state['copied_skill']!=21:continue
    assert state['pockets'][0] is not None
+   edit('mp player 100')
    borrowed=cast(3,4,4)
    assert 'Copy' in borrowed['detail'] and 'Resurrect' in borrowed['detail']
    assert not borrowed['after']['action_done']
    assert borrowed['after']['cooldowns'][0][22]==1 and borrowed['after']['cooldowns'][0][21]==0
-   assert borrowed['after']['mp']==borrowed['before']['mp']
+   assert borrowed['after']['mp']==borrowed['before']['mp']-25
    rollback(borrowed['before']);copied=True;break
   assert copied,'deterministic seeds must exercise copied resurrection'
   print('PASS priest awakening, copied native cost/end-turn rule, fixed copied-slot cooldown',flush=True)

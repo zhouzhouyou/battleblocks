@@ -11,6 +11,7 @@ pub struct RoleState {
     pub copied_skill: Option<usize>,
     pub pocket_slot: usize,
     pub direct_tiles: Vec<u8>,
+    pub repeat_casts: [u8; Skill::ALL.len()],
     pub force_armed: bool,
     pub horizontal: bool,
     pub swap_clear: bool,
@@ -38,6 +39,10 @@ impl RoleState {
         );
         self.select_occupied_pocket();
     }
+    pub fn record_cast(&mut self, skill: Skill) {
+        let count = &mut self.repeat_casts[skill.index()];
+        *count = count.saturating_add(1);
+    }
     pub fn record_swap(&mut self, a: (usize, usize), b: (usize, usize)) {
         self.horizontal = a.1 == b.1;
         self.swap_clear = true;
@@ -47,6 +52,7 @@ impl RoleState {
         self.horizontal = false;
         self.swap_clear = false;
         self.direct_tiles.clear();
+        self.repeat_casts = [0; Skill::ALL.len()];
         self.select_occupied_pocket();
     }
     pub fn end_turn(&mut self) {
@@ -74,15 +80,7 @@ impl RoleState {
         if !self.force_armed || !force_swap(board, a, b, hero) {
             return false;
         }
-        let rules = content::Rules {
-            statuses: self.statuses,
-            ..Default::default()
-        };
-        content::dispatch_rules(
-            &content::EventContext::new(hero, 0, 0, rules),
-            &mut content::RuleEvent::ForceCompleted { state: self },
-            &mut Vec::new(),
-        );
+        self.force_armed = false;
         self.record_swap(a, b);
         true
     }
@@ -175,7 +173,7 @@ mod tests {
                 }
             }
         }
-        assert_eq!((e.hp, e.damage, e.mp), (0, 0, 0));
+        assert_eq!((e.hp, e.damage, e.mp), (0, 6, 0));
         assert!(e.cells.is_empty());
     }
     #[test]
@@ -188,7 +186,6 @@ mod tests {
         for y in 0..N {
             assert_eq!(b[y][0], original[y][1]);
         }
-        assert!(s.statuses.contains(StatusId::ClearPenalty));
         assert!(!s.force_armed);
         let mut priest = original;
         assert!(force_swap(&mut priest, (0, 0), (1, 0), content::PRIEST));
