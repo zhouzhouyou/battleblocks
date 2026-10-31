@@ -110,7 +110,7 @@ impl Session {
             self.cast_time > 0.
                 && !content::skill_profile(*s, self.rules(self.last_cast_enemy)).delayed_damage
         }) {
-            let progress = 1. - self.cast_time as f32 / 1.4;
+            let progress = 1. - self.cast_time as f32 / presentation::CAST_TIME as f32;
             effects::draw(skill, &self.skill_flash, progress, self.last_cast_enemy);
         }
     }

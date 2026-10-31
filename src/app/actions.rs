@@ -261,7 +261,7 @@ impl Session {
                 self.move_flash = None;
                 self.last_cast = Some(effective);
                 self.last_cast_enemy = self.enemy_turn;
-                self.cast_time = 1.4;
+                self.cast_time = presentation::CAST_TIME;
                 self.reward_skill = Some(skill);
                 self.skill_flash = content::target_cells_in(
                     skill, &self.b, target, id, actor_hp, actor_mp, cast_rules,

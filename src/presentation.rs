@@ -1,5 +1,7 @@
 use crate::{board::TileFall, label, outline, Board, N};
 use macroquad::prelude::*;
+/// Duration of the one-shot cast window: the hero's cast animation spans all of it.
+pub const CAST_TIME: f64 = 1.4;
 pub const CHARGE_TIME: f64 = 0.95;
 pub const SWAP_TIME: f64 = 0.35;
 pub const CLEAR_TIME: f64 = 0.4;

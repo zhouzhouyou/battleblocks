@@ -44,6 +44,14 @@ mod nun_visual_tests {
     }
 }
 
+/// New-role atlases stack four rows: idle, awakened idle, cast, awakened cast.
+/// Legacy sheets only carry idle frames, so they keep the idle row while casting.
+pub const CAST_FRAMES: [&[usize]; 2] = [&[8, 9, 10, 11], &[12, 13, 14, 15]];
+/// One cast frame per `CAST_TIME / 4`, so the animation fills the whole cast window.
+pub const CAST_FRAME_TIME: [f64; 4] = [crate::presentation::CAST_TIME / 4.; 4];
+pub fn cast_frames(hero: usize, shadow: bool) -> Option<&'static [usize]> {
+    (hero >= content::KNIGHT).then(|| CAST_FRAMES[shadow as usize])
+}
 pub const SPRITES: &[SpriteAsset] = &[
     SpriteAsset {
         bytes: include_bytes!("../assets/knight.webp"),
