@@ -1,6 +1,6 @@
 # 修女 N-A 游戏美术资源 v1（待用户评审）
 
-根据用户选择的 N-A 人设图制作。`assets/roles/nun.webp` 已被游戏加载；两张立绘 WebP 已导出，但尚未被渲染代码引用。
+根据用户选择的 N-A 人设图制作。`assets/roles/nun.webp` 已被游戏加载；两张立绘 WebP 已导出并保留，供未来图片展览／图鉴功能使用，当前尚未被渲染代码引用。
 
 ## 文件
 
@@ -13,7 +13,7 @@
 - `report.json`：逐帧边界、色数、锚点与输出尺寸检查。
 - [PROMPT.md](PROMPT.md)：完整生成及修订提示词。
 
-游戏资源：动画图集为 `assets/roles/nun.webp`（已加载）；`assets/roles/nun-standee-normal.webp`、`nun-standee-awake.webp` 已导出但尚未被渲染代码引用。复现导出运行 `tools/prepare_nun_assets.py`；它不覆盖其他角色图集或角色注册表。
+游戏资源：动画图集为 `assets/roles/nun.webp`（已加载）；`assets/roles/nun-standee-normal.webp`、`nun-standee-awake.webp` 已导出并保留给未来的图片展览／图鉴功能，当前尚未被渲染代码引用。复现导出运行 `tools/prepare_nun_assets.py`；它不覆盖其他角色图集或角色注册表。
 
 ## 规格与评审重点
 

@@ -23,6 +23,7 @@
 - `asset-sources/art-direction/characters/knight/`：K-A4 v8 人设、黑红金四稿 v3c、石中剑修订与提示词。
 - `asset-sources/art-direction/characters/priest/`：P-C v3 人设、饮酒四稿、参考图与提示词。
 - `asset-sources/art-direction/characters/nun/`：N-A 人设、production/v1 立绘与动画、参考图与提示词。
+- `assets/roles/nun-standee-normal.webp`、`nun-standee-awake.webp`：修女普通／暗影立绘；当前未被渲染代码引用，按用户决定保留给未来的图片展览／图鉴功能，不视为待删资源。
 - `docs/art/characters/`：每位角色的用户设计、选择和最新素材指引。
 
 `../../asset-sources/art-direction/GENERATED-IMAGE-INVENTORY.json` 按 SHA-256 分别标记当前存在、用户要求移除、未采纳的生成原图。只有状态 `present` 对应当前工作树文件；状态 `removed_from_worktree_by_user_request` 的条目仅保留文字记录，其中矮人旧稿可用 `recover_from_git` 追溯，2026-11-01 清理的候选稿已不在 Git 历史中。不再要求把生成缓存里所有旧图重新复制回来。透明书动画来自当前人设图原书像素；未采纳的另画书图不进入当前素材目录。素材仍处于设计评审阶段，不加入游戏运行时包，不修改游戏代码。
