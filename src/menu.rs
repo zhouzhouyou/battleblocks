@@ -7,8 +7,10 @@ pub struct Preview {
     pub since: f64,
     /// False for skills that leave every tile in place; those preview the hero instead.
     pub affects_tiles: bool,
-    /// The cast changes the hero's silhouette (e.g. the nun's frenzy form).
+    /// Silhouette after the cast (e.g. the nun's frenzy form turns her dark).
     pub dark: bool,
+    /// Silhouette the menu shows before the cast, i.e. the current awakening form.
+    pub base_dark: bool,
     /// Status the cast puts on the hero, shown with the character preview.
     pub status: Option<content::StatusId>,
     /// The cast lifts the hero off the ground (the jump skill).
@@ -54,7 +56,10 @@ impl Preview {
         let mut state = crate::role_state::RoleState::default();
         state.on_cast(cast, &board, (2, 3));
         let status = state.statuses.0.iter().flatten().map(|s| s.id).next();
-        let dark = sprites::shadow_form(hero, false, state.statuses);
+        // Appearance before and after the cast. `awakened` is the menu page's state and
+        // statuses can flip it either way: frenzy darkens, returning to reason clears it.
+        let base_dark = sprites::shadow_form(hero, awakened, content::StatusSet::default());
+        let dark = sprites::shadow_form(hero, awakened, state.statuses);
         let hop = content::skill_profile(cast, content::Rules::default()).hop;
         let affects_tiles = !cells.is_empty() || changed != board;
         Self {
@@ -65,6 +70,7 @@ impl Preview {
             since,
             affects_tiles,
             dark,
+            base_dark,
             status,
             hop,
         }
@@ -146,7 +152,6 @@ fn sprite(texture: &Texture2D, asset: &SpriteAsset, area: Rect) {
 /// skill changes the hero's form, switches silhouette after the cast point.
 fn draw_skill_actor(
     hero: usize,
-    page: usize,
     preview: &Preview,
     after: bool,
     texture: &Texture2D,
@@ -154,7 +159,11 @@ fn draw_skill_actor(
 ) {
     let area = Rect::new(558., 428., 200., 184.);
     let center = area.x + area.w / 2.;
-    let dark = after && preview.dark;
+    let dark = if after {
+        preview.dark
+    } else {
+        preview.base_dark
+    };
     let t = (((get_time() - preview.since) % 3.) / 3. - 0.45) / 0.55;
     let t = t.clamp(0., 1.) as f32;
     // The jump skill lifts the hero; its shadow and the cast ring stay on the ground.
@@ -187,7 +196,7 @@ fn draw_skill_actor(
         );
         draw_circle_lines(center, area.y + area.h - 54., 30. + t * 26., 2., color);
     }
-    let (texture, asset) = if dark || page == 2 {
+    let (texture, asset) = if dark {
         (awakened, &sprites::AWAKENED[hero])
     } else {
         (texture, &sprites::SPRITES[hero])
@@ -594,7 +603,7 @@ pub fn draw(
             }
         } else {
             // The board would not change, so preview the hero acting instead of tiles.
-            draw_skill_actor(hero, page, preview, after, texture, awakened_texture);
+            draw_skill_actor(hero, preview, after, texture, awakened_texture);
         }
         label(
             tr_key(zh, "ui.menu.draw.effect_preview"),
@@ -621,13 +630,15 @@ pub fn draw(
             SKYBLUE,
         );
         let hint = if !preview.affects_tiles {
-            match (preview.dark, preview.status) {
-                (true, Some(status)) => format!(
+            match preview.status {
+                // A form change names the new form; other casts name their status.
+                Some(status) if preview.dark != preview.base_dark => format!(
                     "{}：{}",
                     tr_key(zh, "ui.menu.draw.character_form"),
                     status.name(zh)
                 ),
-                _ => tr_key(zh, "ui.menu.draw.cast_animation").to_string(),
+                Some(status) => status.name(zh).to_string(),
+                None => tr_key(zh, "ui.menu.draw.cast_animation").to_string(),
             }
         } else {
             tr_key(zh, "ui.menu.draw.outlined_affected_tiles").to_string()
