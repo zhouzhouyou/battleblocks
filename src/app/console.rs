@@ -4,13 +4,25 @@ impl Session {
         frame.was_console_open = self.console.open;
         self.console.sync_language(self.zh);
         self.console.input();
+        self.process_console_command(frame)
+    }
+    /// Consume one queued debug command without reading keyboard or mouse input.
+    pub(super) fn headless_console_input(&mut self, frame: &mut Frame) -> bool {
+        frame.was_console_open = self.console.open;
+        self.console.sync_language(self.zh);
+        self.console.poll_commands();
+        self.process_console_command(frame)
+    }
+    fn process_console_command(&mut self, frame: &mut Frame) -> bool {
         frame.command_move = None;
         frame.command_skill = None;
         frame.command_target = None;
         frame.restart_command = false;
         // Process one command per frame so multiple CLI commands retain their order.
         if let Some(line) = self.console.commands.pop_front() {
-            self.console.say(&format!("> {line}"));
+            if !self.console.quiet() {
+                self.console.say(&format!("> {line}"));
+            }
             self.console
                 .event("command", &line, &self.snapshot(), &self.snapshot());
             match debug::parse(&line) {
@@ -123,12 +135,10 @@ impl Session {
                             }
                         }
                         Command::Ai(level) => {
-                            if self.choosing {
+                            if self.choosing || !self.rendering {
                                 self.difficulty = level;
-                                self.console.say_tr(
-                                    "Pre-battle AI difficulty updated",
-                                    "已设置开战前的 AI 难度",
-                                );
+                                self.console
+                                    .say_tr("AI difficulty updated", "已设置 AI 难度");
                             } else {
                                 self.console.say_tr("AI difficulty is locked during battle; return to the main menu to choose a new difficulty","战斗中 AI 难度已锁定，回到主菜单才能重新选择");
                             }
@@ -163,19 +173,14 @@ impl Session {
                                             self.enemy_id = id;
                                             self.enemy = HEROES[id].hp;
                                             self.enemy_mp = 0;
-                                            self.enemy_texture = diagnostic_texture(
-                                                sprites::SPRITES[id].bytes,
-                                                "no_actors",
-                                            );
                                         } else {
                                             self.hero_id = id;
                                             self.hp = HEROES[id].hp;
                                             self.mp = 0;
-                                            self.player_texture = diagnostic_texture(
-                                                sprites::SPRITES[id].bytes,
-                                                "no_actors",
-                                            );
-                                            self.preview = menu::Preview::new(id, 0);
+                                        }
+                                        self.refresh_actor_textures();
+                                        if !side {
+                                            self.refresh_preview(0);
                                         }
                                         self.bonuses[side as usize] = 0;
                                         self.armed_sides[side as usize] = false;

@@ -194,7 +194,7 @@ impl Session {
                     }
                     if !self.presentation.hides(x, y) {
                         draw_texture_ex(
-                            &self.tiles[self.b[y][x] as usize],
+                            &self.tiles()[self.b[y][x] as usize],
                             pos.x + (64. - tile_size) / 2.,
                             pos.y + (64. - tile_size) / 2.,
                             color,
@@ -238,7 +238,7 @@ impl Session {
                 }
             }
         }
-        self.presentation.draw_tiles(&self.tiles);
+        self.presentation.draw_tiles(self.tiles());
         if content::reachable_rows(self.hero_id, self.hp, self.rules(false)) < N
             && !self.enemy_turn
             && self.pending.is_empty()

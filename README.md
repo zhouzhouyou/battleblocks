@@ -82,6 +82,18 @@ python3 -m http.server 8765 --bind 127.0.0.1 --directory dist/web
 
 旧七角色的历史平衡验证使用 `cargo run --release --bin balance_probe -- 120 30000`，所有角色两两对战，交换先手；参见 [平衡报告](docs/BALANCE.md)。死亡显示原版“菜”字。
 
+## Headless 验证
+
+GUI 是同一个 headless `Session` 模型的可视层。非 UI 规则和调试流程可直接无窗口运行：
+
+```bash
+cargo run --release -- --headless --log /tmp/battleblocks.jsonl \
+  --command 'pause on' --command 'hero player 0' --command 'pause off' \
+  --command 'move 1 1 2 1'
+```
+
+命令较多时使用 `--script commands.txt`，或用 `--script -` 从 stdin 读取。默认只输出命令反馈和最终 `HEADLESS_OK` 摘要，完整事件写入 JSONL；加 `--verbose` 才会在终端打印逐条事件。`tools/check_headless.py` 覆盖控制台调试编辑、移动、施法、回滚、AI 回合和待结算消除。
+
 ## 觉醒系统
 
 双方达到各自觉醒线后切换持武器皮肤，恢复至第二阶段生命上限并强化角色能力；致命伤害可触发保命，生命代付也可触发。新骑士觉醒新增大锤80（80魔力、冷却1、结束回合），横向直接消除收益+10%；矮人增加仇恨之书垫高，牧师新增每回合复制对手主动的第三栏（固定冷却1，费用和是否结束回合随复制技能）。血线数值在血条悬浮提示中查看，血怒等条件被动有明确状态提示。完整规则、参数与验证局限见 [觉醒系统](docs/AWAKENING.md) 和 [觉醒平衡报告](docs/AWAKENING-BALANCE.md)。

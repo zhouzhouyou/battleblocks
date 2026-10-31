@@ -1,6 +1,6 @@
 # 代码结构与技能事件
 
-`main.rs` 只启动窗口并逐帧调度 Session。战斗规则通过同步、有类型的事件处理器执行；实际战斗、预览和 AI 调用同一套纯规则。通用流程不按角色或技能身份编写特殊分支。
+Headless `Session` 是权威游戏模型，GUI 只是同一模型的输入、帧循环和可视层。战斗规则通过同步、有类型的事件处理器执行；实际战斗、预览和 AI 调用同一套纯规则。通用流程不按角色或技能身份编写特殊分支。
 
 | 位置 | 职责 |
 | --- | --- |
@@ -16,6 +16,18 @@
 | `src/app/` | 输入、调用规则、将结果写入状态、执行随机选择与表现反馈 |
 | `src/board/gravity.rs` | 压实、随机填充及移动起终点；不含能力规则 |
 | `src/debug/` | 命令、完整快照与结构化事件日志 |
+| `src/headless.rs` | 无窗口命令行入口、脚本读取、命令队列推进和稳定状态推进 |
+| `src/app/headless.rs` | 权威模型的固定步长命令驱动与 idle 判定；不包含另一套战斗规则 |
+
+## Headless 核心与 GUI 可视层
+
+`Session::new_headless()` 构造不加载纹理、字体、音频和窗口的权威游戏模型；`Session::new()` 使用同一 `Session::create()` 路径，只额外加载 GUI 资源。公共战斗、调试命令、快照、AI、表现计时和事件结算全部由同一个 `Session` 驱动。
+
+- GUI 每帧调用输入适配、`tick` 和 `draw`。
+- Headless 每帧用固定步长调用同一 `tick`；调试命令通过同一 `debug::Console` 队列和 `process_console_command` 执行。
+- `--headless` 不会进入 Macroquad 窗口事件循环；`--script`、`--command` 提供操作序列，结果以 JSONL 和最终摘要输出。
+- 默认 headless 静默逐条事件 stdout，只输出命令反馈与 `HEADLESS_OK`；`--verbose` 恢复逐事件文本。JSONL 始终完整。
+- 行棋、施法、AI、回合结束、觉醒、待结算消除和回滚都通过同一条模型路径，不得在 CLI 适配层复制规则。
 
 ## 事件与执行次序
 

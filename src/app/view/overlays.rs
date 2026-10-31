@@ -97,9 +97,9 @@ impl Session {
                 if is_awake {
                     &self.awake_textures[id]
                 } else if self.last_cast_enemy {
-                    &self.enemy_texture
+                    self.enemy_texture()
                 } else {
-                    &self.player_texture
+                    self.player_texture()
                 },
                 asset.w,
                 asset.h,
@@ -140,7 +140,7 @@ impl Session {
                     }
                     if let Some(tile) = self.new_role_states[side as usize].pockets[slot] {
                         draw_texture_ex(
-                            &self.tiles[tile as usize],
+                            &self.tiles()[tile as usize],
                             r.x + 4.,
                             r.y + 2.,
                             WHITE,
@@ -406,7 +406,7 @@ impl Session {
             draw_rectangle(256., 190., 512., 340., Color::new(0.02, 0.02, 0.03, 0.96));
             if self.hp == 0 && self.enemy > 0 {
                 draw_texture_ex(
-                    &self.defeat,
+                    self.defeat(),
                     422.,
                     205.,
                     WHITE,
@@ -437,7 +437,7 @@ impl Session {
             ui::draw_pause(self.zh, frame.pointer);
         }
         self.interface
-            .draw_panel(self.zh, self.muted, &self.tiles, frame.pointer);
+            .draw_panel(self.zh, self.muted, self.tiles(), frame.pointer);
         self.console.draw();
         flush_labels();
         set_default_camera();

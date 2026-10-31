@@ -103,6 +103,8 @@ pub struct Console {
     history: Vec<Checkpoint>,
     records: Vec<String>,
     seq: u64,
+    started: std::time::Instant,
+    quiet_events: bool,
     pub action: u64,
     next_action: u64,
     #[cfg(not(target_arch = "wasm32"))]
@@ -113,6 +115,7 @@ pub struct Console {
 }
 impl Console {
     pub fn new(zh: bool) -> Self {
+        let quiet_events = std::env::var_os("BATTLEBLOCKS_HEADLESS_QUIET").is_some();
         #[allow(unused_mut)]
         let mut commands = VecDeque::new();
         #[cfg(not(target_arch = "wasm32"))]
@@ -191,6 +194,8 @@ impl Console {
             history: Vec::new(),
             records: Vec::new(),
             seq: 0,
+            started: std::time::Instant::now(),
+            quiet_events,
             action: 0,
             next_action: 0,
             #[cfg(not(target_arch = "wasm32"))]
@@ -199,12 +204,14 @@ impl Console {
             receiver,
             path,
         };
-        console.say_tr(
-            "Debug console: ~ / F1 toggles, Esc closes. Type help for commands; the language follows the game, lang zh / lang en fix it.",
-            "调试控制台：~ / F1 开关，Esc 关闭。输入 help 查看命令；语言跟随游戏，lang zh / lang en 可单独切换。",
-        );
-        let path = format!("{}{}", console.tr("Log: ", "日志："), console.path);
-        console.say(&path);
+        if !quiet_events {
+            console.say_tr(
+                "Debug console: ~ / F1 toggles, Esc closes. Type help for commands; the language follows the game, lang zh / lang en fix it.",
+                "调试控制台：~ / F1 开关，Esc 关闭。输入 help 查看命令；语言跟随游戏，lang zh / lang en 可单独切换。",
+            );
+            let path = format!("{}{}", console.tr("Log: ", "日志："), console.path);
+            console.say(&path);
+        }
         console
     }
     fn tr(&self, en: &'static str, zh: &'static str) -> &'static str {
@@ -319,6 +326,10 @@ impl Console {
                 .scroll
                 .min(self.rows().len().saturating_sub(VISIBLE_ROWS));
         }
+        self.poll_commands();
+    }
+    /// Drain externally supplied commands without reading keyboard or mouse state.
+    pub fn poll_commands(&mut self) {
         #[cfg(not(target_arch = "wasm32"))]
         while let Ok(line) = self.receiver.try_recv() {
             self.commands.push_back(line);
@@ -381,7 +392,7 @@ impl Console {
         after: &Snapshot,
     ) {
         self.seq += 1;
-        let record=format!("{{\"seq\":{},\"action\":{},\"time\":{},\"event\":{},\"actor\":{},\"detail\":{},\"before\":{},\"after\":{},\"payload\":{}}}",self.seq,self.action,get_time(),quote(event),quote(if before.enemy_turn{"enemy"}else{"player"}),quote(detail),before.json(),after.json(),payload.unwrap_or("null"));
+        let record=format!("{{\"seq\":{},\"action\":{},\"time\":{},\"event\":{},\"actor\":{},\"detail\":{},\"before\":{},\"after\":{},\"payload\":{}}}",self.seq,self.action,self.started.elapsed().as_secs_f64(),quote(event),quote(if before.enemy_turn{"enemy"}else{"player"}),quote(detail),before.json(),after.json(),payload.unwrap_or("null"));
         #[cfg(not(target_arch = "wasm32"))]
         {
             use std::io::Write;
@@ -418,7 +429,15 @@ impl Console {
                 self.seq, self.action, after.hp, after.enemy_hp, after.mp, after.enemy_mp
             )
         };
-        self.say(&line);
+        if !self.quiet_events {
+            self.say(&line);
+        }
+    }
+    pub fn set_quiet_events(&mut self, quiet: bool) {
+        self.quiet_events = quiet;
+    }
+    pub fn quiet(&self) -> bool {
+        self.quiet_events
     }
     pub fn export(&mut self) {
         let data = self.records.join("\n") + "\n";

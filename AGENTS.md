@@ -11,9 +11,17 @@
 
 ## 验证与交付
 
+- Headless 模式是权威游戏模型；GUI 只是同一模型的输入、帧循环和可视层。非 UI 逻辑验证不得另写一套规则，也不应依赖窗口。
 - 改收益逻辑必须补测试：实际规则、消耗、资源上限、目标差异、预览不改变状态。
 - 构建用 `.build-tools/python-path.txt` 指定的 Python 运行 `tools/build.py`；完成后更新 macOS 与网页包。
-- 战斗、日志或回滚逻辑变更后，运行 `tools/check_debug_console.py` 验证真实游戏流程；能力事件或状态逻辑变更同时运行 `tools/check_ability_events.py` 验证来源链、目标被动、状态和回滚。
+- 无窗口验证优先使用：
+  ```bash
+  cargo run --release -- --headless --log /tmp/battleblocks.jsonl \
+    --command 'pause on' --command 'board load ...' --command 'move 1 1 2 1'
+  ```
+  命令较多时使用脚本：`--script path/to/commands.txt`；`--script -` 从 stdin 读取。默认只输出命令反馈和最终摘要；`--verbose` 才把逐条事件打印到终端，完整事件始终写入 `--log` 指定的 JSONL。`--headless-max-steps N` 防止模拟死循环并以退出码 2 报错；`BATTLEBLOCKS_HEADLESS_SEED` 固定随机种子。
+- 非 UI 改动先运行 `cargo test` 和 `tools/check_headless.py`。`check_headless.py` 会无窗口验证控制台调试编辑、移动、施法、回滚、AI 回合和待结算消除。
+- 只有输入、绘制、动画、音频或窗口行为变更时，才运行需要窗口的 `tools/check_debug_console.py`、`tools/check_ability_events.py`、`tools/check_new_roles.py`；能力事件或状态逻辑变更仍应同时用 headless 组合验证来源链、目标被动、状态和回滚。
 
 ## 技能文案
 
@@ -22,6 +30,6 @@
 
 ## 代码组织
 
-- `main.rs` 只负责启动、窗口配置和逐帧调度；输入、战斗结算、界面绘制分别放在 `src/app/` 下。不要将新增角色逻辑写回入口文件。
+- `main.rs` 只负责 GUI／headless 启动分流和窗口配置；headless 核心入口在 `src/headless.rs`，模型驱动在 `src/app/headless.rs`，输入、战斗结算、界面绘制分别放在 `src/app/` 下。不要将新增角色逻辑写回入口文件，也不要为本模式复制战斗规则。
 - 技能效果放在 `src/content/skills/`，主动、被动与临时状态的事件处理放在 `src/content/handlers/`，身份与阶段配置从 `assets/ability-loadouts.txt` 读取。通用收益、消耗、预览、AI 和移动代码只构造事件、分发及应用结果，不按角色或技能 ID 写规则分支；新技能通过处理器注册接入。使用同步、有类型的事件，不引入异步全局监听或插件加载层。
 - 角色／回合状态必须进入快照与回滚；收益规则供实战、预览和 AI 共用。新增治疗转换由技能／状态事件处理器派生新事件，保留完整来源链，最近来源表示当前实际产生效果的能力；位置规则只检查其明确声明的来源，不穿透转换链。临时与跨回合状态进入状态列表，记录施加者与持续时间。统一收益结算入口负责分发与结算，重力与填充从 `src/board/gravity.rs` 扩展，不能分别在技能与动画里复制规则。具体职责见 `docs/ARCHITECTURE.md`。
