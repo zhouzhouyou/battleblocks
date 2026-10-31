@@ -77,18 +77,18 @@ pub fn preview_rewards_in(
         ..rules
     };
     let e = effect_at_in(skill, &mut copy, target, hero, hp, mp, rules);
-    rules.turn_mode = match effective_skill(skill, rules) {
-        Skill::Frenzy => TurnMode::Frenzy,
-        Skill::Rational => TurnMode::Rational,
-        _ => rules.turn_mode,
+    let mut state = crate::role_state::RoleState {
+        statuses: rules.statuses,
+        ..Default::default()
     };
-    let settled = settle_rewards_in(
+    state.on_cast(effective_skill(skill, rules), board, target);
+    rules.statuses = state.statuses;
+    let settled = settle_batch_in(
         hero,
         health,
         mp - pay.mana,
         enemy_hp,
-        (e.hp, e.damage, e.mp),
-        e.opponent_heal,
+        e.reward_batch(effective_skill(skill, rules)),
         rules,
     );
     health = settled.actor_hp;
@@ -103,10 +103,10 @@ pub fn preview_rewards_in(
     };
     if health > 0 && opponent > 0 && rewarded && !cells.is_empty() {
         let clear_rules = Rules {
-            initial_loot: skill == Skill::Greedy && e.reward,
+            initial_loot: skill_profile(skill, rules).initial_loot && e.reward,
             ..rules
         };
-        let (h, d, m) = clear_rewards_in(
+        let batch = clear_batch_in(
             hero,
             health,
             mana,
@@ -116,7 +116,7 @@ pub fn preview_rewards_in(
             bonus + e.bonus,
             clear_rules,
         );
-        let settled = settle_rewards_in(hero, health, mana, opponent, (h, d, m), 0, rules);
+        let settled = settle_batch_in(hero, health, mana, opponent, batch, hit_rules);
         health = settled.actor_hp;
         opponent = settled.opponent_hp;
         let (actual, next) = preview_hit(hit_rules, &mut opponent, settled.damage);
@@ -255,19 +255,17 @@ pub fn preview_move_in(
     } else if !crate::board::hero_swap(&mut copy, a, c, hero) {
         return None;
     }
-    if hero == DWARF
-        && (a.1 < N - reachable_rows(hero, hp, rules) || c.1 < N - reachable_rows(hero, hp, rules))
-    {
+    if a.1 < N - reachable_rows(hero, hp, rules) || c.1 < N - reachable_rows(hero, hp, rules) {
         return None;
     }
     let rules = Rules {
         horizontal: a.1 == c.1,
-        upper_swap: a.1 < 4 && c.1 < 4,
+        swap_clear: true,
         ..rules
     };
     let cells = crate::matches(&copy);
-    let (h, d, m) = clear_rewards_in(hero, hp, mp, &copy, &cells, 1, bonus, rules);
-    let settled = settle_rewards_in(hero, hp, mp, enemy_hp, (h, d, m), 0, rules);
+    let batch = clear_batch_in(hero, hp, mp, &copy, &cells, 1, bonus, rules);
+    let settled = settle_batch_in(hero, hp, mp, enemy_hp, batch, rules);
     let health_after = settled.actor_hp;
     let mana_after = settled.actor_mp;
     let mut opponent = settled.opponent_hp;

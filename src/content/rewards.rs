@@ -19,6 +19,7 @@ pub fn clear_rewards(
 ) -> (i32, i32, i32) {
     clear_rewards_in(hero, hp, mp, board, cells, chain, bonus, Rules::default())
 }
+#[allow(dead_code)] // Aggregate view retained for the legacy balance probe and rule tests.
 pub fn clear_rewards_in(
     hero: usize,
     hp: i32,
@@ -29,90 +30,75 @@ pub fn clear_rewards_in(
     bonus: i32,
     rules: Rules,
 ) -> (i32, i32, i32) {
-    let (mut h, mut d, mut m) = (0, 0, 0);
+    clear_batch_in(hero, hp, mp, board, cells, chain, bonus, rules).totals()
+}
+pub fn clear_batch_in(
+    hero: usize,
+    hp: i32,
+    mp: i32,
+    board: &Board,
+    cells: &[(usize, usize)],
+    chain: usize,
+    bonus: i32,
+    rules: Rules,
+) -> RewardBatch {
+    let ctx = EventContext::new(hero, hp, mp, rules);
+    let mut batch = RewardBatch::default();
     for &(x, y) in cells {
-        if board[y][x] == 255 {
+        let tile = board[y][x];
+        if tile >= 7 {
             continue;
         }
-        let (a, b, c) = VALUES[board[y][x] as usize];
-        h += a;
-        d += b;
-        if b > 0 {
-            d += if hero == KNIGHT {
-                3
-            } else if hero == DWARF {
-                2
-            } else {
-                0
-            };
-        }
-        m += c;
-        if board[y][x] == 0 {
-            if has_passive(hero, rules.awake, Passive::BalancedAffinity) {
-                d += 4;
-            }
-            if has_passive(hero, rules.awake, Passive::BalancedResonance) {
-                d += 6;
-            }
-            if has_passive(hero, rules.awake, Passive::ElementReturn) {
-                m += 2;
-            }
-        }
-    }
-    let scale = reward_scale(chain, bonus) - if rules.miracle { 20 } else { 0 }
-        + if hero == KNIGHT && rules.awake && rules.horizontal && chain == 1 {
-            10
-        } else {
-            0
+        let mut gains = VALUES[tile as usize];
+        let source = EventSource::Tile {
+            position: (x, y),
+            tile,
+            chain,
+            from_swap: rules.swap_clear,
         };
-    h = h * scale / 100;
-    d = d
-        * (scale
-            + if has_passive(hero, rules.awake, Passive::ElvenPower) {
-                25
-            } else {
-                0
-            })
-        / 100;
-    m = m * scale / 100;
-    if has_passive(hero, rules.awake, Passive::BattleTraining) {
-        h = h * 106 / 100;
-        d = d * 106 / 100;
-        m = m * 106 / 100;
+        dispatch_rules(
+            &ctx,
+            &mut RuleEvent::TileReward {
+                source,
+                gains: &mut gains,
+            },
+            &mut batch.triggers,
+        );
+        batch
+            .events
+            .extend(RewardBatch::gains(gains, 0, source).events);
     }
-    if has_passive(hero, rules.awake, Passive::ForestPact) {
-        h = h * 93 / 100;
-        d = d * 93 / 100;
-        m = m * 93 / 100;
-    }
-    if has_passive(hero, rules.awake, Passive::ArcaneConversion) && mp < mana_cap(hero, rules.awake)
-    {
-        let converted = h / 2;
-        h -= converted;
-        m += converted;
-    }
-    if has_passive(hero, rules.awake, Passive::Recycling) {
-        m += (hp + h - health_cap(hero, rules.awake)).max(0) / 2;
-    }
-    if (has_passive(hero, rules.awake, Passive::BloodFury)
-        || has_passive(hero, rules.awake, Passive::BoilingBlood))
-        && hp * 100
-            <= HEROES[hero].hp
-                * if has_passive(hero, rules.awake, Passive::BoilingBlood) {
-                    50
-                } else {
-                    35
-                }
-    {
-        d = d * 125 / 100;
-    }
-    if has_passive(hero, rules.awake, Passive::LootMastery) && rules.initial_loot {
-        d = d * 130 / 100;
-    }
-    if rules.upper_swap && rules.opponent.is_some_and(|(id, _)| id == DWARF) {
-        d = 0;
-    }
-    (h, d, m)
+    let mut scale = reward_scale(chain, bonus);
+    let mut damage_extra = 0;
+    dispatch_rules(
+        &ctx,
+        &mut RuleEvent::ClearScale {
+            chain,
+            scale: &mut scale,
+            damage_extra: &mut damage_extra,
+        },
+        &mut batch.triggers,
+    );
+    let mut gains = batch.totals();
+    gains = (
+        gains.0 * scale / 100,
+        gains.1 * (scale + damage_extra) / 100,
+        gains.2 * scale / 100,
+    );
+    dispatch_rules(
+        &ctx,
+        &mut RuleEvent::ClearTotals { gains: &mut gains },
+        &mut batch.triggers,
+    );
+    batch.set_totals(gains);
+    let mut triggers = std::mem::take(&mut batch.triggers);
+    dispatch_rules(
+        &ctx,
+        &mut RuleEvent::ClearBatch { batch: &mut batch },
+        &mut triggers,
+    );
+    batch.triggers = triggers;
+    batch
 }
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct Payment {
@@ -125,16 +111,42 @@ pub fn payment(hero: usize, hp: i32, mp: i32, skill: Skill) -> Option<Payment> {
 }
 pub fn blood_cost(hero: usize, awake: bool, missing: i32) -> i32 {
     let missing = missing.max(0);
-    if has_passive(hero, awake, Passive::FleshConversion) {
-        (missing + 1) / 2
-    } else {
-        missing * 2
-    }
+    let mut blood = missing * 2;
+    let mut allowed = false;
+    dispatch_rules(
+        &EventContext::new(
+            hero,
+            i32::MAX,
+            0,
+            Rules {
+                awake,
+                ..Default::default()
+            },
+        ),
+        &mut RuleEvent::Payment {
+            missing,
+            blood: &mut blood,
+            allowed: &mut allowed,
+        },
+        &mut Vec::new(),
+    );
+    blood
 }
+
 pub fn payment_in(hero: usize, hp: i32, mp: i32, skill: Skill, rules: Rules) -> Option<Payment> {
     let missing = (skill_cost_in(hero, skill, rules) - mp).max(0);
-    let blood = blood_cost(hero, rules.awake, missing);
-    if missing == 0 || (hero == 6 && hp > blood) {
+    let mut blood = missing * 2;
+    let mut allowed = missing == 0;
+    dispatch_rules(
+        &EventContext::new(hero, hp, mp, rules),
+        &mut RuleEvent::Payment {
+            missing,
+            blood: &mut blood,
+            allowed: &mut allowed,
+        },
+        &mut Vec::new(),
+    );
+    if missing == 0 || allowed {
         Some(Payment {
             mana: skill_cost_in(hero, skill, rules).min(mp),
             blood,
@@ -144,15 +156,29 @@ pub fn payment_in(hero: usize, hp: i32, mp: i32, skill: Skill, rules: Rules) -> 
     }
 }
 
-/// Apply one source event once, before either side's health cap. Converted
-/// results are terminal values: they cannot trigger another conversion.
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+/// Resolve an event batch through ability listeners, retaining every derivation.
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct RewardSettlement {
     pub actor_hp: i32,
     pub actor_mp: i32,
     pub opponent_hp: i32,
     pub damage: i32,
+    pub triggers: Vec<AbilityTrigger>,
+    pub events: Vec<RewardEvent>,
 }
+impl RewardSettlement {
+    /// Latest ability source that produced a live event for this resource and recipient.
+    pub fn source_for(&self, resource: Resource, recipient: EventSide) -> Option<EventSource> {
+        self.events
+            .iter()
+            .rev()
+            .find(|event| {
+                event.resource == resource && event.recipient == recipient && event.amount > 0
+            })
+            .map(RewardEvent::current_source)
+    }
+}
+#[cfg(test)]
 pub fn settle_rewards_in(
     hero: usize,
     hp: i32,
@@ -162,23 +188,87 @@ pub fn settle_rewards_in(
     direct_opponent_heal: i32,
     rules: Rules,
 ) -> RewardSettlement {
-    let (mut heal, mut damage, mana) = gains;
-    let mut opponent_heal = direct_opponent_heal;
-    if hero == NUN && !rules.awake {
-        opponent_heal += heal;
+    settle_batch_in(
+        hero,
+        hp,
+        mp,
+        opponent_hp,
+        RewardBatch::gains(gains, direct_opponent_heal, EventSource::Unspecified),
+        rules,
+    )
+}
+pub fn settle_batch_in(
+    hero: usize,
+    hp: i32,
+    mp: i32,
+    opponent_hp: i32,
+    mut batch: RewardBatch,
+    rules: Rules,
+) -> RewardSettlement {
+    let ctx = EventContext::new(hero, hp, mp, rules);
+    let mut triggers = std::mem::take(&mut batch.triggers);
+    let mut queue: std::collections::VecDeque<_> = std::mem::take(&mut batch.events).into();
+    let mut processed = 0;
+    while let Some(mut reward) = queue.pop_front() {
+        processed += 1;
+        assert!(
+            processed <= 4096,
+            "ability event chain exceeded safety limit"
+        );
+        if reward.amount <= 0 {
+            batch.events.push(reward);
+            continue;
+        }
+        let mut generated = Vec::new();
+        let mut cancelled = false;
+        dispatch_rules(
+            &ctx,
+            &mut RuleEvent::Reward {
+                reward: &mut reward,
+                generated: &mut generated,
+                cancelled: &mut cancelled,
+            },
+            &mut triggers,
+        );
+        queue.extend(generated);
+        if cancelled {
+            continue;
+        }
+        let target_ctx = if reward.recipient == EventSide::Actor {
+            Some(ctx)
+        } else {
+            rules.opponent.map(|(target, awake)| {
+                let mut context = EventContext::new(
+                    target,
+                    opponent_hp,
+                    rules.opponent_mp,
+                    Rules {
+                        awake,
+                        statuses: rules.opponent_statuses,
+                        opponent_statuses: rules.statuses,
+                        opponent_mp: mp,
+                        opponent: Some((hero, rules.awake)),
+                        ..Default::default()
+                    },
+                );
+                context.owner = EventSide::Opponent;
+                context
+            })
+        };
+        if let Some(target_ctx) = target_ctx {
+            dispatch_rules(
+                &target_ctx,
+                &mut RuleEvent::Incoming {
+                    reward: &mut reward,
+                },
+                &mut triggers,
+            );
+        }
+        batch.events.push(reward);
     }
-    if rules.turn_mode == TurnMode::Rational {
-        heal += damage;
-        opponent_heal += damage;
-        damage = 0;
-    } else if hero == NUN && rules.awake {
-        damage += heal + opponent_heal;
-        heal = 0;
-        opponent_heal = 0;
-    } else if rules.turn_mode == TurnMode::Frenzy {
-        damage += opponent_heal;
-        opponent_heal = 0;
-    }
+    triggers.dedup();
+    let (heal, damage, mana) = batch.totals();
+    let opponent_heal = batch.total(Resource::Healing, EventSide::Opponent);
     let opponent_cap = rules
         .opponent
         .map(|(id, awake)| health_cap(id, awake))
@@ -188,5 +278,18 @@ pub fn settle_rewards_in(
         actor_mp: (mp + mana).min(mana_cap(hero, rules.awake)),
         opponent_hp: (opponent_hp + opponent_heal).min(opponent_cap),
         damage,
+        triggers,
+        events: batch.events,
     }
+}
+pub fn turn_end_rewards(hero: usize, hp: i32, mp: i32, rules: Rules) -> RewardBatch {
+    let mut batch = RewardBatch::default();
+    let mut triggers = Vec::new();
+    dispatch_rules(
+        &EventContext::new(hero, hp, mp, rules),
+        &mut RuleEvent::TurnEnd { batch: &mut batch },
+        &mut triggers,
+    );
+    batch.triggers.extend(triggers);
+    batch
 }

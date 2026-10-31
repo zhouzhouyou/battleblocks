@@ -122,7 +122,7 @@ pub fn hero_swap(b: &mut Board, a: (usize, usize), c: (usize, usize), hero: usiz
         return false;
     }
     let original = *b;
-    if matches!(hero, 0 | 7) && a.1 == c.1 {
+    if crate::content::movement_profile(hero).columns && a.1 == c.1 {
         for y in 0..N {
             swap(b, (a.0, y), (c.0, y));
         }
@@ -142,7 +142,7 @@ pub fn adjacent(a: (usize, usize), c: (usize, usize), hero: usize) -> bool {
     }
     let dx = a.0.abs_diff(c.0);
     let dy = a.1.abs_diff(c.1);
-    dx + dy == 1 || (hero == 1 && dx == 1 && dy == 1)
+    dx + dy == 1 || (crate::content::movement_profile(hero).diagonal && dx == 1 && dy == 1)
 }
 pub fn hero_options(b: &Board, hero: usize) -> Vec<((usize, usize), (usize, usize))> {
     let mut out = Vec::new();
@@ -153,7 +153,7 @@ pub fn hero_options(b: &Board, hero: usize) -> Vec<((usize, usize), (usize, usiz
                 if cx < 0 || cy < 0 || cx >= N as isize || cy >= N as isize {
                     continue;
                 }
-                if matches!(hero, 0 | 7) && dy == 0 && y > 0 {
+                if crate::content::movement_profile(hero).columns && dy == 0 && y > 0 {
                     continue;
                 }
                 let c = (cx as usize, cy as usize);
@@ -267,7 +267,7 @@ pub fn move_hints(b: &Board, hero: usize, armed: bool) -> Vec<((usize, usize), (
     }
     // An armed elf can still make an ordinary diagonal swap without using
     // the orthogonal parallel preparation, matching the input handler.
-    if hero == 1 {
+    if crate::content::movement_profile(hero).diagonal {
         moves.extend(
             hero_options(b, hero)
                 .into_iter()
@@ -303,7 +303,10 @@ mod hint_tests {
                                 let c = (cx as usize, cy as usize);
                                 let expected = (armed && dx.abs() + dy.abs() == 1)
                                     || hero_swap(&mut b.clone(), a, c, hero);
-                                let canonical = if !armed && matches!(hero, 0 | 7) && dy == 0 {
+                                let canonical = if !armed
+                                    && crate::content::movement_profile(hero).columns
+                                    && dy == 0
+                                {
                                     ((x, 0), (c.0, 0))
                                 } else {
                                     (a, c)

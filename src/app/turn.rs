@@ -1,20 +1,32 @@
 use super::*;
 impl Session {
     pub(super) fn advance_turn(&mut self, frame: &Frame) {
-        if let Some((damage, enemy_actor)) = self.charge_damage {
+        if let Some(impact) = self.charge_damage.take() {
             let before = self.snapshot();
-            self.charge_damage = None;
-            let hit = self.damage(damage, !enemy_actor, "damage");
-            let actual = hit.damage;
+            let skill = impact.skill;
+            let damage = impact
+                .rewards
+                .total(content::Resource::Damage, content::EventSide::Opponent);
+            debug_assert_eq!(impact.actor_enemy, self.enemy_turn);
+            let applied = self.apply_batch_rewards(impact.rewards);
+            let actual = applied.hit.damage;
             self.turn_log.current.add(0, actual, 0);
-            self.presentation.health(
+            let actor_source = applied
+                .actor_health_source
+                .map(|source| source.name(self.zh))
+                .unwrap_or_else(|| skill.name(self.zh));
+            let opponent_source = applied
+                .opponent_health_source
+                .map(|source| source.name(self.zh))
+                .unwrap_or_else(|| skill.name(self.zh));
+            self.presentation.health_sources(
                 [before.hp, before.enemy_hp],
                 [self.hp, self.enemy],
-                content::Skill::Charge.name(self.zh),
+                [actor_source, opponent_source],
             );
             self.feedback = format!(
                 "{} · {} {}",
-                content::Skill::Charge.name(self.zh),
+                skill.name(self.zh),
                 tr_key(self.zh, "ui.turn.advance_turn.damage"),
                 actual
             );
@@ -22,7 +34,10 @@ impl Session {
             self.deadline = 0.;
             self.console.event(
                 "skill_hit",
-                &format!("Charge expected_damage={} actual_damage={}", damage, actual),
+                &format!(
+                    "{:?} expected_damage={} actual_damage={}",
+                    skill, damage, actual
+                ),
                 &before,
                 &self.snapshot(),
             );
@@ -40,9 +55,15 @@ impl Session {
             } else {
                 self.hero_id
             };
-            if actor_id == content::NUN {
+            let (hp, mp) = if self.enemy_turn {
+                (self.enemy, self.enemy_mp)
+            } else {
+                (self.hp, self.mp)
+            };
+            let ending = content::turn_end_rewards(actor_id, hp, mp, self.rules(self.enemy_turn));
+            if !ending.events.is_empty() {
                 let before_recovery = self.snapshot();
-                let hit = self.apply_rewards((10, 0, 10), 0);
+                let applied = self.apply_batch_rewards(ending);
                 let heal = if self.enemy_turn {
                     self.enemy - before_recovery.enemy_hp
                 } else {
@@ -53,15 +74,24 @@ impl Session {
                 } else {
                     self.mp - before_recovery.mp
                 };
-                self.turn_log.current.add(heal, hit.damage, mana);
-                self.presentation.health(
+                self.turn_log.current.add(heal, applied.hit.damage, mana);
+                let fallback = tr_key(self.zh, "ui.resolution.resolve_pending.clear");
+                let actor_source = applied
+                    .actor_health_source
+                    .map(|source| source.name(self.zh))
+                    .unwrap_or(fallback);
+                let opponent_source = applied
+                    .opponent_health_source
+                    .map(|source| source.name(self.zh))
+                    .unwrap_or(fallback);
+                self.presentation.health_sources(
                     [before_recovery.hp, before_recovery.enemy_hp],
                     [self.hp, self.enemy],
-                    content::role_text("AutoRecovery.name", self.zh),
+                    [actor_source, opponent_source],
                 );
                 self.console.event(
-                    "auto_recovery",
-                    &format!("heal={heal} damage={} mana={mana}", hit.damage),
+                    "turn_end_effect",
+                    &format!("heal={heal} damage={} mana={mana}", applied.hit.damage),
                     &before_recovery,
                     &self.snapshot(),
                 );
@@ -81,16 +111,19 @@ impl Session {
             let cleared = self.new_role_states[self.enemy_turn as usize]
                 .direct_tiles
                 .clone();
-            if receiver_id == content::PRIEST
-                && self.new_role_states[receiver as usize]
-                    .pockets
-                    .iter()
-                    .any(Option::is_none)
-                && !cleared.is_empty()
-            {
-                let pick = rng::gen_range(0, cleared.len());
-                self.new_role_states[receiver as usize].mind_vision(&cleared, pick);
-            }
+            let mut commands = Vec::new();
+            let mut triggers = Vec::new();
+            content::dispatch_rules(
+                &content::EventContext::new(receiver_id, 0, 0, self.rules(receiver)),
+                &mut content::RuleEvent::OpponentTurnEnd {
+                    cleared: &cleared,
+                    state: &self.new_role_states[receiver as usize],
+                    commands: &mut commands,
+                },
+                &mut triggers,
+            );
+            self.apply_state_commands(receiver, commands);
+            self.present_ability_triggers(receiver, &triggers);
             self.new_role_states[self.enemy_turn as usize].end_turn();
             self.enemy_turn = !self.enemy_turn;
             self.cooldowns.start_turn(self.enemy_turn as usize);

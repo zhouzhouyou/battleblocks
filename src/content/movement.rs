@@ -1,18 +1,24 @@
 use super::*;
 
 pub fn reachable_rows(hero: usize, hp: i32, rules: Rules) -> usize {
-    if hero != DWARF {
-        return N;
-    }
-    let levels = if rules.awake {
-        [80, 60, 40]
-            .iter()
-            .filter(|&&v| hp * 100 <= health_cap(hero, true) * v)
-            .count()
-    } else {
-        0
-    };
-    (4 + levels + usize::from(rules.jumped)).min(N)
+    let mut rows = N;
+    dispatch_rules(
+        &EventContext::new(hero, hp, 0, rules),
+        &mut RuleEvent::Reach { rows: &mut rows },
+        &mut Vec::new(),
+    );
+    rows.min(N)
+}
+pub fn movement_profile(hero: usize) -> MovementProfile {
+    let mut profile = MovementProfile::default();
+    dispatch_rules(
+        &EventContext::new(hero, 0, 0, Rules::default()),
+        &mut RuleEvent::Movement {
+            profile: &mut profile,
+        },
+        &mut Vec::new(),
+    );
+    profile
 }
 pub fn targeted_in(skill: Skill, rules: Rules) -> bool {
     targeted(effective_skill(skill, rules))
@@ -35,10 +41,9 @@ pub fn legal_swap_region(
     b: (usize, usize),
     rules: Rules,
 ) -> bool {
-    hero != DWARF
-        || (a.1 >= N - reachable_rows(hero, hp, rules)
-            && b.1 >= N - reachable_rows(hero, hp, rules))
+    a.1 >= N - reachable_rows(hero, hp, rules) && b.1 >= N - reachable_rows(hero, hp, rules)
 }
+
 pub fn legal_target(
     hero: usize,
     hp: i32,
@@ -51,45 +56,40 @@ pub fn legal_target(
         return false;
     }
     let effective = effective_skill(skill, rules);
-    if effective == Skill::Copy {
+    if !ability_enabled(
+        &EventContext::new(hero, hp, 0, rules),
+        AbilityId::Active(effective),
+    ) {
         return false;
     }
-    if effective == Skill::Jump && rules.jumped {
+    let mut allowed = true;
+    dispatch_active(
+        effective,
+        &EventContext::new(hero, hp, 0, rules),
+        &mut RuleEvent::LegalTarget {
+            skill: effective,
+            board,
+            target,
+            allowed: &mut allowed,
+        },
+        &mut Vec::new(),
+    );
+    if !allowed {
         return false;
     }
-    if effective == Skill::Entomb
-        && (rules.pockets.iter().all(Option::is_some) || board[target.1][target.0] >= 7)
-    {
-        return false;
-    }
-    if effective == Skill::Resurrect
-        && rules
-            .pockets
-            .get(rules.pocket_slot)
-            .copied()
-            .flatten()
-            .is_none()
-    {
-        return false;
-    }
-    if hero == DWARF && targeted(effective) {
-        let cells = match effective {
-            Skill::Forge
-            | Skill::Nature
-            | Skill::Greedy
-            | Skill::Balance
-            | Skill::War
-            | Skill::Drain => {
-                let (x, y) = (target.0.min(N - 2), target.1.min(N - 2));
-                vec![(x, y), (x + 1, y), (x, y + 1), (x + 1, y + 1)]
+    let rows = reachable_rows(hero, hp, rules);
+    if rows < N && targeted(effective) {
+        let mut copy = *board;
+        let e = effect_at_in(effective, &mut copy, target, hero, hp, 0, rules);
+        let mut cells = e.cells;
+        for y in 0..N {
+            for x in 0..N {
+                if board[y][x] != copy[y][x] {
+                    cells.push((x, y));
+                }
             }
-            Skill::Entomb | Skill::Resurrect => vec![target],
-            _ => effect_at(effective, &mut board.clone(), target).cells,
-        };
-        if cells
-            .iter()
-            .any(|&(_, y)| y < N - reachable_rows(hero, hp, rules))
-        {
+        }
+        if cells.iter().any(|&(_, y)| y < N - rows) {
             return false;
         }
     }
@@ -113,25 +113,23 @@ pub fn usable_skills_in(board: &Board, hero: usize, hp: i32, mp: i32, rules: Rul
             let Some(pay) = payment_in(hero, hp, mp, skill, rules) else {
                 return false;
             };
-            if effective_skill(skill, rules) == Skill::Jump && hero == DWARF && !rules.jumped {
-                return !move_options_in(
+            let mut override_use = None;
+            dispatch_active(
+                effective_skill(skill, rules),
+                &EventContext::new(hero, hp, mp, rules),
+                &mut RuleEvent::NoSwapUsable {
                     board,
-                    hero,
-                    hp,
-                    Rules {
-                        jumped: true,
-                        ..rules
-                    },
-                )
-                .is_empty();
+                    value: &mut override_use,
+                },
+                &mut Vec::new(),
+            );
+            if let Some(value) = override_use {
+                return value;
             }
             (0..N).any(|y| {
                 (0..N).any(|x| {
                     if !legal_target(hero, hp, skill, board, (x, y), rules) {
                         return false;
-                    }
-                    if effective_skill(skill, rules) == Skill::Miracle {
-                        return true;
                     }
                     let mut copy = *board;
                     let e = effect_at_in(skill, &mut copy, (x, y), hero, hp, mp, rules);

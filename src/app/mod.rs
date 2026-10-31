@@ -49,6 +49,7 @@ pub(crate) struct Session {
     armed_sides: [bool; 2],
     feedback: String,
     feedback_time: f64,
+    reactions: [Option<(String, f64)>; 2],
     move_flash: Option<Move>,
     targeting: Option<content::Skill>,
     skill_flash: Vec<(usize, usize)>,
@@ -68,9 +69,16 @@ pub(crate) struct Session {
     awakened: [bool; 2],
     reward_skill: Option<content::Skill>,
     awake_textures: Vec<Texture2D>,
-    charge_damage: Option<(i32, bool)>,
+    charge_damage: Option<content::PendingImpact>,
     presentation: presentation::Presentation,
     turn_log: turns::Log,
+}
+
+/// Result of one reward settlement, including the latest health-affecting source per side.
+struct AppliedRewards {
+    hit: content::DamageResult,
+    actor_health_source: Option<content::EventSource>,
+    opponent_health_source: Option<content::EventSource>,
 }
 
 struct Frame {
@@ -207,7 +215,7 @@ impl Session {
             .iter()
             .map(|s| diagnostic_texture(s.bytes, "no_actors"))
             .collect();
-        let charge_damage: Option<(i32, bool)> = None;
+        let charge_damage: Option<content::PendingImpact> = None;
         let presentation = presentation::Presentation::default();
         let turn_log = turns::Log::new();
 
@@ -249,6 +257,7 @@ impl Session {
             armed_sides,
             feedback,
             feedback_time,
+            reactions: [None, None],
             move_flash,
             targeting,
             skill_flash,
@@ -275,41 +284,97 @@ impl Session {
     }
     fn rules(&self, side: bool) -> content::Rules {
         content::Rules {
-            jumped: self.new_role_states[side as usize].jumped,
-            miracle: self.new_role_states[side as usize].miracle,
             horizontal: self.new_role_states[side as usize].horizontal,
-            upper_swap: self.new_role_states[side as usize].upper_swap,
+            swap_clear: self.new_role_states[side as usize].swap_clear,
             pockets: self.new_role_states[side as usize].pockets,
             pocket_slot: self.new_role_states[side as usize].pocket_slot,
             copied_skill: self.new_role_states[side as usize]
                 .copied_skill
                 .and_then(content::Skill::from_index),
-            turn_mode: self.new_role_states[side as usize].turn_mode,
+            statuses: self.new_role_states[side as usize].statuses,
             awake: self.awakened[side as usize],
             initial_loot: false,
             opponent_hp: Some(if side { self.hp } else { self.enemy }),
+            opponent_mp: if side { self.mp } else { self.enemy_mp },
+            opponent_statuses: self.new_role_states[(!side) as usize].statuses,
             opponent: Some((
                 if side { self.hero_id } else { self.enemy_id },
                 self.awakened[(!side) as usize],
             )),
         }
     }
+    fn rejection_message(&self, side: bool) -> &'static str {
+        let id = if side { self.enemy_id } else { self.hero_id };
+        content::ability_capabilities(id, self.rules(side))
+            .rejection
+            .map(|key| content::role_text(key, self.zh))
+            .unwrap_or("")
+    }
     fn refresh_copy(&mut self, side: bool) {
         let id = if side { self.enemy_id } else { self.hero_id };
-        if id == content::PRIEST && self.awakened[side as usize] {
-            let other = if side { self.hero_id } else { self.enemy_id };
-            let options: Vec<_> = content::skills(other, self.awakened[(!side) as usize])
-                .iter()
-                .copied()
-                .map(|s| content::effective_skill(s, self.rules(!side)))
-                .filter(|s| *s != content::Skill::Copy)
-                .collect();
-            self.new_role_states[side as usize].copied_skill = if options.is_empty() {
-                None
-            } else {
-                Some(options[rng::gen_range(0, options.len())].index())
-            };
+        let other = if side { self.hero_id } else { self.enemy_id };
+        let options: Vec<_> = content::skills(other, self.awakened[(!side) as usize])
+            .iter()
+            .copied()
+            .map(|s| content::effective_skill(s, self.rules(!side)))
+            .filter(|s| !content::skill_profile(*s, self.rules(!side)).copy_slot)
+            .collect();
+        let mut commands = Vec::new();
+        let mut triggers = Vec::new();
+        content::dispatch_rules(
+            &content::EventContext::new(id, 0, 0, self.rules(side)),
+            &mut content::RuleEvent::RefreshAbilities {
+                options: &options,
+                commands: &mut commands,
+            },
+            &mut triggers,
+        );
+        self.apply_state_commands(side, commands);
+        self.present_ability_triggers(side, &triggers);
+    }
+    fn apply_state_commands(&mut self, side: bool, commands: Vec<content::StateCommand>) {
+        for command in commands {
+            match command {
+                content::StateCommand::FillPocket { slot, options } => {
+                    if !options.is_empty() {
+                        let pick = rng::gen_range(0, options.len());
+                        self.new_role_states[side as usize].pockets[slot] = Some(options[pick]);
+                        self.new_role_states[side as usize].select_occupied_pocket();
+                    }
+                }
+                content::StateCommand::CopySkill { options } => {
+                    self.new_role_states[side as usize].copied_skill = if options.is_empty() {
+                        None
+                    } else {
+                        Some(options[rng::gen_range(0, options.len())].index())
+                    }
+                }
+            }
         }
+    }
+    fn apply_health_cost(
+        &mut self,
+        amount: i32,
+        side: bool,
+        skill: content::Skill,
+    ) -> content::DamageResult {
+        let id = if side { self.enemy_id } else { self.hero_id };
+        let hp = if side { self.enemy } else { self.hp };
+        let mp = if side { self.enemy_mp } else { self.mp };
+        let mut event =
+            content::RewardBatch::gains((0, amount, 0), 0, content::EventSource::Cost(skill))
+                .events
+                .into_iter()
+                .next();
+        if let Some(reward) = event.as_mut() {
+            reward.recipient = content::EventSide::Actor;
+            content::dispatch_rules(
+                &content::EventContext::new(id, hp, mp, self.rules(side)),
+                &mut content::RuleEvent::Incoming { reward },
+                &mut Vec::new(),
+            );
+        }
+        self.damage(event.map(|e| e.amount).unwrap_or(0), side, "blood_payment")
     }
     fn damage(&mut self, amount: i32, side: bool, cause: &str) -> content::DamageResult {
         let old = self.snapshot();
@@ -346,11 +411,8 @@ impl Session {
         }
         result
     }
-    fn apply_rewards(
-        &mut self,
-        gains: (i32, i32, i32),
-        opponent_heal: i32,
-    ) -> content::DamageResult {
+    fn apply_batch_rewards(&mut self, batch: content::RewardBatch) -> AppliedRewards {
+        let before_rewards = self.snapshot();
         let side = self.enemy_turn;
         let (id, hp, mp) = if side {
             (self.enemy_id, self.enemy, self.enemy_mp)
@@ -358,15 +420,15 @@ impl Session {
             (self.hero_id, self.hp, self.mp)
         };
         let opponent_hp = if side { self.hp } else { self.enemy };
-        let settled = content::settle_rewards_in(
-            id,
-            hp,
-            mp,
-            opponent_hp,
-            gains,
-            opponent_heal,
-            self.rules(side),
-        );
+        let settled = content::settle_batch_in(id, hp, mp, opponent_hp, batch, self.rules(side));
+        let actor_health_source =
+            settled.source_for(content::Resource::Healing, content::EventSide::Actor);
+        let opponent_health_source = settled
+            .source_for(content::Resource::Damage, content::EventSide::Opponent)
+            .or_else(|| {
+                settled.source_for(content::Resource::Healing, content::EventSide::Opponent)
+            });
+        self.present_ability_triggers(side, &settled.triggers);
         if side {
             self.enemy = settled.actor_hp;
             self.enemy_mp = settled.actor_mp;
@@ -376,7 +438,44 @@ impl Session {
             self.mp = settled.actor_mp;
             self.enemy = settled.opponent_hp;
         }
-        self.damage(settled.damage, !side, "damage")
+        let hit = self.damage(settled.damage, !side, "damage");
+        for event in &settled.events {
+            self.console.event_payload(
+                "reward_event",
+                &format!("{:?}", event),
+                Some(&event.json()),
+                &before_rewards,
+                &self.snapshot(),
+            );
+        }
+        AppliedRewards {
+            hit,
+            actor_health_source,
+            opponent_health_source,
+        }
+    }
+    fn present_ability_triggers(&mut self, side: bool, triggers: &[content::AbilityTrigger]) {
+        for trigger in triggers {
+            let target_side = if trigger.side == content::EventSide::Actor {
+                side
+            } else {
+                !side
+            };
+            let text = trigger
+                .message
+                .map(|key| content::role_text(key, self.zh).to_string())
+                .unwrap_or_else(|| trigger.ability.name(self.zh).to_string());
+            self.reactions[target_side as usize] = Some((text, 2.));
+            self.console.event(
+                "ability_trigger",
+                &format!(
+                    "side={} ability={:?} message={:?}",
+                    target_side, trigger.ability, trigger.message
+                ),
+                &self.snapshot(),
+                &self.snapshot(),
+            );
+        }
     }
     fn snapshot(&self) -> debug::Snapshot {
         debug::Snapshot {
@@ -405,7 +504,7 @@ impl Session {
             difficulty: self.difficulty,
             paused: self.paused,
             rng_state: rng::state(),
-            charge_damage: self.charge_damage,
+            charge_damage: self.charge_damage.clone(),
             charge_remaining: self.presentation.charge_remaining(),
             turns: self.turn_log.clone(),
         }
@@ -442,7 +541,11 @@ impl Session {
         self.presentation.clear();
         self.charge_damage = state.charge_damage;
         self.turn_log = state.turns;
-        self.last_cast_enemy = self.charge_damage.map(|(_, enemy)| enemy).unwrap_or(false);
+        self.last_cast_enemy = self
+            .charge_damage
+            .as_ref()
+            .map(|impact| impact.actor_enemy)
+            .unwrap_or(false);
         if self.charge_damage.is_some() {
             let column = self.pending.first().map(|c| c.0).unwrap_or(0);
             self.presentation
@@ -451,6 +554,7 @@ impl Session {
         self.skill_flash.clear();
         self.last_cast = None;
         self.cast_time = 0.;
+        self.reactions = [None, None];
         self.feedback.clear();
         self.feedback_time = 0.;
         self.move_flash = None;

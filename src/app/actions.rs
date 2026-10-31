@@ -9,8 +9,12 @@ impl Session {
             {
                 let rect = player_skill_rect(i);
                 if self.cooldowns.remaining(0, *skill) == 0
-                    && !((matches!(skill, content::Skill::Strike) && self.extra_bonus > 0)
-                        || (matches!(skill, content::Skill::Landslide) && self.armed))
+                    && content::preparation_available(
+                        *skill,
+                        self.rules(false),
+                        self.armed,
+                        self.extra_bonus,
+                    )
                     && ((i == 0 && (frame.key(KeyCode::Key1) || frame.key(KeyCode::Space)))
                         || (i == 1 && frame.key(KeyCode::Key2))
                         || (i == 2 && frame.key(KeyCode::Key3))
@@ -42,7 +46,7 @@ impl Session {
                     self.turn_log.current.actions.push(turns::Action::Swap {
                         from: a,
                         to: c,
-                        columns: matches!(self.enemy_id, 0 | content::KNIGHT) && a.1 == c.1,
+                        columns: content::movement_profile(self.enemy_id).columns && a.1 == c.1,
                     });
                     self.console.event(
                         "move",
@@ -96,13 +100,16 @@ impl Session {
                         self.turn_log.current.actions.push(turns::Action::Swap {
                             from: a,
                             to: c,
-                            columns: matches!(self.enemy_id, 0 | content::KNIGHT)
+                            columns: content::movement_profile(self.enemy_id).columns
                                 && !self.armed
                                 && a.1 == c.1,
                         });
                         if self.armed {
                             parallel_swap(&mut self.b, a, c);
                             self.armed = false;
+                            self.new_role_states[self.enemy_turn as usize]
+                                .statuses
+                                .consume(content::StatusDuration::UntilSwap);
                         } else {
                             board::hero_swap(&mut self.b, a, c, self.enemy_id);
                         }
@@ -174,7 +181,8 @@ impl Session {
         if !self.enemy_turn {
             if let Some(skill) = cast {
                 if (content::targeted_in(skill, self.rules(false))
-                    || (skill == content::Skill::Miracle && !commit_force))
+                    || (content::skill_profile(skill, self.rules(false)).force_move
+                        && !commit_force))
                     && self.cooldowns.remaining(0, skill) == 0
                     && content::payment_in(self.hero_id, self.hp, self.mp, skill, self.rules(false))
                         .is_some()
@@ -186,7 +194,7 @@ impl Session {
                 }
             }
             if let Some(skill) = self.targeting {
-                if skill != content::Skill::Miracle
+                if !content::skill_profile(skill, self.rules(false)).force_move
                     && board_target.is_some()
                     && frame.clicked(MouseButton::Left)
                 {
@@ -211,7 +219,7 @@ impl Session {
                 self.mp
             };
             let effective = content::effective_skill(skill, cast_rules);
-            let target = if effective == content::Skill::Hammer
+            let target = if content::skill_profile(effective, cast_rules).random_target
                 && self.cooldowns.remaining(self.enemy_turn as usize, skill) == 0
                 && content::payment_in(id, actor_hp, actor_mp, skill, cast_rules).is_some()
             {
@@ -242,10 +250,10 @@ impl Session {
                 self.console.checkpoint(before.clone());
                 if self.enemy_turn {
                     self.enemy_mp -= pay.mana;
-                    self.damage(pay.blood, true, "blood_payment");
+                    self.apply_health_cost(pay.blood, true, effective);
                 } else {
                     self.mp -= pay.mana;
-                    self.damage(pay.blood, false, "blood_payment");
+                    self.apply_health_cost(pay.blood, false, effective);
                 }
                 self.cooldowns.cast(self.enemy_turn as usize, skill);
                 cast_this_frame = true;
@@ -272,22 +280,36 @@ impl Session {
                     &before.board,
                     target,
                 );
-                let direct_damage =
-                    if matches!(effective, content::Skill::Charge | content::Skill::Rush) {
-                        self.charge_damage = Some((e.damage, self.enemy_turn));
-                        self.presentation
-                            .charge(target.0, presentation::CHARGE_TIME);
-                        0
-                    } else {
-                        e.damage
-                    };
-                let hit = self.apply_rewards((e.hp, direct_damage, e.mp), e.opponent_heal);
+                let mut batch = e.reward_batch(effective);
+                if content::skill_profile(effective, effect_rules).delayed_damage {
+                    let mut delayed = content::RewardBatch::default();
+                    let mut immediate = Vec::new();
+                    for event in std::mem::take(&mut batch.events) {
+                        if event.resource == content::Resource::Damage
+                            && event.recipient == content::EventSide::Opponent
+                        {
+                            delayed.events.push(event);
+                        } else {
+                            immediate.push(event);
+                        }
+                    }
+                    delayed.triggers = std::mem::take(&mut batch.triggers);
+                    batch.events = immediate;
+                    self.charge_damage = Some(content::PendingImpact {
+                        rewards: delayed,
+                        actor_enemy: self.enemy_turn,
+                        skill: effective,
+                    });
+                    self.presentation
+                        .charge(target.0, presentation::CHARGE_TIME);
+                }
+                let applied = self.apply_batch_rewards(batch);
                 let actual_heal = if self.enemy_turn {
                     self.enemy - before.enemy_hp
                 } else {
                     self.hp - before.hp
                 };
-                let actual_damage = hit.damage;
+                let actual_damage = applied.hit.damage;
                 let actual_mana = if self.enemy_turn {
                     self.enemy_mp - before.enemy_mp + pay.mana
                 } else {
@@ -311,7 +333,7 @@ impl Session {
                     skill.name(self.zh),
                     reward_summary(self.zh, actual_heal, actual_damage, actual_mana)
                 );
-                if skill == content::Skill::Charge {
+                if content::skill_profile(effective, effect_rules).delayed_damage {
                     self.feedback = format!(
                         "{} · {} {}",
                         skill.name(self.zh),
@@ -338,14 +360,22 @@ impl Session {
                         ],
                     );
                 }
-                self.presentation.health(
+                let actor_source = if pay.blood > 0 {
+                    tr_key(self.zh, "ui.actions.cast_skill.flesh_casting")
+                } else {
+                    applied
+                        .actor_health_source
+                        .map(|source| source.name(self.zh))
+                        .unwrap_or_else(|| skill.name(self.zh))
+                };
+                let opponent_source = applied
+                    .opponent_health_source
+                    .map(|source| source.name(self.zh))
+                    .unwrap_or_else(|| skill.name(self.zh));
+                self.presentation.health_sources(
                     [before.hp, before.enemy_hp],
                     [self.hp, self.enemy],
-                    if pay.blood > 0 {
-                        tr_key(self.zh, "ui.actions.cast_skill.flesh_casting")
-                    } else {
-                        skill.name(self.zh)
-                    },
+                    [actor_source, opponent_source],
                 );
                 self.feedback_time = 2.5;
                 self.action_done = effective.ends_turn();
@@ -368,14 +398,11 @@ impl Session {
                 self.console.event("skill",&format!("{:?} effective={:?} target=[{},{}] cost={} blood_cost={} direct_heal={} direct_damage={} direct_mana={} bonus={} armed={} actual_heal={} actual_damage={} actual_mana={}",skill,effective,target.0+1,target.1+1,pay.mana,pay.blood,e.hp,e.damage,e.mp,e.bonus,e.armed,actual_heal,actual_damage,actual_mana),&before,&self.snapshot());
             } else {
                 if !self.enemy_turn
-                    && id == content::DWARF
+                    && content::reachable_rows(id, actor_hp, cast_rules) < N
                     && !content::legal_target(id, actor_hp, skill, &self.b, target, cast_rules)
                 {
-                    if self.feedback_time <= 0.
-                        || self.feedback != content::role_text("Dwarf.unreachable", self.zh)
-                    {
-                        self.feedback =
-                            content::role_text("Dwarf.unreachable", self.zh).to_string();
+                    if self.feedback_time <= 0. || self.feedback != self.rejection_message(false) {
+                        self.feedback = self.rejection_message(false).to_string();
                         self.feedback_time = 1.8;
                     }
                     if content::targeted_in(skill, cast_rules) {

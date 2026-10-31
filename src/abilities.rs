@@ -38,37 +38,101 @@ pub enum Passive {
     Madness,
 }
 use Passive::*;
+pub struct AbilityLoadout {
+    pub normal: &'static [Passive],
+    pub awake: &'static [Passive],
+    pub awake_skills: &'static [super::Skill],
+    pub awakening: &'static str,
+}
+pub fn ability_loadout(hero: usize) -> &'static AbilityLoadout {
+    static DATA: std::sync::OnceLock<Vec<AbilityLoadout>> = std::sync::OnceLock::new();
+    &DATA.get_or_init(|| {
+        include_str!("../assets/ability-loadouts.txt")
+            .lines()
+            .filter(|s| !s.starts_with('#') && !s.is_empty())
+            .enumerate()
+            .map(|(index, line)| {
+                let f: Vec<_> = line.split('|').collect();
+                assert_eq!(f[0].parse::<usize>().unwrap(), index);
+                let parse = |text: &str| -> &'static [Passive] {
+                    Box::leak(
+                        text.split(',')
+                            .filter(|s| !s.is_empty())
+                            .map(|name| {
+                                *Passive::ALL
+                                    .iter()
+                                    .find(|p| format!("{p:?}") == name)
+                                    .expect("passive identity")
+                            })
+                            .collect::<Vec<_>>()
+                            .into_boxed_slice(),
+                    )
+                };
+                let active = Box::leak(
+                    f[3].split(',')
+                        .filter(|s| !s.is_empty())
+                        .map(|s| super::Skill::from_index(s.parse().unwrap()).unwrap())
+                        .collect::<Vec<_>>()
+                        .into_boxed_slice(),
+                );
+                AbilityLoadout {
+                    normal: parse(f[1]),
+                    awake: parse(f[2]),
+                    awake_skills: active,
+                    awakening: f[4],
+                }
+            })
+            .collect()
+    })[hero]
+}
 pub fn passives(hero: usize, awake: bool) -> &'static [Passive] {
-    match (hero, awake) {
-        (0, false) => &[ColumnFormation, BattleTraining],
-        (0, true) => &[ColumnFormation, BattleTraining, ChargeMastery, GuardEconomy],
-        (1, false) => &[ForestStep, ForestPact],
-        (1, true) => &[ForestStep, ForestPact, ElvenPower],
-        (2, false) => &[ArcaneConversion, ManaSeal],
-        (2, true) => &[ArcaneConversion, ManaRelease, MeteorEconomy],
-        (3, false) => &[Recycling],
-        (3, true) => &[Recycling, LootMastery],
-        (4, false) => &[BalancedAffinity, ElementReturn],
-        (4, true) => &[BalancedResonance, ElementReturn, BlastMastery],
-        (5, false) => &[BloodFury],
-        (5, true) => &[BoilingBlood],
-        (6, false) => &[FleshCasting],
-        (6, true) => &[FleshConversion, BloodSacrifice],
-        (7, false) => &[KnightStrength, Clumsy],
-        (7, true) => &[KnightStrength, ClumsyAwake],
-        (8, false) => &[DwarfStrength, Short],
-        (8, true) => &[DwarfStrength, Short, Grudge],
-        (9, false) => &[MindVision],
-        (9, true) => &[MindVision, BorrowedSlot],
-        (10, false) => &[FriendMilk, AutoRecovery],
-        (10, true) => &[Madness, AutoRecovery],
-        _ => &[],
+    let data = ability_loadout(hero);
+    if awake {
+        data.awake
+    } else {
+        data.normal
     }
 }
+#[cfg(test)]
 pub fn has_passive(hero: usize, awake: bool, passive: Passive) -> bool {
     passives(hero, awake).contains(&passive)
 }
 impl Passive {
+    pub const ALL: &'static [Self] = &[
+        Self::ColumnFormation,
+        Self::BattleTraining,
+        Self::ForestStep,
+        Self::ForestPact,
+        Self::ArcaneConversion,
+        Self::ManaSeal,
+        Self::ManaRelease,
+        Self::Recycling,
+        Self::BalancedAffinity,
+        Self::BalancedResonance,
+        Self::ElementReturn,
+        Self::BloodFury,
+        Self::BoilingBlood,
+        Self::FleshCasting,
+        Self::FleshConversion,
+        Self::ChargeMastery,
+        Self::GuardEconomy,
+        Self::ElvenPower,
+        Self::MeteorEconomy,
+        Self::LootMastery,
+        Self::BlastMastery,
+        Self::BloodSacrifice,
+        Self::KnightStrength,
+        Self::DwarfStrength,
+        Self::Short,
+        Self::Grudge,
+        Self::Clumsy,
+        Self::ClumsyAwake,
+        Self::MindVision,
+        Self::BorrowedSlot,
+        Self::FriendMilk,
+        Self::AutoRecovery,
+        Self::Madness,
+    ];
     fn is_new(self) -> bool {
         matches!(
             self,
@@ -92,7 +156,7 @@ impl Passive {
             BalancedResonance => Some(BalancedAffinity),
             BoilingBlood => Some(BloodFury),
             FleshConversion => Some(FleshCasting),
-            Madness => Some(FriendMilk),
+
             _ => None,
         }
     }
@@ -195,6 +259,40 @@ impl Passive {
         };
         crate::tr_key(zh, key)
     }
+    #[cfg(test)]
+    pub fn summary_status(
+        self,
+        hero: usize,
+        hp: i32,
+        mp: i32,
+        awake: bool,
+        zh: bool,
+    ) -> Option<(&'static str, bool)> {
+        match self {
+            BloodFury | BoilingBlood | FleshCasting | FleshConversion => {
+                self.status(hero, hp, mp, awake, zh)
+            }
+            _ => None,
+        }
+    }
+    pub fn badge_name(self, zh: bool, status: Option<(&str, bool)>) -> String {
+        if matches!(self, BloodFury | BoilingBlood) {
+            format!(
+                "{}{}",
+                self.short_name(zh),
+                if status.is_some_and(|(_, on)| on) {
+                    "+25%"
+                } else {
+                    crate::tr_key(zh, "ui.overlays.draw_passives.off")
+                }
+            )
+        } else {
+            self.short_name(zh).to_string()
+        }
+    }
+    pub fn badge_highlight(self, status: Option<(&str, bool)>) -> bool {
+        matches!(self, BloodFury | BoilingBlood) && status.is_some_and(|(_, on)| on)
+    }
     pub fn status(
         self,
         hero: usize,
@@ -225,7 +323,42 @@ impl Passive {
                 mp < super::mana_cap(hero, awake),
             ),
             FleshCasting | FleshConversion => {
-                return super::passive_status(hero, hp, mp, awake, zh)
+                if hp <= 0 {
+                    return None;
+                }
+                let missing: Vec<_> = HEROES[hero]
+                    .skills
+                    .iter()
+                    .copied()
+                    .filter(|&s| mp < super::skill_cost(hero, awake, s))
+                    .collect();
+                if missing.is_empty() {
+                    return None;
+                }
+                let active = missing.into_iter().any(|s| {
+                    payment_in(
+                        hero,
+                        hp,
+                        mp,
+                        s,
+                        Rules {
+                            awake,
+                            ..Default::default()
+                        },
+                    )
+                    .is_some()
+                });
+                (
+                    crate::tr_key(
+                        zh,
+                        if active {
+                            "health.blood_ready"
+                        } else {
+                            "health.blood_too_low"
+                        },
+                    ),
+                    active,
+                )
             }
             BloodSacrifice => {
                 let can = HEROES[hero].skills.iter().any(|&s| {

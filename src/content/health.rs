@@ -14,20 +14,41 @@ pub fn health_cap(hero: usize, awake: bool) -> i32 {
 }
 /// Wizard's reserve unlocks on awakening; other roles keep their base cap.
 pub fn mana_cap(hero: usize, awake: bool) -> i32 {
-    if has_passive(hero, awake, Passive::ManaSeal) {
-        250
-    } else {
-        HEROES[hero].mp
-    }
+    let mut value = HEROES[hero].mp;
+    dispatch_rules(
+        &EventContext::new(
+            hero,
+            0,
+            0,
+            Rules {
+                awake,
+                ..Default::default()
+            },
+        ),
+        &mut RuleEvent::ManaCap { value: &mut value },
+        &mut Vec::new(),
+    );
+    value
 }
 pub fn skill_cost(hero: usize, awake: bool, skill: Skill) -> i32 {
-    if has_passive(hero, awake, Passive::GuardEconomy) && skill == Skill::Guard {
-        80
-    } else if has_passive(hero, awake, Passive::MeteorEconomy) && skill == Skill::Meteor {
-        140
-    } else {
-        skill.cost()
-    }
+    let mut value = skill.cost();
+    dispatch_rules(
+        &EventContext::new(
+            hero,
+            0,
+            0,
+            Rules {
+                awake,
+                ..Default::default()
+            },
+        ),
+        &mut RuleEvent::SkillCost {
+            skill,
+            value: &mut value,
+        },
+        &mut Vec::new(),
+    );
+    value
 }
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct DamageResult {
@@ -68,6 +89,7 @@ pub(super) fn preview_hit(rules: Rules, hp: &mut i32, damage: i32) -> (i32, Rule
     }
 }
 /// Persistent indicators for conditional passives; phase itself has no badge.
+#[cfg(test)]
 pub fn passive_status(
     hero: usize,
     hp: i32,
@@ -75,44 +97,7 @@ pub fn passive_status(
     awake: bool,
     zh: bool,
 ) -> Option<(&'static str, bool)> {
-    if hero == 5 {
-        let passive = if has_passive(hero, awake, Passive::BoilingBlood) {
-            Passive::BoilingBlood
-        } else {
-            Passive::BloodFury
-        };
-        return passive.status(hero, hp, mp, awake, zh);
-    }
-    if hero == 6 && hp > 0 {
-        let missing = HEROES[hero]
-            .skills
-            .iter()
-            .copied()
-            .filter(|&s| mp < skill_cost(hero, awake, s))
-            .collect::<Vec<_>>();
-        if !missing.is_empty() {
-            let active = missing.into_iter().any(|s| {
-                payment_in(
-                    hero,
-                    hp,
-                    mp,
-                    s,
-                    Rules {
-                        awake,
-                        ..Rules::default()
-                    },
-                )
-                .is_some()
-            });
-            return Some((
-                if active {
-                    crate::tr_key(zh, "health.blood_ready")
-                } else {
-                    crate::tr_key(zh, "health.blood_too_low")
-                },
-                active,
-            ));
-        }
-    }
-    None
+    passives(hero, awake)
+        .iter()
+        .find_map(|p| p.summary_status(hero, hp, mp, awake, zh))
 }

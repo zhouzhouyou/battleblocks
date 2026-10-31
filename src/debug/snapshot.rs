@@ -26,7 +26,7 @@ pub struct Snapshot {
     pub difficulty: usize,
     pub paused: bool,
     pub rng_state: u64,
-    pub charge_damage: Option<(i32, bool)>,
+    pub charge_damage: Option<crate::content::PendingImpact>,
     pub charge_remaining: f64,
     // Turn indicator records: restored by undo, left out of the log.
     pub turns: crate::turns::Log,
@@ -35,7 +35,7 @@ impl Snapshot {
     pub(super) fn json(&self) -> String {
         format!("{{\"new_role_states\":[{},{}],\"cooldowns\":{:?},\"reward_skill\":{},\"awakened\":{:?},\"board\":{:?},\"hero\":{},\"enemy\":{},\"hp\":{},\"enemy_hp\":{},\"mp\":{},\"enemy_mp\":{},\"enemy_turn\":{},\"action_done\":{},\"pending\":{},\"deadline\":{},\"enemy_clock\":{},\"bonuses\":{:?},\"armed_sides\":{:?},\"bonus\":{},\"armed\":{},\"chain\":{},\"reward\":{},\"difficulty\":{},\"paused\":{},\"rng_state\":{},\"charge_damage\":{},\"charge_remaining\":{}}}",
             role_json(&self.new_role_states[0]),role_json(&self.new_role_states[1]),self.cooldowns.0,self.reward_skill.map(|s|quote(&format!("{s:?}"))).unwrap_or("null".into()),self.awakened,self.board,self.hero,self.enemy,self.hp,self.enemy_hp,self.mp,self.enemy_mp,self.enemy_turn,self.action_done,
-            cells_json(&self.pending),self.deadline,self.enemy_clock,self.bonuses,self.armed_sides,self.bonus,self.armed,self.chain,self.reward,self.difficulty,self.paused,self.rng_state,self.charge_damage.map(|(d,e)|format!("[{d},{e}]")).unwrap_or("null".into()),self.charge_remaining)
+            cells_json(&self.pending),self.deadline,self.enemy_clock,self.bonuses,self.armed_sides,self.bonus,self.armed,self.chain,self.reward,self.difficulty,self.paused,self.rng_state,self.charge_damage.as_ref().map(|p|p.json()).unwrap_or("null".into()),self.charge_remaining)
     }
 }
 fn role_json(state: &crate::role_state::RoleState) -> String {
@@ -46,7 +46,7 @@ fn role_json(state: &crate::role_state::RoleState) -> String {
         .copied_skill
         .map(|v| v.to_string())
         .unwrap_or_else(|| "null".into());
-    format!("{{\"pockets\":[{},{}],\"jumped\":{},\"miracle\":{},\"copied_skill\":{},\"pocket_slot\":{},\"direct_tiles\":{:?},\"force_armed\":{},\"horizontal\":{},\"upper_swap\":{},\"turn_mode\":\"{:?}\"}}", pockets[0],pockets[1],state.jumped,state.miracle,copied,state.pocket_slot,state.direct_tiles,state.force_armed,state.horizontal,state.upper_swap,state.turn_mode)
+    format!("{{\"pockets\":[{},{}],\"copied_skill\":{},\"pocket_slot\":{},\"direct_tiles\":{:?},\"force_armed\":{},\"horizontal\":{},\"swap_clear\":{},\"statuses\":{}}}", pockets[0],pockets[1],copied,state.pocket_slot,state.direct_tiles,state.force_armed,state.horizontal,state.swap_clear,statuses_json(state.statuses))
 }
 fn cells_json(cells: &[(usize, usize)]) -> String {
     format!(
@@ -73,4 +73,20 @@ pub(super) fn quote(s: &str) -> String {
     }
     out.push('"');
     out
+}
+
+fn statuses_json(statuses: crate::content::StatusSet) -> String {
+    format!(
+        "[{}]",
+        statuses
+            .0
+            .iter()
+            .flatten()
+            .map(|s| format!(
+                "{{\"id\":\"{:?}\",\"applied_by\":\"{:?}\",\"duration\":\"{:?}\"}}",
+                s.id, s.applied_by, s.duration
+            ))
+            .collect::<Vec<_>>()
+            .join(",")
+    )
 }

@@ -105,9 +105,12 @@ impl Session {
                             .is_none()
                             {
                                 self.console.say_tr("Not enough mana", "魔力不足");
-                            } else if (skill == content::Skill::Strike && self.extra_bonus > 0)
-                                || (skill == content::Skill::Landslide && self.armed)
-                            {
+                            } else if !content::preparation_available(
+                                skill,
+                                self.rules(false),
+                                self.armed,
+                                self.extra_bonus,
+                            ) {
                                 self.console.say_tr(
                                     "Preparation skill is already active",
                                     "准备类技能已经生效",
