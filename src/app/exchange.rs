@@ -51,7 +51,7 @@ impl Session {
         hint_number: Option<usize>,
         cast_this_frame: bool,
     ) {
-        if (frame.clicked(MouseButton::Left) || frame.command_move.is_some())
+        if (frame.command_move.is_some() || frame.clicked(MouseButton::Left))
             && self.hp > 0
             && !self.enemy_turn
             && !self.action_done
@@ -61,15 +61,18 @@ impl Session {
                     .is_some_and(|s| content::skill_profile(s, self.rules(false)).force_move))
             && !cast_this_frame
         {
-            let (mx, my) = mouse_position();
-            let world = frame.cam.screen_to_world(vec2(mx, my));
-            let x = (world.x - 256.) / 64.;
-            let y = (world.y - 110.) / 64.;
-            if frame.command_move.is_some() || (x >= 0. && x < 8. && y >= 0. && y < 8.) {
-                let c = frame
-                    .command_move
-                    .map(|(_, c)| c)
-                    .unwrap_or((x as usize, y as usize));
+            let target = if let Some((_, target)) = frame.command_move {
+                Some(target)
+            } else if frame.interactive {
+                let (mx, my) = mouse_position();
+                let world = frame.cam.screen_to_world(vec2(mx, my));
+                let x = (world.x - 256.) / 64.;
+                let y = (world.y - 110.) / 64.;
+                (x >= 0. && x < 8. && y >= 0. && y < 8.).then_some((x as usize, y as usize))
+            } else {
+                None
+            };
+            if let Some(c) = target {
                 if let Some((a, _)) = frame.command_move {
                     self.selected = Some(a);
                 }

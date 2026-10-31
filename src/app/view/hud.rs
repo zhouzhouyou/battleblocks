@@ -159,6 +159,9 @@ impl Session {
                 } else {
                     0.
                 };
+                let cover = self.book_cover().clone();
+                let pages = self.book_pages().clone();
+                let bottom = self.book_bottom().clone();
                 let shown = &mut self.book_levels[enemy_side as usize];
                 *shown += (target - *shown).clamp(-(frame.dt as f32) * 5., (frame.dt as f32) * 5.);
                 if *shown > 0.01 {
@@ -167,13 +170,13 @@ impl Session {
                     let height = 8. + 3. * (*shown);
                     let x = area.x + area.w / 2. - 44.;
                     for (tex, y, h) in [
-                        (&self.book_cover, foot_y - height * scale, 6. * scale),
+                        (&cover, foot_y - height * scale, 6. * scale),
                         (
-                            &self.book_pages,
+                            &pages,
                             foot_y - (height - 6.) * scale,
                             3. * (*shown) * scale,
                         ),
-                        (&self.book_bottom, foot_y - 2. * scale, 2. * scale),
+                        (&bottom, foot_y - 2. * scale, 2. * scale),
                     ] {
                         draw_texture_ex(
                             tex,
@@ -201,9 +204,9 @@ impl Session {
                 if show_shadow {
                     &self.awake_textures[id]
                 } else if enemy_side {
-                    &self.enemy_texture
+                    self.enemy_texture()
                 } else {
-                    &self.player_texture
+                    self.player_texture()
                 },
                 sprite.w,
                 sprite.h,
