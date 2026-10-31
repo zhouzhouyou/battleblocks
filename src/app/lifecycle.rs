@@ -31,6 +31,7 @@ impl Session {
         self.skill_flash.clear();
         self.last_cast = None;
         self.cast_time = 0.;
+        self.reactions = [None, None];
         self.feedback.clear();
         self.feedback_time = 0.;
         self.move_flash = None;

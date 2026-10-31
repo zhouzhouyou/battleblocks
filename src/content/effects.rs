@@ -1,15 +1,4 @@
 use super::*;
-#[path = "skills/dwarf.rs"]
-mod dwarf;
-#[path = "skills/knight.rs"]
-mod knight;
-#[path = "skills/legacy.rs"]
-mod legacy;
-#[path = "skills/nun.rs"]
-mod nun;
-#[path = "skills/priest.rs"]
-mod priest;
-
 pub const VALUES: [(i32, i32, i32); 7] = [
     (2, 4, 4),
     (6, 0, 0),
@@ -29,26 +18,39 @@ pub struct Effect {
     pub reward: bool,
     pub bonus: i32,
     pub armed: bool,
+    pub triggers: Vec<AbilityTrigger>,
+    pub events: Option<RewardBatch>,
+}
+impl Effect {
+    pub fn reward_batch(&self, skill: Skill) -> RewardBatch {
+        let mut batch = self.events.clone().unwrap_or_else(|| {
+            RewardBatch::gains(
+                (self.hp, self.damage, self.mp),
+                self.opponent_heal,
+                EventSource::Skill(skill),
+            )
+        });
+        batch.set_totals((self.hp, self.damage, self.mp));
+        batch.set_total(Resource::Healing, EventSide::Opponent, self.opponent_heal);
+        batch.triggers.extend(self.triggers.clone());
+        batch
+    }
 }
 pub fn effect(skill: Skill, b: &mut Board) -> Effect {
     effect_at(skill, b, (3, 3))
 }
 pub fn targeted(skill: Skill) -> bool {
-    matches!(
+    let mut value = false;
+    dispatch_active(
         skill,
-        Skill::Charge
-            | Skill::Nature
-            | Skill::Greedy
-            | Skill::Chort
-            | Skill::Balance
-            | Skill::War
-            | Skill::Drain
-            | Skill::Rush
-            | Skill::Forge
-            | Skill::Entomb
-            | Skill::Resurrect
-            | Skill::Copy
-    )
+        &EventContext::new(0, HEROES[0].hp, 0, Rules::default()),
+        &mut RuleEvent::Targeted {
+            skill,
+            value: &mut value,
+        },
+        &mut Vec::new(),
+    );
+    value
 }
 #[cfg(test)]
 pub fn target_cells(skill: Skill, b: &Board, target: (usize, usize)) -> Vec<(usize, usize)> {
@@ -106,15 +108,8 @@ pub fn trigger_tiles(
     )
 }
 pub fn effect_at(skill: Skill, b: &mut Board, target: (usize, usize)) -> Effect {
-    match skill {
-        Skill::Rush | Skill::Miracle | Skill::Hammer => knight::effect(skill, target),
-        Skill::Jump | Skill::Forge => dwarf::effect(skill, b, target),
-        Skill::Entomb | Skill::Resurrect | Skill::Copy => priest::effect(skill, target),
-        Skill::Frenzy | Skill::Healing | Skill::Rational => nun::effect(skill),
-        _ => legacy::effect(skill, b, target),
-    }
+    effect_at_in(skill, b, target, 0, HEROES[0].hp, 0, Rules::default())
 }
-
 pub fn effect_at_in(
     skill: Skill,
     b: &mut Board,
@@ -125,40 +120,28 @@ pub fn effect_at_in(
     rules: Rules,
 ) -> Effect {
     let skill = effective_skill(skill, rules);
-    if skill == Skill::Resurrect {
-        if let Some(tile) = rules.pockets.get(rules.pocket_slot).copied().flatten() {
-            priest::insert(b, target, tile);
-        }
-        return Effect::default();
-    }
-    let mut e = effect_at(skill, b, target);
-    if skill == Skill::Guard {
-        e.hp = health_cap(hero, rules.awake) / 5;
-    }
-    if skill == Skill::Healing {
-        e.hp = health_cap(hero, rules.awake) / 10;
-        e.opponent_heal = rules
-            .opponent
-            .map(|(id, awake)| health_cap(id, awake) / 10)
-            .unwrap_or(0);
-    }
-    if rules.awake {
-        if hero == 0 && skill == Skill::Guard {
-            e.hp = health_cap(hero, true) / 5;
-        }
-        if has_passive(hero, rules.awake, Passive::BlastMastery) && skill == Skill::Imp {
-            e.damage += e.cells.len() as i32 * 2;
-        }
-        if (has_passive(hero, rules.awake, Passive::ChargeMastery) && skill == Skill::Charge)
-            || (has_passive(hero, rules.awake, Passive::LootMastery) && skill == Skill::Greedy)
-        {
-            e.damage = e.damage * if hero == 0 { 125 } else { 130 } / 100;
-        }
-        if has_passive(hero, rules.awake, Passive::BloodSacrifice)
-            && payment_in(hero, hp, mp, skill, rules).is_some_and(|p| p.blood > 0)
-        {
-            e.damage = e.damage * 120 / 100;
-        }
-    }
-    e
+    let ctx = EventContext::new(hero, hp, mp, rules);
+    let mut effect = Effect::default();
+    dispatch_active(
+        skill,
+        &ctx,
+        &mut RuleEvent::Cast {
+            skill,
+            board: b,
+            target,
+            effect: &mut effect,
+        },
+        &mut Vec::new(),
+    );
+    let mut triggers = Vec::new();
+    dispatch_rules(
+        &ctx,
+        &mut RuleEvent::SkillEffect {
+            skill,
+            effect: &mut effect,
+        },
+        &mut triggers,
+    );
+    effect.triggers = triggers;
+    effect
 }

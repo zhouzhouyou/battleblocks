@@ -1,20 +1,20 @@
 //! Snapshot-owned character state and turn-local skill preparation. Board changes use the same rules in the
 //! live loop and previews; random choices are supplied by the saved RNG stream.
 use crate::board::{self, Board, N};
-use crate::content::{self, Skill, TurnMode};
+#[cfg(test)]
+use crate::content::StatusId;
+use crate::content::{self, Skill, StatusSet};
 
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct RoleState {
     pub pockets: [Option<u8>; 2],
-    pub jumped: bool,
-    pub miracle: bool,
     pub copied_skill: Option<usize>,
     pub pocket_slot: usize,
     pub direct_tiles: Vec<u8>,
     pub force_armed: bool,
     pub horizontal: bool,
-    pub upper_swap: bool,
-    pub turn_mode: TurnMode,
+    pub swap_clear: bool,
+    pub statuses: StatusSet,
 }
 impl RoleState {
     pub fn select_occupied_pocket(&mut self) {
@@ -24,38 +24,33 @@ impl RoleState {
     }
     pub fn on_cast(&mut self, effective: Skill, before: &Board, target: (usize, usize)) {
         self.horizontal = false;
-        self.upper_swap = false;
-        match effective {
-            Skill::Frenzy => self.turn_mode = TurnMode::Frenzy,
-            Skill::Rational => self.turn_mode = TurnMode::Rational,
-            Skill::Jump => self.jumped = true,
-            Skill::Miracle => self.force_armed = true,
-            Skill::Entomb => {
-                if let Some(slot) = self.pockets.iter_mut().find(|p| p.is_none()) {
-                    *slot = Some(before[target.1][target.0]);
-                }
-            }
-            Skill::Resurrect => self.pockets[self.pocket_slot] = None,
-            _ => {}
-        }
+        self.swap_clear = false;
+        content::dispatch_active(
+            effective,
+            &content::EventContext::new(0, 0, 0, content::Rules::default()),
+            &mut content::RuleEvent::CastState {
+                skill: effective,
+                board: before,
+                target,
+                state: self,
+            },
+            &mut Vec::new(),
+        );
         self.select_occupied_pocket();
     }
     pub fn record_swap(&mut self, a: (usize, usize), b: (usize, usize)) {
         self.horizontal = a.1 == b.1;
-        self.upper_swap = a.1 < 4 && b.1 < 4;
+        self.swap_clear = true;
     }
     pub fn start_turn(&mut self) {
-        self.turn_mode = TurnMode::Normal;
-        self.jumped = false;
-        self.miracle = false;
         self.force_armed = false;
         self.horizontal = false;
-        self.upper_swap = false;
+        self.swap_clear = false;
         self.direct_tiles.clear();
         self.select_occupied_pocket();
     }
     pub fn end_turn(&mut self) {
-        self.turn_mode = TurnMode::Normal;
+        self.statuses.end_owner_turn();
     }
     /// Select from the multiset of directly eliminated tiles, not distinct types.
     pub fn mind_vision(&mut self, direct_tiles: &[u8], pick: usize) -> bool {
@@ -79,8 +74,15 @@ impl RoleState {
         if !self.force_armed || !force_swap(board, a, b, hero) {
             return false;
         }
-        self.force_armed = false;
-        self.miracle = true;
+        let rules = content::Rules {
+            statuses: self.statuses,
+            ..Default::default()
+        };
+        content::dispatch_rules(
+            &content::EventContext::new(hero, 0, 0, rules),
+            &mut content::RuleEvent::ForceCompleted { state: self },
+            &mut Vec::new(),
+        );
         self.record_swap(a, b);
         true
     }
@@ -92,7 +94,7 @@ pub fn force_swap(board: &mut Board, a: (usize, usize), b: (usize, usize), hero:
         return false;
     }
     let mut copy = *board;
-    if matches!(hero, 0 | content::KNIGHT) && a.1 == b.1 {
+    if content::movement_profile(hero).columns && a.1 == b.1 {
         for y in 0..N {
             board::swap(&mut copy, (a.0, y), (b.0, y));
         }
@@ -180,15 +182,13 @@ mod tests {
     fn force_swap_obeys_caster_movement_and_is_transactional() {
         let mut b = board();
         let original = b;
-        let mut s = RoleState {
-            force_armed: true,
-            ..Default::default()
-        };
+        let mut s = RoleState::default();
+        s.on_cast(Skill::Miracle, &b, (0, 0));
         assert!(s.complete_force(&mut b, (0, 0), (1, 0), content::KNIGHT));
         for y in 0..N {
             assert_eq!(b[y][0], original[y][1]);
         }
-        assert!(s.miracle);
+        assert!(s.statuses.contains(StatusId::ClearPenalty));
         assert!(!s.force_armed);
         let mut priest = original;
         assert!(force_swap(&mut priest, (0, 0), (1, 0), content::PRIEST));
@@ -201,15 +201,22 @@ mod tests {
     fn conversion_mode_is_snapshot_owned_and_expires_at_turn_end() {
         let mut state = RoleState::default();
         state.on_cast(Skill::Frenzy, &board(), (0, 0));
-        assert_eq!(state.turn_mode, TurnMode::Frenzy);
+        assert!(state.statuses.contains(StatusId::Frenzy));
         let snapshot = state.clone();
         state.end_turn();
-        assert_eq!(state.turn_mode, TurnMode::Normal);
+        assert!(
+            !state.statuses.contains(StatusId::Frenzy)
+                && !state.statuses.contains(StatusId::Rational)
+        );
         state = snapshot;
-        assert_eq!(state.turn_mode, TurnMode::Frenzy);
+        assert!(state.statuses.contains(StatusId::Frenzy));
         state.on_cast(Skill::Rational, &board(), (0, 0));
-        assert_eq!(state.turn_mode, TurnMode::Rational);
+        assert!(state.statuses.contains(StatusId::Rational));
+        state.end_turn();
         state.start_turn();
-        assert_eq!(state.turn_mode, TurnMode::Normal);
+        assert!(
+            !state.statuses.contains(StatusId::Frenzy)
+                && !state.statuses.contains(StatusId::Rational)
+        );
     }
 }

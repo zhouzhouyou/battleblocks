@@ -44,7 +44,7 @@ pub(crate) fn passive_rect(enemy: bool) -> Rect {
     Rect::new(if enemy { 796. } else { 20. }, 376., 208., 50.)
 }
 pub(crate) fn player_skill_rect(i: usize) -> Rect {
-    Rect::new(20., 434. + i as f32 * 78., 208., 74.)
+    Rect::new(20., 460. + i as f32 * 78., 208., 74.)
 }
 pub(crate) fn enemy_skill_rect(i: usize) -> Rect {
     Rect::new(796., 470. + i as f32 * 44., 208., 38.)

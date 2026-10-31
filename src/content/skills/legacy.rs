@@ -20,7 +20,6 @@ pub(super) fn effect(skill: Skill, b: &mut Board, target: (usize, usize)) -> Eff
             }
         }
         Skill::Guard => {
-            e.hp = HEROES[0].hp / 5;
             for (y, row) in b.iter().enumerate() {
                 for (x, &kind) in row.iter().enumerate() {
                     if kind == 1 {
@@ -125,5 +124,113 @@ pub(super) fn effect(skill: Skill, b: &mut Board, target: (usize, usize)) -> Eff
         }
         _ => unreachable!("new skill dispatched to legacy effects"),
     }
+    e
+}
+
+pub(super) fn cast(
+    skill: Skill,
+    b: &mut Board,
+    target: (usize, usize),
+    ctx: &EventContext,
+) -> Effect {
+    let original = *b;
+    let mut e = effect(skill, b, target);
+    if skill == Skill::Guard {
+        e.hp = health_cap(ctx.hero, ctx.rules.awake) / 5;
+    }
+    let mut batch = RewardBatch::default();
+    let tile_events = |position: (usize, usize), gains: (i32, i32, i32)| {
+        let source = EventSource::Tile {
+            position,
+            tile: original[position.1][position.0],
+            chain: 0,
+            from_swap: false,
+        };
+        let mut part = RewardBatch::gains(gains, 0, source);
+        for event in &mut part.events {
+            event.derived_by(EventSource::Skill(skill), EventSide::Actor);
+        }
+        part.events
+    };
+    match skill {
+        Skill::Charge => {
+            batch.push(
+                Resource::Damage,
+                EventSide::Opponent,
+                60,
+                EventSource::Skill(skill),
+            );
+            for &cell in &e.cells {
+                batch.events.extend(tile_events(
+                    cell,
+                    (0, VALUES[original[cell.1][cell.0] as usize].1, 0),
+                ));
+            }
+        }
+        Skill::Drain => {
+            for &cell in &e.cells {
+                let h = VALUES[original[cell.1][cell.0] as usize].0;
+                batch.events.extend(tile_events(cell, (h * 2, h * 3, 0)));
+            }
+        }
+        Skill::Lightning => {
+            for &cell in &e.cells {
+                batch.events.extend(tile_events(
+                    cell,
+                    (0, 0, VALUES[original[cell.1][cell.0] as usize].2),
+                ));
+            }
+        }
+        Skill::Meteor => {
+            for &cell in &e.cells {
+                let v = VALUES[original[cell.1][cell.0] as usize];
+                batch.events.extend(tile_events(cell, (0, v.1, v.2)));
+            }
+            let t = batch.totals();
+            batch.set_totals((0, t.1 / 2, t.2 / 2));
+            batch.push(
+                Resource::Damage,
+                EventSide::Opponent,
+                60,
+                EventSource::Skill(skill),
+            );
+        }
+        Skill::Greedy => {
+            for &cell in &e.cells {
+                batch
+                    .events
+                    .extend(tile_events(cell, VALUES[original[cell.1][cell.0] as usize]));
+            }
+            let t = batch.totals();
+            batch.set_totals((t.0 / 2, t.1 / 2, t.2 / 2));
+        }
+        Skill::Imp => {
+            for &cell in &e.cells {
+                batch.events.extend(tile_events(cell, (0, 12, 4)));
+            }
+        }
+        Skill::Chort => {
+            for &cell in &e.cells {
+                batch.events.extend(tile_events(cell, (2, 4, 1)));
+            }
+        }
+        Skill::Corrupt => {
+            for y in 0..N {
+                for x in 0..N {
+                    if original[y][x] == 2 {
+                        batch.events.extend(tile_events((x, y), (3, 6, 0)));
+                    }
+                }
+            }
+        }
+        _ => {
+            batch = RewardBatch::gains(
+                (e.hp, e.damage, e.mp),
+                e.opponent_heal,
+                EventSource::Skill(skill),
+            )
+        }
+    }
+    e.events = Some(batch);
     e
 }

@@ -1,30 +1,32 @@
 #[path = "abilities.rs"]
 mod abilities;
-pub use abilities::{has_passive, Passive};
+pub use abilities::{ability_loadout, Passive};
 pub fn passives(hero: usize, awake: bool) -> &'static [Passive] {
     abilities::passives(hero, awake)
 }
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-pub enum TurnMode {
-    #[default]
-    Normal,
-    Frenzy,
-    Rational,
-}
+#[path = "content/status.rs"]
+mod status;
+pub use status::*;
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct Rules {
     pub awake: bool,
     pub initial_loot: bool,
     pub opponent_hp: Option<i32>,
+    pub opponent_mp: i32,
+    pub opponent_statuses: StatusSet,
     pub opponent: Option<(usize, bool)>,
-    pub jumped: bool,
-    pub miracle: bool,
     pub horizontal: bool,
-    pub upper_swap: bool,
+    pub swap_clear: bool,
     pub pockets: [Option<u8>; 2],
     pub pocket_slot: usize,
     pub copied_skill: Option<Skill>,
-    pub turn_mode: TurnMode,
+    pub statuses: StatusSet,
+}
+impl Rules {
+    pub fn with_status(mut self, id: StatusId, source: Skill, duration: StatusDuration) -> Self {
+        self.statuses.insert(id, source, duration);
+        self
+    }
 }
 pub const KNIGHT: usize = 7;
 pub const DWARF: usize = 8;
@@ -40,6 +42,9 @@ pub use definitions::*;
 #[path = "content/health.rs"]
 mod health;
 pub use health::*;
+#[path = "content/events.rs"]
+mod events;
+pub use events::*;
 #[path = "content/movement.rs"]
 mod movement;
 pub use movement::*;

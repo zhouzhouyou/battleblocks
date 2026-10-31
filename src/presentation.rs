@@ -320,7 +320,8 @@ impl Presentation {
         self.time = FALL_TIME;
         self.duration = FALL_TIME;
     }
-    pub fn health(&mut self, before: [i32; 2], after: [i32; 2], source: &str) {
+    /// Show the actual current source independently for each affected side.
+    pub fn health_sources(&mut self, before: [i32; 2], after: [i32; 2], sources: [&str; 2]) {
         for i in 0..2 {
             if before[i] != after[i] {
                 self.popups.push(Popup {
@@ -328,7 +329,7 @@ impl Presentation {
                     before: before[i],
                     after: after[i],
                     time: 2.4,
-                    source: source.to_string(),
+                    source: sources[i].to_string(),
                 });
             }
         }
@@ -452,7 +453,7 @@ mod tests {
         let b = [[2; N]; N];
         let mut p = Presentation::default();
         p.swap(&b, (0, 0), (1, 0), false, true, 2);
-        p.health([700, 500], [700, 350], "charge");
+        p.health_sources([700, 500], [700, 350], ["charge", "charge"]);
         assert!(p.hides(0, 0));
         assert!(p.actor_enemy);
         p.tick(SWAP_TIME + 0.01);
@@ -462,6 +463,15 @@ mod tests {
         p.tick(3.);
         assert!(p.popups.is_empty());
     }
+    #[test]
+    fn health_popups_keep_the_current_source_for_each_side() {
+        let mut p = Presentation::default();
+        p.health_sources([700, 400], [650, 350], ["auto recovery", "madness"]);
+        assert_eq!(p.popups.len(), 2);
+        assert_eq!(p.popups[0].source, "auto recovery");
+        assert_eq!(p.popups[1].source, "madness");
+    }
+
     #[test]
     fn animation_covers_every_parallel_pair_and_rollback_clears_it() {
         let mut p = Presentation::default();

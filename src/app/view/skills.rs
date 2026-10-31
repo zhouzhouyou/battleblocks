@@ -90,7 +90,7 @@ impl Session {
             );
             let details = format!(
                 "{} · {} {}",
-                if self.hero_id == 6
+                if content::ability_capabilities(self.hero_id, self.rules(false)).blood_payment
                     && self.mp < content::skill_cost_in(self.hero_id, *skill, self.rules(false))
                 {
                     cost_text(
@@ -118,7 +118,7 @@ impl Session {
                 rect.x + 8.,
                 rect.y + 40.,
                 fit_size(&details, 14., rect.w - 16.),
-                if self.hero_id == 6
+                if content::ability_capabilities(self.hero_id, self.rules(false)).blood_payment
                     && self.mp < content::skill_cost_in(self.hero_id, *skill, self.rules(false))
                 {
                     RED
@@ -243,7 +243,9 @@ impl Session {
                 GOLD,
             );
             label(
-                &if id == 6 && mana < content::skill_cost_in(id, skill, self.rules(is_enemy)) {
+                &if content::payment_in(id, health, mana, skill, self.rules(is_enemy))
+                    .is_some_and(|p| p.blood > 0)
+                {
                     cost_text(
                         self.zh,
                         mana,
@@ -267,7 +269,9 @@ impl Session {
                 x + 10.,
                 266.,
                 18.,
-                if id == 6 && mana < content::skill_cost_in(id, skill, self.rules(is_enemy)) {
+                if content::payment_in(id, health, mana, skill, self.rules(is_enemy))
+                    .is_some_and(|p| p.blood > 0)
+                {
                     RED
                 } else {
                     SKYBLUE
@@ -297,7 +301,7 @@ impl Session {
                 None
             };
             let range = (content::targeted_in(skill, self.rules(is_enemy))
-                || content::effective_skill(skill, self.rules(is_enemy)) == content::Skill::Hammer)
+                || content::skill_profile(skill, self.rules(is_enemy)).random_target)
                 && exact_target.is_none();
             let (low, high) = if range {
                 content::preview_range_in(
@@ -428,7 +432,7 @@ impl Session {
                     ORANGE,
                 );
             }
-            if id == 6
+            if content::ability_capabilities(id, self.rules(is_enemy)).blood_payment
                 && mana < content::skill_cost_in(id, skill, self.rules(is_enemy))
                 && content::payment_in(id, health, mana, skill, self.rules(is_enemy)).is_none()
             {
@@ -511,7 +515,7 @@ impl Session {
                     WHITE,
                 );
             }
-            if skill == content::Skill::Strike {
+            if content::skill_profile(skill, self.rules(is_enemy)).requires_no_bonus {
                 label(
                     tr_key(self.zh, "ui.skills.draw_skill_details.next_clear_100"),
                     x + 10.,

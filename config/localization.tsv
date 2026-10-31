@@ -82,6 +82,7 @@ ui.hints.draw_hints.mp	MP+	魔
 ui.shared.mp	MP	魔力
 ui.menu.draw_passive_entries.new	New	新增
 ui.shared.next	Next >	下一页
+ui.shared.unknown	Unknown source	来源未知
 ui.menu.draw.next_choose_opponent	NEXT · CHOOSE OPPONENT	下一步：选择对手
 ui.skills.draw_skill_details.next_clear_100	Next clear: +100%	下次消除收益＋100%
 ui.menu.draw.next_clear_100	Next clear: +100%	下次消除：收益+100%
