@@ -16,15 +16,14 @@ const PANEL_PAD: f32 = 24.;
 const PANEL_LEFT: f32 = PANEL.x + PANEL_PAD;
 const PANEL_INNER: f32 = PANEL.w - 2. * PANEL_PAD;
 /// Tabs of the help panel and the gap between them.
-pub const HELP_TAB_COUNT: usize = 2;
-const HELP_TABS: usize = HELP_TAB_COUNT;
+pub const HELP_TAB_COUNT: usize = 3;
 const TAB_GAP: f32 = 10.;
 const TAB_TOP: f32 = 158.;
 const TAB_HEIGHT: f32 = 30.;
 /// Tabs share the content width, so the strip always ends on the panel's inner edge
 /// no matter how many tabs exist. Input and drawing use this one geometry.
 pub fn help_tab_rect(i: usize) -> Rect {
-    let count = HELP_TABS.max(1) as f32;
+    let count = HELP_TAB_COUNT.max(1) as f32;
     let w = (PANEL_INNER - TAB_GAP * (count - 1.)) / count;
     Rect::new(
         PANEL_LEFT + i as f32 * (w + TAB_GAP),
@@ -119,7 +118,7 @@ impl Ui {
         }
         if click {
             if self.panel == Some(Panel::Help) {
-                for i in 0..HELP_TABS {
+                for i in 0..HELP_TAB_COUNT {
                     if help_tab_rect(i).contains(pointer) {
                         self.help_tab = i;
                         return true;
@@ -487,6 +486,7 @@ impl Ui {
             for (i, text) in [
                 tr_key(zh, "ui.screen.draw_panel.tiles_matching"),
                 tr_key(zh, "ui.screen.draw_panel.awakening"),
+                tr_key(zh, "ui.screen.draw_panel.fatigue_tab"),
             ]
             .iter()
             .enumerate()
@@ -495,31 +495,38 @@ impl Ui {
                 frame(r, self.help_tab == i);
                 label(text, r.x + 10., r.y + 21., 17., WHITE);
             }
-            if self.help_tab == 1 {
-                // Explanation only: every hero's numbers live on its own awakening page.
-                for (i, (text, color)) in [
-                    (
-                        tr_key(
-                            zh,
-                            "ui.screen.draw_panel.damage_or_hp_payment_triggers_a_ne",
+            if self.help_tab >= 1 {
+                // Awakening explains the mechanic; endgame pressure explains the ramp.
+                // Every hero's own numbers live on its awakening page.
+                let lines = if self.help_tab == 1 {
+                    [
+                        (
+                            tr_key(
+                                zh,
+                                "ui.screen.draw_panel.damage_or_hp_payment_triggers_a_ne",
+                            ),
+                            GOLD,
                         ),
-                        GOLD,
-                    ),
-                    (
-                        tr_key(
-                            zh,
-                            "ui.screen.draw_panel.the_triggering_hit_cannot_spill_ov",
+                        (
+                            tr_key(
+                                zh,
+                                "ui.screen.draw_panel.the_triggering_hit_cannot_spill_ov",
+                            ),
+                            LIGHTGRAY,
                         ),
-                        LIGHTGRAY,
-                    ),
-                    (
-                        tr_key(zh, "ui.screen.draw_panel.awakening_numbers"),
-                        SKYBLUE,
-                    ),
-                ]
-                .iter()
-                .enumerate()
-                {
+                        (
+                            tr_key(zh, "ui.screen.draw_panel.awakening_numbers"),
+                            SKYBLUE,
+                        ),
+                    ]
+                } else {
+                    [
+                        (tr_key(zh, "ui.screen.draw_panel.fatigue"), GOLD),
+                        (tr_key(zh, "ui.screen.draw_panel.fatigue_limits"), LIGHTGRAY),
+                        (tr_key(zh, "ui.screen.draw_panel.fatigue_strip"), SKYBLUE),
+                    ]
+                };
+                for (i, (text, color)) in lines.iter().enumerate() {
                     label(
                         text,
                         PANEL_LEFT,
@@ -637,40 +644,43 @@ impl Ui {
                         SKYBLUE,
                     );
                 }
-                label(
-                    tr_key(
-                        zh,
-                        "ui.screen.draw_panel.match_3_identical_tiles_damage_hit",
+                // Rules that apply to the whole board, wrapped into the panel width.
+                for (text, y, size, color) in [
+                    (
+                        tr_key(
+                            zh,
+                            "ui.screen.draw_panel.match_3_identical_tiles_damage_hit",
+                        ),
+                        556.,
+                        20.,
+                        WHITE,
                     ),
-                    236.,
-                    564.,
-                    20.,
-                    WHITE,
-                );
-                label(
-                    tr_key(
-                        zh,
-                        "ui.screen.draw_panel.chains_10_per_step_up_to_130_skill",
+                    (
+                        tr_key(
+                            zh,
+                            "ui.screen.draw_panel.chains_10_per_step_up_to_130_skill",
+                        ),
+                        584.,
+                        19.,
+                        LIGHTGRAY,
                     ),
-                    236.,
-                    598.,
-                    19.,
-                    LIGHTGRAY,
-                );
-                label(
-                    tr_key(zh, "ui.screen.draw_panel.fatigue"),
-                    236.,
-                    624.,
-                    18.,
-                    GOLD,
-                );
+                ] {
+                    label(
+                        text,
+                        PANEL_LEFT,
+                        y,
+                        fit_size(text, size, PANEL_INNER),
+                        color,
+                    );
+                }
             }
         }
+        // The hint is part of the panel; it must never fall outside the frame.
         label(
             tr_key(zh, "ui.screen.draw_panel.esc_close"),
-            236.,
-            650.,
-            18.,
+            PANEL_LEFT,
+            PANEL.y + PANEL.h - 12.,
+            16.,
             LIGHTGRAY,
         );
     }
