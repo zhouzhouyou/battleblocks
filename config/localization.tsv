@@ -260,5 +260,8 @@ ui.menu.draw.lore_intro	CHARACTER	人物介绍
 ui.menu.draw.lore_traits	TRAITS	人物特质
 ui.menu.draw.lore_lines	VOICE LINES	台词
 ui.screen.draw_panel.fatigue	After round 12: +12% damage and -10% healing each round.	第12回合后：每回合伤害+12%、治疗−10%
+ui.screen.draw_panel.fatigue_tab	Endgame ramp	终局加压
+ui.screen.draw_panel.fatigue_limits	Cumulative: damage up to 300%, healing down to 30%.	逐回合累加：伤害最高300%，治疗最低30%。
+ui.screen.draw_panel.fatigue_strip	The strip above the board shows the current ramp.	顶部提示条显示当前回合的加压幅度。
 ui.hud.draw_turns.fatigue_warning	Next round: +{0}% damage / −{1}% healing per round	下回合起：每回合伤害+{0}%、治疗−{1}%
 ui.hud.draw_turns.fatigue_active	Fatigue: +{0}% damage · −{1}% healing	终局加压：伤害+{0}% · 治疗−{1}%
