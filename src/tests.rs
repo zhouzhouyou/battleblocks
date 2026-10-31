@@ -197,3 +197,47 @@ fn gravity_preserves_survivor_order() {
     drop_board(&mut b);
     assert_eq!((2..N).map(|y| b[y][0]).collect::<Vec<_>>(), survivors);
 }
+#[test]
+fn selection_scroll_keeps_rows_inside_their_viewport() {
+    let roster = content::ROSTER.len();
+    let hero_area = menu::hero_list_rect();
+    let last_hero = menu::hero_rect(menu::HERO_VISIBLE_ROWS - 1);
+    assert!(last_hero.y + last_hero.h <= hero_area.y + hero_area.h);
+    // The hero hints start at y=662; the last visible row must stay above them.
+    assert!(hero_area.y + hero_area.h < 650.);
+
+    let opponent_area = ui::opponent_list_rect();
+    let last_opponent = ui::opponent_rect(ui::OPPONENT_VISIBLE_ROWS - 1, 0);
+    assert!(last_opponent.y + last_opponent.h <= opponent_area.y + opponent_area.h);
+    // The back/start buttons begin at y=651; the grid must stop before them.
+    assert!(opponent_area.y + opponent_area.h < ui::back_rect().y);
+
+    assert_eq!(
+        ui::scroll_to_show(0, roster - 1, roster, menu::HERO_VISIBLE_ROWS),
+        ui::max_scroll(roster, menu::HERO_VISIBLE_ROWS)
+    );
+    assert_eq!(ui::scroll_to_show(0, 0, roster, menu::HERO_VISIBLE_ROWS), 0);
+    let opponent_rows = ui::opponent_row_count();
+    assert_eq!(
+        ui::scroll_to_show(
+            0,
+            opponent_rows - 1,
+            opponent_rows,
+            ui::OPPONENT_VISIBLE_ROWS
+        ),
+        ui::max_scroll(opponent_rows, ui::OPPONENT_VISIBLE_ROWS)
+    );
+    assert_eq!(
+        ui::scroll_by(0, 1, opponent_rows, ui::OPPONENT_VISIBLE_ROWS),
+        1
+    );
+    assert_eq!(
+        ui::scroll_by(1, 1, opponent_rows, ui::OPPONENT_VISIBLE_ROWS),
+        1
+    );
+    assert_eq!(
+        ui::scroll_by(0, -1, opponent_rows, ui::OPPONENT_VISIBLE_ROWS),
+        0
+    );
+    assert_eq!(ui::clamp_scroll(9, 3, 5), 0);
+}
