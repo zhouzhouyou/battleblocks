@@ -1,8 +1,8 @@
 {
-  "date": "2026-10-31",
-  "policy": "Keep current dwarf model v5 and animation v6 only. Removed drafts remain in Git history, not the working tree. Do not restore from generator cache. User-authorized production/v3 animations derive from selected models; current role display height and pixel density are uniform.",
+  "date": "2026-11-01",
+  "policy": "Keep current dwarf model v5, animation v6, and the selected role model sheets only. On 2026-11-01 the obsolete production v1/v2 images, duplicate grid previews, and superseded knight/priest/nun candidates were removed from the working tree and from Git history; commit dates were preserved and origin/main remains an ancestor of the current branch. Do not restore removed drafts from the generator cache. User-authorized production/v3 animations derive from selected models; current role display height and pixel density are uniform.",
   "generated_images_seen": 42,
-  "generated_images_in_worktree": 29,
+  "generated_images_in_worktree": 20,
   "images": [
     {
       "generated_file": "exec-03eba591-9e0e-41ef-bce8-0db8425e9216.png",
@@ -15,7 +15,7 @@
       "sha256": "1cfa5f41af40b05e21eb7f08006820008f4e39f5b3c0e0fe6e154be5b0bb1978",
       "status": "removed_from_worktree_by_user_request",
       "former_repository_file": "asset-sources/art-direction/characters/dwarf/animations/grudge-book-thickness-v3.png",
-      "recover_from_git": "2aa2b99"
+      "recover_from_git": "9ccc459"
     },
     {
       "generated_file": "exec-0b4d2392-cbf4-401f-97b6-670d67861d3b.png",
@@ -46,7 +46,7 @@
       "sha256": "13c9d5ccd155e8a0914d9434b6514d7f2c844240fb2189d8bd209870b3939031",
       "status": "removed_from_worktree_by_user_request",
       "former_repository_file": "asset-sources/art-direction/characters/dwarf/dwarf-review-v1.png",
-      "recover_from_git": "2aa2b99"
+      "recover_from_git": "9ccc459"
     },
     {
       "generated_file": "exec-55c69988-64dc-4ab2-b9bf-acdde4a9e3f9.png",
@@ -65,7 +65,7 @@
       "sha256": "1e5406d810c024fb30950250bc1e1ecd34f802ccf2f401430c2e01ab04e8da8a",
       "status": "removed_from_worktree_by_user_request",
       "former_repository_file": "asset-sources/art-direction/characters/dwarf/dwarf-refined-ka-v4.png",
-      "recover_from_git": "2aa2b99"
+      "recover_from_git": "9ccc459"
     },
     {
       "generated_file": "exec-75e10404-7709-4050-890a-772714827926.png",
@@ -78,7 +78,7 @@
       "sha256": "ac61635d34476cc6620d4e9add5c3170ef708d92c80c5e986fd2c8fc2648b5fc",
       "status": "removed_from_worktree_by_user_request",
       "former_repository_file": "asset-sources/art-direction/archive/dwarf-ka-detail-study-too-smooth.png",
-      "recover_from_git": "2aa2b99"
+      "recover_from_git": "9ccc459"
     },
     {
       "generated_file": "exec-7d1433ba-b20c-4c0f-9d76-53806bb98d78.png",
@@ -97,7 +97,7 @@
       "sha256": "dcdb3c96f9817ce9ddcc08ed010ddbdfc8b3ddd65fe1250262079b82c9316df7",
       "status": "removed_from_worktree_by_user_request",
       "former_repository_file": "asset-sources/art-direction/characters/dwarf/dwarf-review-e-v1.png",
-      "recover_from_git": "2aa2b99"
+      "recover_from_git": "9ccc459"
     },
     {
       "generated_file": "exec-9112a263-b415-4455-93a4-74f471a2264a.png",
@@ -122,20 +122,22 @@
       "sha256": "5ed4a85adc3df969cb50bbead6946b0efb3a44dc66285995ee8a9b0a4f712c3f",
       "status": "removed_from_worktree_by_user_request",
       "former_repository_file": "asset-sources/art-direction/characters/dwarf/animations/grudge-book-closed-v2.png",
-      "recover_from_git": "2aa2b99"
+      "recover_from_git": "9ccc459"
     },
     {
       "generated_file": "exec-a16b68f9-fcb2-42a6-93aa-55a75264857e.png",
       "sha256": "2ffbb4a8049cc1e64043e72e7e14a6995441bb859bf51fe705118e7d4906efc6",
-      "status": "present",
-      "repository_file": "asset-sources/art-direction/characters/knight/knight-review-e-v1.png"
+      "status": "removed_from_worktree_by_user_request",
+      "former_repository_file": "asset-sources/art-direction/characters/knight/knight-review-e-v1.png",
+      "removed_at": "2026-11-01",
+      "note": "Removed from the working tree and Git history during the 2026-11-01 cleanup; only the text record remains."
     },
     {
       "generated_file": "exec-b286d6fb-c5c5-4304-9c32-8c89826ffd71.png",
       "sha256": "728617b1699977e30ca3dcbcdf981858dc19b80637d2dd22e3a8ffe60386c4a1",
       "status": "removed_from_worktree_by_user_request",
       "former_repository_file": "asset-sources/art-direction/characters/dwarf/animations/grudge-book-study-v1.png",
-      "recover_from_git": "2aa2b99"
+      "recover_from_git": "9ccc459"
     },
     {
       "generated_file": "exec-cd99b18b-667c-47fd-96dd-d8358f0f79b3.png",
@@ -148,7 +150,7 @@
       "sha256": "d9f024c7aede2ceac3c244b1ac502ddfa7bb7be362127fb0bc42f2d279bca6ab",
       "status": "removed_from_worktree_by_user_request",
       "former_repository_file": "asset-sources/art-direction/characters/dwarf/animations/dwarf-idle-runes-v1.png",
-      "recover_from_git": "2aa2b99"
+      "recover_from_git": "9ccc459"
     },
     {
       "generated_file": "exec-de89aede-9837-4d63-b413-6a0de8ecc2d0.png",
@@ -161,7 +163,7 @@
       "sha256": "673d5513ba51492a1fbb0cbb742b4bdb146f880f0368b2fa519dfe9dc740d11b",
       "status": "removed_from_worktree_by_user_request",
       "former_repository_file": "asset-sources/art-direction/characters/dwarf/animations/dwarf-normal-awake-corrected-v2.png",
-      "recover_from_git": "2aa2b99"
+      "recover_from_git": "9ccc459"
     },
     {
       "generated_file": "exec-f60797f3-9f67-470c-aa18-fefaec840f9e.png",
@@ -174,19 +176,23 @@
       "sha256": "5809dc551c267731d41343f8bff4ab4c61dba4b4bd9106ccb724b069d357cca5",
       "status": "removed_from_worktree_by_user_request",
       "former_repository_file": "asset-sources/art-direction/archive/dwarf-first-study-too-detailed.png",
-      "recover_from_git": "2aa2b99"
+      "recover_from_git": "9ccc459"
     },
     {
       "generated_file": "exec-e29e9675-b0ef-4cc4-8ead-10932f4ee676.png",
       "sha256": "7671918fe6ec8003ca067bf18600ad293aefccc46aac6497522ca7a64d40dcb5",
-      "status": "present",
-      "repository_file": "asset-sources/art-direction/characters/knight/knight-black-gold-candidates-v3a-needs-fix.png"
+      "status": "removed_from_worktree_by_user_request",
+      "former_repository_file": "asset-sources/art-direction/characters/knight/knight-black-gold-candidates-v3a-needs-fix.png",
+      "removed_at": "2026-11-01",
+      "note": "Removed from the working tree and Git history during the 2026-11-01 cleanup; only the text record remains."
     },
     {
       "generated_file": "exec-cc3a161b-bf38-4a4f-ba5b-ef702c1b3fc4.png",
       "sha256": "33ff931771914de45295486447904b32508a48bca1539b01a8c5a8ad448ca841",
-      "status": "present",
-      "repository_file": "asset-sources/art-direction/characters/knight/knight-black-gold-candidates-v3b-needs-fix.png"
+      "status": "removed_from_worktree_by_user_request",
+      "former_repository_file": "asset-sources/art-direction/characters/knight/knight-black-gold-candidates-v3b-needs-fix.png",
+      "removed_at": "2026-11-01",
+      "note": "Removed from the working tree and Git history during the 2026-11-01 cleanup; only the text record remains."
     },
     {
       "generated_file": "exec-a905a8e4-98c4-470f-aaba-e21c97bdaa84.png",
@@ -197,32 +203,42 @@
     {
       "generated_file": "exec-19d452dc-76d1-435e-9691-2c6261e80329.png",
       "sha256": "758547298b629fe6a6327355787cd1e50b31992cba4c0d21ff86d26ba77c9bfd",
-      "status": "present",
-      "repository_file": "asset-sources/art-direction/characters/knight/knight-a4-model-sheet-v4.png"
+      "status": "removed_from_worktree_by_user_request",
+      "former_repository_file": "asset-sources/art-direction/characters/knight/knight-a4-model-sheet-v4.png",
+      "removed_at": "2026-11-01",
+      "note": "Removed from the working tree and Git history during the 2026-11-01 cleanup; only the text record remains."
     },
     {
       "generated_file": "exec-06efd626-6f4b-4155-bb51-005cfbb3067f.png",
       "sha256": "e7fddb8cbb2368d178b0d7ea2ef4d0ed16760b3c9f2f713273fdbebb2b7b7dc9",
-      "status": "present",
-      "repository_file": "asset-sources/art-direction/characters/knight/knight-a4-model-sheet-v5.png"
+      "status": "removed_from_worktree_by_user_request",
+      "former_repository_file": "asset-sources/art-direction/characters/knight/knight-a4-model-sheet-v5.png",
+      "removed_at": "2026-11-01",
+      "note": "Removed from the working tree and Git history during the 2026-11-01 cleanup; only the text record remains."
     },
     {
       "generated_file": "exec-67f2a9c3-478b-4362-a993-06d528b283bd.png",
       "sha256": "fff67eba29737717ad8e8acee95edfdce22b6868008071ec911878c492edb23c",
-      "status": "present",
-      "repository_file": "asset-sources/art-direction/characters/knight/knight-a4-model-sheet-v6.png"
+      "status": "removed_from_worktree_by_user_request",
+      "former_repository_file": "asset-sources/art-direction/characters/knight/knight-a4-model-sheet-v6.png",
+      "removed_at": "2026-11-01",
+      "note": "Removed from the working tree and Git history during the 2026-11-01 cleanup; only the text record remains."
     },
     {
       "generated_file": "exec-0db75d4b-197a-4b4a-8edc-319486eaff63.png",
       "sha256": "c8bb9b51f53b37bec2e1803e867a7cf8064b55c0f759926ca2b60d9b6452734a",
-      "status": "present",
-      "repository_file": "asset-sources/art-direction/characters/knight/knight-a4-model-sheet-v7.png"
+      "status": "removed_from_worktree_by_user_request",
+      "former_repository_file": "asset-sources/art-direction/characters/knight/knight-a4-model-sheet-v7.png",
+      "removed_at": "2026-11-01",
+      "note": "Removed from the working tree and Git history during the 2026-11-01 cleanup; only the text record remains."
     },
     {
       "generated_file": "exec-37c1ec18-f406-4645-b2d0-8f2bc3075b04.png",
       "sha256": "44cb7620539c6bc8af2b2c4fb6e1b0baba0f8366962e2d32055f7ea42f639d8b",
-      "status": "present",
-      "repository_file": "asset-sources/art-direction/characters/knight/knight-helmet-mechanism-v7.png"
+      "status": "removed_from_worktree_by_user_request",
+      "former_repository_file": "asset-sources/art-direction/characters/knight/knight-helmet-mechanism-v7.png",
+      "removed_at": "2026-11-01",
+      "note": "Removed from the working tree and Git history during the 2026-11-01 cleanup; only the text record remains."
     },
     {
       "generated_file": "exec-67a577d3-3f49-4050-8396-c725198a1bd3.png",
@@ -239,8 +255,10 @@
     {
       "generated_file": "exec-b5368252-beb2-4978-898f-4db2d436d7d4.png",
       "sha256": "6c84cc302d3f811b9daad47c969c603fb7fc452ae94f6fb42f4cd2f7072582c3",
-      "status": "present",
-      "repository_file": "asset-sources/art-direction/characters/priest/priest-pc-model-sheet-e-v2.png"
+      "status": "removed_from_worktree_by_user_request",
+      "former_repository_file": "asset-sources/art-direction/characters/priest/priest-pc-model-sheet-e-v2.png",
+      "removed_at": "2026-11-01",
+      "note": "Removed from the working tree and Git history during the 2026-11-01 cleanup; only the text record remains."
     },
     {
       "generated_file": "exec-5d5dade6-3423-4890-81a2-497d23eaec5a.png",

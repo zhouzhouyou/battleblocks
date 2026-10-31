@@ -27,7 +27,7 @@
 >
 > 现在候选阶段就别提交了
 
-检查时工作区干净，骑士觉醒设定已在提交 `6491108`。随后用户曾要求候选阶段不提交；2026-10-30 用户要求完成本次文档更新后提交。参考图内的传记、动作名、技能、3.1 头身说明等不自动成为用户选定设定。
+检查时工作区干净，骑士觉醒设定已在提交 `1259208`。随后用户曾要求候选阶段不提交；2026-10-30 用户要求完成本次文档更新后提交。参考图内的传记、动作名、技能、3.1 头身说明等不自动成为用户选定设定。
 
 ## 当前四个候选
 
@@ -91,7 +91,7 @@
 ## 图片、提示词与待评审项
 
 - 当前修订稿：[P-C 人设图 v3](../../../asset-sources/art-direction/characters/priest/priest-pc-model-sheet-e-v3.png)，[修订提示词](../../../asset-sources/art-direction/characters/priest/MODEL-SHEET-PC-V3.md)。圣杯俯视改为正上方视图，待用户复核。
-- 历史展开稿：[P-C 人设图 v2](../../../asset-sources/art-direction/characters/priest/priest-pc-model-sheet-e-v2.png)，[完整生成提示词](../../../asset-sources/art-direction/characters/priest/MODEL-SHEET-PC-V2.md)。人物三视图、普通／觉醒、三种表情、装备拆分、圣杯三视图及圣典开合。
+- 历史展开稿：P-C 人设图 v2（图片已移出仓库），[完整生成提示词](../../../asset-sources/art-direction/characters/priest/MODEL-SHEET-PC-V2.md)。人物三视图、普通／觉醒、三种表情、装备拆分、圣杯三视图及圣典开合。
 - 用户已选方向，v3 仍待评审；袍身与披肩装饰密度、装备拆分腰带附带布片、圣杯各视图太阳图案的统一性待校准，不能把生成细节反写为新增用户要求。未制作动画或游戏素材接入。
 
 - [四稿对比图](../../../asset-sources/art-direction/characters/priest/priest-drinking-candidates-e-v1.png)：上排普通、下排觉醒，底部面貌／酒器／圣徽。

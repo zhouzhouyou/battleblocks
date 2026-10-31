@@ -32,7 +32,7 @@
 
 > 然后你需要创建游戏中可能会用到的 资源文件。例如立绘、动画素材。
 
-已生成普通／暗影全身立绘、四行各四帧的待机与施法动画，及 384×384 固定网格图集。资源说明、逐帧检查、原始图片、历史修订和完整提示词见 [production/v1](../../../asset-sources/art-direction/characters/nun/production/v1/README.md)。游戏已注册 `assets/roles/nun.webp`、`nun-standee-normal.webp`、`nun-standee-awake.webp`。生成图中曾有不符合简洁服装要求的十字形光点与过大光晕，当前动画使用修正后的 v2 源图；角色不增加道具或装饰。动画姿势和立绘光照仍待用户评审，不自动视为最终通过。
+已生成普通／暗影全身立绘、四行各四帧的待机与施法动画，及 384×384 固定网格图集。资源说明、逐帧检查、原始图片、历史修订和完整提示词见 [production/v1](../../../asset-sources/art-direction/characters/nun/production/v1/README.md)。游戏已加载 `assets/roles/nun.webp`；两张立绘 WebP 已导出，但当前渲染代码尚未引用。生成图中曾有不符合简洁服装要求的十字形光点与过大光晕，当前动画使用修正后的 v2 源图；角色不增加道具或装饰。动画姿势和立绘光照仍待用户评审，不自动视为最终通过。
 
 ## 角色介绍与台词（用户原文）
 
@@ -113,12 +113,12 @@
 | N-C 灰烬见证者 | 年长女性，瘦削微驼、目光严厉 | 褪色灰黑修女服，铁提灯低垂 | 挺直身姿，紫灯与背后的暗影呼应 |
 | N-D 坚定巡夜者 | 中年女性，宽肩、稳固站姿，保护者气质 | 普通黑色修女服，方形提灯向前照路 | 紫灯与脚边的盾形暗影，人物仍保持原装束 |
 
-原图：[N-A](../../../asset-sources/art-direction/characters/nun/nun-e-a-v1.png) · [N-B](../../../asset-sources/art-direction/characters/nun/nun-e-b-v1.png) · [N-C](../../../asset-sources/art-direction/characters/nun/nun-e-c-v1.png) · [N-D](../../../asset-sources/art-direction/characters/nun/nun-e-d-v1.png)。提示词见 [PROMPT-E-V1.md](../../../asset-sources/art-direction/characters/nun/PROMPT-E-V1.md)。
+选定原图：[N-A](../../../asset-sources/art-direction/characters/nun/nun-e-a-v1.png)。N-B／C／D 图片已按 2026-11-01 清理移出仓库。提示词见 [PROMPT-E-V1.md](../../../asset-sources/art-direction/characters/nun/PROMPT-E-V1.md)。
 
 ## 实装与待评审
 
 - 角色介绍、人物特质、七句台词和技能原文已记录；已确定的结算细节见上文。
-- 384×384 图集和两种立绘已作为游戏资源接入；动画姿势、立绘光照与游戏内显示效果仍待用户视觉评审。生成画面中的细节不覆盖用户明确设定。
+- 384×384 图集已作为游戏资源接入；两种立绘已导出但尚未被渲染代码引用。动画姿势、立绘光照与游戏内显示效果仍待用户视觉评审。生成画面中的细节不覆盖用户明确设定。
 - 关联方块物件尚未锁定；当前沿用现有方块体系。
 - 验证：Rust 测试通过；真实游戏调试流程通过，含「陷入癫狂」后释放「治疗术」及逐步撤销；macOS 与网页包已生成。修女对修女的治疗不重复触发友谊之奶。
 - 修订：陷入癫狂只转换治疗收益，不改变方块种类、交换规则或可用移动数；战斗中普通修女施放后切换暗影动画，回合结束恢复普通动画。觉醒后常态显示暗影动画，回归理性期间显示普通动画。

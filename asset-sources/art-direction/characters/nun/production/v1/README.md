@@ -1,11 +1,10 @@
 # 修女 N-A 游戏美术资源 v1（待用户评审）
 
-根据用户选择的 N-A 人设图制作。仅新增文件，尚未修改角色注册、选角、技能或战斗代码；`assets/roles/nun.webp` 与两张立绘 WebP 已暂存，尚未被游戏加载。
+根据用户选择的 N-A 人设图制作。`assets/roles/nun.webp` 已被游戏加载；两张立绘 WebP 已导出，但尚未被渲染代码引用。
 
 ## 文件
 
-- `animation-source-v1.png`：初次生成 4×4 透明动画源图，保留历史，不用于导出。
-- `animation-source-v2.png`：修去十字形光点与大面积光晕后的 4×4 透明动画源图，当前导出来源。
+- `animation-source-v2.png`：修去十字形光点与大面积光晕后的 4×4 透明动画源图，当前导出来源。初次生成的 v1 源图已按 2026-11-01 清理移出仓库，不用于导出。
 - `grid-384.png`：16 帧、每帧 384×384 的完整透明图集。第 1 行普通待机，第 2 行暗影待机，第 3 行普通治疗施法，第 4 行暗影攻击施法；每行 4 帧。
 - `normal-idle-0.png`、`awake-idle-0.png`：两种形态的待机首帧。
 - `normal-idle.gif`、`awake-idle.gif`、`normal-heal.gif`、`awake-attack.gif`：四组动画预览。
@@ -14,7 +13,7 @@
 - `report.json`：逐帧边界、色数、锚点与输出尺寸检查。
 - [PROMPT.md](PROMPT.md)：完整生成及修订提示词。
 
-游戏可加载资源已暂存为 `assets/roles/nun.webp`、`assets/roles/nun-standee-normal.webp`、`assets/roles/nun-standee-awake.webp`。复现导出运行 `tools/prepare_nun_assets.py`；它不覆盖其他角色图集或角色注册表。
+游戏资源：动画图集为 `assets/roles/nun.webp`（已加载）；`assets/roles/nun-standee-normal.webp`、`nun-standee-awake.webp` 已导出但尚未被渲染代码引用。复现导出运行 `tools/prepare_nun_assets.py`；它不覆盖其他角色图集或角色注册表。
 
 ## 规格与评审重点
 

@@ -84,8 +84,6 @@ for name,spec in SPECS.items():
  frames[4].save(directory/'awake-idle-0.png')
  atlas.save(OUT/f'{name}.webp',lossless=True,exact=True,method=6)
  montage.save(directory/'grid-384.png')
- # Inspectable enlarged derivative, never used as the in-game source.
- montage.resize((1536,1536),Image.Resampling.NEAREST).save(directory/'grid-preview.png')
  for phase,row in [('normal-idle',0),('awake-idle',1),('normal-cast',2),('awake-cast',3)]:
   seq=[f.resize((384,384),Image.Resampling.NEAREST) for f in frames[row*4:row*4+4]]
   seq[0].save(directory/f'{phase}.gif',save_all=True,append_images=seq[1:],duration=180 if row<2 else 130,loop=0,disposal=2,transparency=0)
