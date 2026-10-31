@@ -14,6 +14,7 @@ ui.menu.draw.animated_preview	ANIMATED PREVIEW	角色动画预览
 ui.screen.draw_top.audio_m	Audio / M	音频 / M
 ui.menu.draw.awakening	AWAKENING	觉醒能力
 ui.screen.draw_panel.awakening	Awakening	觉醒
+ui.screen.draw_panel.awakening_numbers	Each hero's trigger point and new HP cap are on its awakening page.	各角色的觉醒点与新生命上限见角色觉醒页。
 ui.screen.draw_opponents.back_choose_hero	Back: choose hero	上一步：选择角色
 ui.hud.draw_turns.battle_blocks	BATTLE BLOCKS	方块战斗
 ui.hud.draw_turns.battle_over	Battle over	战斗结束
@@ -60,7 +61,6 @@ ui.skills.draw_skill_details.expected_rewards	Expected rewards	预估收益
 ui.hints.draw_hints.first_clear_no_refill_chains	First clear; no refill chains	首轮收益，不含补充连锁
 ui.actions.cast_skill.flesh_casting	Flesh casting	血肉施法
 ui.screen.draw_panel.fullscreen	Fullscreen	全屏
-ui.screen.draw_panel.hero_trigger_new_hp_cap	Hero                 Trigger / new HP cap	角色                         觉醒点 / 新生命上限
 ui.screen.draw_game_over_buttons.home	Home	回到首页
 ui.hints.draw_hints.hover_to_list_click_to_play	Hover to list · click to play	悬停查看 · 点击条目执行
 ui.menu.draw.hp_20_max	HP +20% max	回复生命上限20%
