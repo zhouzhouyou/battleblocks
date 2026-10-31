@@ -281,7 +281,7 @@ impl Session {
                     } else {
                         e.damage
                     };
-                let hit = self.apply_rewards((e.hp, direct_damage, e.mp));
+                let hit = self.apply_rewards((e.hp, direct_damage, e.mp), e.opponent_heal);
                 let actual_heal = if self.enemy_turn {
                     self.enemy - before.enemy_hp
                 } else {

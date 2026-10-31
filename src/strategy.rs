@@ -3,15 +3,18 @@ use crate::{content::Skill, matches, Board, N};
 type Move = ((usize, usize), (usize, usize));
 fn score(b: &Board, hero: usize, hp: i32, mp: i32, rules: Rules) -> f32 {
     let (h, d, m) = crate::content::clear_rewards_in(hero, hp, mp, b, &matches(b), 1, 0, rules);
-    let progress =
-        if let (Some((id, mut awake)), Some(mut health)) = (rules.opponent, rules.opponent_hp) {
-            crate::content::take_damage(id, &mut health, &mut awake, d).damage
-        } else {
-            d
-        };
-    progress as f32
-        + h.min(crate::content::health_cap(hero, rules.awake) - hp) as f32 * 0.8
-        + m.min(crate::content::mana_cap(hero, rules.awake) - mp) as f32 * 0.65
+    let original_opponent_hp = rules.opponent_hp.unwrap_or(10000);
+    let settled =
+        crate::content::settle_rewards_in(hero, hp, mp, original_opponent_hp, (h, d, m), 0, rules);
+    let progress = if let (Some((id, mut awake)), Some(_)) = (rules.opponent, rules.opponent_hp) {
+        let mut health = settled.opponent_hp;
+        crate::content::take_damage(id, &mut health, &mut awake, settled.damage).damage
+    } else {
+        settled.damage
+    };
+    progress as f32 - (settled.opponent_hp - original_opponent_hp) as f32
+        + (settled.actor_hp - hp) as f32 * 0.8
+        + (settled.actor_mp - mp) as f32 * 0.65
 }
 #[cfg(test)]
 pub fn choose_move(
@@ -202,6 +205,25 @@ pub fn choose_skill_available_in(
                 })
                 .unwrap_or(0)
                 - crate::content::skill_cost_in(id, s, rules) / 5;
+        }
+        if matches!(effective, Skill::Frenzy | Skill::Rational) {
+            let next_mode = if effective == Skill::Frenzy {
+                crate::content::TurnMode::Frenzy
+            } else {
+                crate::content::TurnMode::Rational
+            };
+            let next_rules = Rules {
+                turn_mode: next_mode,
+                ..rules
+            };
+            let future = choose_move_in(b, hp, id, mp, id, 1, next_rules)
+                .map(|(a, c)| {
+                    let mut next = *b;
+                    crate::board::hero_swap(&mut next, a, c, id);
+                    score(&next, id, hp, mp, next_rules) as i32
+                })
+                .unwrap_or(0);
+            return future - swap_value as i32 - crate::content::skill_cost_in(id, s, rules) / 5;
         }
         let e = crate::content::effect_at_in(s, &mut copy, target, id, hp, mp, rules);
         let p = crate::content::preview_rewards_in(

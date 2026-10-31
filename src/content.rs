@@ -5,6 +5,13 @@ pub fn passives(hero: usize, awake: bool) -> &'static [Passive] {
     abilities::passives(hero, awake)
 }
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum TurnMode {
+    #[default]
+    Normal,
+    Frenzy,
+    Rational,
+}
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct Rules {
     pub awake: bool,
     pub initial_loot: bool,
@@ -17,11 +24,13 @@ pub struct Rules {
     pub pockets: [Option<u8>; 2],
     pub pocket_slot: usize,
     pub copied_skill: Option<Skill>,
+    pub turn_mode: TurnMode,
 }
 pub const KNIGHT: usize = 7;
 pub const DWARF: usize = 8;
 pub const PRIEST: usize = 9;
-pub const ROSTER: &[usize] = &[DWARF, KNIGHT, PRIEST, 1, 2, 3, 4, 5, 6];
+pub const NUN: usize = 10;
+pub const ROSTER: &[usize] = &[DWARF, KNIGHT, PRIEST, NUN, 1, 2, 3, 4, 5, 6];
 use crate::board::{Board, N};
 
 // Stable rules API shared by the game, AI, previews and balance probe.
@@ -62,6 +71,9 @@ mod move_preview_tests;
 #[cfg(test)]
 #[path = "content/tests/new_role_integration_tests.rs"]
 mod new_role_integration_tests;
+#[cfg(test)]
+#[path = "content/tests/nun_tests.rs"]
+mod nun_tests;
 #[cfg(test)]
 #[path = "content/tests/passive_status_tests.rs"]
 mod passive_status_tests;
