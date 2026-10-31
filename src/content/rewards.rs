@@ -1,5 +1,18 @@
 use super::*;
 
+/// From this complete round onward, damage ramps up and healing decays.
+/// The cap keeps the endgame finite without turning the first half into a race.
+pub const FATIGUE_START_ROUND: u32 = 12;
+pub const FATIGUE_DAMAGE_STEP: i32 = 12;
+pub const FATIGUE_HEALING_STEP: i32 = 10;
+pub fn fatigue_scales(round: u32) -> (i32, i32) {
+    let steps = round.saturating_sub(FATIGUE_START_ROUND) as i32;
+    (
+        (100 + steps * FATIGUE_DAMAGE_STEP).min(300),
+        (100 - steps * FATIGUE_HEALING_STEP).max(30),
+    )
+}
+
 /// First clear 100%; later cascades +10% per wave, capped at 130%.
 /// Each preparation bonus adds 100%.
 pub fn reward_scale(chain: usize, bonus: i32) -> i32 {
@@ -265,6 +278,16 @@ pub fn settle_batch_in(
             );
         }
         batch.events.push(reward);
+    }
+    let (damage_scale, healing_scale) = fatigue_scales(rules.round);
+    if damage_scale != 100 || healing_scale != 100 {
+        for event in &mut batch.events {
+            event.amount = match event.resource {
+                Resource::Damage => event.amount * damage_scale / 100,
+                Resource::Healing => event.amount * healing_scale / 100,
+                Resource::Mana => event.amount,
+            };
+        }
     }
     triggers.dedup();
     let (heal, damage, mana) = batch.totals();

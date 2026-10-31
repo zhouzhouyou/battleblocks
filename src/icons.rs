@@ -168,7 +168,7 @@ pub fn draw(skill: Skill, x: f32, y: f32, size: f32) {
 pub fn draw_passive(passive: crate::content::Passive, x: f32, y: f32, size: f32) {
     use crate::content::Passive::*;
     let skill = match passive {
-        KnightStrength | DwarfStrength => Skill::Charge,
+        KnightStrength | DwarfStrength | Might => Skill::Charge,
         Short | Grudge | Clumsy | ClumsyAwake => Skill::Landslide,
         MindVision | BorrowedSlot => Skill::Greedy,
         FriendMilk => Skill::Healing,

@@ -62,7 +62,7 @@ fn conf() -> macroquad::conf::Conf {
 }
 
 fn main() {
-    if std::env::args().any(|arg| arg == "--headless") {
+    if std::env::args().any(|arg| arg == "--headless" || arg == "--autoplay") {
         headless::run();
     } else {
         macroquad::Window::from_config(conf(), gui_main());

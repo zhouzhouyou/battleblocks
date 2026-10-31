@@ -4,6 +4,10 @@ pub use abilities::{ability_loadout, Passive};
 pub fn passives(hero: usize, awake: bool) -> &'static [Passive] {
     abilities::passives(hero, awake)
 }
+#[path = "content/lore.rs"]
+mod lore;
+#[allow(unused_imports)]
+pub use lore::*;
 #[path = "content/status.rs"]
 mod status;
 pub use status::*;
@@ -21,6 +25,10 @@ pub struct Rules {
     pub pocket_slot: usize,
     pub copied_skill: Option<Skill>,
     pub statuses: StatusSet,
+    /// Complete rounds played, starting at 1. Drives the anti-stall overdrive.
+    pub round: u32,
+    /// Casts already made this turn, used by the no-cooldown repeat surcharge.
+    pub repeat_casts: [u8; Skill::ALL.len()],
 }
 impl Rules {
     pub fn with_status(mut self, id: StatusId, source: Skill, duration: StatusDuration) -> Self {
@@ -91,6 +99,9 @@ mod preview_tests;
 #[cfg(test)]
 #[path = "content/tests/reward_tests.rs"]
 mod reward_tests;
+#[cfg(test)]
+#[path = "content/tests/rework_tests.rs"]
+mod rework_tests;
 #[cfg(test)]
 #[path = "content/tests/tests.rs"]
 mod tests;

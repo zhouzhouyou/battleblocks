@@ -640,6 +640,13 @@ impl Ui {
                     19.,
                     LIGHTGRAY,
                 );
+                label(
+                    tr_key(zh, "ui.screen.draw_panel.fatigue"),
+                    236.,
+                    624.,
+                    18.,
+                    GOLD,
+                );
             }
         }
         label(

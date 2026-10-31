@@ -432,6 +432,54 @@ impl Session {
             15.,
             previous.x + previous.w - 14. - text_x,
         );
+        if !over {
+            // The rule is permanent in Help; this strip makes the ramp visible in play.
+            let (fatigue, color) = if self.round == content::FATIGUE_START_ROUND {
+                let (damage, healing) = content::fatigue_scales(self.round + 1);
+                let damage = (damage - 100).to_string();
+                let healing = (100 - healing).to_string();
+                (
+                    Some(crate::format_text(
+                        self.zh,
+                        "ui.hud.draw_turns.fatigue_warning",
+                        &[&damage, &healing],
+                    )),
+                    GOLD,
+                )
+            } else if self.round > content::FATIGUE_START_ROUND {
+                let (damage, healing) = content::fatigue_scales(self.round);
+                let damage = (damage - 100).to_string();
+                let healing = (100 - healing).to_string();
+                (
+                    Some(crate::format_text(
+                        self.zh,
+                        "ui.hud.draw_turns.fatigue_active",
+                        &[&damage, &healing],
+                    )),
+                    ORANGE,
+                )
+            } else {
+                (None, GRAY)
+            };
+            if let Some(text) = fatigue {
+                let strip = Rect::new(236., 88., 552., 18.);
+                draw_rectangle(
+                    strip.x,
+                    strip.y,
+                    strip.w,
+                    strip.h,
+                    Color::from_rgba(45, 29, 35, 245),
+                );
+                draw_rectangle_lines(strip.x, strip.y, strip.w, strip.h, 1., color);
+                label_centered(
+                    &text,
+                    strip.x + strip.w / 2.,
+                    strip.y + 14.,
+                    fit_size(&text, 15., strip.w - 20.),
+                    color,
+                );
+            }
+        }
         label(
             &format!(
                 "{}{}",

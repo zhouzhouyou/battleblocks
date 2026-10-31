@@ -6,7 +6,7 @@
 4|BalancedAffinity,ElementReturn|BalancedResonance,ElementReturn,BlastMastery||hero.awakening.imp
 5|BloodFury|BoilingBlood||hero.awakening.chort
 6|FleshCasting|FleshConversion,BloodSacrifice||hero.awakening.zombie
-7|KnightStrength,Clumsy|KnightStrength,ClumsyAwake|15,16,17|Knight.awakening
-8|DwarfStrength,Short|DwarfStrength,Short,Grudge||Dwarf.awakening
+7|Might,Clumsy|Might,ClumsyAwake|15,16,17|Knight.awakening
+8|Might,Short|Might,Short,Grudge||Dwarf.awakening
 9|MindVision|MindVision,BorrowedSlot|20,21,22|Priest.awakening
 10|FriendMilk,AutoRecovery|FriendMilk,Madness,AutoRecovery|25,24|Nun.awakening

@@ -126,6 +126,9 @@ impl Session {
             self.present_ability_triggers(receiver, &triggers);
             self.new_role_states[self.enemy_turn as usize].end_turn();
             self.enemy_turn = !self.enemy_turn;
+            if !self.enemy_turn {
+                self.round += 1;
+            }
             self.cooldowns.start_turn(self.enemy_turn as usize);
             self.new_role_states[self.enemy_turn as usize].start_turn();
             self.refresh_copy(self.enemy_turn);

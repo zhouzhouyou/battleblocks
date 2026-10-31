@@ -234,7 +234,14 @@ pub fn effective_skill(skill: Skill, rules: Rules) -> Skill {
 }
 
 pub fn skill_cost_in(hero: usize, skill: Skill, rules: Rules) -> i32 {
-    skill_cost(hero, rules.awake, effective_skill(skill, rules))
+    let effective = effective_skill(skill, rules);
+    let base = skill_cost(hero, rules.awake, effective);
+    let repeat = rules.repeat_casts[effective.index()] as i32;
+    if effective.cooldown() == 0 && !effective.ends_turn() {
+        base + repeat * 15
+    } else {
+        base
+    }
 }
 pub fn skill_name_in(skill: Skill, rules: Rules, zh: bool) -> String {
     if effective_skill(skill, rules) != skill {

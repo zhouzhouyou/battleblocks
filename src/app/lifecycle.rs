@@ -47,6 +47,7 @@ impl Session {
         self.reward = true;
         self.game_over_logged = false;
         self.turn_log = turns::Log::new();
+        self.round = 1;
         self.console.reset_history();
     }
 }

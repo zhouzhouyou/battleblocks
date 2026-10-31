@@ -27,6 +27,7 @@ pub enum Passive {
     BloodSacrifice,
     KnightStrength,
     DwarfStrength,
+    Might,
     Short,
     Grudge,
     Clumsy,
@@ -123,6 +124,7 @@ impl Passive {
         Self::BloodSacrifice,
         Self::KnightStrength,
         Self::DwarfStrength,
+        Self::Might,
         Self::Short,
         Self::Grudge,
         Self::Clumsy,
@@ -138,6 +140,7 @@ impl Passive {
             self,
             KnightStrength
                 | DwarfStrength
+                | Might
                 | Short
                 | Grudge
                 | Clumsy
@@ -165,8 +168,10 @@ impl Passive {
             return super::role_text(&format!("{self:?}.name"), zh);
         }
         let key = match self {
-            KnightStrength | DwarfStrength | Short | Grudge | Clumsy | ClumsyAwake | MindVision
-            | BorrowedSlot | FriendMilk | AutoRecovery | Madness => unreachable!(),
+            KnightStrength | DwarfStrength | Might | Short | Grudge | Clumsy | ClumsyAwake
+            | MindVision | BorrowedSlot | FriendMilk | AutoRecovery | Madness => {
+                unreachable!()
+            }
             ColumnFormation => "passive.name.column_formation",
             BattleTraining => "passive.name.battle_training",
             ForestStep => "passive.name.forest_step",
@@ -200,8 +205,10 @@ impl Passive {
             return self.name(true);
         }
         let key = match self {
-            KnightStrength | DwarfStrength | Short | Grudge | Clumsy | ClumsyAwake | MindVision
-            | BorrowedSlot | FriendMilk | AutoRecovery | Madness => unreachable!(),
+            KnightStrength | DwarfStrength | Might | Short | Grudge | Clumsy | ClumsyAwake
+            | MindVision | BorrowedSlot | FriendMilk | AutoRecovery | Madness => {
+                unreachable!()
+            }
             ColumnFormation => "passive.short_name.column_formation",
             BattleTraining => "passive.short_name.battle_training",
             ForestStep => "passive.short_name.forest_step",
@@ -232,8 +239,10 @@ impl Passive {
             return super::role_text(&format!("{self:?}.description"), zh);
         }
         let key = match self {
-            KnightStrength | DwarfStrength | Short | Grudge | Clumsy | ClumsyAwake | MindVision
-            | BorrowedSlot | FriendMilk | AutoRecovery | Madness => unreachable!(),
+            KnightStrength | DwarfStrength | Might | Short | Grudge | Clumsy | ClumsyAwake
+            | MindVision | BorrowedSlot | FriendMilk | AutoRecovery | Madness => {
+                unreachable!()
+            }
             ColumnFormation => "passive.description.column_formation",
             BattleTraining => "passive.description.battle_training",
             ForestStep => "passive.description.forest_step",

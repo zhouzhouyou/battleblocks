@@ -95,11 +95,6 @@ pub fn handle(
             }
             Skill::Miracle => {
                 state.force_armed = true;
-                state.statuses.insert(
-                    StatusId::ForcedMove,
-                    listener,
-                    StatusDuration::OwnerTurnEnd(1),
-                );
             }
             Skill::Strike => state.statuses.insert(
                 StatusId::DoubleRewards,
@@ -170,7 +165,9 @@ pub fn handle(
             effect,
         } if *skill == listener => {
             **effect = match listener {
-                Skill::Rush | Skill::Miracle | Skill::Hammer => knight::effect(listener, *target),
+                Skill::Rush | Skill::Miracle | Skill::Hammer => {
+                    knight::effect(listener, board, *target, ctx)
+                }
                 Skill::Jump | Skill::Forge => dwarf::effect(listener, board, *target),
                 Skill::Entomb | Skill::Resurrect | Skill::Copy => {
                     priest::cast(listener, board, *target, ctx)
