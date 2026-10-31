@@ -8,10 +8,15 @@ pub enum Panel {
 pub const WINDOW_SIZES: [(i32, i32); 2] = [(1024, 720), (1280, 900)];
 // Horizontal extent of the volume slider in the first settings row.
 const VOLUME_TRACK: (f32, f32) = (462., 662.);
+/// Fully visible rows of the opponent grid; further rows scroll.
+pub const OPPONENT_VISIBLE_ROWS: usize = 5;
 pub struct Ui {
     pub panel: Option<Panel>,
     pub opponent: Option<usize>,
     pub opponent_step: bool,
+    // First visible row of each selectable list. Both clamp to the current roster.
+    pub hero_scroll: usize,
+    pub opponent_scroll: usize,
     help_awakening: bool,
     fullscreen: bool,
     // Index into WINDOW_SIZES.
@@ -24,6 +29,8 @@ impl Default for Ui {
             panel: None,
             opponent: None,
             opponent_step: false,
+            hero_scroll: 0,
+            opponent_scroll: 0,
             help_awakening: false,
             fullscreen: false,
             window: 1,
@@ -265,7 +272,11 @@ impl Ui {
         thumbs: &Texture2D,
         pointer: Vec2,
         difficulty: usize,
+        scroll: usize,
     ) {
+        let total = crate::content::ROSTER.len() + 1;
+        let rows = opponent_row_count();
+        let scroll = clamp_scroll(scroll, rows, OPPONENT_VISIBLE_ROWS);
         label(
             tr_key(zh, "ui.screen.draw_opponents.step_2_choose_opponent"),
             24.,
@@ -307,78 +318,91 @@ impl Ui {
                 draw_rectangle_lines(r.x, r.y, r.w, r.h, 2., GOLD);
             }
         }
-        for i in 0..=crate::content::ROSTER.len() {
-            let r = opponent_rect(i);
-            frame(r, r.contains(pointer));
-            let selected = if i == 0 {
-                self.opponent.is_none()
-            } else {
-                self.opponent == Some(crate::content::ROSTER[i - 1])
-            };
-            if selected {
-                draw_rectangle_lines(r.x, r.y, r.w, r.h, 2., GOLD);
-            }
-            if i == 0 {
-                label(
-                    tr_key(zh, "ui.screen.draw_opponents.random_opponent"),
-                    r.x + 14.,
-                    r.y + 32.,
-                    24.,
-                    GOLD,
-                );
-                label(
-                    tr_key(zh, "ui.screen.draw_opponents.excludes_your_hero"),
-                    r.x + 14.,
-                    r.y + 61.,
-                    17.,
-                    LIGHTGRAY,
-                );
-            } else {
-                let id = crate::content::ROSTER[i - 1];
-                let h = &HEROES[id];
-                draw_texture_ex(
-                    thumbs,
-                    r.x + 8.,
-                    r.y + 12.,
-                    WHITE,
-                    DrawTextureParams {
-                        dest_size: Some(vec2(40., 48.)),
-                        source: Some(Rect::new(id as f32 * 40., 0., 40., 48.)),
-                        ..Default::default()
-                    },
-                );
-                label(
-                    if zh { h.zh } else { h.en },
-                    r.x + 58.,
-                    r.y + 28.,
-                    22.,
-                    WHITE,
-                );
-                label(
-                    &format!(
-                        "{} {}  {} {}",
-                        tr_key(zh, "ui.shared.hp"),
-                        h.hp,
-                        tr_key(zh, "ui.shared.mp"),
-                        crate::content::mana_cap(id, false)
-                    ),
-                    r.x + 58.,
-                    r.y + 51.,
-                    17.,
-                    LIGHTGRAY,
-                );
-                label(
-                    &format!("{} / {}", h.skills[0].name(zh), h.skills[1].name(zh)),
-                    r.x + 8.,
-                    r.y + 68.,
-                    if zh { 16. } else { 13. },
-                    SKYBLUE,
-                );
+        // Only fully visible grid rows are drawn and clickable, so the last row can
+        // never spill over the back/start buttons below the list.
+        for row in 0..OPPONENT_VISIBLE_ROWS {
+            for column in 0..2 {
+                let i = (scroll + row) * 2 + column;
+                if i >= total {
+                    break;
+                }
+                let r = opponent_rect(row, column);
+                frame(r, r.contains(pointer));
+                let selected = if i == 0 {
+                    self.opponent.is_none()
+                } else {
+                    self.opponent == Some(crate::content::ROSTER[i - 1])
+                };
+                if selected {
+                    draw_rectangle_lines(r.x, r.y, r.w, r.h, 2., GOLD);
+                }
+                if i == 0 {
+                    label(
+                        tr_key(zh, "ui.screen.draw_opponents.random_opponent"),
+                        r.x + 14.,
+                        r.y + 32.,
+                        24.,
+                        GOLD,
+                    );
+                    label(
+                        tr_key(zh, "ui.screen.draw_opponents.excludes_your_hero"),
+                        r.x + 14.,
+                        r.y + 61.,
+                        17.,
+                        LIGHTGRAY,
+                    );
+                } else {
+                    let id = crate::content::ROSTER[i - 1];
+                    let h = &HEROES[id];
+                    draw_texture_ex(
+                        thumbs,
+                        r.x + 8.,
+                        r.y + 12.,
+                        WHITE,
+                        DrawTextureParams {
+                            dest_size: Some(vec2(40., 48.)),
+                            source: Some(Rect::new(id as f32 * 40., 0., 40., 48.)),
+                            ..Default::default()
+                        },
+                    );
+                    label(
+                        if zh { h.zh } else { h.en },
+                        r.x + 58.,
+                        r.y + 28.,
+                        22.,
+                        WHITE,
+                    );
+                    label(
+                        &format!(
+                            "{} {}  {} {}",
+                            tr_key(zh, "ui.shared.hp"),
+                            h.hp,
+                            tr_key(zh, "ui.shared.mp"),
+                            crate::content::mana_cap(id, false)
+                        ),
+                        r.x + 58.,
+                        r.y + 51.,
+                        17.,
+                        LIGHTGRAY,
+                    );
+                    label(
+                        &format!("{} / {}", h.skills[0].name(zh), h.skills[1].name(zh)),
+                        r.x + 8.,
+                        r.y + 68.,
+                        if zh { 16. } else { 13. },
+                        SKYBLUE,
+                    );
+                }
             }
         }
-        let focus = (1..=crate::content::ROSTER.len())
-            .find(|&i| opponent_rect(i).contains(pointer))
-            .map(|i| crate::content::ROSTER[i - 1])
+        draw_scrollbar(opponent_list_rect(), scroll, rows, OPPONENT_VISIBLE_ROWS);
+        let focus = (0..OPPONENT_VISIBLE_ROWS)
+            .flat_map(|row| (0..2).map(move |column| (row, column)))
+            .find_map(|(row, column)| {
+                let i = (scroll + row) * 2 + column;
+                (i > 0 && i < total && opponent_rect(row, column).contains(pointer))
+                    .then(|| crate::content::ROSTER[i - 1])
+            })
             .or(self.opponent);
         if let Some(id) = focus {
             label(
@@ -627,10 +651,68 @@ impl Ui {
         );
     }
 }
-pub fn opponent_rect(i: usize) -> Rect {
+/// Largest valid first-row offset for a list showing `visible` rows at a time.
+pub fn max_scroll(total: usize, visible: usize) -> usize {
+    total.saturating_sub(visible)
+}
+/// Clamp a stored scroll offset after the roster or the viewport changes.
+pub fn clamp_scroll(offset: usize, total: usize, visible: usize) -> usize {
+    offset.min(max_scroll(total, visible))
+}
+/// Smallest offset that keeps `index` inside the visible window.
+pub fn scroll_to_show(offset: usize, index: usize, total: usize, visible: usize) -> usize {
+    if visible == 0 || index >= total {
+        return clamp_scroll(offset, total, visible);
+    }
+    let next = if index < offset {
+        index
+    } else if index >= offset + visible {
+        index + 1 - visible
+    } else {
+        offset
+    };
+    clamp_scroll(next, total, visible)
+}
+/// Move a scroll offset by whole rows (positive scrolls towards later rows).
+pub fn scroll_by(offset: usize, delta: i32, total: usize, visible: usize) -> usize {
+    let next = (offset as i64 + delta as i64).max(0) as usize;
+    clamp_scroll(next, total, visible)
+}
+/// Draw a vertical scrollbar immediately right of `area`; invisible when all rows fit.
+pub fn draw_scrollbar(area: Rect, offset: usize, total: usize, visible: usize) {
+    if total <= visible {
+        return;
+    }
+    let track = Rect::new(area.x + area.w + 4., area.y, 4., area.h);
+    draw_rectangle(
+        track.x,
+        track.y,
+        track.w,
+        track.h,
+        Color::from_rgba(45, 50, 62, 255),
+    );
+    let thumb_h = (track.h * visible as f32 / total as f32).max(18.);
+    let progress =
+        offset.min(max_scroll(total, visible)) as f32 / max_scroll(total, visible) as f32;
+    draw_rectangle(
+        track.x,
+        track.y + (track.h - thumb_h) * progress,
+        track.w,
+        thumb_h,
+        Color::from_rgba(132, 143, 166, 255),
+    );
+}
+pub fn opponent_row_count() -> usize {
+    (crate::content::ROSTER.len() + 1).div_ceil(2)
+}
+pub fn opponent_list_rect() -> Rect {
+    Rect::new(230., 176., 564., 88. * OPPONENT_VISIBLE_ROWS as f32)
+}
+/// Grid cell for an on-screen row and column, independent of the scroll offset.
+pub fn opponent_rect(row: usize, column: usize) -> Rect {
     Rect::new(
-        230. + (i % 2) as f32 * 288.,
-        176. + (i / 2) as f32 * 88.,
+        230. + column as f32 * 288.,
+        176. + row as f32 * 88.,
         276.,
         80.,
     )

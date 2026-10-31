@@ -46,8 +46,15 @@ impl Preview {
         }
     }
 }
-pub fn hero_rect(i: usize) -> Rect {
-    Rect::new(24., 112. + i as f32 * 53., 232., 48.)
+/// Rows of the hero list that fit without covering the key hints below it.
+pub const HERO_VISIBLE_ROWS: usize = 9;
+pub const HERO_ROW_STEP: f32 = 53.;
+/// On-screen row rectangle. Map it back to a roster entry through the scroll offset.
+pub fn hero_rect(row: usize) -> Rect {
+    Rect::new(24., 112. + row as f32 * HERO_ROW_STEP, 232., 48.)
+}
+pub fn hero_list_rect() -> Rect {
+    Rect::new(24., 112., 232., HERO_ROW_STEP * HERO_VISIBLE_ROWS as f32)
 }
 pub fn skill_rect(i: usize) -> Rect {
     Rect::new(548., 126. + i as f32 * 94., 452., 88.)
@@ -118,6 +125,7 @@ pub fn draw(
     preview: &Preview,
     pointer: Vec2,
     page: usize,
+    scroll: usize,
     awakened_texture: &Texture2D,
 ) {
     let mut resource_hint = None;
@@ -137,9 +145,12 @@ pub fn draw(
         19.,
         LIGHTGRAY,
     );
-    for (slot, &i) in content::ROSTER.iter().enumerate() {
+    let scroll = ui::clamp_scroll(scroll, content::ROSTER.len(), HERO_VISIBLE_ROWS);
+    let visible_rows = HERO_VISIBLE_ROWS.min(content::ROSTER.len().saturating_sub(scroll));
+    for row in 0..visible_rows {
+        let i = content::ROSTER[scroll + row];
         let h = &HEROES[i];
-        let r = hero_rect(slot);
+        let r = hero_rect(row);
         panel(
             r,
             if i == hero || r.contains(pointer) {
@@ -183,6 +194,12 @@ pub fn draw(
             LIGHTGRAY,
         );
     }
+    ui::draw_scrollbar(
+        hero_list_rect(),
+        scroll,
+        content::ROSTER.len(),
+        HERO_VISIBLE_ROWS,
+    );
     label(
         tr_key(zh, "ui.menu.draw.select_hero"),
         26.,
