@@ -103,7 +103,8 @@ pub struct Console {
     history: Vec<Checkpoint>,
     records: Vec<String>,
     seq: u64,
-    started: std::time::Instant,
+    /// Seconds from a platform clock; `std::time::Instant` panics on wasm32-unknown-unknown.
+    started: f64,
     quiet_events: bool,
     /// Unattended batch runs skip snapshots, history and JSONL output.
     batch: bool,
@@ -196,7 +197,7 @@ impl Console {
             history: Vec::new(),
             records: Vec::new(),
             seq: 0,
-            started: std::time::Instant::now(),
+            started: macroquad::miniquad::date::now(),
             quiet_events,
             batch: false,
             action: 0,
@@ -401,7 +402,7 @@ impl Console {
             return;
         }
         self.seq += 1;
-        let record=format!("{{\"seq\":{},\"action\":{},\"time\":{},\"event\":{},\"actor\":{},\"detail\":{},\"before\":{},\"after\":{},\"payload\":{}}}",self.seq,self.action,self.started.elapsed().as_secs_f64(),quote(event),quote(if before.enemy_turn{"enemy"}else{"player"}),quote(detail),before.json(),after.json(),payload.unwrap_or("null"));
+        let record=format!("{{\"seq\":{},\"action\":{},\"time\":{},\"event\":{},\"actor\":{},\"detail\":{},\"before\":{},\"after\":{},\"payload\":{}}}",self.seq,self.action,macroquad::miniquad::date::now()-self.started,quote(event),quote(if before.enemy_turn{"enemy"}else{"player"}),quote(detail),before.json(),after.json(),payload.unwrap_or("null"));
         #[cfg(not(target_arch = "wasm32"))]
         {
             use std::io::Write;
