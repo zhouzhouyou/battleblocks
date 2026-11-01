@@ -105,7 +105,7 @@
 
 - [四稿对比图](../../../asset-sources/art-direction/characters/priest/priest-drinking-candidates-e-.png)：上排普通、下排觉醒，底部面貌／酒器／圣徽。
 - [完整生成提示词](../../../asset-sources/art-direction/characters/priest/PROMPT-E-.md)。
-- 用户参考保存在 `asset-sources/art-direction/characters/priest/references/user-drinking-priest-2026-10-29.png`。
+- 用户参考图仅本地保存，不进入仓库（`references/` 已加入 `.gitignore`）。
 - 当前为概念稿，像素尺度、色数与实际显示尺寸未做生产校准。P-B/P-D 的持物左右手随姿态变化，后续选定后需明确惯用手并统一；图中文字未作为设定依据。
 
 只有用户明确选择才记为通过；本次按用户明确要求提交现有牧师稿件和记录。
