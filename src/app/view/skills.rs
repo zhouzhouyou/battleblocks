@@ -84,7 +84,7 @@ impl Session {
             label(
                 &title,
                 rect.x + 40.,
-                rect.y + 23.,
+                rect.y + 24.,
                 fit_size(&title, 18., rect.w - 48.),
                 WHITE,
             );
@@ -116,7 +116,7 @@ impl Session {
             label(
                 &details,
                 rect.x + 8.,
-                rect.y + 40.,
+                rect.y + 42.,
                 fit_size(&details, 14., rect.w - 16.),
                 if content::ability_capabilities(self.hero_id, self.rules(false)).blood_payment
                     && self.mp < content::skill_cost_in(self.hero_id, *skill, self.rules(false))
@@ -126,26 +126,6 @@ impl Session {
                     SKYBLUE
                 },
             );
-            for (line, text) in content::skill_description_in(*skill, self.rules(false), self.zh)
-                .lines()
-                .take(
-                    if content::effective_skill(*skill, self.rules(false)).ends_turn() {
-                        2
-                    } else {
-                        1
-                    },
-                )
-                .enumerate()
-            {
-                // Shrink a long line to the box width instead of letting it spill out.
-                label(
-                    text,
-                    rect.x + 8.,
-                    rect.y + 54. + line as f32 * 14.,
-                    fit_size(text, 13., rect.w - 16.),
-                    LIGHTGRAY,
-                );
-            }
         }
         for (i, &skill) in content::skills(self.hero_id, self.awakened[0])
             .iter()
@@ -156,7 +136,7 @@ impl Session {
                 label(
                     content::role_text("Skill.continue", self.zh),
                     rect.x + 8.,
-                    rect.y + 68.,
+                    rect.y + 59.,
                     13.,
                     GOLD,
                 );
@@ -227,21 +207,18 @@ impl Session {
                 2.,
                 if is_enemy { ORANGE } else { SKYBLUE },
             );
-            label(
-                &format!(
-                    "{} · {}",
-                    if is_enemy {
-                        tr_key(self.zh, "ui.shared.enemy")
-                    } else {
-                        tr_key(self.zh, "ui.shared.you")
-                    },
-                    content::skill_name_in(skill, self.rules(is_enemy), self.zh)
-                ),
-                x + 10.,
-                239.,
-                20.,
-                GOLD,
+            // The copied third slot can be named like "Copy · Brute-force miracle";
+            // shrink the heading instead of letting it run past the panel edge.
+            let heading = format!(
+                "{} · {}",
+                if is_enemy {
+                    tr_key(self.zh, "ui.shared.enemy")
+                } else {
+                    tr_key(self.zh, "ui.shared.you")
+                },
+                content::skill_name_in(skill, self.rules(is_enemy), self.zh)
             );
+            label(&heading, x + 10., 239., fit_size(&heading, 20., 200.), GOLD);
             label(
                 &if content::payment_in(id, health, mana, skill, self.rules(is_enemy))
                     .is_some_and(|p| p.blood > 0)

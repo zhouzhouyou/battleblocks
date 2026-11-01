@@ -124,16 +124,7 @@ impl Session {
                     .any(Option::is_some)
             {
                 for slot in 0..2 {
-                    let r = Rect::new(
-                        if side {
-                            796. + slot as f32 * 105.
-                        } else {
-                            20. + slot as f32 * 105.
-                        },
-                        if side { 610. } else { 670. },
-                        100.,
-                        25.,
-                    );
+                    let r = pocket_rect(side, slot);
                     draw_rectangle(r.x, r.y, r.w, r.h, Color::from_rgba(39, 42, 50, 255));
                     if !side && self.new_role_states[0].pocket_slot == slot {
                         outline(r.x, r.y, r.w, r.h, 1.5, GOLD);
