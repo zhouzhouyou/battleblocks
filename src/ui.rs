@@ -407,11 +407,17 @@ impl Ui {
                         17.,
                         LIGHTGRAY,
                     );
+                    let skills = h
+                        .skills
+                        .iter()
+                        .map(|skill| skill.name(zh))
+                        .collect::<Vec<_>>()
+                        .join(" / ");
                     label(
-                        &format!("{} / {}", h.skills[0].name(zh), h.skills[1].name(zh)),
+                        &skills,
                         r.x + 8.,
                         r.y + 68.,
-                        if zh { 16. } else { 13. },
+                        fit_size(&skills, if zh { 16. } else { 13. }, r.w - 16.),
                         SKYBLUE,
                     );
                 }

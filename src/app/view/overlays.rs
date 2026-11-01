@@ -211,6 +211,13 @@ impl Session {
                                 "next clear".into()
                             }
                         }
+                        content::StatusDuration::SkipTurn => {
+                            if self.zh {
+                                "跳过下回合".into()
+                            } else {
+                                "skips next turn".into()
+                            }
+                        }
                     };
                     format!("{}·{}", s.id.name(self.zh), duration)
                 })

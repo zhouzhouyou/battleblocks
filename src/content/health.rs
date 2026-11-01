@@ -1,7 +1,7 @@
 use super::*;
 
-pub const AWAKENING_LINES: [i32; 11] = [45, 35, 40, 50, 37, 35, 30, 45, 40, 40, 40];
-pub const AWAKENING_CAPS: [i32; 11] = [55, 45, 50, 55, 50, 47, 44, 55, 60, 55, 55];
+pub const AWAKENING_LINES: [i32; 12] = [45, 35, 40, 50, 37, 35, 30, 45, 40, 40, 40, 40];
+pub const AWAKENING_CAPS: [i32; 12] = [55, 45, 50, 55, 50, 47, 44, 55, 60, 55, 55, 55];
 pub fn awakening_line(hero: usize) -> i32 {
     HEROES[hero].hp * AWAKENING_LINES[hero] / 100
 }

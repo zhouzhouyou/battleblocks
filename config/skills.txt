@@ -25,3 +25,4 @@ Copy|Borrowed|复制|Copies an opponent active each turn.\nUses its cost and tur
 Frenzy|Into frenzy|陷入癫狂|This turn, healing for the opponent becomes damage.\nDoes not end turn.|本回合为对手触发的治疗改为伤害\n不结束回合|1|false|||30|prepare
 Healing|Healing prayer|治疗术|Restore 7% of each side's own max HP.|双方各回复自身最大生命值的7%|3|true|||60|heal
 Rational|Return to reason|回归理性|Disable Madness for this turn.\nDoes not end turn.|本回合禁用癫狂\n不结束回合|1|false|||30|prepare
+EmberBlast|Ember blast|炎爆术|Destroy the whole board.\nDeal 110% of MP spent + 25.\nThen sleep: skip your next turn.|摧毁全盘\n造成消耗魔力110%+25的伤害\n随后沉睡，跳过下一个自己的回合|0|true|Can cast at 80% MP; actually spend your current MP.\nDestroy the board; deal 110% of MP spent + 25.\nFull-MP cast deals +15% damage.\nThen sleep: skip your next turn.|魔力达到上限80%即可施放，消耗当前全部魔力\n摧毁全盘，造成消耗魔力110%+25的伤害\n满魔施放伤害+15%\n随后沉睡，跳过下回合|0|destroy

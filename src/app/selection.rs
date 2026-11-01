@@ -72,9 +72,10 @@ impl Session {
                     self.refresh_preview(0);
                     self.reveal_hero();
                 }
-                for i in 0..content::skills(self.hero_id, self.character_page == 2).len() {
-                    if (frame.clicked(MouseButton::Left)
-                        && menu::skill_rect(i).contains(frame.pointer))
+                let skill_rects =
+                    menu::skill_rects(self.hero_id, self.character_page == 2, self.zh);
+                for (i, rect) in skill_rects.iter().enumerate() {
+                    if (frame.clicked(MouseButton::Left) && rect.contains(frame.pointer))
                         || (i == 0 && frame.key(KeyCode::Key1))
                         || (i == 1 && frame.key(KeyCode::Key2))
                         || (i == 2 && frame.key(KeyCode::Key3))

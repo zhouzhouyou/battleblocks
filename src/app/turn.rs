@@ -42,6 +42,45 @@ impl Session {
                 &self.snapshot(),
             );
         }
+        if self.pending.is_empty() && !self.presentation.busy() && !self.action_done {
+            let side = self.enemy_turn as usize;
+            if self.new_role_states[side]
+                .statuses
+                .contains(content::StatusId::Sleep)
+            {
+                self.action_done = true;
+                self.new_role_states[side].turn_start_done = true;
+                self.deadline = 0.6;
+                self.turn_log.current.actions.push(turns::Action::Sleep);
+                self.feedback = tr_key(self.zh, "ui.turn.advance_turn.sleep").to_string();
+                self.feedback_time = 1.6;
+                self.console.event(
+                    "sleep_turn",
+                    "Sleep status skips this turn; turn-end recovery still applies",
+                    &self.snapshot(),
+                    &self.snapshot(),
+                );
+            } else if !self.new_role_states[side].turn_start_done {
+                let before = self.snapshot();
+                let (id, hp, mp) = if self.enemy_turn {
+                    (self.enemy_id, self.enemy, self.enemy_mp)
+                } else {
+                    (self.hero_id, self.hp, self.mp)
+                };
+                let rules = self.rules(self.enemy_turn);
+                let triggers = content::turn_start_effects(id, hp, mp, &mut self.b, rules);
+                self.new_role_states[side].turn_start_done = true;
+                self.present_ability_triggers(self.enemy_turn, &triggers);
+                if self.b != before.board {
+                    self.console.event(
+                        "turn_start_effect",
+                        "Turn-start passive changed tiles",
+                        &before,
+                        &self.snapshot(),
+                    );
+                }
+            }
+        }
         if self.pending.is_empty() && !self.presentation.busy() {
             self.deadline = (self.deadline - frame.dt).max(0.);
         }

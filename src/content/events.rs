@@ -244,6 +244,9 @@ pub enum RuleEvent<'a> {
         state: &'a crate::role_state::RoleState,
         commands: &'a mut Vec<StateCommand>,
     },
+    TurnStart {
+        board: &'a mut Board,
+    },
     RefreshAbilities {
         options: &'a [Skill],
         commands: &'a mut Vec<StateCommand>,
@@ -301,6 +304,7 @@ pub enum RuleEvent<'a> {
         value: &'a mut i32,
     },
     Payment {
+        skill: Option<Skill>,
         missing: i32,
         blood: &'a mut i32,
         allowed: &'a mut bool,

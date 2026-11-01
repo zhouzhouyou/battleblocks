@@ -43,7 +43,7 @@ fn selected_targets_and_new_combos() {
     );
     assert_eq!(effect(Skill::Blood, &mut b.clone()).hp, 100);
     for hero in HEROES.iter() {
-        assert_eq!(hero.skills.len(), 2);
+        assert!((1..=2).contains(&hero.skills.len()));
     }
 }
 #[test]

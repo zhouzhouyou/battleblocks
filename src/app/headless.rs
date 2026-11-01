@@ -13,6 +13,9 @@ pub(crate) struct BatchOutcome {
     pub steps: u64,
     pub hp: i32,
     pub enemy_hp: i32,
+    pub nukes: [u32; 2],
+    pub nuke_damage: [i64; 2],
+    pub first_nuke_round: [u32; 2],
 }
 
 impl Session {
@@ -72,6 +75,8 @@ impl Session {
 
         let mut frame = Frame::headless(dt);
         let mut steps = 0;
+        let mut first_nuke_round = [0; 2];
+        let mut seen_nukes = [0; 2];
         while self.hp > 0 && self.enemy > 0 && steps < max_steps {
             frame.command_move = None;
             frame.command_skill = None;
@@ -79,6 +84,14 @@ impl Session {
             self.headless_auto_command(&mut frame);
             self.tick(&mut frame);
             steps += 1;
+            for side in 0..2 {
+                if self.nuke_casts[side] > seen_nukes[side] {
+                    seen_nukes[side] = self.nuke_casts[side];
+                    if first_nuke_round[side] == 0 {
+                        first_nuke_round[side] = self.round;
+                    }
+                }
+            }
         }
         let winner = if self.hp <= 0 && self.enemy <= 0 {
             None
@@ -95,6 +108,9 @@ impl Session {
             steps,
             hp: self.hp,
             enemy_hp: self.enemy,
+            nukes: self.nuke_casts,
+            nuke_damage: self.nuke_damage,
+            first_nuke_round,
         }
     }
 

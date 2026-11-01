@@ -362,8 +362,29 @@ fn skill_preview_shows_the_hero_when_no_tile_changes() {
 }
 
 #[test]
+fn skill_cards_adapt_to_the_wrapped_description_height() {
+    for hero in 0..HEROES.len() {
+        for awake in [false, true] {
+            let rects = menu::skill_rects(hero, awake, true);
+            assert_eq!(rects.len(), content::skills(hero, awake).len());
+            for pair in rects.windows(2) {
+                assert!(pair[0].y + pair[0].h <= pair[1].y);
+            }
+            assert!(rects.last().is_none_or(|rect| rect.y + rect.h <= 414.));
+        }
+    }
+    let base = menu::skill_rects(content::FIRE_ELF, false, true);
+    let awake = menu::skill_rects(content::FIRE_ELF, true, true);
+    assert_eq!(base.len(), 1);
+    assert_eq!(awake.len(), 1);
+    assert_eq!(base[0].h, 88.);
+    assert!(awake[0].h > base[0].h);
+}
+
+#[test]
 fn only_new_role_atlases_have_cast_rows() {
     // 4×4 new-role sheets: idle, awakened idle, cast, awakened cast.
+    // The fire elf's fourth row is its sleep pose; both forms share the cast row.
     assert_eq!(
         sprites::cast_frames(content::NUN, false),
         Some([8, 9, 10, 11].as_slice())
@@ -376,6 +397,19 @@ fn only_new_role_atlases_have_cast_rows() {
         sprites::cast_frames(content::DWARF, false).map(|f| f.len()),
         Some(4)
     );
+    assert_eq!(
+        sprites::cast_frames(content::FIRE_ELF, false),
+        Some([8, 9, 10, 11].as_slice())
+    );
+    assert_eq!(
+        sprites::cast_frames(content::FIRE_ELF, true),
+        Some([8, 9, 10, 11].as_slice())
+    );
+    assert_eq!(
+        sprites::sleep_frames(content::FIRE_ELF),
+        Some([12, 13, 14, 15].as_slice())
+    );
+    assert_eq!(sprites::sleep_frames(content::NUN), None);
     // Legacy sheets have no cast row, so battle and preview keep their idle frames.
     assert_eq!(sprites::cast_frames(0, false), None);
     assert_eq!(sprites::cast_frames(6, true), None);
