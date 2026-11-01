@@ -99,11 +99,11 @@
 
 ## 图片、提示词与待评审项
 
-- 当前修订稿：[P-C 人设图 ](../../../asset-sources/art-direction/characters/priest/priest-pc-model-sheet-e-.png)，[修订提示词](../../../asset-sources/art-direction/characters/priest/MODEL-SHEET-PC-.md)。圣杯俯视改为正上方视图，待用户复核。
+- 当前修订稿：[P-C 人设图 ](../../../asset-sources/art-direction/characters/priest/priest-pc-model-sheet-e-.webp)，[修订提示词](../../../asset-sources/art-direction/characters/priest/MODEL-SHEET-PC-.md)。圣杯俯视改为正上方视图，待用户复核。
 - 历史展开稿：P-C 人设图 （图片已移出仓库），[完整生成提示词](../../../asset-sources/art-direction/characters/priest/MODEL-SHEET-PC-.md)。人物三视图、普通／觉醒、三种表情、装备拆分、圣杯三视图及圣典开合。
 - 用户已选方向， 仍待评审；袍身与披肩装饰密度、装备拆分腰带附带布片、圣杯各视图太阳图案的统一性待校准，不能把生成细节反写为新增用户要求。未制作动画或游戏素材接入。
 
-- [四稿对比图](../../../asset-sources/art-direction/characters/priest/priest-drinking-candidates-e-.png)：上排普通、下排觉醒，底部面貌／酒器／圣徽。
+- [四稿对比图](../../../asset-sources/art-direction/characters/priest/priest-drinking-candidates-e-.webp)：上排普通、下排觉醒，底部面貌／酒器／圣徽。
 - [完整生成提示词](../../../asset-sources/art-direction/characters/priest/PROMPT-E-.md)。
 - 用户参考图仅本地保存，不进入仓库（`references/` 已加入 `.gitignore`）。
 - 当前为概念稿，像素尺度、色数与实际显示尺寸未做生产校准。P-B/P-D 的持物左右手随姿态变化，后续选定后需明确惯用手并统一；图中文字未作为设定依据。
