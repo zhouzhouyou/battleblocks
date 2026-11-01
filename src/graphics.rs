@@ -59,11 +59,21 @@ pub(crate) fn sprite_rect(enemy: bool) -> Rect {
 pub(crate) fn passive_rect(enemy: bool) -> Rect {
     Rect::new(if enemy { 796. } else { 20. }, 376., 208., 50.)
 }
+// Cards keep three rows (number + name, cost, "does not end turn") and leave the
+// description to the hover panel; the pocket strip sits under the last card.
 pub(crate) fn player_skill_rect(i: usize) -> Rect {
-    Rect::new(20., 460. + i as f32 * 78., 208., 74.)
+    Rect::new(20., 460. + i as f32 * 70., 208., 66.)
 }
 pub(crate) fn enemy_skill_rect(i: usize) -> Rect {
     Rect::new(796., 470. + i as f32 * 44., 208., 38.)
+}
+pub(crate) fn pocket_rect(enemy: bool, slot: usize) -> Rect {
+    Rect::new(
+        if enemy { 796. } else { 20. } + slot as f32 * 105.,
+        if enemy { 610. } else { 670. },
+        100.,
+        25.,
+    )
 }
 pub(crate) fn draw_cooldown_overlay(rect: Rect, remaining: u8) {
     draw_rectangle(rect.x, rect.y, rect.w, rect.h, Color::new(0., 0., 0., 0.72));
