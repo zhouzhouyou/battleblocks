@@ -1,17 +1,18 @@
 # 当前美术资产与历史归档
 
-更新：2026-11-01。按用户要求完成三轮清理：
+更新：2026-11-01。按用户要求完成多轮清理：
 
 - 2026-10-29：移除矮人旧稿 16 个旧版图片／动画文件；这些文件随后也已从 Git 历史移除，不从生成缓存恢复到当前目录。
 - 2026-11-01：移除 64 个已淘汰或重复的文件，包括三位新角色的 production/v1、v2 迭代图片、重复的 `grid-preview.png`、修女旧动画源、骑士 v4–v7／v3a-b／结构探索图／首轮稿、牧师人设 v2、修女 N-B／C／D；并重写本地 Git 历史以清除这些大文件。全部提交时间与说明保留，origin/main 仍是当前分支祖先。v1/v2 目录只保留 `PROMPT.md`。
 - 2026-11-01（矮人旧稿）：上述 16 个矮人旧稿文件也从 Git 历史移除；当前 Git 历史不再包含任何已淘汰草稿，仅本地历史备份保留。
 - 2026-11-01（参考图）：9 张用户参考原图已从工作树与 Git 历史移除，`characters/*/references/` 整体加入 `.gitignore`；原图只在本地保留，仓库不再包含参考图。
+- 2026-11-01（源图格式）：`asset-sources` 下 53 张 PNG 与 24 个 GIF 转为无损 WebP，77 个文件由 58.9MB 降至 40.4MB；`book-growth-independent.gif` 与 `dwarf-book-elevation.gif` 因动画 WebP 会合并帧并缩短总时长而保留 GIF。原始 PNG/GIF 已从 Git 历史移除（两个书本 GIF 除外）。游戏运行时始终只打包 `assets/` 下的 WebP。
 
 用户技能、选稿和修改原文仍保留在角色档案。
 
 ## 矮人当前有效资产
 
-- `asset-sources/art-direction/characters/dwarf/dwarf-model-sheet-black-red-v5.png`：唯一当前造型基准，人物与武器三视图、黑红无盔、装备和表情。
+- `asset-sources/art-direction/characters/dwarf/dwarf-model-sheet-black-red-v5.webp`：唯一当前造型基准，人物与武器三视图、黑红无盔、装备和表情。
 - `asset-sources/art-direction/characters/dwarf/MODEL-SHEET-V5.md`：用户要求与人设图生成记录。
 - `asset-sources/art-direction/characters/dwarf/references/`：用户参考原图，仅本地保存；该目录已忽略，不进入仓库。
 - `asset-sources/art-direction/characters/dwarf/animations/v6/`：最新独立人物、直接从人设图裁出的书封面／纸页／底封、透明书增厚 GIF、合成垫高 GIF，以及 README 来源和核对记录。
@@ -19,8 +20,8 @@
 
 ## 其他目录
 
-- `asset-sources/art-direction/e-reference.png`：当前 E 全局参考。
-- `asset-sources/art-direction/f-reference.png`：历史 F 参考。
+- `asset-sources/art-direction/e-reference.webp`：当前 E 全局参考。
+- `asset-sources/art-direction/f-reference.webp`：历史 F 参考。
 - `asset-sources/art-direction/archive/`：其他早期方块与角色候选，非矮人旧单体稿；本轮未删除。
 - `asset-sources/art-direction/characters/knight/`：K-A4 v8 人设、黑红金四稿 v3c、石中剑修订与提示词。
 - `asset-sources/art-direction/characters/priest/`：P-C v3 人设、饮酒四稿与提示词；参考图仅本地保存。

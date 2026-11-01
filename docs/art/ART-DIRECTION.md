@@ -16,7 +16,7 @@ Create a compact art bible with a locked palette, silhouette and proportion rule
 
 - 西式奇幻、2D 三消回合战斗、共享 8×8 棋盘；macOS 原生与 Web。美术评审不改变战斗规则。
 - 保留现有正面／四分之三角色展示；角色、物件与 UI 统一美术语言。
-- 参考图：`../../asset-sources/art-direction/e-reference.png`。参考图是概念预览，不保证符合生产用尺寸、色数、网格或透明度。
+- 参考图：`../../asset-sources/art-direction/e-reference.webp`。参考图是概念预览，不保证符合生产用尺寸、色数、网格或透明度。
 
 ## 制作规范
 

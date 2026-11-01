@@ -4,7 +4,7 @@
 
 ## 输出与用途
 
-- `dwarf-model-sheet-black-red-v5.png`：本轮人设图，**待用户评审，未自动视为最终通过**。
+- `dwarf-model-sheet-black-red-v5.webp`：本轮人设图，**待用户评审，未自动视为最终通过**。
 - 上轮 `dwarf-refined-ka-v4.png` 已按用户要求从工作树和 Git 历史移除；不作为当前素材。
 - `references/user-bareheaded-dwarf-2026-10-29.png`：用户提供原始参考，仅本地保存，不进入仓库。
 - 人设包含人物正／侧／背视图，武器正／侧／俯视图，平静／开心／生气头像，以及肩甲、黑色围裙、红色内衣与腰布、腰带、护腕、靴子、胡须束环、独立仇恨之书的装备拆解。

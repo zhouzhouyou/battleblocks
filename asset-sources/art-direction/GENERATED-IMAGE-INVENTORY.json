@@ -8,7 +8,7 @@
       "generated_file": "exec-03eba591-9e0e-41ef-bce8-0db8425e9216.png",
       "sha256": "4957cd1f7790612fcf277b6417ca5cd0bca3a31ae0b8dd7cb184564c0b3a73e3",
       "status": "present",
-      "repository_file": "asset-sources/art-direction/archive/roster-28-character-object-pairs.png"
+      "repository_file": "asset-sources/art-direction/archive/roster-28-character-object-pairs.webp"
     },
     {
       "generated_file": "exec-05903d57-5943-4219-a019-b73f094938c6.png",
@@ -22,25 +22,25 @@
       "generated_file": "exec-0b4d2392-cbf4-401f-97b6-670d67861d3b.png",
       "sha256": "5d1ea4d801e730e5af055e2c34eee9df7f7c43568e7597728680d3370c161399",
       "status": "present",
-      "repository_file": "asset-sources/art-direction/archive/roster-c-dark-folktale.png"
+      "repository_file": "asset-sources/art-direction/archive/roster-c-dark-folktale.webp"
     },
     {
       "generated_file": "exec-20638df9-c293-4b13-a2aa-01f509b2243b.png",
       "sha256": "1b2d27add40449dfa5ba3757f7b9f6506f2d1c2122f25037c6918d44156b8879",
       "status": "present",
-      "repository_file": "asset-sources/art-direction/archive/roster-d-coarse-pixel.png"
+      "repository_file": "asset-sources/art-direction/archive/roster-d-coarse-pixel.webp"
     },
     {
       "generated_file": "exec-2171326f-0d6b-455e-b21f-55fb0c05d5ac.png",
       "sha256": "a4f2cb0c6f74a4eacedf0479f0ffd90f02a193599df9345360c8c78c7d0c6e55",
       "status": "present",
-      "repository_file": "asset-sources/art-direction/archive/roster-a-retro-pixel.png"
+      "repository_file": "asset-sources/art-direction/archive/roster-a-retro-pixel.webp"
     },
     {
       "generated_file": "exec-26f52f40-a3ff-42d7-b46a-d5a2c7795aa2.png",
       "sha256": "cef798a5d69ca3749f265738cb3f48ed520d281e1773ab8a8d62a0a047b3b811",
       "status": "present",
-      "repository_file": "asset-sources/art-direction/archive/roster-b-cartoon.png"
+      "repository_file": "asset-sources/art-direction/archive/roster-b-cartoon.webp"
     },
     {
       "generated_file": "exec-4a5d91da-2aff-4b3a-a3e1-9f547819b74a.png",
@@ -60,7 +60,7 @@
       "generated_file": "exec-5decee2b-3b3d-49e7-82a9-81d15bdfb40a.png",
       "sha256": "3643f4330d163a1e6c03e0e09d6c79e345d8a23eac490a0a7b93fe0aca3f536b",
       "status": "present",
-      "repository_file": "asset-sources/art-direction/e-reference.png"
+      "repository_file": "asset-sources/art-direction/e-reference.webp"
     },
     {
       "generated_file": "exec-6f2f6cf0-cd24-4e20-86dc-3086843face1.png",
@@ -74,7 +74,7 @@
       "generated_file": "exec-75e10404-7709-4050-890a-772714827926.png",
       "sha256": "8159f4ee8ba449215219a7a04003f103da652e3c63dd6454c7ab8985d15d049a",
       "status": "present",
-      "repository_file": "asset-sources/art-direction/characters/dwarf/dwarf-model-sheet-black-red-v5.png"
+      "repository_file": "asset-sources/art-direction/characters/dwarf/dwarf-model-sheet-black-red-v5.webp"
     },
     {
       "generated_file": "exec-76e0f763-1b7c-4e66-8593-00ffbb3b2504.png",
@@ -88,7 +88,7 @@
       "generated_file": "exec-7d1433ba-b20c-4c0f-9d76-53806bb98d78.png",
       "sha256": "81d0d4374d0c7b92229bbd4f7a55713a390d15e96fb3ba13a7ca000563e26dbf",
       "status": "present",
-      "repository_file": "asset-sources/art-direction/archive/tile-everyday-objects.png"
+      "repository_file": "asset-sources/art-direction/archive/tile-everyday-objects.webp"
     },
     {
       "generated_file": "exec-84bc32aa-8afe-4c67-b14e-8860f3f21865.png",
@@ -114,13 +114,13 @@
       "generated_file": "exec-92146376-45ea-477d-b8b7-fa3fc18b2e7d.png",
       "sha256": "2603dcfcdc6894a4c22c67734c06167b9cd7ebe48b876e4f2a2354ada8ef9b2f",
       "status": "present",
-      "repository_file": "asset-sources/art-direction/characters/dwarf/animations/v6/dwarf-awake-source.png"
+      "repository_file": "asset-sources/art-direction/characters/dwarf/animations/v6/dwarf-awake-source.webp"
     },
     {
       "generated_file": "exec-9c0a170a-cb43-4645-b38a-a47ea2884b6f.png",
       "sha256": "df5620592f8b93dba98a5b17f83c6fa60cb3211e129f489f1364aa94407368ed",
       "status": "present",
-      "repository_file": "asset-sources/art-direction/f-reference.png"
+      "repository_file": "asset-sources/art-direction/f-reference.webp"
     },
     {
       "generated_file": "exec-9c2b8215-cb41-4ba8-b67b-d592b2b85933.png",
@@ -150,7 +150,7 @@
       "generated_file": "exec-cd99b18b-667c-47fd-96dd-d8358f0f79b3.png",
       "sha256": "41c1cd3b425bf9db342c0b8cd6cf4ae24793a52f3d47845491e322c5b8aeed23",
       "status": "present",
-      "repository_file": "asset-sources/art-direction/archive/tile-symbols-items-medallions.png"
+      "repository_file": "asset-sources/art-direction/archive/tile-symbols-items-medallions.webp"
     },
     {
       "generated_file": "exec-de1bdc90-711f-4cfa-b4de-30d0470445f1.png",
@@ -164,7 +164,7 @@
       "generated_file": "exec-de89aede-9837-4d63-b413-6a0de8ecc2d0.png",
       "sha256": "40fba7c321c4b34ab5ef418d75a0445a84f638c7a1f28ebead5ee186e3b4b319",
       "status": "present",
-      "repository_file": "asset-sources/art-direction/archive/tile-western-fantasy-objects.png"
+      "repository_file": "asset-sources/art-direction/archive/tile-western-fantasy-objects.webp"
     },
     {
       "generated_file": "exec-f23ae5d0-c895-4854-96e8-4979807c8d0b.png",
@@ -178,7 +178,7 @@
       "generated_file": "exec-f60797f3-9f67-470c-aa18-fefaec840f9e.png",
       "sha256": "b6febff51755406477b8d1de1d99a0b3834047f48153f2c86d31f842c2f934fb",
       "status": "present",
-      "repository_file": "asset-sources/art-direction/characters/knight/knight-stone-sword-v2.png"
+      "repository_file": "asset-sources/art-direction/characters/knight/knight-stone-sword-v2.webp"
     },
     {
       "generated_file": "exec-fe7a2aa9-aba4-469a-afa2-835f82e96379.png",
@@ -208,7 +208,7 @@
       "generated_file": "exec-a905a8e4-98c4-470f-aaba-e21c97bdaa84.png",
       "sha256": "25cb307aff0303cdebbed90300f77e657d873116796c0fbe49afb1420f10e341",
       "status": "present",
-      "repository_file": "asset-sources/art-direction/characters/knight/knight-black-red-gold-candidates-v3c.png"
+      "repository_file": "asset-sources/art-direction/characters/knight/knight-black-red-gold-candidates-v3c.webp"
     },
     {
       "generated_file": "exec-19d452dc-76d1-435e-9691-2c6261e80329.png",
@@ -254,13 +254,13 @@
       "generated_file": "exec-67a577d3-3f49-4050-8396-c725198a1bd3.png",
       "sha256": "db50485928d300085b27f34053407664bceb8eefbd88f6162e8327022f4b68e2",
       "status": "present",
-      "repository_file": "asset-sources/art-direction/characters/knight/knight-a4-model-sheet-v8.png"
+      "repository_file": "asset-sources/art-direction/characters/knight/knight-a4-model-sheet-v8.webp"
     },
     {
       "generated_file": "exec-e99dba1b-c80b-4ef3-92db-4793888e67d6.png",
       "sha256": "0b7d8e0a6daf98cb2dfc9f12a94b0a4775ebbef6f5ccd220f2860cc458193c06",
       "status": "present",
-      "repository_file": "asset-sources/art-direction/characters/priest/priest-drinking-candidates-e-v1.png"
+      "repository_file": "asset-sources/art-direction/characters/priest/priest-drinking-candidates-e-v1.webp"
     },
     {
       "generated_file": "exec-b5368252-beb2-4978-898f-4db2d436d7d4.png",
@@ -274,25 +274,25 @@
       "generated_file": "exec-5d5dade6-3423-4890-81a2-497d23eaec5a.png",
       "sha256": "a23c48a98155c8c79430f2119e1d8376c4a9e846e4e8c34539900a6fe8aa0e76",
       "status": "present",
-      "repository_file": "asset-sources/art-direction/characters/priest/priest-pc-model-sheet-e-v3.png"
+      "repository_file": "asset-sources/art-direction/characters/priest/priest-pc-model-sheet-e-v3.webp"
     },
     {
       "generated_file": "exec-91a8c85f-7084-4587-b268-534135042af9.png",
       "sha256": "c1d446405b87c704dc18e7d0a0578bb0918e9fc50358c0ea59542692de623ee9",
       "status": "present",
-      "repository_file": "asset-sources/art-direction/characters/knight/production/v3/animation-source.png"
+      "repository_file": "asset-sources/art-direction/characters/knight/production/v3/animation-source.webp"
     },
     {
       "generated_file": "exec-8d71db22-1d40-430e-9e18-cdaebbffb955.png",
       "sha256": "bc60138caffdc04a0f475a80df9b673f5770ee28f7a1f5bb8a91f039f2cf3f72",
       "status": "present",
-      "repository_file": "asset-sources/art-direction/characters/dwarf/production/v3/animation-source.png"
+      "repository_file": "asset-sources/art-direction/characters/dwarf/production/v3/animation-source.webp"
     },
     {
       "generated_file": "exec-95830c23-bfda-40ab-bb1d-a7c374f3fd18.png",
       "sha256": "585ef05121f6c819eb8c25eedbaf8309fb377b2d07eabcd72b27ef19964b9225",
       "status": "present",
-      "repository_file": "asset-sources/art-direction/characters/priest/production/v3/animation-source.png"
+      "repository_file": "asset-sources/art-direction/characters/priest/production/v3/animation-source.webp"
     }
   ],
   "user_references": [

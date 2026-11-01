@@ -4,12 +4,12 @@
 
 ## 文件
 
-- `animation-source-v2.png`：修去十字形光点与大面积光晕后的 4×4 透明动画源图，当前导出来源。初次生成的 v1 源图已按 2026-11-01 清理移出仓库，不用于导出。
-- `grid-384.png`：16 帧、每帧 384×384 的完整透明图集。第 1 行普通待机，第 2 行暗影待机，第 3 行普通治疗施法，第 4 行暗影攻击施法；每行 4 帧。
-- `normal-idle-0.png`、`awake-idle-0.png`：两种形态的待机首帧。
-- `normal-idle.gif`、`awake-idle.gif`、`normal-heal.gif`、`awake-attack.gif`：四组动画预览。
-- `standee-normal-source-v1.png`、`standee-awake-source-v1.png`：独立全身立绘原图。
-- `standee-normal.png`、`standee-awake.png`：共享色表、二值透明的独立立绘导出。
+- `animation-source-v2.webp`：修去十字形光点与大面积光晕后的 4×4 透明动画源图，当前导出来源。初次生成的 v1 源图已按 2026-11-01 清理移出仓库，不用于导出。
+- `grid-384.webp`：16 帧、每帧 384×384 的完整透明图集。第 1 行普通待机，第 2 行暗影待机，第 3 行普通治疗施法，第 4 行暗影攻击施法；每行 4 帧。
+- `normal-idle-0.webp`、`awake-idle-0.webp`：两种形态的待机首帧。
+- `normal-idle.webp`、`awake-idle.webp`、`normal-heal.webp`、`awake-attack.webp`：四组动画预览。
+- `standee-normal-source-v1.webp`、`standee-awake-source-v1.webp`：独立全身立绘原图。
+- `standee-normal.webp`、`standee-awake.webp`：共享色表、二值透明的独立立绘导出。
 - `report.json`：逐帧边界、色数、锚点与输出尺寸检查。
 - [PROMPT.md](PROMPT.md)：完整生成及修订提示词。
 

@@ -2,7 +2,7 @@
 
 # 骑士 K-A4 人设稿 v4
 
-日期：2026-10-29。工具：内置 imagegen。参考图：`knight-black-red-gold-candidates-v3c.png`，只采用最右 K-A4。用户已选方向，人设稿待评审；不做编码或游戏接入。
+日期：2026-10-29。工具：内置 imagegen。参考图：`knight-black-red-gold-candidates-v3c.webp`，只采用最右 K-A4。用户已选方向，人设稿待评审；不做编码或游戏接入。
 
 用户原始修改与当前权威规则见 `docs/art/characters/KNIGHT.md`。初次生成觉醒图未闭面甲，已发起定向修订；不以错误图改变设定。
 

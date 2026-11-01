@@ -2,7 +2,7 @@
 
 # 矮人战士首轮评审：生成记录
 
-工具：内置 ImageGen。用途：概念评审，不是生产用动画或正式导入素材。样式参考：`../../f-reference.png`。
+工具：内置 ImageGen。用途：概念评审，不是生产用动画或正式导入素材。样式参考：`../../f-reference.webp`。
 
 全局提示词与制作约束：[ART-DIRECTION.md](../../../../docs/art/ART-DIRECTION.md)。本轮使用下列资产级提示词收简第一轮过密的细节。原始最终预览保存在 `dwarf-review-v1.png`；`dwarf-review-v1.webp` 是像素一致的无损副本；`dwarf-review-ui-preview.webp` 是仅供界面预览的压缩副本。未采纳的第一轮过密图不作为最终交付素材。
 

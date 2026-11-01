@@ -55,7 +55,7 @@
 
 ## 最新美术反馈：觉醒头身比例
 
-最新图：[K-A4 v8](../../../asset-sources/art-direction/characters/knight/knight-a4-model-sheet-v8.png)，[完整提示词](../../../asset-sources/art-direction/characters/knight/MODEL-SHEET-A4-V8.md)。已对觉醒头部体积与颈肩比例、背面盔壳／抬起面甲的后视形状进行修订，保持普通开盔、觉醒闭盔。待用户评审，不将本轮修订自动视为通过。
+最新图：[K-A4 v8](../../../asset-sources/art-direction/characters/knight/knight-a4-model-sheet-v8.webp)，[完整提示词](../../../asset-sources/art-direction/characters/knight/MODEL-SHEET-A4-V8.md)。已对觉醒头部体积与颈肩比例、背面盔壳／抬起面甲的后视形状进行修订，保持普通开盔、觉醒闭盔。待用户评审，不将本轮修订自动视为通过。
 
 追加用户原文：「另外角色背面图的头盔处理也很奇怪」。背面应展示后脑盔壳与活动面甲内侧，不能复制正面鼻脊和朝向相机的透气孔；辫子由盔后下缘引出。
 
@@ -132,7 +132,7 @@
 
 验收要求：如图片仍露出觉醒脸部或产生多余剑，必须标为待修，不反向修改上述设定。
 
-当前候选图：[黑红金四稿 v3c](../../../asset-sources/art-direction/characters/knight/knight-black-red-gold-candidates-v3c.png)。上排普通、下排觉醒，底部开心／生气及近球形石头的正侧形状参考。v3c 已修正觉醒露下巴、A1 多余剑与高马尾；A1/A4 表情小图仍偏马尾，与全身侧辫不一致，选定后人设图需统一，不视为新增发型。四稿尚未通过，概念像素密度和实际游戏尺寸仍需生产校准。
+当前候选图：[黑红金四稿 v3c](../../../asset-sources/art-direction/characters/knight/knight-black-red-gold-candidates-v3c.webp)。上排普通、下排觉醒，底部开心／生气及近球形石头的正侧形状参考。v3c 已修正觉醒露下巴、A1 多余剑与高马尾；A1/A4 表情小图仍偏马尾，与全身侧辫不一致，选定后人设图需统一，不视为新增发型。四稿尚未通过，概念像素密度和实际游戏尺寸仍需生产校准。
 
 历史中间稿 v3a、v3b 仅为修订过程记录（文件名含 `needs-fix`），存在觉醒露下巴、多余剑或错误发型；不可作为当前参考。完整提示词与参考来源见 [生成记录](../../../asset-sources/art-direction/characters/knight/PROMPT-BLACK-RED-GOLD-V3.md)。
 
@@ -142,7 +142,7 @@
 >
 > 骑士觉醒后也还是石中剑，只是骑士力气大到把剑连带石头一起举起来了。
 
-保留 K-A 金发女重骑士，普通形态握着插在地面石头里的剑；觉醒剑不脱离石头，凭力量举起整套剑与石头，庄严外表和离谱力量形成反差。贞德气质暂以蓝白战旗式披肩和沉静坚毅表达，具体服装仍待评审。原 K-A 抽剑发光的觉醒候选不再作为当前方案。新增图：`../../../asset-sources/art-direction/characters/knight/knight-stone-sword-v2.png`。这不是已确定的主动或被动技能规则。
+保留 K-A 金发女重骑士，普通形态握着插在地面石头里的剑；觉醒剑不脱离石头，凭力量举起整套剑与石头，庄严外表和离谱力量形成反差。贞德气质暂以蓝白战旗式披肩和沉静坚毅表达，具体服装仍待评审。原 K-A 抽剑发光的觉醒候选不再作为当前方案。新增图：`../../../asset-sources/art-direction/characters/knight/knight-stone-sword-v2.webp`。这不是已确定的主动或被动技能规则。
 
 ## 用户要求（原文）
 

@@ -31,9 +31,9 @@
 
 > 采用 A
 
-选定方向：[N-A「静默守夜者」原图](../../../asset-sources/art-direction/characters/nun/nun-e-a-v1.png)。以成年女性、修长内敛的轮廓、朴素的黑色长修女服与白色头巾、垂在身侧的单盏提灯为当前人设。普通形态的暖白灯火与暗影形态的紫色灯火、脚边与袖缘暗影取自同一选定图。N-B／C／D 保留为历史候选，不视为选定稿。
+选定方向：[N-A「静默守夜者」原图](../../../asset-sources/art-direction/characters/nun/nun-e-a-v1.webp)。以成年女性、修长内敛的轮廓、朴素的黑色长修女服与白色头巾、垂在身侧的单盏提灯为当前人设。普通形态的暖白灯火与暗影形态的紫色灯火、脚边与袖缘暗影取自同一选定图。N-B／C／D 保留为历史候选，不视为选定稿。
 
-展开人设图：[N-A v1](../../../asset-sources/art-direction/characters/nun/nun-na-model-sheet-e-v1.png)，[完整生成提示词](../../../asset-sources/art-direction/characters/nun/MODEL-SHEET-NA-V1.md)。图包含正／侧／背视图、普通／暗影姿态、温柔／困惑／危险的喜悦／恢复后的悔意四种表情，以及修女服和同一盏提灯的结构拆分。这张图是待用户评审的概念人设，不把生成细节自动视为新设定，也不视为合格的生产图集。
+展开人设图：[N-A v1](../../../asset-sources/art-direction/characters/nun/nun-na-model-sheet-e-v1.webp)，[完整生成提示词](../../../asset-sources/art-direction/characters/nun/MODEL-SHEET-NA-V1.md)。图包含正／侧／背视图、普通／暗影姿态、温柔／困惑／危险的喜悦／恢复后的悔意四种表情，以及修女服和同一盏提灯的结构拆分。这张图是待用户评审的概念人设，不把生成细节自动视为新设定，也不视为合格的生产图集。
 
 ## 游戏美术资源 v1（待评审）
 
@@ -122,7 +122,7 @@
 | N-C 灰烬见证者 | 年长女性，瘦削微驼、目光严厉 | 褪色灰黑修女服，铁提灯低垂 | 挺直身姿，紫灯与背后的暗影呼应 |
 | N-D 坚定巡夜者 | 中年女性，宽肩、稳固站姿，保护者气质 | 普通黑色修女服，方形提灯向前照路 | 紫灯与脚边的盾形暗影，人物仍保持原装束 |
 
-选定原图：[N-A](../../../asset-sources/art-direction/characters/nun/nun-e-a-v1.png)。N-B／C／D 图片已按 2026-11-01 清理移出仓库。提示词见 [PROMPT-E-V1.md](../../../asset-sources/art-direction/characters/nun/PROMPT-E-V1.md)。
+选定原图：[N-A](../../../asset-sources/art-direction/characters/nun/nun-e-a-v1.webp)。N-B／C／D 图片已按 2026-11-01 清理移出仓库。提示词见 [PROMPT-E-V1.md](../../../asset-sources/art-direction/characters/nun/PROMPT-E-V1.md)。
 
 ## 实装与待评审
 

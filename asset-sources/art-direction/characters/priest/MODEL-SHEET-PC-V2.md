@@ -2,7 +2,7 @@
 
 # 牧师 P-C 人设稿 v2
 
-日期：2026-10-29。内置 imagegen，参考 `priest-drinking-candidates-e-v1.png` 第三列。用户原文：「按 p-c 来」。已选人物方向，新人设图待评审。仍按用户要求不提交 Git。
+日期：2026-10-29。内置 imagegen，参考 `priest-drinking-candidates-e-v1.webp` 第三列。用户原文：「按 p-c 来」。已选人物方向，新人设图待评审。仍按用户要求不提交 Git。
 
 ## 完整提示词
 
