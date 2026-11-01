@@ -1,255 +1,18 @@
-use crate::{label, Board};
+use crate::{label, outline, Board};
 use macroquad::prelude::*;
 use std::collections::VecDeque;
 /// Output rows visible at once in the full-screen console.
 const VISIBLE_ROWS: usize = 26;
 
-#[derive(Clone)]
-pub struct Snapshot {
-    pub awakened: [bool; 2],
-    pub reward_skill: Option<crate::content::Skill>,
-    pub board: Board,
-    pub hero: usize,
-    pub enemy: usize,
-    pub hp: i32,
-    pub enemy_hp: i32,
-    pub mp: i32,
-    pub enemy_mp: i32,
-    pub enemy_turn: bool,
-    pub action_done: bool,
-    pub pending: Vec<(usize, usize)>,
-    pub deadline: f64,
-    pub enemy_clock: f64,
-    pub bonuses: [i32; 2],
-    pub armed_sides: [bool; 2],
-    pub bonus: i32,
-    pub armed: bool,
-    pub chain: i32,
-    pub reward: bool,
-    pub difficulty: usize,
-    pub paused: bool,
-    pub rng_state: u64,
-    pub charge_damage: Option<(i32, bool)>,
-    pub charge_remaining: f64,
-    // Turn indicator records: restored by undo, left out of the log.
-    pub turns: crate::turns::Log,
-}
-impl Snapshot {
-    fn json(&self) -> String {
-        format!("{{\"reward_skill\":{},\"awakened\":{:?},\"board\":{:?},\"hero\":{},\"enemy\":{},\"hp\":{},\"enemy_hp\":{},\"mp\":{},\"enemy_mp\":{},\"enemy_turn\":{},\"action_done\":{},\"pending\":{},\"deadline\":{},\"enemy_clock\":{},\"bonuses\":{:?},\"armed_sides\":{:?},\"bonus\":{},\"armed\":{},\"chain\":{},\"reward\":{},\"difficulty\":{},\"paused\":{},\"rng_state\":{},\"charge_damage\":{},\"charge_remaining\":{}}}",
-            self.reward_skill.map(|s|quote(&format!("{s:?}"))).unwrap_or("null".into()),self.awakened,self.board,self.hero,self.enemy,self.hp,self.enemy_hp,self.mp,self.enemy_mp,self.enemy_turn,self.action_done,
-            cells_json(&self.pending),self.deadline,self.enemy_clock,self.bonuses,self.armed_sides,self.bonus,self.armed,self.chain,self.reward,self.difficulty,self.paused,self.rng_state,self.charge_damage.map(|(d,e)|format!("[{d},{e}]")).unwrap_or("null".into()),self.charge_remaining)
-    }
-}
-fn cells_json(cells: &[(usize, usize)]) -> String {
-    format!(
-        "[{}]",
-        cells
-            .iter()
-            .map(|(x, y)| format!("[{x},{y}]"))
-            .collect::<Vec<_>>()
-            .join(",")
-    )
-}
-fn quote(s: &str) -> String {
-    let mut out = String::from("\"");
-    for c in s.chars() {
-        match c {
-            '"' => out.push_str("\\\""),
-            '\\' => out.push_str("\\\\"),
-            '\n' => out.push_str("\\n"),
-            '\r' => out.push_str("\\r"),
-            '\t' => out.push_str("\\t"),
-            c if c.is_control() => out.push_str(&format!("\\u{:04x}", c as u32)),
-            c => out.push(c),
-        }
-    }
-    out.push('"');
-    out
-}
-#[derive(Debug, PartialEq)]
-pub enum Command {
-    Help,
-    Status,
-    Board,
-    Export,
-    Undo(bool),
-    Restart,
-    Resolve,
-    Shuffle,
-    Seed(u64),
-    SetTile(usize, usize, u8),
-    LoadBoard(Board),
-    Hero(bool, usize),
-    Bonus(bool, i32),
-    Armed(bool, bool),
-    Hp(bool, i32),
-    Mp(bool, i32),
-    Turn(bool),
-    Ai(usize),
-    Pause(bool),
-    Move((usize, usize), (usize, usize)),
-    Cast(usize, (usize, usize)),
-    /// Console output language: Some(true) Chinese, Some(false) English, None follows the game.
-    Lang(Option<bool>),
-}
-#[derive(Clone, Copy, Debug, PartialEq)]
-pub enum ParseError {
-    MissingArgument,
-    ExpectedInteger,
-    Coordinate,
-    Side,
-    Negative,
-    TileType,
-    Seed,
-    ArmedUsage,
-    PauseUsage,
-    SkillSlot,
-    LangUsage,
-    Unknown,
-}
-impl ParseError {
-    pub fn message(self, zh: bool) -> &'static str {
-        let (en, cn) = match self {
-            Self::MissingArgument => ("Missing argument", "缺少参数"),
-            Self::ExpectedInteger => ("Expected an integer", "参数应为整数"),
-            Self::Coordinate => ("Coordinates must be 1–8 (x y)", "坐标必须是 1～8（x y）"),
-            Self::Side => ("Use player or enemy", "请用 player 或 enemy"),
-            Self::Negative => ("Value must be non-negative", "数值不能为负"),
-            Self::TileType => ("Tile type must be 0–6", "方块类型必须是 0～6"),
-            Self::Seed => ("Expected an unsigned seed", "种子应为非负整数"),
-            Self::ArmedUsage => (
-                "Use buff player|enemy armed on|off",
-                "用法：buff player|enemy armed on|off",
-            ),
-            Self::PauseUsage => ("Use pause on|off", "用法：pause on|off"),
-            Self::SkillSlot => ("Skill slot must be 1 or 2", "技能编号只能是 1 或 2"),
-            Self::LangUsage => (
-                "Use lang zh, lang en or lang auto (follow the game)",
-                "用法：lang zh、lang en 或 lang auto（跟随游戏语言）",
-            ),
-            Self::Unknown => (
-                "Unknown command or argument count. Type help.",
-                "未知命令或参数个数不对，输入 help 查看用法",
-            ),
-        };
-        if zh {
-            cn
-        } else {
-            en
-        }
-    }
-}
-pub fn parse(input: &str) -> Result<Command, ParseError> {
-    let words: Vec<_> = input.split_whitespace().collect();
-    let n = |i: usize| -> Result<i32, ParseError> {
-        words
-            .get(i)
-            .ok_or(ParseError::MissingArgument)?
-            .parse()
-            .map_err(|_| ParseError::ExpectedInteger)
-    };
-    let coord = |i| -> Result<usize, ParseError> {
-        let v = n(i)?;
-        if (1..=8).contains(&v) {
-            Ok((v - 1) as usize)
-        } else {
-            Err(ParseError::Coordinate)
-        }
-    };
-    let side = |i| -> Result<bool, ParseError> {
-        match words.get(i).copied() {
-            Some("player") => Ok(false),
-            Some("enemy") => Ok(true),
-            _ => Err(ParseError::Side),
-        }
-    };
-    let value = |i| -> Result<i32, ParseError> {
-        let v = n(i)?;
-        if v >= 0 {
-            Ok(v)
-        } else {
-            Err(ParseError::Negative)
-        }
-    };
-    let kind = |i| -> Result<u8, ParseError> {
-        let v = n(i)?;
-        if (0..=6).contains(&v) {
-            Ok(v as u8)
-        } else {
-            Err(ParseError::TileType)
-        }
-    };
-    match words.first().copied().unwrap_or("") {
-        "help" if words.len() == 1 => Ok(Command::Help),
-        "status" if words.len() == 1 => Ok(Command::Status),
-        "board" if words.len() == 1 => Ok(Command::Board),
-        "export" if words.len() == 1 => Ok(Command::Export),
-        "undo" if words.len() == 1 => Ok(Command::Undo(false)),
-        "undo" if words.as_slice() == ["undo", "player"] => Ok(Command::Undo(true)),
-        "restart" if words.len() == 1 => Ok(Command::Restart),
-        "resolve" if words.len() == 1 => Ok(Command::Resolve),
-        "shuffle" if words.len() == 1 => Ok(Command::Shuffle),
-        "seed" if words.len() == 2 => Ok(Command::Seed(
-            words[1].parse().map_err(|_| ParseError::Seed)?,
-        )),
-        "tile" if words.len() == 4 => Ok(Command::SetTile(coord(1)?, coord(2)?, kind(3)?)),
-        "board" if words.len() == 66 && words[1] == "load" => {
-            let mut b = [[0; 8]; 8];
-            for y in 0..8 {
-                for x in 0..8 {
-                    b[y][x] = kind(2 + y * 8 + x)?;
-                }
-            }
-            Ok(Command::LoadBoard(b))
-        }
-        "hero" if words.len() == 3 && (0..7).contains(&n(2)?) => {
-            Ok(Command::Hero(side(1)?, n(2)? as usize))
-        }
-        "buff" if words.len() == 4 && words[2] == "bonus" && (0..=10).contains(&n(3)?) => {
-            Ok(Command::Bonus(side(1)?, n(3)?))
-        }
-        "buff" if words.len() == 4 && words[2] == "armed" => match words[3] {
-            "on" => Ok(Command::Armed(side(1)?, true)),
-            "off" => Ok(Command::Armed(side(1)?, false)),
-            _ => Err(ParseError::ArmedUsage),
-        },
-        "hp" if words.len() == 3 => Ok(Command::Hp(side(1)?, value(2)?)),
-        "mp" if words.len() == 3 => Ok(Command::Mp(side(1)?, value(2)?)),
-        "turn" if words.len() == 2 => Ok(Command::Turn(side(1)?)),
-        "ai" if words.len() == 2 && (0..=2).contains(&n(1)?) => Ok(Command::Ai(n(1)? as usize)),
-        "pause" if words.len() == 2 => match words[1] {
-            "on" => Ok(Command::Pause(true)),
-            "off" => Ok(Command::Pause(false)),
-            _ => Err(ParseError::PauseUsage),
-        },
-        "move" if words.len() == 5 => Ok(Command::Move(
-            (coord(1)?, coord(2)?),
-            (coord(3)?, coord(4)?),
-        )),
-        "cast" if words.len() == 2 || words.len() == 4 => {
-            let slot = n(1)?;
-            if !(1..=2).contains(&slot) {
-                return Err(ParseError::SkillSlot);
-            }
-            Ok(Command::Cast(
-                (slot - 1) as usize,
-                if words.len() == 4 {
-                    (coord(2)?, coord(3)?)
-                } else {
-                    (3, 3)
-                },
-            ))
-        }
-        "lang" => match words.as_slice() {
-            [_, "zh" | "cn"] => Ok(Command::Lang(Some(true))),
-            [_, "en"] => Ok(Command::Lang(Some(false))),
-            [_, "auto" | "game"] => Ok(Command::Lang(None)),
-            _ => Err(ParseError::LangUsage),
-        },
-        _ => Err(ParseError::Unknown),
-    }
-}
+mod commands;
+mod snapshot;
+#[cfg(test)]
+use commands::ParseError;
+pub use commands::{parse, Command};
+use snapshot::quote;
+pub use snapshot::Snapshot;
+#[cfg(test)]
+mod tests;
 /// Event names as shown in the console; the JSONL log keeps the English identifiers.
 fn event_name(event: &str, zh: bool) -> &str {
     if !zh {
@@ -340,6 +103,10 @@ pub struct Console {
     history: Vec<Checkpoint>,
     records: Vec<String>,
     seq: u64,
+    started: std::time::Instant,
+    quiet_events: bool,
+    /// Unattended batch runs skip snapshots, history and JSONL output.
+    batch: bool,
     pub action: u64,
     next_action: u64,
     #[cfg(not(target_arch = "wasm32"))]
@@ -350,6 +117,7 @@ pub struct Console {
 }
 impl Console {
     pub fn new(zh: bool) -> Self {
+        let quiet_events = std::env::var_os("BATTLEBLOCKS_HEADLESS_QUIET").is_some();
         #[allow(unused_mut)]
         let mut commands = VecDeque::new();
         #[cfg(not(target_arch = "wasm32"))]
@@ -428,6 +196,9 @@ impl Console {
             history: Vec::new(),
             records: Vec::new(),
             seq: 0,
+            started: std::time::Instant::now(),
+            quiet_events,
+            batch: false,
             action: 0,
             next_action: 0,
             #[cfg(not(target_arch = "wasm32"))]
@@ -436,12 +207,14 @@ impl Console {
             receiver,
             path,
         };
-        console.say_tr(
-            "Debug console: ~ / F1 toggles, Esc closes. Type help for commands; the language follows the game, lang zh / lang en fix it.",
-            "调试控制台：~ / F1 开关，Esc 关闭。输入 help 查看命令；语言跟随游戏，lang zh / lang en 可单独切换。",
-        );
-        let path = format!("{}{}", console.tr("Log: ", "日志："), console.path);
-        console.say(&path);
+        if !quiet_events {
+            console.say_tr(
+                "Debug console: ~ / F1 toggles, Esc closes. Type help for commands; the language follows the game, lang zh / lang en fix it.",
+                "调试控制台：~ / F1 开关，Esc 关闭。输入 help 查看命令；语言跟随游戏，lang zh / lang en 可单独切换。",
+            );
+            let path = format!("{}{}", console.tr("Log: ", "日志："), console.path);
+            console.say(&path);
+        }
         console
     }
     fn tr(&self, en: &'static str, zh: &'static str) -> &'static str {
@@ -556,6 +329,10 @@ impl Console {
                 .scroll
                 .min(self.rows().len().saturating_sub(VISIBLE_ROWS));
         }
+        self.poll_commands();
+    }
+    /// Drain externally supplied commands without reading keyboard or mouse state.
+    pub fn poll_commands(&mut self) {
         #[cfg(not(target_arch = "wasm32"))]
         while let Ok(line) = self.receiver.try_recv() {
             self.commands.push_back(line);
@@ -576,6 +353,9 @@ impl Console {
         self.checkpoint_kind(state, false)
     }
     fn checkpoint_kind(&mut self, state: Snapshot, gameplay: bool) -> u64 {
+        if self.batch {
+            return 0;
+        }
         self.next_action += 1;
         self.action = self.next_action;
         self.history.push(Checkpoint {
@@ -607,8 +387,21 @@ impl Console {
         self.action = 0;
     }
     pub fn event(&mut self, event: &str, detail: &str, before: &Snapshot, after: &Snapshot) {
+        self.event_payload(event, detail, None, before, after);
+    }
+    pub fn event_payload(
+        &mut self,
+        event: &str,
+        detail: &str,
+        payload: Option<&str>,
+        before: &Snapshot,
+        after: &Snapshot,
+    ) {
+        if self.batch {
+            return;
+        }
         self.seq += 1;
-        let record=format!("{{\"seq\":{},\"action\":{},\"time\":{},\"event\":{},\"actor\":{},\"detail\":{},\"before\":{},\"after\":{}}}",self.seq,self.action,get_time(),quote(event),quote(if before.enemy_turn{"enemy"}else{"player"}),quote(detail),before.json(),after.json());
+        let record=format!("{{\"seq\":{},\"action\":{},\"time\":{},\"event\":{},\"actor\":{},\"detail\":{},\"before\":{},\"after\":{},\"payload\":{}}}",self.seq,self.action,self.started.elapsed().as_secs_f64(),quote(event),quote(if before.enemy_turn{"enemy"}else{"player"}),quote(detail),before.json(),after.json(),payload.unwrap_or("null"));
         #[cfg(not(target_arch = "wasm32"))]
         {
             use std::io::Write;
@@ -645,7 +438,19 @@ impl Console {
                 self.seq, self.action, after.hp, after.enemy_hp, after.mp, after.enemy_mp
             )
         };
-        self.say(&line);
+        if !self.quiet_events {
+            self.say(&line);
+        }
+    }
+    pub fn set_quiet_events(&mut self, quiet: bool) {
+        self.quiet_events = quiet;
+    }
+    /// Unattended batch runs do not need undo snapshots or a JSONL transcript.
+    pub fn set_batch(&mut self, batch: bool) {
+        self.batch = batch;
+    }
+    pub fn quiet(&self) -> bool {
+        self.quiet_events
     }
     pub fn export(&mut self) {
         let data = self.records.join("\n") + "\n";
@@ -695,7 +500,7 @@ impl Console {
         crate::flush_labels();
         // An opaque full-screen sheet, so no battle text shows through or around it.
         draw_rectangle(0., 0., 1024., 720., Color::new(0.02, 0.03, 0.06, 1.));
-        draw_rectangle_lines(8., 8., 1008., 704., 2., Color::new(0.25, 0.4, 0.55, 1.));
+        outline(8., 8., 1008., 704., 2., Color::new(0.25, 0.4, 0.55, 1.));
         label(
             self.tr(
                 "DEBUG CONSOLE · ~ / F1 toggle · Esc close · wheel / PgUp PgDn scroll",
@@ -743,230 +548,4 @@ impl Console {
 #[cfg(target_arch = "wasm32")]
 extern "C" {
     fn bb_debug_download(ptr: *const u8, len: usize);
-}
-#[cfg(test)]
-mod tests {
-    use super::*;
-    fn state(enemy_turn: bool, hp: i32) -> Snapshot {
-        Snapshot {
-            awakened: [false; 2],
-            reward_skill: None,
-            board: [[1; 8]; 8],
-            hero: 0,
-            enemy: 1,
-            hp,
-            enemy_hp: 550,
-            mp: 200,
-            enemy_mp: 50,
-            enemy_turn,
-            action_done: false,
-            pending: vec![(2, 3)],
-            deadline: 0.2,
-            enemy_clock: 0.5,
-            bonuses: [1, 0],
-            armed_sides: [true, false],
-            bonus: 1,
-            armed: true,
-            chain: 2,
-            reward: true,
-            difficulty: 2,
-            paused: false,
-            rng_state: 42,
-            charge_damage: None,
-            charge_remaining: 0.,
-            turns: crate::turns::Log::new(),
-        }
-    }
-    #[cfg(not(target_arch = "wasm32"))]
-    fn console() -> Console {
-        let (_, receiver) = std::sync::mpsc::channel();
-        Console {
-            open: false,
-            zh: false,
-            follow_game: true,
-            scroll: 0,
-            input: String::new(),
-            output: VecDeque::new(),
-            commands: VecDeque::new(),
-            history: Vec::new(),
-            records: Vec::new(),
-            seq: 0,
-            action: 0,
-            next_action: 0,
-            file: None,
-            receiver,
-            path: String::new(),
-        }
-    }
-    #[cfg(not(target_arch = "wasm32"))]
-    #[test]
-    fn undo_player_removes_enemy_actions_and_debug_edits() {
-        let mut c = console();
-        let original = state(false, 700);
-        c.checkpoint(original.clone());
-        c.checkpoint(state(true, 650));
-        c.checkpoint_edit(state(false, 600));
-        let (restored, id) = c.undo(true).unwrap();
-        assert_eq!(id, 1);
-        assert_eq!(restored.json(), original.json());
-        assert!(c.history.is_empty());
-        assert!(c.undo(false).is_none());
-        assert_eq!(c.checkpoint(state(false, 500)), 4); // IDs never reused after rollback.
-    }
-    #[cfg(not(target_arch = "wasm32"))]
-    #[test]
-    fn undo_latest_retains_earlier_checkpoints() {
-        let mut c = console();
-        c.checkpoint(state(false, 700));
-        c.checkpoint(state(true, 650));
-        let (restored, id) = c.undo(false).unwrap();
-        assert_eq!(restored.hp, 650);
-        assert_eq!(id, 2);
-        assert_eq!(c.history.len(), 1);
-        assert_eq!(c.undo(false).unwrap().0.hp, 700);
-    }
-    #[test]
-    fn command_validation() {
-        assert_eq!(parse("tile 8 1 6"), Ok(Command::SetTile(7, 0, 6)));
-        for bad in [
-            "tile 0 1 2",
-            "tile 1 1 7",
-            "hp player -1",
-            "move 9 1 2 3",
-            "ai 3",
-            "undo enemy",
-            "cast 3",
-            "hp player 5 extra",
-        ] {
-            assert!(parse(bad).is_err(), "{bad}");
-        }
-        assert_eq!(parse("undo player"), Ok(Command::Undo(true)));
-    }
-    #[test]
-    fn json_escapes_control_characters() {
-        assert_eq!(quote("a\n\"\\"), "\"a\\n\\\"\\\\\"");
-    }
-    #[cfg(not(target_arch = "wasm32"))]
-    #[test]
-    fn console_language_follows_the_game_until_fixed() {
-        let mut c = console();
-        c.sync_language(true);
-        assert!(c.zh);
-        c.sync_language(false);
-        assert!(!c.zh);
-        // A fixed language ignores the game's language toggles.
-        c.set_language(Some(true), false);
-        c.sync_language(false);
-        assert!(c.zh);
-        assert!(c.output.back().unwrap().contains("中文"));
-        // lang auto takes the game's current language at once and keeps following it.
-        c.set_language(None, false);
-        assert!(!c.zh);
-        c.sync_language(true);
-        assert!(c.zh);
-    }
-    #[test]
-    fn board_load_requires_64_valid_tiles() {
-        let text = format!("board load {}", vec!["2"; 64].join(" "));
-        assert_eq!(parse(&text), Ok(Command::LoadBoard([[2; 8]; 8])));
-        assert!(parse("board load 2 2").is_err());
-    }
-    #[test]
-    fn lang_command_and_errors_are_specific() {
-        assert_eq!(parse("lang zh"), Ok(Command::Lang(Some(true))));
-        assert_eq!(parse("lang cn"), Ok(Command::Lang(Some(true))));
-        assert_eq!(parse("lang en"), Ok(Command::Lang(Some(false))));
-        assert_eq!(parse("lang auto"), Ok(Command::Lang(None)));
-        for (bad, error) in [
-            ("lang", ParseError::LangUsage),
-            ("lang fr", ParseError::LangUsage),
-            ("tile 0 1 2", ParseError::Coordinate),
-            ("tile 1 1 7", ParseError::TileType),
-            ("hp player -1", ParseError::Negative),
-            ("hp boss 1", ParseError::Side),
-            ("cast 3", ParseError::SkillSlot),
-            ("pause maybe", ParseError::PauseUsage),
-            ("seed -1", ParseError::Seed),
-            ("tile x 1 2", ParseError::ExpectedInteger),
-            ("dance", ParseError::Unknown),
-        ] {
-            assert_eq!(parse(bad), Err(error), "{bad}");
-        }
-    }
-    #[test]
-    fn every_parse_error_has_both_languages() {
-        use ParseError::*;
-        for error in [
-            MissingArgument,
-            ExpectedInteger,
-            Coordinate,
-            Side,
-            Negative,
-            TileType,
-            Seed,
-            ArmedUsage,
-            PauseUsage,
-            SkillSlot,
-            LangUsage,
-            Unknown,
-        ] {
-            let cjk = |text: &str| text.chars().any(|c| ('\u{4e00}'..='\u{9fff}').contains(&c));
-            let (en, zh) = (error.message(false), error.message(true));
-            assert!(!en.is_empty() && !cjk(en), "{error:?}");
-            assert!(cjk(zh), "{error:?} has no Chinese message");
-        }
-    }
-    #[test]
-    fn wrapped_rows_stay_within_the_limit_and_keep_the_text() {
-        let text = "#4 action=1 resolution: cells=[(2, 6), (3, 6), (4, 6)] reward=true multiplier_percent=100 heal=0 damage=22 mana=22 chain=2 refreshed=false actual_heal=0";
-        let rows = wrap_units(text, 40.);
-        assert!(rows.len() > 1);
-        assert!(rows.iter().all(|row| text_units(row) <= 40.));
-        assert_eq!(
-            rows.join(" ").split_whitespace().collect::<Vec<_>>(),
-            text.split_whitespace().collect::<Vec<_>>()
-        );
-        let cjk = "控制台打开时战斗暂停；move、cast、resolve 会关闭控制台并按正常规则结算。";
-        let rows = wrap_units(cjk, 12.);
-        assert!(rows.iter().all(|row| text_units(row) <= 12.));
-        assert_eq!(rows.concat().replace(' ', ""), cjk.replace(' ', ""));
-        assert_eq!(wrap_units("", 10.), vec![String::new()]);
-    }
-    #[cfg(not(target_arch = "wasm32"))]
-    #[test]
-    fn help_switches_language_and_keeps_the_same_sections() {
-        let mut c = console();
-        c.help();
-        let english: Vec<_> = c.output.drain(..).collect();
-        c.zh = true;
-        c.help();
-        let chinese: Vec<_> = c.output.drain(..).collect();
-        assert_eq!(english.len(), chinese.len());
-        assert!(english.iter().all(|line| !line.contains('～')));
-        assert!(chinese.iter().any(|line| line.contains("lang en")));
-        // Every section line has a category column, in both languages.
-        for lines in [&english, &chinese] {
-            assert!(lines[1..]
-                .iter()
-                .all(|line| line.split_once('\t').is_some()));
-        }
-        assert!(c
-            .rows()
-            .iter()
-            .all(|(_, row, x)| text_units(row) * 15. <= 1000. - x));
-    }
-    #[test]
-    fn console_names_events_in_chinese_but_keeps_log_identifiers() {
-        assert_eq!(event_name("resolution", true), "结算");
-        assert_eq!(event_name("resolution", false), "resolution");
-        assert_eq!(
-            event_detail("All cascades resolved; next actor", true),
-            "连锁结算完毕，轮到下一方"
-        );
-        // Measured details are shown exactly as logged.
-        assert_eq!(
-            event_detail("swap [1,1] -> [2,1]", true),
-            "swap [1,1] -> [2,1]"
-        );
-    }
 }

@@ -1,5 +1,7 @@
-use crate::{board::TileFall, label, Board, N};
+use crate::{board::TileFall, label, outline, Board, N};
 use macroquad::prelude::*;
+/// Duration of the one-shot cast window: the hero's cast animation spans all of it.
+pub const CAST_TIME: f64 = 1.4;
 pub const CHARGE_TIME: f64 = 0.95;
 pub const SWAP_TIME: f64 = 0.35;
 pub const CLEAR_TIME: f64 = 0.4;
@@ -53,7 +55,7 @@ pub struct Presentation {
     swapping: bool,
     charge_column: Option<usize>,
 }
-fn pos(x: usize, y: isize) -> Vec2 {
+fn pos(x: isize, y: isize) -> Vec2 {
     vec2(256. + x as f32 * 64., 110. + y as f32 * 64.)
 }
 impl Presentation {
@@ -136,8 +138,8 @@ impl Presentation {
                 DrawTextureParams {
                     dest_size: Some(vec2(width, visible)),
                     source: Some(Rect::new(
-                        index as f32 * w,
-                        top / 72. * h,
+                        (index % (texture.width() / w) as usize) as f32 * w,
+                        (index / (texture.width() / w) as usize) as f32 * h + top / 72. * h,
                         w,
                         visible / 72. * h,
                     )),
@@ -229,14 +231,18 @@ impl Presentation {
             };
             let x = panel.x + panel.w / 2.;
             crate::label_centered(
-                if zh { "觉醒" } else { "AWAKENING" },
+                crate::tr_key(zh, "combat.awakening_banner"),
                 x,
                 255. - t * 9.,
                 24.,
                 Color::new(1., 0.8, 0.4, alpha),
             );
             if t > 0.45 {
-                let text = format!("+{} {}", a.new_max - a.hit, if zh { "生命" } else { "HP" });
+                let text = crate::format_text(
+                    zh,
+                    "combat.health_gain",
+                    &[&(a.new_max - a.hit).to_string()],
+                );
                 crate::label_centered(
                     &text,
                     x,
@@ -248,7 +254,11 @@ impl Presentation {
         }
     }
     pub fn hides(&self, x: usize, y: usize) -> bool {
-        self.busy() && self.motions.iter().any(|m| m.to == pos(x, y as isize))
+        self.busy()
+            && self
+                .motions
+                .iter()
+                .any(|m| m.to == pos(x as isize, y as isize))
     }
     pub fn swap(
         &mut self,
@@ -283,15 +293,15 @@ impl Presentation {
                 }
             }
         }
-        if hero == 0 && a.1 == b.1 && !parallel {
+        if matches!(hero, 0 | crate::content::KNIGHT) && a.1 == b.1 && !parallel {
             pairs = (0..N).map(|y| ((a.0, y), (b.0, y))).collect();
         }
         self.motions.clear();
         for (a, b) in pairs {
             for (from, to) in [(a, b), (b, a)] {
                 self.motions.push(Motion {
-                    from: pos(from.0, from.1 as isize),
-                    to: pos(to.0, to.1 as isize),
+                    from: pos(from.0 as isize, from.1 as isize),
+                    to: pos(to.0 as isize, to.1 as isize),
                     kind: before[from.1][from.0],
                 });
             }
@@ -304,15 +314,16 @@ impl Presentation {
         self.motions = falls
             .into_iter()
             .map(|f| Motion {
-                from: pos(f.x, f.from_y),
-                to: pos(f.x, f.to_y as isize),
+                from: pos(f.from.0, f.from.1),
+                to: pos(f.to.0 as isize, f.to.1 as isize),
                 kind: f.kind,
             })
             .collect();
         self.time = FALL_TIME;
         self.duration = FALL_TIME;
     }
-    pub fn health(&mut self, before: [i32; 2], after: [i32; 2], source: &str) {
+    /// Show the actual current source independently for each affected side.
+    pub fn health_sources(&mut self, before: [i32; 2], after: [i32; 2], sources: [&str; 2]) {
         for i in 0..2 {
             if before[i] != after[i] {
                 self.popups.push(Popup {
@@ -320,7 +331,7 @@ impl Presentation {
                     before: before[i],
                     after: after[i],
                     time: 2.4,
-                    source: source.to_string(),
+                    source: sources[i].to_string(),
                 });
             }
         }
@@ -355,7 +366,7 @@ impl Presentation {
                 },
             );
             if self.swapping {
-                draw_rectangle_lines(
+                outline(
                     p.x + 2.,
                     p.y + 2.,
                     60.,
@@ -382,22 +393,14 @@ impl Presentation {
                 let color = if delta < 0 { ORANGE } else { GREEN };
                 draw_rectangle(x, y - 22., 200., 52., Color::new(0.04, 0.05, 0.08, 0.93));
                 label(
-                    &format!(
-                        "{} {}",
+                    &crate::format_text(
+                        zh,
                         if delta < 0 {
-                            if zh {
-                                "受伤"
-                            } else {
-                                "Damage"
-                            }
+                            "combat.popup_damage"
                         } else {
-                            if zh {
-                                "回复"
-                            } else {
-                                "Heal"
-                            }
+                            "combat.popup_heal"
                         },
-                        delta.abs()
+                        &[&delta.abs().to_string()],
                     ),
                     x + 5.,
                     y,
@@ -420,6 +423,21 @@ impl Presentation {
 mod tests {
     use super::*;
     #[test]
+    fn refill_animation_accepts_horizontal_and_off_board_origins() {
+        let mut p = Presentation::default();
+        p.fall(vec![TileFall {
+            from: (-2, 3),
+            to: (1, 3),
+            kind: 2,
+        }]);
+        assert_eq!(p.motions[0].from, vec2(128., 302.));
+        assert_eq!(p.motions[0].to, vec2(320., 302.));
+        assert!(p.hides(1, 3));
+        assert!(!p.hides(1, 4));
+        p.tick(FALL_TIME + 0.01);
+        assert!(!p.busy());
+    }
+    #[test]
     fn charge_sweep_clears_only_selected_columns_in_order() {
         let mut p = Presentation::default();
         p.charge(2, CHARGE_TIME);
@@ -437,7 +455,7 @@ mod tests {
         let b = [[2; N]; N];
         let mut p = Presentation::default();
         p.swap(&b, (0, 0), (1, 0), false, true, 2);
-        p.health([700, 500], [700, 350], "charge");
+        p.health_sources([700, 500], [700, 350], ["charge", "charge"]);
         assert!(p.hides(0, 0));
         assert!(p.actor_enemy);
         p.tick(SWAP_TIME + 0.01);
@@ -447,6 +465,15 @@ mod tests {
         p.tick(3.);
         assert!(p.popups.is_empty());
     }
+    #[test]
+    fn health_popups_keep_the_current_source_for_each_side() {
+        let mut p = Presentation::default();
+        p.health_sources([700, 400], [650, 350], ["auto recovery", "madness"]);
+        assert_eq!(p.popups.len(), 2);
+        assert_eq!(p.popups[0].source, "auto recovery");
+        assert_eq!(p.popups[1].source, "madness");
+    }
+
     #[test]
     fn animation_covers_every_parallel_pair_and_rollback_clears_it() {
         let mut p = Presentation::default();
@@ -478,7 +505,7 @@ pub fn draw_move_hint(
     };
     if columns {
         for x in [a.0, b.0] {
-            draw_rectangle_lines(256. + x as f32 * 64. + 5., 115., 54., 502., 2., GOLD);
+            outline(256. + x as f32 * 64. + 5., 115., 54., 502., 2., GOLD);
         }
     }
     let dir = (to - from).normalize();

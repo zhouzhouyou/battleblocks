@@ -1,5 +1,6 @@
 //! Skill-specific, deterministic visuals. Rendering never touches battle state or RNG.
 use crate::content::Skill;
+use crate::outline;
 use macroquad::prelude::*;
 fn tint(c: Color, a: f32) -> Color {
     Color::new(c.r, c.g, c.b, a.clamp(0., 1.))
@@ -49,6 +50,15 @@ fn cross(center: Vec2, size: f32, color: Color) {
     draw_rectangle(center.x - 2., center.y - size, 4., size * 2., color);
 }
 pub fn draw(skill: Skill, cells: &[(usize, usize)], progress: f32, enemy: bool) {
+    let skill = match skill {
+        Skill::Rush => Skill::Charge,
+        Skill::Miracle | Skill::Jump | Skill::Copy => Skill::Strike,
+        Skill::Hammer => Skill::Meteor,
+        Skill::Forge => Skill::War,
+        Skill::Entomb => Skill::Greedy,
+        Skill::Resurrect => Skill::Nature,
+        other => other,
+    };
     let p = progress.clamp(0., 1.);
     let alpha = 1. - p;
     let actor = vec2(if enemy { 890. } else { 110. }, 300.);
@@ -235,7 +245,7 @@ pub fn draw(skill: Skill, cells: &[(usize, usize)], progress: f32, enemy: bool) 
             }
             Skill::Guard => {
                 // The board contribution is consumption, not additional healing.
-                draw_rectangle_lines(
+                outline(
                     c.x - 24. * (1. - q),
                     c.y - 24. * (1. - q),
                     48. * (1. - q),
@@ -252,7 +262,7 @@ pub fn draw(skill: Skill, cells: &[(usize, usize)], progress: f32, enemy: bool) 
                     );
                 }
             }
-            Skill::Charge | Skill::Blood | Skill::Strike | Skill::Landslide => {}
+            _ => {}
         }
     }
 }

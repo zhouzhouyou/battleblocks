@@ -1,0 +1,44 @@
+# key|English|中文
+KnightStrength.name|Might|大力
+KnightStrength.description|Each attack-bearing tile deals 3 extra damage.|每个攻击方块额外造成3伤害
+DwarfStrength.name|Might|大力
+DwarfStrength.description|Each attack-bearing tile deals 2 extra damage.|每个攻击方块额外造成2伤害
+Might.name|Might|大力
+Might.description|Each attack-bearing tile deals 2 extra damage.|每个攻击方块额外造成2伤害
+Short.name|Short|矮
+Short.description|Only reach the bottom four rows.\nOn enemy swaps, damage from tiles cleared in the top four rows is blocked.|只能操作下方四行\n敌方交换消除时，上方四行方块产生的伤害无效
+Grudge.name|Book of grudges|仇恨之书
+Grudge.description|At 80%, 60%, 40% current HP cap,\nreach one extra row per threshold.\nHealing reduces the book height.|生命不高于当前上限80%／60%／40%时\n每级额外触及一行，最多三级\n恢复生命会降低书的厚度与范围
+Clumsy.name|Clumsy|笨拙
+Clumsy.description|Horizontal swaps exchange whole adjacent columns.\nDirect clears from a column swap gain +8% rewards.|左右移动时交换相邻两整列\n整列交换产生的直接消除收益 +8%
+ClumsyAwake.name|Clumsy+|笨拙·觉醒
+ClumsyAwake.description|Horizontal swaps exchange whole adjacent columns.\nDirect clears from a column swap gain +18% rewards.|左右移动时交换相邻两整列\n整列交换产生的直接消除收益 +18%
+MindVision.name|Mind vision|心灵视界
+MindVision.description|After each enemy turn, copy one directly cleared tile.\nSkip if pockets are full; capacity remains two.|对手回合结束时随机复制一个直接消除过的方块\n口袋已满则不复制，容量仍为两个
+BorrowedSlot.name|Borrowed power|借来的力量
+BorrowedSlot.description|A third active slot copies an enemy active each turn.\nFixed cooldown 1; inherits its cost and end-turn rule.|每回合随机复制一个对手主动到额外栏位\n固定冷却1，消耗与结束回合规则随复制技能
+Knight.awakening|Horizontal direct clears +10%; unlock Hammer 80.|左右移动的直接消除效果+10%；解锁大锤80
+Dwarf.awakening|The book increases reach at 80%, 60%, 40% HP.|仇恨之书在80%／60%／40%血量阶段增加范围
+Priest.awakening|Unlock a third slot that copies an enemy active each turn.|新增每回合随机复制对手主动的技能栏
+FriendMilk.name|Friendship milk|友谊之奶
+FriendMilk.description|Each healing effect on yourself also heals the opponent by its original amount, even at full HP.|每次对自己触发治疗，也按原始治疗量治疗对手，不受生命缺口影响
+AutoRecovery.name|Automatic recovery|自动恢复
+AutoRecovery.description|At turn end, restore 6 HP and 8 mana. The healing triggers other healing effects.|回合结束时回复6生命与8魔力；治疗照常触发其他效果
+Madness.name|Madness|癫狂
+Madness.description|All healing effects become damage to the opponent. You do not heal.|所有治疗效果改为对手受到伤害，自己不回血
+Nun.awakening|Gain Madness while keeping Friendship milk. Into frenzy becomes Return to reason.|保留友谊之奶并获得癫狂，陷入癫狂替换为回归理性
+Dwarf.unreachable|Damn, I cannot reach that.|该死，我够不到
+Skill.continue|Does not end turn|不结束回合
+Skill.force_prompt|Select an adjacent non-matching movement.|请选择一次不产生消除的相邻移动
+
+Dwarf.evade|You cannot hit me!|你打不到我！
+Status.frenzy|Frenzy|陷入癫狂
+Status.rational|Reason|回归理性
+Status.reach|Extended reach|操作范围增加
+Status.double|Double rewards|消除增幅准备
+Status.parallel|Parallel swap|三线换位准备
+Status.frenzy.description|Your healing for the opponent becomes damage. Your own healing still works.|为对手触发的治疗改为伤害；自身治疗照常生效
+Status.rational.description|Madness is disabled. Normal attacks still deal damage.|暂时禁用癫狂；普通攻击仍造成伤害
+Status.reach.description|You can reach one additional row.|可操作范围增加一行
+Status.double.description|Your next clear gains 100% additional effects.|下次消除额外触发100%效果
+Status.parallel.description|The next orthogonal exchange includes its two parallel pairs.|下次正交交换附带两侧平行交换

@@ -1,0 +1,269 @@
+# BattleBlocks UI localization. Columns: key, English, 中文.
+# Edit both language columns together. Templates use {0}, {1}, ... placeholders.
+# ui.shared.* entries are short labels reused by multiple screens.
+# 数值提示模板：序号占位符按源代码传入顺序替换
+ui.screen.draw_pause.abandon_return_to_main_menu	Abandon & return to main menu	放弃并回到主菜单
+ui.hud.draw_turns.action_resolved	Action resolved	行动结算完成
+ui.hud.draw_actors.active	ACTIVE	行动中
+ui.shared.advanced	Advanced	进阶
+ui.menu.draw.after_casting	After casting	释放后
+ui.skills.draw_skill_details.after_hp	After: HP	结算后生命
+ui.hud.draw_turns.ai	AI: 	AI 难度：
+ui.screen.draw_opponents.ai_difficulty	AI difficulty	AI 难度
+ui.menu.draw.animated_preview	ANIMATED PREVIEW	角色动画预览
+ui.screen.draw_top.audio_m	Audio / M	音频 / M
+ui.menu.draw.awakening	AWAKENING	觉醒能力
+ui.screen.draw_panel.awakening	Awakening	觉醒
+ui.screen.draw_panel.awakening_numbers	Each hero's trigger point and new HP cap are on its awakening page.	各角色的觉醒点与新生命上限见角色觉醒页。
+ui.screen.draw_opponents.back_choose_hero	Back: choose hero	上一步：选择角色
+ui.hud.draw_turns.battle_blocks	BATTLE BLOCKS	方块战斗
+ui.hud.draw_turns.battle_over	Battle over	战斗结束
+ui.menu.draw.before_casting	Before casting	释放前
+ui.shared.beginner	Beginner	入门
+ui.hints.draw_hints.blue_tiles_gold_columns_hold_h_cli	Blue: tiles · Gold: columns · hold H + click a number	蓝色：两格交换 / 金色：整列交换 · 按住 H 点编号即可执行
+ui.hints.draw_hints.blue_tiles_gold_whole_columns	Blue: tiles / Gold: whole columns	蓝色：两格交换 / 金色：整列交换
+ui.turns.actions_text.board_reroll	Board reroll	重排棋盘
+ui.battlefield.draw_board.cancel_esc_right_click	Cancel · Esc / right click	取消 · Esc / 右键
+ui.shared.cd	CD	冷却
+ui.hud.draw_turns.chain	Chain	连锁
+ui.screen.draw_panel.chains_10_per_step_up_to_130_skill	Chains: +10% per step, up to 130%. Skills may differ.	连锁每层＋10%，最高130%；技能按各自说明结算。
+ui.actions.cast_skill.charging_expected_damage	Charging · expected damage:	冲锋中 · 预计伤害：
+ui.hud.draw_turns.charging	Charging	冲锋中
+ui.resolution.resolve_pending.clear	Clear	消除
+ui.hud.draw_turns.clearing_matches	Clearing matches	正在消除
+ui.hints.draw_hints.click	click	点击执行
+ui.hints.draw_hints.click_a_row_to_play_pages	Click a row to play · ← → pages	点击条目即可执行 · ← → 翻页
+ui.menu.draw.click_a_skill_to_preview	Click a skill to preview	点击技能可预览效果
+ui.hud.draw_turns.click_a_target	click a target	点击棋盘选择目标
+ui.skills.draw_skill_details.click_board_to_confirm	Click board to confirm	点击棋盘确认释放
+ui.turns.swap_text.col	 COL	 整列
+ui.screen.draw_pause.continue	Continue	继续游戏
+ui.skills.draw_skill_details.cost	Cost: 	消耗：
+ui.turns.results_text.damage	damage	伤害
+ui.turn.advance_turn.damage	Damage:	伤害：
+# 技能预览中标注预估伤害，而 turns.rs 里的 Damage 是日志回合结果
+ui.skills.draw_skill_details.damage	Damage:	预计伤害：
+ui.screen.draw_panel.damage_or_hp_payment_triggers_a_ne	Damage or HP payment triggers a new skin, healing and power.	受伤或支付生命到达血线后，更换皮肤、恢复生命并强化。
+ui.overlays.draw_overlays.defeat	DEFEAT	你输了
+ui.hud.draw_turns.defeat	Defeat	失败
+ui.hints.draw_hints.dmg	Dmg 	伤
+ui.screen.draw_panel.dmg	DMG	伤害
+ui.menu.draw.each_hero_plays_differently	Each hero plays differently.	每个角色都有不同的战斗方式。
+ui.menu.draw.effect_preview	EFFECT PREVIEW	技能效果预览
+ui.menu.draw.character_form	Character form	角色形态
+ui.menu.draw.cast_animation	Cast animation	施法动作
+ui.shared.enemy	Enemy	敌方
+ui.hud.draw_turns.enemy_is_choosing	Enemy is choosing	敌方思考中
+ui.hints.draw_hints.enemy_moves_view_only	Enemy moves: view only	敌方的交换，仅供查看
+ui.hud.draw_turns.enemy_turn	Enemy turn	敌方回合
+ui.screen.draw_opponents.enter_start_battle	Enter · Start battle	回车 / 点击 · 开始对战
+ui.screen.draw_panel.esc_close	Esc: Close	Esc：关闭
+ui.screen.draw_opponents.excludes_your_hero	Excludes your hero	随机时不与己方角色重复
+ui.skills.draw_skill_details.expected_rewards	Expected rewards	预估收益
+ui.hints.draw_hints.first_clear_no_refill_chains	First clear; no refill chains	首轮收益，不含补充连锁
+ui.actions.cast_skill.flesh_casting	Flesh casting	血肉施法
+ui.screen.draw_panel.fullscreen	Fullscreen	全屏
+ui.screen.draw_game_over_buttons.home	Home	回到首页
+ui.hints.draw_hints.hover_to_list_click_to_play	Hover to list · click to play	悬停查看 · 点击条目执行
+ui.menu.draw.hp_20_max	HP +20% max	回复生命上限20%
+ui.shared.hp	HP	生命
+ui.hints.draw_hints.hp	HP+	治
+ui.skills.draw_skill_details.hp_change	HP change:	生命变化：
+ui.skills.draw_skill_details.hp_payment_triggers_awakening	HP payment triggers awakening	生命支付将触发觉醒
+ui.skills.draw_skill_details.if_funded_mana_too_low	If funded; mana too low	筹足魔力后可获；当前不足
+ui.screen.draw_panel.language	Language	语言
+ui.hud.draw_turns.last_turn	Last turn	上一回合
+ui.skills.draw_skill_details.mana	Mana:	魔力：
+ui.screen.draw_panel.match_3_identical_tiles_damage_hit	Match 3+ identical tiles. Damage hits your opponent.	连接三个以上同类方块消除；伤害作用于对手。
+ui.menu.draw.max_health	MAX HEALTH	生命上限
+ui.menu.draw.max_mana	MAX MANA	魔力上限
+ui.hints.draw_hints.move_rewards	Move rewards	移动收益
+ui.hints.draw_hints.moves	moves	种交换
+ui.hints.draw_hints.moves_hold_h	Moves · hold H	可行移动 · 按住 H
+ui.hints.draw_hints.mp	MP+	魔
+ui.shared.mp	MP	魔力
+ui.menu.draw_passive_entries.new	New	新增
+ui.shared.next	Next >	下一页
+ui.shared.unknown	Unknown source	来源未知
+ui.menu.draw.next_choose_opponent	NEXT · CHOOSE OPPONENT	下一步：选择对手
+ui.skills.draw_skill_details.next_clear_100	Next clear: +100%	下次消除收益＋100%
+ui.menu.draw.next_clear_100	Next clear: +100%	下次消除：收益+100%
+ui.menu.draw.next_swap	Next swap	下次交换
+ui.hud.draw_turns.no_gain	no gain	无收益
+ui.hints.draw_hints.no_legal_exchanges	No legal exchanges	当前无可行交换
+ui.overlays.draw_reroll.no_swaps_cast_a_skill_reroll_f2	No swaps: cast a skill / reroll (F2)	无可交换：可施法 / 点击重排（F2）
+ui.hud.draw_turns.none_yet	None yet	暂无
+ui.skills.draw_skill_details.not_enough_hp_must_leave_1	Not enough HP; must leave 1	生命不足，支付后须剩1点
+ui.overlays.draw_passives.off	 · off	·未触发
+ui.screen.draw_panel.off	Off	关闭
+ui.screen.draw_panel.on	On	开启
+ui.menu.draw.one_distinctive_skill	ONE DISTINCTIVE SKILL	专属技能
+ui.menu.draw.outlined_affected_tiles	Outlined: affected tiles	描边：受影响的方块
+ui.menu.draw.passive_skill	PASSIVE SKILL	被动技能
+ui.screen.draw_top.pause_p	Pause / P	暂停 / P
+ui.screen.draw_pause.paused	PAUSED	已暂停
+ui.screen.draw_game_over_buttons.play_again	Play again	重来一局
+ui.overlays.draw_pockets.pocket	Pocket	口袋
+ui.shared.prev	< Prev	上一页
+ui.menu.draw.preview_the_effect_below	Preview the effect below.	在下方预览技能影响的方块。
+ui.menu.draw.preview_your_hero_and_skills_befor	Preview your hero and skills before battle	查看角色与技能，准备回合制对战
+ui.screen.draw_opponents.random_opponent	Random opponent	随机对手
+ui.skills.draw_skill_details.range_depends_on_target	Range depends on target	收益区间依目标而定
+ui.skills.draw_skill_details.refill_cascades_excluded	Refill cascades excluded	补充后的连锁未计入
+ui.menu.draw_passive_entries.replaces	Replaces	替换
+ui.screen.draw_pause.restart_battle	Restart battle	重开本局
+ui.menu.draw.select_hero	↑ / ↓: Select hero	↑ / ↓：选择角色
+ui.screen.draw_top.settings	Settings	设置
+ui.screen.draw_panel.settings	SETTINGS	游戏设置
+ui.screen.draw_pause.settings_menu	Settings menu	设置菜单
+ui.menu.draw.skills_click_to_preview	SKILLS · click to preview	技能 · 点击查看效果
+ui.shared.standard	Standard	标准
+ui.menu.draw.step_1_choose_your_hero	STEP 1 · CHOOSE YOUR HERO	第一步 · 选择角色
+ui.screen.draw_opponents.step_2_choose_opponent	STEP 2 · CHOOSE OPPONENT	第二步 · 选择对手
+ui.hud.draw_turns.swapping	Swapping	正在交换
+ui.skills.draw_skill_details.text	–	～
+ui.hud.draw_turns.text	: 	：
+ui.screen.draw_panel.the_triggering_hit_cannot_spill_ov	The triggering hit cannot spill over; later hits resolve normally.	触发觉醒的攻击不继续扣第二阶段生命；后续伤害正常结算。
+ui.screen.draw_panel.tile_guide	TILE GUIDE	方块说明
+ui.screen.draw_top.tile_guide	Tile guide	方块说明
+ui.hud.draw_turns.tiles_falling	Tiles falling	方块掉落
+ui.screen.draw_panel.tiles_matching	Tiles & matching	方块与消除
+battle.outcome.victory	Victory	胜利
+battle.banner.victory	VICTORY!	胜利！
+ui.screen.draw_panel.volume	Volume	音量
+ui.screen.draw_panel.volume_muted	Volume (muted)	音量（静音）
+ui.screen.draw_panel.window	Window	窗口
+ui.shared.you	You	我方
+ui.screen.draw_opponents.your_hero	Your hero	你的角色
+ui.hud.draw_turns.your_turn	Your turn	你的回合
+note.skill_cast	Skill cast	技能已释放
+note.not_enough_mana	Not enough mana	魔力不足
+note.no_moves	No moves: board refreshed	无可用交换，棋盘已刷新
+note.match	Match!	消除成功！
+note.no_match	No match: choose another tile	未形成三消，请重新选择
+hero.hp_awaken_trigger	Awaken: {0} ({1}%)	觉醒点 {0}（{1}%）
+hero.hp_new_cap	New HP cap: {0} ({1}%)	恢复后上限 {0}（{1}%）
+hero.mana_unlocked	Unlock: {0}	觉醒后 {0}
+hero.awakening_tooltip	Gold: awakening at {0} HP ({1}%)\nBlue: new HP cap {2} ({3}%)\nAwakening restores HP to the new cap	金色菱形：觉醒点 {0}（{1}%）\n蓝色菱形：恢复后上限 {2}（{3}%）\n觉醒时恢复至新的生命上限
+hero.awakening_overlay	Awakening: {0} HP ({1}%)\nNew HP cap: {2} ({3}%)\nDamage triggers healing and power\n{4}	觉醒点：{0}（{1}%）\n觉醒后上限：{2}（{3}%）\n受伤触线后恢复生命并强化\n{4}
+hero.current_hp_cap	Current HP cap: {0}	当前生命上限：{0}
+hero.mana_locked	MP cap locked: {0}	魔力上限锁定：{0}
+hero.mana_unlocks	Awakening unlocks {0} MP	觉醒后解锁至{0}魔力
+hero.mana_cap_tooltip	Current MP cap: {0}\nAwakening unlocks MP cap: {1}\nLock marks the currently available capacity	当前魔力上限：{0}\n觉醒后解锁魔力上限：{1}\n锁的位置表示当前可用容量
+hero.mana_cap_basic	MP cap: {0}	魔力上限：{0}
+combat.reward_summary	+{0} HP · {1} damage · +{2} MP	生命 +{0} · 伤害 {1} · 魔力 +{2}
+combat.awakening_banner	AWAKENING	觉醒
+combat.health_gain	+{0} HP	+{0} 生命
+combat.popup_damage	Damage {0}	受伤 {0}
+combat.popup_heal	Heal {0}	回复 {0}
+battle.enemy_hp_preview	Enemy HP → {0}{1}	敌方生命 → {0}{1}
+battle.enemy_hp_awakening_suffix	 · Awakening	 · 将觉醒
+battle.replace_passive	Replaces: {0}	替代：{0}
+passive.name.column_formation	Column formation	列阵
+passive.name.battle_training	Battle training	战技训练
+passive.name.forest_step	Forest step	林间穿行
+passive.name.forest_pact	Forest pact	森林契约
+passive.name.arcane_conversion	Arcane conversion	奥术转化
+passive.name.mana_seal	Mana seal	魔力封印
+passive.name.mana_release	Mana release	魔力解放
+passive.name.recycling	Scrap recovery	废物回收
+passive.name.balanced_affinity	Balanced affinity	平衡亲和
+passive.name.balanced_resonance	Balanced resonance	平衡共鸣
+passive.name.element_return	Element return	元素回流
+passive.name.blood_fury	Blood fury	血怒
+passive.name.boiling_blood	Boiling blood	沸血
+passive.name.flesh_casting	Flesh casting	血肉施法
+passive.name.flesh_conversion	Flesh conversion	血肉转化
+passive.name.charge_mastery	Charge mastery	冲锋专精
+passive.name.guard_economy	Guard economy	守护节制
+passive.name.elven_power	Elven power	精灵之力
+passive.name.meteor_economy	Meteor economy	陨星节制
+passive.name.loot_mastery	Loot mastery	掠夺专精
+passive.name.blast_mastery	Blast mastery	爆裂专精
+passive.name.blood_sacrifice	Blood sacrifice	血祭
+passive.description.column_formation	Horizontal swaps move two columns.\nVertical swaps move two tiles.	左右交换相邻两整列\n上下仍交换两个方块
+passive.description.battle_training	Clear healing, damage and mana\nincrease by 6%.	消除治疗、伤害和魔力\n收益增加6%
+passive.description.forest_step	Diagonal adjacent swaps allowed.\nMatches remain horizontal/vertical.	可交换斜向相邻方块\n仍按横向、纵向三消判定
+passive.description.forest_pact	Clear healing, damage and mana\ndecrease by 7%.	消除治疗、伤害和魔力\n收益降低7%
+passive.description.arcane_conversion	Below cap, 50% of clear\nhealing becomes MP (floor).\nAt full MP, heal normally.	魔力未满时，50%消除治疗\n转为魔力；已满则正常治疗\n转换量向下取整
+passive.description.mana_seal	MP cap locked at 250.\nAwakening unlocks 400.	当前魔力上限锁定为250\n觉醒后解锁至400
+passive.description.mana_release	MP cap unlocked to 400.	魔力上限解锁至400
+passive.description.recycling	Every 2 overheal from clears\nbecomes 1 MP, obeying the cap.	消除产生的溢出治疗\n每2点转为1魔力，受上限限制
+passive.description.balanced_affinity	On a match, each balanced tile\ndeals 4 extra damage.	三消时，每个平衡方块\n额外造成4点伤害
+passive.description.balanced_resonance	On a match, each balanced tile\ndeals 6 extra damage.	三消时，每个平衡方块\n额外造成6点伤害
+passive.description.element_return	On a match, each balanced tile\nrestores 2 extra MP.	三消时，每个平衡方块\n额外回复2魔力
+passive.description.blood_fury	At or below 35% of initial HP,\nclear damage increases by 25%.\nChecked before each clear wave.	生命不高于初始上限35%时\n消除伤害增加25%\n每轮消除前判断
+passive.description.boiling_blood	At or below 50% of initial HP,\nclear damage increases by 25%.\nChecked before each clear wave.	生命不高于初始上限50%时\n消除伤害增加25%\n每轮消除前判断
+passive.description.flesh_casting	Each missing MP costs 2 HP.\nMust leave at least 1 HP.	缺少的每1魔力支付2生命\n支付后必须至少剩余1生命
+passive.description.flesh_conversion	1 HP pays 2 missing MP.\nRound HP cost up.\nMust leave at least 1 HP.	1生命抵2点缺少的魔力\n生命消耗向上取整\n支付后必须至少剩余1生命
+passive.description.charge_mastery	Knight charge damage +25%.	骑士冲锋的伤害增加25%
+passive.description.guard_economy	Guard MP cost reduced\nfrom 150 to 80.	坚守回复的魔力消耗\n从150降低至80
+passive.description.elven_power	Clear damage gains 25% of base.\nAdditive with clear amplification.	消除伤害额外增加基础值25%\n与消除增幅加算
+passive.description.meteor_economy	Meteor MP cost reduced\nfrom 160 to 140.	陨星轰击的魔力消耗\n从160降低至140
+passive.description.loot_mastery	Area loot deals 30% more damage.\nLater cascades get no bonus.	区域掠夺的伤害提高30%\n后续连锁消除不享受此加成
+passive.description.blast_mastery	Blast gains 2 damage per tile:\n12 increases to 14.	平衡引爆每格额外造成2伤害\n单格伤害由12提高至14
+passive.description.blood_sacrifice	HP-paid skills deal 20% more\ndirect damage; later clears\nare unchanged.	使用生命代付的技能\n直接伤害增加20%\n不放大后续消除伤害
+passive.short_name.column_formation	Columns	列阵
+passive.short_name.battle_training	Training	战技训练
+passive.short_name.forest_step	Forest step	林间穿行
+passive.short_name.forest_pact	Pact	森林契约
+passive.short_name.arcane_conversion	Conversion	奥术转化
+passive.short_name.mana_seal	MP seal	魔力封印
+passive.short_name.mana_release	MP release	魔力解放
+passive.short_name.recycling	Recycle	废物回收
+passive.short_name.balanced_affinity	Affinity	平衡亲和
+passive.short_name.balanced_resonance	Resonance	平衡共鸣
+passive.short_name.element_return	MP return	元素回流
+passive.short_name.blood_fury	Fury	血怒
+passive.short_name.boiling_blood	Boiling	沸血
+passive.short_name.flesh_casting	HP casting	血肉施法
+passive.short_name.flesh_conversion	HP casting+	血肉转化
+passive.short_name.charge_mastery	Charge+	冲锋专精
+passive.short_name.guard_economy	Guard cost	守护节制
+passive.short_name.elven_power	Elven power	精灵之力
+passive.short_name.meteor_economy	Meteor cost	陨星节制
+passive.short_name.loot_mastery	Loot+	掠夺专精
+passive.short_name.blast_mastery	Blast+	爆裂专精
+passive.short_name.blood_sacrifice	Blood power	血祭
+# Help overlay tile type names, displayed beside each tile example
+ui.screen.draw_help.tile_balanced	Balanced	平衡
+ui.screen.draw_help.tile_healing	Healing	治疗
+ui.screen.draw_help.tile_damage	Damage	伤害
+ui.screen.draw_help.tile_mana	Mana	魔力
+ui.screen.draw_help.tile_heal_damage	Heal + damage	治疗＋伤害
+ui.screen.draw_help.tile_heal_mana	Heal + mana	治疗＋魔力
+ui.screen.draw_help.tile_damage_mana	Damage + mana	伤害＋魔力
+passive.status.blood_fury_active	DMG +25%	伤害+25%
+passive.status.inactive	Inactive	未触发
+passive.status.converting	Converting	转化中
+passive.status.full_healing	Full healing	正常治疗
+passive.status.blood_paid_active	HP-paid +20%	代付时+20%
+passive.status.needs_blood_payment	Needs HP payment	需生命代付
+health.blood_ready	HP ready	可代付
+health.blood_too_low	HP too low	代付不足
+hero.awakening.knight	Charge damage +25%; Guard heals 20% of new HP cap; costs 80 MP	冲锋伤害增加25%；坚守回复按新上限治疗20%，消耗80魔力
+hero.awakening.elf	Clear damage +25% of base (additive)	消除伤害额外增加基础值25%（加算）
+hero.awakening.wizard	MP cap: 250 → 400; Meteor cost: 160 → 140	魔力上限250 → 400；陨星消耗160 → 140
+hero.awakening.goblin	Area loot damage +30%	区域掠夺伤害增加30%
+hero.awakening.imp	Balanced bonus: +4 → +6; Blast: 12 → 14 per tile	平衡方块额外伤害4 → 6；引爆每格伤害12 → 14
+hero.awakening.chort	Blood fury threshold: 35% → 50%	血怒触发线35% → 50%
+hero.awakening.zombie	1 HP pays 2 MP (round HP up); blood-paid damage +20%	1生命抵2魔力（生命向上取整）；代付技能伤害+20%
+feedback.blood_cast	Flesh casting -{0} HP · HP {1} → {2} · MP {3} → {4}	血肉施法 生命 -{0} · 生命 {1} → {2} · 魔力 {3} → {4}
+hero.opponent_awakening_preview	Trigger: {0} HP ({1}%)\nNew cap: {2} HP ({3}%)\n{4}	觉醒点 {0}（{1}%）\n新生命上限 {2}（{3}%）\n{4}
+skill.blood_payment_preview	-{0} HP → {1} !	生命 -{0} → {1} !
+skill.enemy_awakening_preview	Enemy awakens: HP → {0}	敌方将觉醒：生命 → {0}
+skill.cost_with_blood	{0} MP + {1} HP !	{0} 魔力 + {1} 生命 !
+skill.cost_mana_only	{0} MP	{0} 魔力
+settings.language_chinese	中文	中文
+settings.language_english	English	English
+note.select_adjacent_tiles	Select two adjacent tiles	选择两个相邻方块
+ui.menu.draw.lore_file	CHARACTER FILE	人物档案
+ui.menu.draw.lore_intro	CHARACTER	人物介绍
+ui.menu.draw.lore_traits	TRAITS	人物特质
+ui.menu.draw.lore_lines	VOICE LINES	台词
+ui.screen.draw_panel.fatigue	After round 12: +12% damage and -10% healing each round.	第12回合后：每回合伤害+12%、治疗−10%
+ui.screen.draw_panel.fatigue_tab	Endgame ramp	终局加压
+ui.screen.draw_panel.fatigue_limits	Cumulative: damage up to 300%, healing down to 30%.	逐回合累加：伤害最高300%，治疗最低30%。
+ui.screen.draw_panel.fatigue_strip	The strip above the board shows the current ramp.	顶部提示条显示当前回合的加压幅度。
+ui.hud.draw_turns.fatigue_warning	Next round: +{0}% damage / −{1}% healing per round	下回合起：每回合伤害+{0}%、治疗−{1}%
+ui.hud.draw_turns.fatigue_active	Fatigue: +{0}% damage · −{1}% healing	终局加压：伤害+{0}% · 治疗−{1}%
