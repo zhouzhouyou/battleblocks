@@ -122,6 +122,39 @@ fn sidebar_labels_are_short_and_localized() {
     assert_eq!(cost_text(false, 100, 0), "100 MP");
 }
 #[test]
+fn skill_cards_leave_the_pocket_strip_its_own_row() {
+    // A full awakened loadout has three cards plus the priest's two-pocket strip.
+    // Nothing may overlap: the strip used to cut through the third card's text.
+    for enemy in [false, true] {
+        let panel = side_panel_rect(enemy);
+        let passives = passive_rect(enemy);
+        let mut previous_bottom = passives.y + passives.h;
+        for i in 0..3 {
+            let card = if enemy {
+                enemy_skill_rect(i)
+            } else {
+                player_skill_rect(i)
+            };
+            assert!(
+                card.y >= previous_bottom,
+                "side {enemy} card {i} starts above the previous row"
+            );
+            assert!(card.x >= panel.x && card.right() <= panel.right());
+            assert!(card.bottom() <= panel.bottom());
+            for slot in 0..2 {
+                let pocket = pocket_rect(enemy, slot);
+                assert!(
+                    !card.overlaps(&pocket),
+                    "side {enemy} card {i} overlaps pocket {slot}"
+                );
+                assert!(pocket.bottom() <= panel.bottom());
+                assert!(pocket.x >= panel.x && pocket.right() <= panel.right());
+            }
+            previous_bottom = card.bottom();
+        }
+    }
+}
+#[test]
 fn selecting_same_skill_cancels_and_different_skill_switches() {
     use content::Skill;
     let selected = toggle_skill_target(None, Skill::Lightning);
