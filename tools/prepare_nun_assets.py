@@ -1,7 +1,7 @@
 """Import the approved nun concept sources into inspectable game-ready art files.
 
 This stages resources without adding the nun to the playable roster. The creative
-drawing is kept in versioned source PNGs; this importer only slices, anchors,
+drawing is kept in versioned source WebP images; this importer only slices, anchors,
 quantizes, and packs pixels on the same grid as the existing role atlases.
 """
 
@@ -81,11 +81,11 @@ def reduce_colors(image: Image.Image, palette: Image.Image) -> Image.Image:
 
 def main() -> None:
     OUTPUT.mkdir(exist_ok=True)
-    source = Image.open(SOURCE / "animation-source-v2.png").convert("RGBA")
+    source = Image.open(SOURCE / "animation-source-v2.webp").convert("RGBA")
     assert source.size == (1254, 1254)
     standees = {
-        "normal": Image.open(SOURCE / "standee-normal-source-v1.png").convert("RGBA"),
-        "awake": Image.open(SOURCE / "standee-awake-source-v1.png").convert("RGBA"),
+        "normal": Image.open(SOURCE / "standee-normal-source-v1.webp").convert("RGBA"),
+        "awake": Image.open(SOURCE / "standee-awake-source-v1.webp").convert("RGBA"),
     }
     palette = make_palette([source, *standees.values()])
     palette_colors = [palette.getpalette()[i : i + 3] for i in range(0, 64 * 3, 3)]
@@ -130,30 +130,32 @@ def main() -> None:
     atlas = Image.new("RGBA", (FRAME * 4, FRAME * 4))
     for number, frame in enumerate(frames):
         atlas.alpha_composite(frame, (number % 4 * FRAME, number // 4 * FRAME))
-    atlas.save(SOURCE / "grid-384.png")
+    atlas.save(SOURCE / "grid-384.webp", format="WEBP", lossless=True, exact=True, method=6)
     atlas.save(OUTPUT / "nun.webp", format="WEBP", lossless=True, exact=True, method=6)
-    frames[0].save(SOURCE / "normal-idle-0.png")
-    frames[4].save(SOURCE / "awake-idle-0.png")
+    frames[0].save(SOURCE / "normal-idle-0.webp", format="WEBP", lossless=True, exact=True, method=6)
+    frames[4].save(SOURCE / "awake-idle-0.webp", format="WEBP", lossless=True, exact=True, method=6)
     for name, row in (("normal-idle", 0), ("awake-idle", 1), ("normal-heal", 2), ("awake-attack", 3)):
         sequence = frames[row * 4 : row * 4 + 4]
         sequence[0].save(
-            SOURCE / f"{name}.gif",
+            SOURCE / f"{name}.webp",
+            format="WEBP",
             save_all=True,
             append_images=sequence[1:],
             duration=180 if row < 2 else 130,
             loop=0,
-            disposal=2,
-            transparency=0,
+            lossless=True,
+            exact=True,
+            method=6,
         )
 
     for name, image in standees.items():
         reduced = reduce_colors(image, palette)
         assert set(reduced.getchannel("A").get_flattened_data()) <= {0, 255}
-        reduced.save(SOURCE / f"standee-{name}.png")
+        reduced.save(SOURCE / f"standee-{name}.webp", format="WEBP", lossless=True, exact=True, method=6)
         reduced.save(OUTPUT / f"nun-standee-{name}.webp", format="WEBP", lossless=True, exact=True, method=6)
 
     report = {
-        "source": "animation-source-v2.png",
+        "source": "animation-source-v2.webp",
         "frame_size": [FRAME, FRAME],
         "frames": len(frames),
         "rows": ["normal-idle", "awake-idle", "normal-heal", "awake-attack"],

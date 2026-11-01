@@ -34,7 +34,7 @@
 
 ## 当前资产与选稿历史
 
-- 当前人设图：`../../../asset-sources/art-direction/characters/dwarf/dwarf-model-sheet-black-red-.png`；完整装备、三视图和表情。用户要求以此图的仇恨之书为准。
+- 当前人设图：`../../../asset-sources/art-direction/characters/dwarf/dwarf-model-sheet-black-red-.webp`；完整装备、三视图和表情。用户要求以此图的仇恨之书为准。
 - 当前动画与分层源素材：[ 记录](../../../asset-sources/art-direction/characters/dwarf/animations//README.md)。
 - 用户选定 E-A 锻炉老兵；旧 F／E 候选、蓝衣头盔、旧符文、旧书与旧动画已移除，不再作为当前素材。其旧文件已从 Git 历史移除，不从生成缓存重新复制回来。
 - 原始设定、后续修订与未决规则保留在本档；删旧图片不删除用户设计记录。
@@ -110,7 +110,7 @@
 
 ### 当前交付（2026-10-29，）
 
-- 人设图：`../../../asset-sources/art-direction/characters/dwarf/dwarf-model-sheet-black-red-.png`。
+- 人设图：`../../../asset-sources/art-direction/characters/dwarf/dwarf-model-sheet-black-red-.webp`。
 - 合成动画：[dwarf-book-elevation.gif](../../../asset-sources/art-direction/characters/dwarf/animations//dwarf-book-elevation.gif)，720×680、16fps、160帧、10秒。
 - 独立透明书动画：[book-growth-independent.gif](../../../asset-sources/art-direction/characters/dwarf/animations//book-growth-independent.gif)，550×300、16fps、160帧、10秒，不含角色。
 - 人物透明层、书封面／纸页／底封和来源裁切均分别保存在 `animations//`；生成提示词、源图裁切和核对记录见 [README](../../../asset-sources/art-direction/characters/dwarf/animations//README.md)。

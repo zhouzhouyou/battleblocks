@@ -42,7 +42,7 @@ def clean_alpha(alpha):
 report={}
 for name,spec in SPECS.items():
  directory=ROOT/'asset-sources/art-direction/characters'/name/'production/v3'
- source=Image.open(directory/'animation-source.png').convert('RGBA')
+ source=Image.open(directory/'animation-source.webp').convert('RGBA')
  assert source.size==(1254,1254), (name,source.size)
  opaque=source.getchannel('A').point(lambda a:255 if a>=160 else 0)
  palette=Image.composite(source.convert('RGB'),Image.new('RGB',source.size,(22,24,32)),opaque).quantize(colors=64,method=Image.Quantize.MEDIANCUT,dither=Image.Dither.NONE)
@@ -80,22 +80,22 @@ for name,spec in SPECS.items():
  montage=Image.new('RGBA',(4*FRAME,4*FRAME))
  for i,frame in enumerate(frames):
   atlas.alpha_composite(frame,((i%4)*FRAME,(i//4)*FRAME)); montage.alpha_composite(frame,((i%4)*FRAME,(i//4)*FRAME))
- frames[0].save(directory/'normal-idle-0.png')
- frames[4].save(directory/'awake-idle-0.png')
+ frames[0].save(directory/'normal-idle-0.webp',lossless=True,exact=True,method=6)
+ frames[4].save(directory/'awake-idle-0.webp',lossless=True,exact=True,method=6)
  atlas.save(OUT/f'{name}.webp',lossless=True,exact=True,method=6)
- montage.save(directory/'grid-384.png')
+ montage.save(directory/'grid-384.webp',lossless=True,exact=True,method=6)
  for phase,row in [('normal-idle',0),('awake-idle',1),('normal-cast',2),('awake-cast',3)]:
   seq=[f.resize((384,384),Image.Resampling.NEAREST) for f in frames[row*4:row*4+4]]
-  seq[0].save(directory/f'{phase}.gif',save_all=True,append_images=seq[1:],duration=180 if row<2 else 130,loop=0,disposal=2,transparency=0)
+  seq[0].save(directory/f'{phase}.webp',save_all=True,append_images=seq[1:],duration=180 if row<2 else 130,loop=0,lossless=True,exact=True,method=6)
  report[name]={'frame_size':[384,384],'frames':16,'visible_height':320,'display_scale':'uniform across all three roles','foot_anchor':[192,336],'palette':spec['palette'],'checks':checks,'webp_bytes':(OUT/f'{name}.webp').stat().st_size}
 
 # The book reuses only the existing v6 cover/pages/bottom layers from the v5 model.
 bookdir=ROOT/'asset-sources/art-direction/characters/dwarf/animations/v6'
-cover=Image.open(bookdir/'book-cover.png').convert('RGBA').resize((160,24),Image.Resampling.NEAREST)
-bottom=Image.open(bookdir/'book-bottom.png').convert('RGBA').resize((160,8),Image.Resampling.NEAREST)
+cover=Image.open(bookdir/'book-cover.webp').convert('RGBA').resize((160,24),Image.Resampling.NEAREST)
+bottom=Image.open(bookdir/'book-bottom.webp').convert('RGBA').resize((160,8),Image.Resampling.NEAREST)
 book=Image.new('RGBA',(384*4,384))
 for level in range(1,4):
- pages=Image.open(bookdir/'book-pages.png').convert('RGBA').resize((160,level*12),Image.Resampling.NEAREST)
+ pages=Image.open(bookdir/'book-pages.webp').convert('RGBA').resize((160,level*12),Image.Resampling.NEAREST)
  height=(8+level*3)*4
  book.alpha_composite(cover,(384*level+112,336-height))
  book.alpha_composite(pages,(384*level+112,336-height+24))
@@ -105,7 +105,7 @@ book_palette.putpalette([v for c in (book_rgb+[book_rgb[-1]]*(256-len(book_rgb))
 def book_colors(im):
  colored=im.convert('RGB').quantize(palette=book_palette,dither=Image.Dither.NONE).convert('RGBA'); colored.putalpha(im.getchannel('A')); return colored
 book_colors(book).save(OUT/'grudge-book.webp',lossless=True,exact=True,method=6)
-for name,layer in [('cover',cover),('pages',Image.open(bookdir/'book-pages.png').convert('RGBA').resize((160,12),Image.Resampling.NEAREST)),('bottom',bottom)]:
+for name,layer in [('cover',cover),('pages',Image.open(bookdir/'book-pages.webp').convert('RGBA').resize((160,12),Image.Resampling.NEAREST)),('bottom',bottom)]:
  book_colors(layer).save(OUT/f'book-{name}.webp',lossless=True,exact=True,method=6)
 report['book']={'frame_size':[384,384],'frames':4,'heights':[0,11,14,17],'source':'dwarf/animations/v6/'}
 (OUT/'report.json').write_text(json.dumps(report,indent=2)+'\n')
