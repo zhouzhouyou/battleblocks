@@ -4,13 +4,29 @@ import json, shutil
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "assets"
 OUT.mkdir(exist_ok=True)
+
+def webp_durations(path):
+    """Read ANMF frame durations; Pillow does not expose them in info."""
+    data = path.read_bytes()
+    assert data[:4] == b"RIFF" and data[8:12] == b"WEBP", path
+    pos, durations = 12, []
+    while pos + 8 <= len(data):
+        fourcc = data[pos:pos+4]
+        size = int.from_bytes(data[pos+4:pos+8], "little")
+        if fourcc == b"ANMF":
+            durations.append(int.from_bytes(data[pos+8+12:pos+8+15], "little") / 1000)
+        pos += 8 + size + (size & 1)
+    return durations
+
 for name in ("balanced", "hp", "damage", "mp", "hd", "hm", "dm"):
-    Image.open(ROOT / f"asset-sources/{name}.png").convert("RGBA").save(OUT / f"{name}.webp", lossless=True, exact=True, method=6)
+    Image.open(ROOT / f"asset-sources/{name}.webp").convert("RGBA").save(OUT / f"{name}.webp", lossless=True, exact=True, method=6)
 shutil.copy2(ROOT / "asset-sources/crush.wav", OUT / "crush.wav")
 report = {}
 for name in ("knight", "elf", "wizzard", "goblin", "imp", "chort", "big_zombie", "big_demon_ro"):
-    source = ROOT / f"asset-sources/{name}.gif"
+    source = ROOT / f"asset-sources/{name}.webp"
     gif = Image.open(source)
+    frame_durations = webp_durations(source)
+    assert len(frame_durations) == gif.n_frames, (name, len(frame_durations), gif.n_frames)
     frames, durations = [], []
     bounds = None
     for i in range(gif.n_frames):
@@ -19,7 +35,7 @@ for name in ("knight", "elf", "wizzard", "goblin", "imp", "chort", "big_zombie",
         # Hidden RGB under alpha=0 does not contribute to the rendered image.
         frame.putdata([pixel if pixel[3] else (0,0,0,0) for pixel in frame.getdata()])
         frames.append(frame.copy())
-        durations.append(gif.info.get("duration", 100) / 1000)
+        durations.append(frame_durations[i])
         b = frame.getbbox()
         if b:
             bounds = b if bounds is None else (min(bounds[0], b[0]), min(bounds[1], b[1]), max(bounds[2], b[2]), max(bounds[3], b[3]))
@@ -69,3 +85,7 @@ for i, (name, meta) in enumerate(list(report.items())[:7]):
     image.thumbnail((40, 48), Image.Resampling.NEAREST)
     thumbs.paste(image, (i * 40 + (40 - image.width) // 2, 48 - image.height))
 thumbs.save(OUT / "hero-thumbnails.webp", lossless=True, exact=True, method=6)
+
+# Rebuild the approved new-role atlases and final combined registry.
+import subprocess, sys
+subprocess.run([sys.executable,str(ROOT/"tools/prepare_role_assets.py")],check=True)

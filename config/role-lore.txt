@@ -1,0 +1,92 @@
+# hero id|kind|English|中文
+# kind: title, intro, trait, line. \\n breaks a line inside one entry.
+0|title|The Old Oath|旧誓骑士
+0|intro|The old knight remains in the roster for regression drills. His oath is simple: hold the line, and let the columns do the arguing.|旧版骑士留在回归名单里。他的誓言很简单：守住阵线，让整列去讲道理。
+0|trait|Retro, but still swinging.|复古，但依然会挥剑。
+0|line|The old ways still hold a column or two.|老规矩，至少还守得住一两列。
+1|title|Forest Ranger|林间游侠
+1|intro|She walks the diagonals where others see only rows and columns. The forest pact takes a cut of every clear, but the extra angles are worth the price.|她走别人看不见的斜线。森林契约会抽走每次消除的一部分收益，但多出来的角度值这个价。
+1|trait|Diagonal steps; horizontal trouble.|斜着走，正着打。
+1|trait|Pays the forest on every clear.|每次消除都要给森林交税。
+1|line|Straight lines are for people who cannot turn.|直线是给不会拐弯的人准备的。
+1|line|The forest takes its cut. It also shows me the way.|森林会抽成，也会指路。
+1|line|One more angle is one more answer.|多一个角度，就多一种答案。
+2|title|Arcane Scholar|奥术学者
+2|intro|He burns healing into mana, then burns mana into meteors. His reserve is deep, his body is not.|他把治疗烧成魔力，再把魔力烧成陨星。他的魔力很深，身体很薄。
+2|trait|Healing becomes mana. Full mana means normal healing.|治疗转魔力；魔力满时恢复为正常治疗。
+2|trait|The reserve unlocks on awakening.|觉醒后魔力上限进一步提高。
+2|line|Knowledge is firepower. I have read extensively.|知识就是火力。我读得很多。
+2|line|Do not stand in the middle. That is where the argument lands.|别站在中间。那里是结论落下的地方。
+2|line|I calculated the odds. You were in them.|我算过概率。你就在里面。
+3|title|Scrap Picker|拾荒者
+3|intro|A goblin who turns other people's leftovers into his own economy. Every scrap is a resource; every resource is a plan.|哥布林把别人不要的东西变成自己的经济。每块废料都是资源，每份资源都是计划。
+3|trait|Overhealing is still money.|溢出的治疗也是钱。
+3|line|Waste not, want not. Preferably not mine.|别浪费，也别浪费我的。
+3|line|That pile? It is an investment.|那堆东西？那叫投资。
+4|title|Contract Imp|契约小恶魔
+4|intro|A small demon with a talent for balanced detonation and a deep respect for fine print.|擅长平衡引爆，也非常尊重契约的小恶魔。
+4|trait|Balanced tiles hit harder in his hands.|平衡方块在他手里更疼。
+4|line|Read the contract. Then sign it anyway.|先读契约，然后再签。
+4|line|Everything balances out. Usually with an explosion.|一切都会平衡。通常伴随着爆炸。
+5|title|Blood-Horn Chort|血怒角魔
+5|intro|A horned brute who gets stronger as his blood runs low. The lower he falls, the more the board should worry.|血越少越危险的角魔。他倒得越低，棋盘越该担心。
+5|trait|Low health, high damage.|低血量，高伤害。
+5|line|You call it desperation. I call it a discount.|你叫它绝境。我叫它折扣。
+5|line|Hit me again. I am almost interested.|再打一下。我快认真了。
+6|title|Flesh Caster|血肉施法者
+6|intro|A zombie who pays missing mana with his own flesh. Every spell is a small autopsy in reverse.|用血肉支付缺失魔力的大僵尸。每次施法都像一次反向验尸。
+6|trait|Missing mana is paid with HP.|缺失魔力用生命支付。
+6|trait|Must leave at least 1 HP to pay.|支付后必须至少剩1点生命。
+6|line|Mana is a suggestion. Flesh is a currency.|魔力只是建议。血肉才是货币。
+6|line|I have plenty of parts. Most of them still work.|我零件很多。大部分还能用。
+7|title|The Sword in the Stone|石中剑的持有者
+7|intro|She never worked out how to pull the sword out of the stone, so she swings both. It turns out enough strength makes swordsmanship a branch of physics.|她至今没弄明白怎么把剑从石头里拔出来，于是就连石头一起抡。事实证明，力气够大，剑法就只是物理学的分支。
+7|trait|Motto: if it will not come out, swing it.|座右铭：拔不出来，就一起抡。
+7|trait|Technique is for people with less upper body.|技巧是给力气不够的人准备的。
+7|line|The sword came out. The stone just came with it.|剑拔出来了。只是石头还挂在上面。
+7|line|They said use wisdom. I used my back.|他们说要靠智慧。我说，靠腰。
+7|line|My sword has a name. So does the stone. Together they are called "do not dodge".|我的剑有名字，石头也有，合起来叫“别躲”。
+7|line|Technique is for people who are not strong enough.|技巧是给力气不够的人准备的。
+7|line|Do not worry. I will try to hit only once.|别担心，我尽量只砸一下。
+7|line|The holy blade chose me. The stone chose me more firmly.|圣剑选择了我。石头选得更紧。
+7|line|Chivalry: stand straight, raise the sword, do not trip over your own rock.|骑士精神：站直，举剑，别被自己的石头绊倒。
+7|line|You say this is not regulation? My regulation is very heavy.|你说这不合规矩？我的规矩挺重的。
+8|title|Forge Veteran|锻炉老兵
+8|intro|A dwarven veteran who writes every grudge in a thick book and every answer in a heavy hammer. He insists he is not short; the world's shelves are simply built too high. Anything out of reach goes into the book, to be settled from a slightly higher position later.|矮人战士把每一笔仇恨写进厚厚的书里，把每一个答案抡进沉重的锤子里。他坚称自己不矮，只是世界的架子造得太高。够不到的东西都记进仇恨之书，等下次站得高一点再算。
+8|trait|Reach is a suggestion, not a rule.|“够得到”只是建议，不是规则。
+8|trait|Grudges are a family ledger.|仇恨之书是传家账本。
+8|line|I am not short. I am closer to the ore.|我这不是矮，是离矿脉更近。
+8|line|Who builds a doorframe for a giant and calls it normal?|谁把门框造给巨人，还管那叫正常？
+8|line|I cannot reach it? No. The shelf is in the wrong place.|我够不到？不，是那个架子放错了地方。
+8|line|Do not look down at me. I am inspecting your knees.|别低头看我——我在检查你的膝盖够不够硬。
+8|line|The book is full of enemies. The first page is a shelf I could not reach.|书里记满了仇人；第一页是我够不到的酒架。
+8|line|A dwarf walks into a tavern and hits the table. That is the whole joke. The table was too high.|一个矮人走进酒馆，然后撞到了桌沿。笑话就这么长。桌子太高了。
+8|line|Why does a dwarf carry a ladder? The Book of Grudges is thick enough to stand on.|为什么矮人总带梯子？因为仇恨之书厚得能垫脚。
+8|line|I do not need a view. I need everything below the knee.|我不需要视野。我只需要膝盖以下的世界。
+8|line|My hammer is called "Persuasion". It rarely needs a second argument.|我这把锤子叫“说服”。它很少需要说第二遍。
+8|line|I can reach the top shelf. I just need the floor to cooperate.|我够得到最上层。只需要地板配合一下。
+9|title|The Dirty Priest|脏牧
+9|intro|She preaches by day and steals by night. The Light handles the blessings; the chalice handles turning other people's good things into hers. May the Light bless you, especially your pockets, your tiles, and that card you just drew.|她白天布道，晚上顺牌。圣光负责祝福，圣杯负责把别人的好东西变成她的。愿圣光祝福你——尤其是你的口袋、你的方块，和你刚抽到的好牌。
+9|trait|A priest in name, a thief in practice.|名义上是牧师，手段一点都不干净。
+9|trait|If you cannot beat it, borrow it. If you cannot borrow it, resurrect it.|打不过就借，借不到就复生。
+9|line|May the Light bless you. Now hand over your hand.|愿圣光祝福你。现在，把手牌交给我。
+9|line|It is not stealing. I am holding it for the Light.|这不是偷，是替圣光保管。
+9|line|I drink because water is expensive. I steal cards because you have too many.|我喝酒是因为水太贵；我偷牌是因为你太多。
+9|line|Death is not the end. Whose end it is, we can discuss later.|死亡不是终点。是谁的终点，之后再聊。
+9|line|Priests do not fight. We let the Light borrow your hand.|牧师不打架。我们只是让圣光借你的手打你。
+9|line|Do not look at me like that. The Light said it was fine.|别用那种眼神看我。圣光说可以。
+9|line|Your cards are lovely. They will be mine next turn.|你的牌很好，可惜下回合归我。
+9|line|I never lie. I preach.|我从不撒谎——我布道。
+9|line|Burial is for resurrection. Who gets resurrected depends on my mood.|埋葬是为了复活。至于复活的是谁，看心情。
+9|line|May the Light forgive you. I will not.|愿圣光宽恕你。我不宽恕。
+10|title|The Silent Vigil|静默守夜者
+10|intro|On the road to fight the shadows, she grew fond of shadow magic. Tenderness and danger live in the same hands; she does not think she is hurting anyone. Her healing simply becomes attack magic without her noticing.|在研究对抗暗影的路上，她也沉迷上了暗影魔法。温柔与危险共存；她甚至不觉得自己在伤害人，只是不知不觉间，治疗术就变成了攻击魔法。
+10|trait|Tender, and dangerous.|温柔与危险共存。
+10|trait|She truly believes she is only healing.|她真的以为自己只是在治疗。
+10|line|登场 · May the Light soothe your wounds.|登场 · 愿圣光抚平你的伤痛。
+10|line|治疗 · Do not be afraid. I am here.|治疗 · 不要害怕，我在这里。
+10|line|暗影 · Why will you not accept salvation?|暗影 · 为什么……你们就是不肯接受救赎？
+10|line|暗影登场 · Heh. Now I finally hear His voice.|暗影登场 · 呵呵……现在，我终于听见祂的声音了。
+10|line|暗影攻击 · Do not run! This is part of the treatment!|暗影攻击 · 别躲！这也是治疗的一部分！
+10|line|癫狂 · Pain? No, no! That is the embrace of God!|癫狂 · 疼痛？不，不不！那是神的拥抱！
+10|line|恢复 · What... what did I just do?|恢复 · 我……刚才都做了什么？
