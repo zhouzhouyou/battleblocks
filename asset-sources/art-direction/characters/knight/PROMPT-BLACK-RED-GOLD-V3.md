@@ -2,7 +2,7 @@
 
 日期：2026-10-29。工具：内置 imagegen。状态：四个候选，等待用户选择，尚非定稿或生产资产。
 
-参考：旧版 `knight-stone-sword-v2.png` 为人物基础；`references/user-helmet-armor-2026-10-29.png` 为头甲与装备参考；`references/user-helmet-expressions-2026-10-29.png` 为表情符号方式。用户文本优先于参考图片。用户追加「加入红色吧」，当前黑红金取代最初纯黑金。
+参考：旧版 `knight-stone-sword-v2.png` 为人物基础；本地 `references/user-helmet-armor-2026-10-29.png`（未入库）为头甲与装备参考；本地 `references/user-helmet-expressions-2026-10-29.png`（未入库）为表情符号方式。用户文本优先于参考图片。用户追加「加入红色吧」，当前黑红金取代最初纯黑金。
 
 以下保留完整生成与修订提示词。初稿和中间稿有露下巴、A1 多余武器等错误，不视为设定通过。
 

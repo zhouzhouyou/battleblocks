@@ -297,9 +297,58 @@
   ],
   "user_references": [
     {
-      "repository_file": "asset-sources/art-direction/characters/dwarf/references/user-bareheaded-dwarf-2026-10-29.png",
+      "local_file": "asset-sources/art-direction/characters/dwarf/references/user-bareheaded-dwarf-2026-10-29.png",
       "source": "User supplied image; reference only.",
+      "status": "local_only_not_committed",
       "sha256": "ded478a142a169fedd5dedf07891cb7bb9b08848c6d82a2214ad2fa3f13c71be"
+    },
+    {
+      "local_file": "asset-sources/art-direction/characters/knight/references/user-helmet-armor-2026-10-29.png",
+      "source": "User supplied image; reference only.",
+      "status": "local_only_not_committed",
+      "sha256": "efea1cf2421518b7e854bdb965f29cf94e7df7d9493f8ab16c098b31fb18de5d"
+    },
+    {
+      "local_file": "asset-sources/art-direction/characters/knight/references/user-helmet-expressions-2026-10-29.png",
+      "source": "User supplied image; reference only.",
+      "status": "local_only_not_committed",
+      "sha256": "b2bf4c2719ea923b24746044004aa0d2b3bd0358a06fdfd96a5e3daf69906698"
+    },
+    {
+      "local_file": "asset-sources/art-direction/characters/knight/references/user-hinged-helmet-2026-10-29.png",
+      "source": "User supplied image; reference only.",
+      "status": "local_only_not_committed",
+      "sha256": "2223ceac94674183313adeefb3c0bcf0b83e7a8c9d3864864e788db72a278ffd"
+    },
+    {
+      "local_file": "asset-sources/art-direction/characters/nun/references/user-darkbishop-2026-10-31.png",
+      "source": "User supplied image; reference only.",
+      "status": "local_only_not_committed",
+      "sha256": "5089a894200a0ad86cdb672aed895012dd430e9bdf151d3d7b584c5203bfefea"
+    },
+    {
+      "local_file": "asset-sources/art-direction/characters/nun/references/user-nun-concept-2026-10-31.png",
+      "source": "User supplied image; reference only.",
+      "status": "local_only_not_committed",
+      "sha256": "9cb99a86c106fa710dfaec5d1c161ef3e4770e4ef2258aaa38c35adee6acffd4"
+    },
+    {
+      "local_file": "asset-sources/art-direction/characters/nun/references/user-shadow-priest-2026-10-31.png",
+      "source": "User supplied image; reference only.",
+      "status": "local_only_not_committed",
+      "sha256": "058a1238e71f7bd01beeb37427513f68d8009385f59275e3948352f7fdf3b193"
+    },
+    {
+      "local_file": "asset-sources/art-direction/characters/nun/references/user-shadowform-2026-10-31.png",
+      "source": "User supplied image; reference only.",
+      "status": "local_only_not_committed",
+      "sha256": "760ddb45381740bf6c92e409928e6b56e691ed531caf0fdc483fa731899edbc5"
+    },
+    {
+      "local_file": "asset-sources/art-direction/characters/priest/references/user-drinking-priest-2026-10-29.png",
+      "source": "User supplied image; reference only.",
+      "status": "local_only_not_committed",
+      "sha256": "7a17bc726ef298a1aea9323ca305cf5c3421e512e725214740c48b43e680d2c3"
     }
   ]
 }
