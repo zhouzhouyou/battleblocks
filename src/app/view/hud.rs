@@ -146,6 +146,11 @@ impl Session {
                 && self.last_cast.is_some()
                 && self.last_cast_enemy == enemy_side
                 && self.cast_time > 0.;
+            let sleep_indices = sprites::sleep_frames(id).filter(|_| {
+                self.new_role_states[enemy_side as usize]
+                    .statuses
+                    .contains(content::StatusId::Sleep)
+            });
             let mut area = sprite_rect(enemy_side);
             if content::ability_capabilities(id, self.rules(enemy_side)).reach_visual {
                 let target = if show_awake {
@@ -218,6 +223,8 @@ impl Session {
                 },
                 if casting {
                     cast_indices.unwrap()
+                } else if let Some(frames) = sleep_indices {
+                    frames
                 } else {
                     sprite.indices
                 },

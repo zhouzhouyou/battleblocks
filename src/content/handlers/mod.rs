@@ -1,6 +1,9 @@
 use super::*;
 mod active;
 mod dwarf;
+mod fire_elf;
+#[path = "../skills/fire_elf.rs"]
+mod fire_elf_effect;
 mod knight;
 mod legacy;
 mod nun;
@@ -14,6 +17,7 @@ pub fn passive_handler(p: Passive) -> RuleHandler {
         }
         Passive::FriendMilk | Passive::Madness | Passive::AutoRecovery => nun::handle,
         Passive::MindVision | Passive::BorrowedSlot => priest::handle,
+        Passive::ManaAffinity | Passive::SleepRecovery | Passive::SoundSleep => fire_elf::handle,
         Passive::ColumnFormation
         | Passive::BattleTraining
         | Passive::ForestStep
@@ -66,6 +70,7 @@ pub fn active_handler(skill: Skill) -> RuleHandler {
         | Skill::Frenzy
         | Skill::Healing
         | Skill::Rational => active::handle,
+        Skill::EmberBlast => fire_elf::active_handle,
     }
 }
 
@@ -76,6 +81,7 @@ pub fn status_handler(status: StatusId) -> RuleHandler {
         | StatusId::ExtraReach
         | StatusId::DoubleRewards
         | StatusId::ParallelSwap => statuses::handle,
+        StatusId::Sleep => fire_elf::status_handle,
     }
 }
 mod statuses;

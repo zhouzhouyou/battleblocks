@@ -493,6 +493,12 @@ fn main() {
                 .collect()
         })
         .unwrap_or_else(|| (0..7).collect());
+    if roster.contains(&content::FIRE_ELF) {
+        eprintln!(
+            "match_probe does not model Sleeping turns; use `--headless --autoplay` for the fire elf"
+        );
+        std::process::exit(2);
+    }
     assert!(samples > 0 && roster.len() >= 2);
     let count = roster.len();
     let mut wins = vec![0u64; count];

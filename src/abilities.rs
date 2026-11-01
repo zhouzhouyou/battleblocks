@@ -37,6 +37,9 @@ pub enum Passive {
     FriendMilk,
     AutoRecovery,
     Madness,
+    ManaAffinity,
+    SleepRecovery,
+    SoundSleep,
 }
 use Passive::*;
 pub struct AbilityLoadout {
@@ -134,6 +137,9 @@ impl Passive {
         Self::FriendMilk,
         Self::AutoRecovery,
         Self::Madness,
+        Self::ManaAffinity,
+        Self::SleepRecovery,
+        Self::SoundSleep,
     ];
     fn is_new(self) -> bool {
         matches!(
@@ -150,6 +156,9 @@ impl Passive {
                 | FriendMilk
                 | AutoRecovery
                 | Madness
+                | ManaAffinity
+                | SleepRecovery
+                | SoundSleep
         )
     }
     pub fn replaces(self) -> Option<Self> {
@@ -159,6 +168,7 @@ impl Passive {
             BalancedResonance => Some(BalancedAffinity),
             BoilingBlood => Some(BloodFury),
             FleshConversion => Some(FleshCasting),
+            SoundSleep => Some(SleepRecovery),
 
             _ => None,
         }
@@ -169,7 +179,8 @@ impl Passive {
         }
         let key = match self {
             KnightStrength | DwarfStrength | Might | Short | Grudge | Clumsy | ClumsyAwake
-            | MindVision | BorrowedSlot | FriendMilk | AutoRecovery | Madness => {
+            | MindVision | BorrowedSlot | FriendMilk | AutoRecovery | Madness | ManaAffinity
+            | SleepRecovery | SoundSleep => {
                 unreachable!()
             }
             ColumnFormation => "passive.name.column_formation",
@@ -206,7 +217,8 @@ impl Passive {
         }
         let key = match self {
             KnightStrength | DwarfStrength | Might | Short | Grudge | Clumsy | ClumsyAwake
-            | MindVision | BorrowedSlot | FriendMilk | AutoRecovery | Madness => {
+            | MindVision | BorrowedSlot | FriendMilk | AutoRecovery | Madness | ManaAffinity
+            | SleepRecovery | SoundSleep => {
                 unreachable!()
             }
             ColumnFormation => "passive.short_name.column_formation",
@@ -240,7 +252,8 @@ impl Passive {
         }
         let key = match self {
             KnightStrength | DwarfStrength | Might | Short | Grudge | Clumsy | ClumsyAwake
-            | MindVision | BorrowedSlot | FriendMilk | AutoRecovery | Madness => {
+            | MindVision | BorrowedSlot | FriendMilk | AutoRecovery | Madness | ManaAffinity
+            | SleepRecovery | SoundSleep => {
                 unreachable!()
             }
             ColumnFormation => "passive.description.column_formation",

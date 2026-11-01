@@ -46,6 +46,8 @@ impl Session {
         self.extra_bonus = 0;
         self.reward = true;
         self.game_over_logged = false;
+        self.nuke_casts = [0; 2];
+        self.nuke_damage = [0; 2];
         self.turn_log = turns::Log::new();
         self.round = 1;
         self.console.reset_history();

@@ -40,7 +40,24 @@ pub const KNIGHT: usize = 7;
 pub const DWARF: usize = 8;
 pub const PRIEST: usize = 9;
 pub const NUN: usize = 10;
-pub const ROSTER: &[usize] = &[DWARF, KNIGHT, PRIEST, NUN, 1, 2, 3, 4, 5, 6];
+pub const FIRE_ELF: usize = 11;
+pub const ROSTER: &[usize] = &[DWARF, KNIGHT, PRIEST, NUN, 1, FIRE_ELF, 3, 4, 5, 6];
+
+pub fn turn_start_effects(
+    hero: usize,
+    hp: i32,
+    mp: i32,
+    board: &mut Board,
+    rules: Rules,
+) -> Vec<AbilityTrigger> {
+    let mut triggers = Vec::new();
+    dispatch_rules(
+        &EventContext::new(hero, hp, mp, rules),
+        &mut RuleEvent::TurnStart { board },
+        &mut triggers,
+    );
+    triggers
+}
 use crate::board::{Board, N};
 
 // Stable rules API shared by the game, AI, previews and balance probe.
@@ -75,6 +92,9 @@ mod cooldown_tests;
 #[cfg(test)]
 #[path = "content/tests/deadlock_tests.rs"]
 mod deadlock_tests;
+#[cfg(test)]
+#[path = "content/tests/fire_elf_tests.rs"]
+mod fire_elf_tests;
 #[cfg(test)]
 #[path = "content/tests/keyword_tests.rs"]
 mod keyword_tests;

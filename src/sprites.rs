@@ -45,12 +45,21 @@ mod nun_visual_tests {
 }
 
 /// New-role atlases stack four rows: idle, awakened idle, cast, awakened cast.
+/// The fire elf's fourth row is the post-cast sleep pose instead of an awakened cast.
 /// Legacy sheets only carry idle frames, so they keep the idle row while casting.
 pub const CAST_FRAMES: [&[usize]; 2] = [&[8, 9, 10, 11], &[12, 13, 14, 15]];
+pub const FIRE_ELF_SLEEP_FRAMES: &[usize] = &[12, 13, 14, 15];
 /// One cast frame per `CAST_TIME / 4`, so the animation fills the whole cast window.
 pub const CAST_FRAME_TIME: [f64; 4] = [crate::presentation::CAST_TIME / 4.; 4];
 pub fn cast_frames(hero: usize, shadow: bool) -> Option<&'static [usize]> {
+    if hero == content::FIRE_ELF {
+        // Both forms use the same cast row; the fourth row is the sleep pose.
+        return Some(CAST_FRAMES[0]);
+    }
     (hero >= content::KNIGHT).then(|| CAST_FRAMES[shadow as usize])
+}
+pub fn sleep_frames(hero: usize) -> Option<&'static [usize]> {
+    (hero == content::FIRE_ELF).then_some(FIRE_ELF_SLEEP_FRAMES)
 }
 pub const SPRITES: &[SpriteAsset] = &[
     SpriteAsset {
@@ -130,6 +139,13 @@ pub const SPRITES: &[SpriteAsset] = &[
         durations: &[0.18; 4],
         indices: &[0, 1, 2, 3],
     },
+    SpriteAsset {
+        bytes: include_bytes!("../assets/roles/fire-elf.webp"),
+        w: 384.,
+        h: 384.,
+        durations: &[0.18; 4],
+        indices: &[0, 1, 2, 3],
+    },
 ];
 pub const AWAKENED: &[SpriteAsset] = &[
     SpriteAsset {
@@ -204,6 +220,13 @@ pub const AWAKENED: &[SpriteAsset] = &[
     },
     SpriteAsset {
         bytes: include_bytes!("../assets/roles/nun.webp"),
+        w: 384.,
+        h: 384.,
+        durations: &[0.18; 4],
+        indices: &[4, 5, 6, 7],
+    },
+    SpriteAsset {
+        bytes: include_bytes!("../assets/roles/fire-elf.webp"),
         w: 384.,
         h: 384.,
         durations: &[0.18; 4],
