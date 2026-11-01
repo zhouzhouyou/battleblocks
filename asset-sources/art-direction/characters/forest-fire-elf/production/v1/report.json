@@ -1,0 +1,296 @@
+{
+  "source": "animation-source-v1.webp",
+  "atlas": "grid-384.webp",
+  "rows": [
+    "normal-idle",
+    "focused-idle",
+    "fire-explosion",
+    "fall-asleep"
+  ],
+  "frame_size": [
+    384,
+    384
+  ],
+  "frames": 16,
+  "foot_anchor": [
+    192,
+    336
+  ],
+  "shared_palette_colors": 64,
+  "source_scale": 0.927536231884058,
+  "checks": [
+    {
+      "row": 0,
+      "column": 0,
+      "source_bounds": [
+        44,
+        6,
+        276,
+        349
+      ],
+      "frame_bounds": [
+        84,
+        18,
+        299,
+        336
+      ],
+      "colors": 64
+    },
+    {
+      "row": 0,
+      "column": 1,
+      "source_bounds": [
+        49,
+        5,
+        294,
+        350
+      ],
+      "frame_bounds": [
+        78,
+        16,
+        305,
+        336
+      ],
+      "colors": 64
+    },
+    {
+      "row": 0,
+      "column": 2,
+      "source_bounds": [
+        49,
+        9,
+        289,
+        350
+      ],
+      "frame_bounds": [
+        80,
+        20,
+        303,
+        336
+      ],
+      "colors": 64
+    },
+    {
+      "row": 0,
+      "column": 3,
+      "source_bounds": [
+        54,
+        5,
+        293,
+        350
+      ],
+      "frame_bounds": [
+        81,
+        16,
+        303,
+        336
+      ],
+      "colors": 64
+    },
+    {
+      "row": 1,
+      "column": 0,
+      "source_bounds": [
+        51,
+        0,
+        294,
+        343
+      ],
+      "frame_bounds": [
+        79,
+        18,
+        304,
+        336
+      ],
+      "colors": 64
+    },
+    {
+      "row": 1,
+      "column": 1,
+      "source_bounds": [
+        49,
+        0,
+        307,
+        343
+      ],
+      "frame_bounds": [
+        72,
+        18,
+        311,
+        336
+      ],
+      "colors": 64
+    },
+    {
+      "row": 1,
+      "column": 2,
+      "source_bounds": [
+        49,
+        0,
+        300,
+        343
+      ],
+      "frame_bounds": [
+        75,
+        18,
+        308,
+        336
+      ],
+      "colors": 64
+    },
+    {
+      "row": 1,
+      "column": 3,
+      "source_bounds": [
+        44,
+        0,
+        293,
+        343
+      ],
+      "frame_bounds": [
+        76,
+        18,
+        307,
+        336
+      ],
+      "colors": 64
+    },
+    {
+      "row": 2,
+      "column": 0,
+      "source_bounds": [
+        26,
+        5,
+        254,
+        298
+      ],
+      "frame_bounds": [
+        86,
+        64,
+        297,
+        336
+      ],
+      "colors": 64
+    },
+    {
+      "row": 2,
+      "column": 1,
+      "source_bounds": [
+        23,
+        0,
+        299,
+        300
+      ],
+      "frame_bounds": [
+        64,
+        58,
+        320,
+        336
+      ],
+      "colors": 64
+    },
+    {
+      "row": 2,
+      "column": 2,
+      "source_bounds": [
+        2,
+        2,
+        306,
+        300
+      ],
+      "frame_bounds": [
+        51,
+        60,
+        333,
+        336
+      ],
+      "colors": 64
+    },
+    {
+      "row": 2,
+      "column": 3,
+      "source_bounds": [
+        56,
+        0,
+        290,
+        300
+      ],
+      "frame_bounds": [
+        83,
+        58,
+        300,
+        336
+      ],
+      "colors": 64
+    },
+    {
+      "row": 3,
+      "column": 0,
+      "source_bounds": [
+        37,
+        0,
+        290,
+        233
+      ],
+      "frame_bounds": [
+        74,
+        120,
+        309,
+        336
+      ],
+      "colors": 64
+    },
+    {
+      "row": 3,
+      "column": 1,
+      "source_bounds": [
+        30,
+        0,
+        301,
+        247
+      ],
+      "frame_bounds": [
+        66,
+        107,
+        317,
+        336
+      ],
+      "colors": 64
+    },
+    {
+      "row": 3,
+      "column": 2,
+      "source_bounds": [
+        2,
+        69,
+        313,
+        223
+      ],
+      "frame_bounds": [
+        48,
+        193,
+        336,
+        336
+      ],
+      "colors": 64
+    },
+    {
+      "row": 3,
+      "column": 3,
+      "source_bounds": [
+        7,
+        79,
+        304,
+        223
+      ],
+      "frame_bounds": [
+        54,
+        202,
+        329,
+        336
+      ],
+      "colors": 64
+    }
+  ],
+  "gameplay_integrated": false
+}

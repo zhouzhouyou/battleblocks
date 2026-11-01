@@ -1,0 +1,9 @@
+hero,wins,games,win_percent,nukes_per_game,first_nuke_round,avg_nuke_damage
+Dwarf,95,192,49.5,0.00,0.0,0.0
+Knight,98,192,51.0,0.00,0.0,0.0
+Priest,88,192,45.8,0.00,0.0,0.0
+Nun,98,192,51.0,0.00,0.0,0.0
+FireElf,101,192,52.6,2.19,7.4,243.5
+games=480,draws=0,aborted=0,median_rounds=18,p90_rounds=22,max_rounds=25,first_side_win=56.0%
+roster=Dwarf,Knight,Priest,Nun,FireElf
+pairwise_win_counts=[[0, 31, 15, 28, 21], [17, 0, 25, 31, 25], [33, 23, 0, 6, 26], [20, 17, 42, 0, 19], [27, 23, 22, 29, 0]]

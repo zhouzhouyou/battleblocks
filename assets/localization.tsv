@@ -23,6 +23,7 @@ ui.shared.beginner	Beginner	入门
 ui.hints.draw_hints.blue_tiles_gold_columns_hold_h_cli	Blue: tiles · Gold: columns · hold H + click a number	蓝色：两格交换 / 金色：整列交换 · 按住 H 点编号即可执行
 ui.hints.draw_hints.blue_tiles_gold_whole_columns	Blue: tiles / Gold: whole columns	蓝色：两格交换 / 金色：整列交换
 ui.turns.actions_text.board_reroll	Board reroll	重排棋盘
+ui.turns.actions_text.sleep	Sleep	沉睡
 ui.battlefield.draw_board.cancel_esc_right_click	Cancel · Esc / right click	取消 · Esc / 右键
 ui.shared.cd	CD	冷却
 ui.hud.draw_turns.chain	Chain	连锁
@@ -41,6 +42,7 @@ ui.screen.draw_pause.continue	Continue	继续游戏
 ui.skills.draw_skill_details.cost	Cost: 	消耗：
 ui.turns.results_text.damage	damage	伤害
 ui.turn.advance_turn.damage	Damage:	伤害：
+ui.turn.advance_turn.sleep	Sleeping - turn skipped	沉睡 · 跳过本回合
 # 技能预览中标注预估伤害，而 turns.rs 里的 Damage 是日志回合结果
 ui.skills.draw_skill_details.damage	Damage:	预计伤害：
 ui.screen.draw_panel.damage_or_hp_payment_triggers_a_ne	Damage or HP payment triggers a new skin, healing and power.	受伤或支付生命到达血线后，更换皮肤、恢复生命并强化。

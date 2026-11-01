@@ -6,6 +6,7 @@ pub enum StatusId {
     ExtraReach,
     DoubleRewards,
     ParallelSwap,
+    Sleep,
 }
 impl StatusId {
     pub fn description(self, zh: bool) -> &'static str {
@@ -16,6 +17,7 @@ impl StatusId {
                 Self::ExtraReach => "Status.reach.description",
                 Self::DoubleRewards => "Status.double.description",
                 Self::ParallelSwap => "Status.parallel.description",
+                Self::Sleep => "Status.sleep.description",
             },
             zh,
         )
@@ -28,6 +30,7 @@ impl StatusId {
                 Self::ExtraReach => "Status.reach",
                 Self::DoubleRewards => "Status.double",
                 Self::ParallelSwap => "Status.parallel",
+                Self::Sleep => "Status.sleep",
             },
             zh,
         )
@@ -38,6 +41,7 @@ pub enum StatusDuration {
     OwnerTurnEnd(u8),
     UntilSwap,
     UntilClear,
+    SkipTurn,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct StatusEffect {

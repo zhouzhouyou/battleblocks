@@ -22,6 +22,7 @@ pub fn draw(skill: Skill, x: f32, y: f32, size: f32) {
         Skill::Greedy | Skill::Blood => ORANGE,
         Skill::Imp | Skill::Balance => VIOLET,
         Skill::Chort | Skill::War => RED,
+        Skill::EmberBlast => ORANGE,
         Skill::Corrupt | Skill::Drain => LIME,
         _ => GOLD,
     };
@@ -161,6 +162,16 @@ pub fn draw(skill: Skill, x: f32, y: f32, size: f32) {
             draw_line(cx - r * 0.6, cy, cx + r * 0.6, cy, 3., color);
             draw_line(cx, cy - r * 0.6, cx, cy + r * 0.6, 3., color);
         }
+        Skill::EmberBlast => {
+            draw_circle(cx, cy + r * 0.1, r * 0.62, color);
+            draw_triangle(
+                vec2(cx, cy - r),
+                vec2(cx - r * 0.55, cy + r * 0.15),
+                vec2(cx + r * 0.55, cy + r * 0.15),
+                color,
+            );
+            draw_circle(cx, cy + r * 0.2, r * 0.28, YELLOW);
+        }
         _ => {}
     }
 }
@@ -192,6 +203,8 @@ pub fn draw_passive(passive: crate::content::Passive, x: f32, y: f32, size: f32)
         MeteorEconomy => Skill::Meteor,
         LootMastery => Skill::Greedy,
         BlastMastery => Skill::Imp,
+        ManaAffinity => Skill::EmberBlast,
+        SleepRecovery | SoundSleep => Skill::Guard,
         BloodSacrifice => Skill::Corrupt,
     };
     if matches!(passive, ManaSeal | ManaRelease) {

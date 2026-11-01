@@ -141,6 +141,10 @@ fn run_batch(args: &[String]) {
     let mut aborted = 0u64;
     let mut first_wins = 0u64;
     let mut total = 0u64;
+    let mut nukes = vec![0u64; crate::content::HEROES.len()];
+    let mut nuke_damage = vec![0i64; crate::content::HEROES.len()];
+    let mut first_nuke_sum = vec![0u64; crate::content::HEROES.len()];
+    let mut first_nuke_games = vec![0u64; crate::content::HEROES.len()];
     for a in 0..n {
         for b in (a + 1)..n {
             for sample in 0..samples {
@@ -155,6 +159,23 @@ fn run_batch(args: &[String]) {
                     total += 1;
                     games[roster[player]] += 1;
                     games[roster[enemy]] += 1;
+                    // Only the fire elf can cast Ember Blast; attribute the count to that side.
+                    if roster[player] == crate::content::FIRE_ELF {
+                        nukes[roster[player]] += outcome.nukes[0] as u64;
+                        nuke_damage[roster[player]] += outcome.nuke_damage[0];
+                        if outcome.first_nuke_round[0] > 0 {
+                            first_nuke_sum[roster[player]] += outcome.first_nuke_round[0] as u64;
+                            first_nuke_games[roster[player]] += 1;
+                        }
+                    }
+                    if roster[enemy] == crate::content::FIRE_ELF {
+                        nukes[roster[enemy]] += outcome.nukes[1] as u64;
+                        nuke_damage[roster[enemy]] += outcome.nuke_damage[1];
+                        if outcome.first_nuke_round[1] > 0 {
+                            first_nuke_sum[roster[enemy]] += outcome.first_nuke_round[1] as u64;
+                            first_nuke_games[roster[enemy]] += 1;
+                        }
+                    }
                     rounds.push(outcome.rounds);
                     match outcome.winner {
                         Some(0) => {
@@ -194,14 +215,17 @@ fn run_batch(args: &[String]) {
         .unwrap_or(0);
     let max_round = rounds.last().copied().unwrap_or(0);
     let mut out = String::new();
-    out.push_str("hero,wins,games,win_percent\n");
+    out.push_str("hero,wins,games,win_percent,nukes_per_game,first_nuke_round,avg_nuke_damage\n");
     for &id in &roster {
         out.push_str(&format!(
-            "{},{},{},{:.1}\n",
+            "{},{},{},{:.1},{:.2},{:.1},{:.1}\n",
             crate::content::HEROES[id].en,
             wins[id],
             games[id],
-            wins[id] as f64 / games[id].max(1) as f64 * 100.
+            wins[id] as f64 / games[id].max(1) as f64 * 100.,
+            nukes[id] as f64 / games[id].max(1) as f64,
+            first_nuke_sum[id] as f64 / first_nuke_games[id].max(1) as f64,
+            nuke_damage[id] as f64 / nukes[id].max(1) as f64
         ));
     }
     out.push_str(&format!(
