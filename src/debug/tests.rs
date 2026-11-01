@@ -46,7 +46,7 @@ fn console() -> Console {
         history: Vec::new(),
         records: Vec::new(),
         seq: 0,
-        started: std::time::Instant::now(),
+        started: macroquad::miniquad::date::now(),
         quiet_events: false,
         batch: false,
         action: 0,
