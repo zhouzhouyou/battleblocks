@@ -1,6 +1,19 @@
 use crate::content::Skill;
+use crate::outline;
 use macroquad::prelude::*;
 pub fn draw(skill: Skill, x: f32, y: f32, size: f32) {
+    let skill = match skill {
+        Skill::Rush => Skill::Charge,
+        Skill::Miracle | Skill::Jump | Skill::Copy => Skill::Landslide,
+        Skill::Hammer => Skill::Meteor,
+        Skill::Forge => Skill::War,
+        Skill::Entomb => Skill::Greedy,
+        Skill::Resurrect => Skill::Nature,
+        Skill::Frenzy => Skill::Imp,
+        Skill::Healing => Skill::Guard,
+        Skill::Rational => Skill::Nature,
+        other => other,
+    };
     let color = match skill {
         Skill::Charge | Skill::Landslide => GOLD,
         Skill::Guard => GREEN,
@@ -10,6 +23,7 @@ pub fn draw(skill: Skill, x: f32, y: f32, size: f32) {
         Skill::Imp | Skill::Balance => VIOLET,
         Skill::Chort | Skill::War => RED,
         Skill::Corrupt | Skill::Drain => LIME,
+        _ => GOLD,
     };
     draw_rectangle(
         x,
@@ -18,7 +32,7 @@ pub fn draw(skill: Skill, x: f32, y: f32, size: f32) {
         size,
         Color::new(color.r * 0.15, color.g * 0.15, color.b * 0.15, 1.),
     );
-    draw_rectangle_lines(x + 1., y + 1., size - 2., size - 2., 1., color);
+    outline(x + 1., y + 1., size - 2., size - 2., 1., color);
     let cx = x + size / 2.;
     let cy = y + size / 2.;
     let r = size * 0.3;
@@ -147,6 +161,7 @@ pub fn draw(skill: Skill, x: f32, y: f32, size: f32) {
             draw_line(cx - r * 0.6, cy, cx + r * 0.6, cy, 3., color);
             draw_line(cx, cy - r * 0.6, cx, cy + r * 0.6, 3., color);
         }
+        _ => {}
     }
 }
 
@@ -154,6 +169,12 @@ pub fn draw(skill: Skill, x: f32, y: f32, size: f32) {
 pub fn draw_passive(passive: crate::content::Passive, x: f32, y: f32, size: f32) {
     use crate::content::Passive::*;
     let skill = match passive {
+        KnightStrength | DwarfStrength | Might => Skill::Charge,
+        Short | Grudge | Clumsy | ClumsyAwake => Skill::Landslide,
+        MindVision | BorrowedSlot => Skill::Greedy,
+        FriendMilk => Skill::Healing,
+        AutoRecovery => Skill::Guard,
+        Madness => Skill::Frenzy,
         ColumnFormation => Skill::Landslide,
         BattleTraining => Skill::Charge,
         ForestStep => Skill::Nature,

@@ -1,0 +1,16 @@
+hero,wins,games,win_percent
+Dwarf,239,480,49.8
+Knight,244,480,50.8
+Priest,228,480,47.5
+Nun,243,480,50.6
+Elf,163,480,34.0
+Wizard,323,480,67.3
+games=1440,draws=0,median_actions=47,p10_actions=29,p90_actions=60,max_actions=80,median_rounds=18,p90_rounds=21,max_rounds=26,first_side_win=53.8%
+pairwise_win_counts=[[0, 62, 44, 50, 62, 21], [34, 0, 52, 55, 63, 40], [52, 44, 0, 22, 68, 42], [46, 41, 74, 0, 57, 25], [34, 33, 28, 39, 0, 29], [75, 56, 54, 71, 67, 0]]
+hero,swaps,skills
+Dwarf,6858,5534
+Knight,9314,3766
+Priest,8038,4212
+Nun,7569,2586
+Elf,5791,4739
+Wizard,4454,2074

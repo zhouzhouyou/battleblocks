@@ -1,0 +1,26 @@
+> 历史记录：这一版动画图片已按 2026-11-01 清理移出仓库，本目录只保留提示词；当前使用 production/v3。
+
+# dwarf · 游戏动画 v1
+
+2026-10-30。内置 imagegen，根据当前人设制作透明帧图；生成源图需经网格、透明度、色数与锚点校准后接入。
+
+## 初始完整提示词
+
+Act as the art director for an original game. Establish densely detailed pixel illustration as the global visual language for the entire project. Apply this direction consistently to characters, environments, props, items, UI, icons, visual effects, animation, loading screens and promotional art. Keep the project's existing genre, mechanics, camera and target platform; when one is unspecified, state an assumption before proposing assets.
+
+Use carefully shaped pixel clusters, nuanced hue shifts and richer stepped ramps to describe cloth, foliage, stone and architecture. Keep a consistent pixel scale and concentrate intricate detail around focal assets, allowing quieter surfaces and distance to preserve hierarchy. Give characters expressive but readable frame animation and materials that match the environment's cluster language. Design UI icons at intentional resolutions rather than downscaling painted images. Effects may use controlled soft light, but must preserve the underlying pixel contours. Avoid random pixel noise, inconsistent sprite density and detail that vanishes or flickers at the target display size.
+
+Create a compact art bible with a locked palette, silhouette and proportion rules, material examples, lighting hierarchy, UI/icon rules, motion guidelines and a short list of visual mistakes to avoid. Define measurable asset specifications appropriate to the chosen platform and camera, then keep them consistent across every batch. Preserve gameplay readability, accessible text and clear interactive targets at the actual display size. Use original designs and compositions rather than copying a particular game's characters, logos or artwork. When asked for one asset, deliver that asset within this art direction; do not redesign the style for each request.
+Use case: identity-preserve. Asset type: transparent game animation SPRITE SHEET based on the attached reference model sheet.
+Create an exactly square 4-column by 4-row grid of 16 separate full-body frames on a genuinely TRANSPARENT background. NO lettering, NO titles, NO grids, NO frame borders, NO floor, NO cast shadow, NO UI. Each identical cell has ample transparent gutters. Every frame uses the same frontal three-quarter facing slightly right. Consistent anatomy, head size, outfit, equipment, pixel grid, scale and feet anchor. Crisp densely detailed PIXEL ILLUSTRATION with deliberately stepped 3-4-tone material ramps, coherent pixel clusters, hard pixel edges, no smooth digital painting, no blurry downscaled art. High detail readability rather than coarse 8bit. Think each frame drawn intentionally on a 96x96 logical canvas and enlarged 4x by nearest-neighbor. Uniform cell size and fixed camera. Each full subject fits its cell completely with at least 8% margins.
+Row1: four subtle normal IDLE cycle frames (breathing, hair and cloth settling), feet remain grounded.
+Row2: four subtle AWAKENED IDLE cycle frames, same identity and all clothing.
+Row3: four sequential CAST / ATTACK frames: anticipation, windup, release, recovery. This must be actual articulated movement, not four duplicate poses.
+Row4: four sequential HIT/RECOVER frames: slight recoil, stronger recoil, regaining stance, return toward idle. No blood, no dying/disappearing, no new accessories.
+Read the reference as identity and design authority. Do NOT include portraits or equipment breakdowns from the reference.
+Character: short stocky mature MALE DWARF, bright orange swept hair and huge braided orange beard, bare head NO HELMET, black leather smith apron over deep red tunic, dark steel shoulder plates and boots, brass trim. One hand naturally EMPTY. Other hand always holds ONE finely forged double-ended perfectly symmetric rectangular STEEL WARHAMMER with red leather grip and a simple HAMMER-SHAPED rune. BOTH ends same dimensions and material, not an axe. Normal rune dark engraved; awakened rune alone glows red, same body/armor/hair/weapon. No added armor/hair/halo. Row3 swings this SAME hammer with planted then lightly jumping pose. NO BOOK in any frame; book will be a separate layer. At the shared scale the dwarf body is 32 logical pixels tall, HALF the height of a normal human (64). Keep the dwarf low centered in each cell, feet at logical y=84, body top about y=52; full hammer may extend higher. Do not fill the entire cell with a human-height dwarf.
+
+## 动画与一致性修订
+
+Edit this transparent 4x4 dwarf animation atlas. Preserve rows1,2,3 exactly. Replace ONLY bottom ROW4 with FOUR sequential AWAKENED ATTACK poses matching row3: anticipation, overhead windup, powerful hammer swing, recovery. Same exact body, hair, beard, armor and clothing. Only difference from row3 normal attack: engraved HAMMER-shaped rune on same symmetrical double-headed warhammer glows red. Remove broad golden slash effect; keep tight red rune light, motion conveyed by poses. No books, no helmet, no new equipment or hair. Same cell sizes, alpha transparency, feet anchors and pixel density, no text/grid/background.
+

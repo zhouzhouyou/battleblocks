@@ -36,6 +36,7 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-debug-') as temp:
         send('cast 1 2 3')
         data=wait(lambda r:any(e['event']=='skill' for e in r));cast=next(e for e in data if e['event']=='skill')
         assert cast['before']['mp']-cast['after']['mp']==100
+        assert cast['before']['cooldowns'][0][0]==0 and cast['after']['cooldowns'][0][0]==2
         attack=[4,0,12,0,7,0,7]
         expected=60+sum(attack[row[x]] for row in cast['before']['board'] for x in (1,2))
         assert cast['after']['enemy_hp']==cast['before']['enemy_hp'], 'Charge damage waits for visual impact'
@@ -214,6 +215,24 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-debug-') as temp:
         assert recharge['before']['mp']==60 and recharge['after']['mp']==min(recovered,250)
         assert 'cost=60' in recharge['detail']
         rollback_to(recharge['before'])
+        # The nun's preparation changes this turn's direct healing into damage.
+        edit_command('hero player 10')
+        edit_command('hero enemy 8')
+        edit_command('hp player 400')
+        edit_command('hp enemy 500')
+        edit_command('mp player 160')
+        prepare=action('cast 1','skill')
+        assert any(s['id']=='Frenzy' for s in prepare['after']['new_role_states'][0]['statuses'])
+        assert not prepare['after']['armed']
+        assert prepare['after']['mp']==130 and not prepare['after']['action_done']
+        prayer=action('cast 2','skill')
+        assert prayer['after']['hp']==443
+        assert prayer['after']['enemy_hp']==415
+        assert prayer['after']['mp']==70
+        traced=[e['payload'] for e in records() if e['event']=='reward_event' and e['action']==prayer['action'] and e.get('payload') and e['payload']['resource']=='Damage']
+        assert any([step['source'].get('id') for step in event['source_chain']]==['Healing','FriendMilk','Frenzy'] for event in traced)
+        rollback_to(prayer['before'])
+        rollback_to(prepare['before'])
         # At the locked full reserve, the wizard's clear heals normally.
         edit_command('hero player 2')
         edit_command('hp player 300')
