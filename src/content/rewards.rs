@@ -137,6 +137,7 @@ pub fn blood_cost(hero: usize, awake: bool, missing: i32) -> i32 {
             },
         ),
         &mut RuleEvent::Payment {
+            skill: None,
             missing,
             blood: &mut blood,
             allowed: &mut allowed,
@@ -153,6 +154,7 @@ pub fn payment_in(hero: usize, hp: i32, mp: i32, skill: Skill, rules: Rules) -> 
     dispatch_rules(
         &EventContext::new(hero, hp, mp, rules),
         &mut RuleEvent::Payment {
+            skill: Some(skill),
             missing,
             blood: &mut blood,
             allowed: &mut allowed,

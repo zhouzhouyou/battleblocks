@@ -10,3 +10,4 @@
 8|Might,Short|Might,Short,Grudge||Dwarf.awakening
 9|MindVision|MindVision,BorrowedSlot|20,21,22|Priest.awakening
 10|FriendMilk,AutoRecovery|FriendMilk,Madness,AutoRecovery|25,24|Nun.awakening
+11|ManaAffinity,SleepRecovery|ManaAffinity,SoundSleep||FireElf.awakening
