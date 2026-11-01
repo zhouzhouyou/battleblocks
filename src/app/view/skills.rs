@@ -29,9 +29,23 @@ impl Session {
                 GRAY
             };
             // Cost right-aligned; the name fits into the space left of it.
+            let nominal = content::skill_cost_in(self.enemy_id, *skill, self.rules(true));
             let cost = cost_text(
                 self.zh,
-                content::skill_cost_in(self.enemy_id, *skill, self.rules(true)),
+                if content::payment_in(
+                    self.enemy_id,
+                    self.enemy,
+                    self.enemy_mp,
+                    *skill,
+                    self.rules(true),
+                )
+                .is_some()
+                    && self.enemy_mp < nominal
+                {
+                    self.enemy_mp
+                } else {
+                    nominal
+                },
                 0,
             );
             let cost_width = label_width(&cost, 15.);
@@ -104,11 +118,22 @@ impl Session {
                         ),
                     )
                 } else {
-                    cost_text(
-                        self.zh,
-                        content::skill_cost_in(self.hero_id, *skill, self.rules(false)),
-                        0,
+                    let nominal = content::skill_cost_in(self.hero_id, *skill, self.rules(false));
+                    let displayed = if content::payment_in(
+                        self.hero_id,
+                        self.hp,
+                        self.mp,
+                        *skill,
+                        self.rules(false),
                     )
+                    .is_some()
+                        && self.mp < nominal
+                    {
+                        self.mp
+                    } else {
+                        nominal
+                    };
+                    cost_text(self.zh, displayed, 0)
                 },
                 tr_key(self.zh, "ui.shared.cd"),
                 skill.cooldown()
@@ -233,14 +258,20 @@ impl Session {
                         ),
                     )
                 } else {
+                    let nominal = content::skill_cost_in(id, skill, self.rules(is_enemy));
+                    let displayed =
+                        if content::payment_in(id, health, mana, skill, self.rules(is_enemy))
+                            .is_some()
+                            && mana < nominal
+                        {
+                            mana
+                        } else {
+                            nominal
+                        };
                     format!(
                         "{}{}",
                         tr_key(self.zh, "ui.skills.draw_skill_details.cost"),
-                        cost_text(
-                            self.zh,
-                            content::skill_cost_in(id, skill, self.rules(is_enemy)),
-                            0
-                        )
+                        cost_text(self.zh, displayed, 0)
                     )
                 },
                 x + 10.,

@@ -1,9 +1,7 @@
 //! Snapshot-owned character state and turn-local skill preparation. Board changes use the same rules in the
 //! live loop and previews; random choices are supplied by the saved RNG stream.
 use crate::board::{self, Board, N};
-#[cfg(test)]
-use crate::content::StatusId;
-use crate::content::{self, Skill, StatusSet};
+use crate::content::{self, Skill, StatusDuration, StatusId, StatusSet};
 
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct RoleState {
@@ -16,6 +14,10 @@ pub struct RoleState {
     pub horizontal: bool,
     pub swap_clear: bool,
     pub statuses: StatusSet,
+    /// The current cast ends the turn; Sleep is applied after the turn-end recovery.
+    pub sleep_pending: bool,
+    /// The once-per-own-turn passive hook has run for the current turn.
+    pub turn_start_done: bool,
 }
 impl RoleState {
     pub fn select_occupied_pocket(&mut self) {
@@ -48,6 +50,7 @@ impl RoleState {
         self.swap_clear = true;
     }
     pub fn start_turn(&mut self) {
+        self.turn_start_done = false;
         self.force_armed = false;
         self.horizontal = false;
         self.swap_clear = false;
@@ -57,6 +60,13 @@ impl RoleState {
     }
     pub fn end_turn(&mut self) {
         self.statuses.end_owner_turn();
+        if self.sleep_pending {
+            self.statuses
+                .insert(StatusId::Sleep, Skill::EmberBlast, StatusDuration::SkipTurn);
+            self.sleep_pending = false;
+        } else {
+            self.statuses.consume(StatusDuration::SkipTurn);
+        }
     }
     /// Select from the multiset of directly eliminated tiles, not distinct types.
     pub fn mind_vision(&mut self, direct_tiles: &[u8], pick: usize) -> bool {

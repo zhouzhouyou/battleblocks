@@ -13,6 +13,8 @@ pub enum Action {
     Skill(Skill),
     /// The board was rerolled, by choice or because nothing was playable.
     Reroll,
+    /// The owner was asleep and the whole turn was skipped.
+    Sleep,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -62,6 +64,7 @@ impl Turn {
                 Action::Reroll => {
                     crate::tr_key(zh, "ui.turns.actions_text.board_reroll").to_string()
                 }
+                Action::Sleep => crate::tr_key(zh, "ui.turns.actions_text.sleep").to_string(),
             })
             .collect::<Vec<_>>()
             .join(" → ")

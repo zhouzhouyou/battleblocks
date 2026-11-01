@@ -90,6 +90,7 @@ pub fn handle(
             missing,
             blood,
             allowed,
+            ..
         } => match p {
             Passive::FleshCasting => **allowed = ctx.hp > **blood,
             Passive::FleshConversion => {
