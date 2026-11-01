@@ -88,8 +88,55 @@ pub fn hero_rect(row: usize) -> Rect {
 pub fn hero_list_rect() -> Rect {
     Rect::new(24., 112., 232., HERO_ROW_STEP * HERO_VISIBLE_ROWS as f32)
 }
-pub fn skill_rect(i: usize) -> Rect {
-    Rect::new(548., 126. + i as f32 * 94., 452., 88.)
+const SKILL_X: f32 = 548.;
+const SKILL_Y: f32 = 126.;
+const SKILL_W: f32 = 452.;
+const SKILL_MIN_H: f32 = 88.;
+const SKILL_GAP: f32 = 6.;
+const SKILL_BOTTOM: f32 = 414.;
+
+fn skill_description_lines(skill: content::Skill, awake: bool, zh: bool) -> Vec<String> {
+    // `wrap_preview_text` counts CJK as one unit and ASCII as 0.55; at the
+    // card's 16px description size, this limit is the usable pixel width.
+    wrap_preview_text(
+        content::skill_description(skill, awake, zh),
+        (SKILL_W - 28.) / 16.,
+    )
+}
+
+fn skill_max_lines(rect: Rect) -> usize {
+    (((rect.h - 49. - 5.) / 17.).floor().max(0.) as usize) + 1
+}
+
+/// Lay skill cards out from their wrapped description height. Most cards keep
+/// the original 88px; a card with four or more lines grows instead of spilling.
+pub fn skill_rects(hero: usize, awake: bool, zh: bool) -> Vec<Rect> {
+    let mut rects = Vec::new();
+    let mut y = SKILL_Y;
+    for skill in content::skills(hero, awake) {
+        let lines = skill_description_lines(*skill, awake, zh).len();
+        let height = if lines > 3 {
+            (49. + lines as f32 * 17. + SKILL_GAP).max(SKILL_MIN_H)
+        } else {
+            SKILL_MIN_H
+        };
+        rects.push(Rect::new(SKILL_X, y, SKILL_W, height));
+        y += height + SKILL_GAP;
+    }
+    // Future multi-skill descriptions may not all fit. Equalize rather than
+    // overlapping; the draw pass truncates to each card's visible line count.
+    if !rects.is_empty() && y - SKILL_GAP > SKILL_BOTTOM {
+        let count = rects.len();
+        let equal =
+            ((SKILL_BOTTOM - SKILL_Y - SKILL_GAP * (count - 1) as f32) / count as f32).max(70.);
+        let mut y = SKILL_Y;
+        for rect in &mut rects {
+            rect.y = y;
+            rect.h = equal;
+            y += equal + SKILL_GAP;
+        }
+    }
+    rects
 }
 pub fn start_rect() -> Rect {
     Rect::new(284., 651., 716., 48.)
@@ -504,8 +551,8 @@ pub fn draw(
         draw_lore(hero, zh);
     } else {
         let visible_skills = content::skills(hero, page == 2);
-        for (i, skill) in visible_skills.iter().enumerate() {
-            let r = skill_rect(i);
+        let skill_rects = skill_rects(hero, page == 2, zh);
+        for (i, (skill, r)) in visible_skills.iter().zip(skill_rects).enumerate() {
             panel(
                 r,
                 if i == preview.skill {
@@ -537,10 +584,8 @@ pub fn draw(
                 WHITE,
             );
             label(&details, details_x, r.y + 27., details_size, SKYBLUE);
-            for (line, text) in content::skill_description(*skill, page == 2, zh)
-                .lines()
-                .enumerate()
-            {
+            let description = skill_description_lines(*skill, page == 2, zh);
+            for (line, text) in description.iter().take(skill_max_lines(r)).enumerate() {
                 label(
                     text,
                     r.x + 14.,
@@ -549,29 +594,6 @@ pub fn draw(
                     LIGHTGRAY,
                 );
             }
-        }
-        if h.skills.len() == 1 {
-            label(
-                tr_key(zh, "ui.menu.draw.one_distinctive_skill"),
-                564.,
-                306.,
-                23.,
-                GOLD,
-            );
-            label(
-                tr_key(zh, "ui.menu.draw.each_hero_plays_differently"),
-                564.,
-                341.,
-                19.,
-                LIGHTGRAY,
-            );
-            label(
-                tr_key(zh, "ui.menu.draw.preview_the_effect_below"),
-                564.,
-                369.,
-                19.,
-                LIGHTGRAY,
-            );
         }
         label(
             tr_key(zh, "ui.menu.draw.skills_click_to_preview"),
@@ -597,6 +619,7 @@ pub fn draw(
                     | content::Skill::Rush
                     | content::Skill::Hammer
                     | content::Skill::Entomb
+                    | content::Skill::EmberBlast
             );
             for y in 0..N {
                 for x in 0..N {

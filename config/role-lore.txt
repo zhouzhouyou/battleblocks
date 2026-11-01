@@ -90,3 +90,13 @@
 10|line|暗影攻击 · Do not run! This is part of the treatment!|暗影攻击 · 别躲！这也是治疗的一部分！
 10|line|癫狂 · Pain? No, no! That is the embrace of God!|癫狂 · 疼痛？不，不不！那是神的拥抱！
 10|line|恢复 · What... what did I just do?|恢复 · 我……刚才都做了什么？
+11|title|The Nap after the Boom|爆完就睡
+11|intro|A cheerful forest elf who learned exactly one spell and considers that a complete education. She pours every drop of mana into one enormous explosion, then immediately falls asleep on the spot. The forest has learned to schedule its walks around her naps.|住在森林里的开朗精灵，只学了一招，并认为这已经是完整的教育。她把每一滴魔力都倒进一场巨大的爆炸，然后当场睡着。森林已经学会把散步时间排在她的午睡之外。
+11|trait|One spell. One nap.|只会一招，倒头就睡。
+11|trait|Mana goes in. Everything else goes out.|魔力攒进去，别的东西炸出去。
+11|line|I have a technique. It is called "all of it".|我有一招，叫“全部”。
+11|line|Was that too much? No. That was exactly enough.|刚才是不是太过了？不，刚刚好。
+11|line|Wake me when the mana is full. Or when dinner is ready.|魔力满了再叫我。饭好了也可以。
+11|line|The forest is fine. The forest is just... very far away now.|森林没事。森林只是……现在离得有点远。
+11|line|I did not miss. I removed the concept of missing.|我没有打偏。我只是把“打偏”这个概念一起炸掉了。
+11|line|Ten out of ten. Would nap again.|十分。下次还睡。

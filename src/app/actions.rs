@@ -311,6 +311,10 @@ impl Session {
                     self.hp - before.hp
                 };
                 let actual_damage = applied.hit.damage;
+                if effective == content::Skill::EmberBlast {
+                    self.nuke_casts[self.enemy_turn as usize] += 1;
+                    self.nuke_damage[self.enemy_turn as usize] += actual_damage as i64;
+                }
                 let actual_mana = if self.enemy_turn {
                     self.enemy_mp - before.enemy_mp + pay.mana
                 } else {

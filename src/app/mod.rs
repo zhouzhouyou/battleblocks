@@ -75,6 +75,9 @@ pub(crate) struct Session {
     presentation: presentation::Presentation,
     turn_log: turns::Log,
     round: u32,
+    /// Analysis-only counter for balance screens; not part of snapshots or play.
+    nuke_casts: [u32; 2],
+    nuke_damage: [i64; 2],
 }
 
 /// Result of one reward settlement, including the latest health-affecting source per side.
@@ -286,6 +289,8 @@ impl Session {
         let charge_damage: Option<content::PendingImpact> = None;
         let presentation = presentation::Presentation::default();
         let turn_log = turns::Log::new();
+        let nuke_casts = [0; 2];
+        let nuke_damage = [0; 2];
         let round = 1u32;
 
         Self {
@@ -351,6 +356,8 @@ impl Session {
             presentation,
             turn_log,
             round,
+            nuke_casts,
+            nuke_damage,
         }
     }
     fn required_texture(texture: &Option<Texture2D>) -> &Texture2D {

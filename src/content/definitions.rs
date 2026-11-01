@@ -28,6 +28,7 @@ pub enum Skill {
     Frenzy,
     Healing,
     Rational,
+    EmberBlast,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TileOperation {
@@ -89,6 +90,7 @@ impl Skill {
         Skill::Frenzy,
         Skill::Healing,
         Skill::Rational,
+        Skill::EmberBlast,
     ];
     pub fn from_index(index: usize) -> Option<Self> {
         Self::ALL.get(index).copied()
@@ -235,7 +237,17 @@ pub fn effective_skill(skill: Skill, rules: Rules) -> Skill {
 
 pub fn skill_cost_in(hero: usize, skill: Skill, rules: Rules) -> i32 {
     let effective = effective_skill(skill, rules);
-    let base = skill_cost(hero, rules.awake, effective);
+    // Use the full rules here: a copied active must see copied_skill and its own
+    // dynamic cost, which the awake-only `skill_cost` helper cannot resolve.
+    let mut base = effective.cost();
+    dispatch_rules(
+        &EventContext::new(hero, 0, 0, rules),
+        &mut RuleEvent::SkillCost {
+            skill: effective,
+            value: &mut base,
+        },
+        &mut Vec::new(),
+    );
     let repeat = rules.repeat_casts[effective.index()] as i32;
     if effective.cooldown() == 0 && !effective.ends_turn() {
         base + repeat * 15

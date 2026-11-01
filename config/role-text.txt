@@ -42,3 +42,12 @@ Status.rational.description|Madness is disabled. Normal attacks still deal damag
 Status.reach.description|You can reach one additional row.|可操作范围增加一行
 Status.double.description|Your next clear gains 100% additional effects.|下次消除额外触发100%效果
 Status.parallel.description|The next orthogonal exchange includes its two parallel pairs.|下次正交交换附带两侧平行交换
+ManaAffinity.name|Mana affinity|魔力亲和
+ManaAffinity.description|At the start of your turn, replace 2 random non-mana normal tiles with mana tiles. It never creates a match.|回合开始时，随机将2个非魔力普通方块替换为魔力方块；不会直接形成三消
+SleepRecovery.name|Sleep recovery|沉睡回复
+SleepRecovery.description|While asleep, restore 8% max HP and 15% max MP.|沉睡时回复8%最大生命、15%最大魔力
+SoundSleep.name|Sound sleep|安眠
+SoundSleep.description|While asleep, take 30% less damage; waking recovery becomes 12% HP and 20% MP.|沉睡时受到伤害-30%；醒来回复提高到12%生命、20%魔力
+Status.sleep|Sleep|沉睡
+Status.sleep.description|Skip your next turn. Sleep recovery is a passive.|跳过下一个自己的回合；睡眠回复由被动提供
+FireElf.awakening|Sound sleep replaces Sleep recovery. Ember blast can be cast at 80% MP; a full-MP cast deals +15% damage.|安眠替换沉睡回复；炎爆术魔力达到上限80%即可施放，满魔施放伤害+15%
