@@ -79,14 +79,14 @@ impl Preview {
 /// Final page is the character file; pages 0..2 are resources, passives and awakening.
 pub const CHARACTER_PAGE_COUNT: usize = 4;
 /// Rows of the hero list that fit without covering the key hints below it.
-pub const HERO_VISIBLE_ROWS: usize = 9;
+pub const HERO_VISIBLE_ROWS: usize = 8;
 pub const HERO_ROW_STEP: f32 = 53.;
 /// On-screen row rectangle. Map it back to a roster entry through the scroll offset.
 pub fn hero_rect(row: usize) -> Rect {
-    Rect::new(24., 112. + row as f32 * HERO_ROW_STEP, 232., 48.)
+    Rect::new(24., 164. + row as f32 * HERO_ROW_STEP, 232., 48.)
 }
 pub fn hero_list_rect() -> Rect {
-    Rect::new(24., 112., 232., HERO_ROW_STEP * HERO_VISIBLE_ROWS as f32)
+    Rect::new(24., 164., 232., HERO_ROW_STEP * HERO_VISIBLE_ROWS as f32)
 }
 const SKILL_X: f32 = 548.;
 const SKILL_Y: f32 = 126.;
@@ -283,6 +283,7 @@ fn draw_skill_actor(
 }
 pub fn draw(
     hero: usize,
+    group: content::HeroGroup,
     zh: bool,
     texture: &Texture2D,
     thumbs: &Texture2D,
@@ -310,10 +311,19 @@ pub fn draw(
         19.,
         LIGHTGRAY,
     );
-    let scroll = ui::clamp_scroll(scroll, content::ROSTER.len(), HERO_VISIBLE_ROWS);
-    let visible_rows = HERO_VISIBLE_ROWS.min(content::ROSTER.len().saturating_sub(scroll));
+    ui::draw_group_tabs(false, group, zh, pointer);
+    label(
+        tr_key(zh, "ui.selection.group_hint"),
+        26.,
+        624.,
+        18.,
+        LIGHTGRAY,
+    );
+    let roster = group.roster();
+    let scroll = ui::clamp_scroll(scroll, roster.len(), HERO_VISIBLE_ROWS);
+    let visible_rows = HERO_VISIBLE_ROWS.min(roster.len().saturating_sub(scroll));
     for row in 0..visible_rows {
-        let i = content::ROSTER[scroll + row];
+        let i = roster[scroll + row];
         let h = &HEROES[i];
         let r = hero_rect(row);
         panel(
@@ -342,7 +352,7 @@ pub fn draw(
             if zh { h.zh } else { h.en },
             r.x + 67.,
             r.y + 23.,
-            20.,
+            fit_size(if zh { h.zh } else { h.en }, 20., r.w - 75.),
             if i == hero { GOLD } else { WHITE },
         );
         label(
@@ -359,12 +369,7 @@ pub fn draw(
             LIGHTGRAY,
         );
     }
-    ui::draw_scrollbar(
-        hero_list_rect(),
-        scroll,
-        content::ROSTER.len(),
-        HERO_VISIBLE_ROWS,
-    );
+    ui::draw_scrollbar(hero_list_rect(), scroll, roster.len(), HERO_VISIBLE_ROWS);
     label(
         tr_key(zh, "ui.menu.draw.select_hero"),
         26.,
@@ -381,7 +386,8 @@ pub fn draw(
     );
     let h = &HEROES[hero];
     panel(Rect::new(284., 112., 244., 518.), card);
-    label(if zh { h.zh } else { h.en }, 302., 151., 34., GOLD);
+    let name = if zh { h.zh } else { h.en };
+    label(name, 302., 151., fit_size(name, 34., 208.), GOLD);
     label(
         tr_key(zh, "ui.menu.draw.animated_preview"),
         302.,

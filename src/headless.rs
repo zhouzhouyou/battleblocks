@@ -110,7 +110,7 @@ fn run_batch(args: &[String]) {
                 })
             })
             .collect::<Vec<_>>(),
-        None => crate::content::ROSTER.to_vec(),
+        None => crate::content::DEFAULT_AUTOPLAY_ROSTER.to_vec(),
     };
     if roster.len() < 2 {
         eprintln!("--roster needs at least two hero ids");
