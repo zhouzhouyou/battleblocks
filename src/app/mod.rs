@@ -6,6 +6,7 @@ mod console;
 mod controls;
 mod exchange;
 mod headless;
+pub(crate) use headless::BatchOutcome;
 mod lifecycle;
 mod resolution;
 mod selection;
