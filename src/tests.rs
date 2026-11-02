@@ -232,7 +232,8 @@ fn gravity_preserves_survivor_order() {
 }
 #[test]
 fn selection_scroll_keeps_rows_inside_their_viewport() {
-    let roster = content::ROSTER.len();
+    // Exercise overflow too, even though both current groups fit.
+    let roster = 12;
     let hero_area = menu::hero_list_rect();
     let last_hero = menu::hero_rect(menu::HERO_VISIBLE_ROWS - 1);
     assert!(last_hero.y + last_hero.h <= hero_area.y + hero_area.h);
@@ -250,7 +251,7 @@ fn selection_scroll_keeps_rows_inside_their_viewport() {
         ui::max_scroll(roster, menu::HERO_VISIBLE_ROWS)
     );
     assert_eq!(ui::scroll_to_show(0, 0, roster, menu::HERO_VISIBLE_ROWS), 0);
-    let opponent_rows = ui::opponent_row_count();
+    let opponent_rows = ui::opponent_row_count(roster);
     assert_eq!(
         ui::scroll_to_show(
             0,
@@ -266,13 +267,55 @@ fn selection_scroll_keeps_rows_inside_their_viewport() {
     );
     assert_eq!(
         ui::scroll_by(1, 1, opponent_rows, ui::OPPONENT_VISIBLE_ROWS),
-        1
+        2
     );
     assert_eq!(
         ui::scroll_by(0, -1, opponent_rows, ui::OPPONENT_VISIBLE_ROWS),
         0
     );
     assert_eq!(ui::clamp_scroll(9, 3, 5), 0);
+}
+
+#[test]
+fn selection_tabs_fit_above_each_list_without_overlapping_other_controls() {
+    for opponents in [false, true] {
+        let area = if opponents {
+            ui::opponent_list_rect()
+        } else {
+            menu::hero_list_rect()
+        };
+        for i in 0..2 {
+            let tab = ui::group_tab_rect(opponents, i);
+            assert!(tab.w >= 44. && tab.h >= 44.);
+            assert!(tab.x >= area.x && tab.x + tab.w <= area.x + area.w);
+            assert!(tab.y + tab.h < area.y);
+            if i == 1 {
+                let previous = ui::group_tab_rect(opponents, 0);
+                assert!(previous.x + previous.w < tab.x);
+            }
+            if opponents {
+                let difficulty = ui::difficulty_rect(i);
+                assert!(difficulty.y + difficulty.h < tab.y);
+            }
+        }
+        for group in content::HeroGroup::ALL {
+            let rows = if opponents {
+                ui::opponent_row_count(group.roster().len())
+            } else {
+                group.roster().len()
+            };
+            let visible = if opponents {
+                ui::OPPONENT_VISIBLE_ROWS
+            } else {
+                menu::HERO_VISIBLE_ROWS
+            };
+            assert_eq!(
+                ui::max_scroll(rows, visible),
+                0,
+                "both groups fit completely"
+            );
+        }
+    }
 }
 
 #[test]

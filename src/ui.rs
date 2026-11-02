@@ -33,11 +33,13 @@ pub fn help_tab_rect(i: usize) -> Rect {
     )
 }
 /// Fully visible rows of the opponent grid; further rows scroll.
-pub const OPPONENT_VISIBLE_ROWS: usize = 5;
+pub const OPPONENT_VISIBLE_ROWS: usize = 4;
 pub struct Ui {
     pub panel: Option<Panel>,
     pub opponent: Option<usize>,
     pub opponent_step: bool,
+    pub hero_group: content::HeroGroup,
+    pub opponent_group: content::HeroGroup,
     // First visible row of each selectable list. Both clamp to the current roster.
     pub hero_scroll: usize,
     pub opponent_scroll: usize,
@@ -53,6 +55,8 @@ impl Default for Ui {
             panel: None,
             opponent: None,
             opponent_step: false,
+            hero_group: content::HeroGroup::New,
+            opponent_group: content::HeroGroup::New,
             hero_scroll: 0,
             opponent_scroll: 0,
             help_tab: 0,
@@ -79,6 +83,35 @@ fn frame(r: Rect, hovered: bool) {
 fn button(r: Rect, text: &str, pointer: Vec2) {
     frame(r, r.contains(pointer));
     label_centered(text, r.x + r.w / 2., r.y + r.h / 2. + 8., 22., WHITE);
+}
+/// Selection tabs share geometry between drawing and hit testing on both pages.
+pub fn group_tab_rect(opponents: bool, index: usize) -> Rect {
+    if opponents {
+        Rect::new(230. + index as f32 * 288., 164., 276., 44.)
+    } else {
+        Rect::new(24. + index as f32 * 120., 112., 112., 44.)
+    }
+}
+pub fn draw_group_tabs(opponents: bool, selected: content::HeroGroup, zh: bool, pointer: Vec2) {
+    for (i, group) in content::HeroGroup::ALL.into_iter().enumerate() {
+        let r = group_tab_rect(opponents, i);
+        let key = match group {
+            content::HeroGroup::New => "ui.selection.new",
+            content::HeroGroup::Legacy => "ui.selection.legacy",
+        };
+        let text = format!("{} ({})", tr_key(zh, key), group.roster().len());
+        frame(r, r.contains(pointer));
+        if group == selected {
+            outline(r.x, r.y, r.w, r.h, 2., GOLD);
+        }
+        label_centered(
+            &text,
+            r.x + r.w / 2.,
+            r.y + 29.,
+            fit_size(&text, 18., r.w - 12.),
+            if group == selected { GOLD } else { WHITE },
+        );
+    }
 }
 fn settings_row(i: usize) -> Rect {
     Rect::new(280., 190. + i as f32 * 58., 464., 46.)
@@ -296,8 +329,9 @@ impl Ui {
         difficulty: usize,
         scroll: usize,
     ) {
-        let total = crate::content::ROSTER.len() + 1;
-        let rows = opponent_row_count();
+        let roster = self.opponent_group.roster();
+        let total = roster.len() + 1;
+        let rows = opponent_row_count(roster.len());
         let scroll = clamp_scroll(scroll, rows, OPPONENT_VISIBLE_ROWS);
         label(
             tr_key(zh, "ui.screen.draw_opponents.step_2_choose_opponent"),
@@ -340,6 +374,14 @@ impl Ui {
                 outline(r.x, r.y, r.w, r.h, 2., GOLD);
             }
         }
+        draw_group_tabs(true, self.opponent_group, zh, pointer);
+        label(
+            tr_key(zh, "ui.selection.group_hint"),
+            230.,
+            616.,
+            18.,
+            LIGHTGRAY,
+        );
         // Only fully visible grid rows are drawn and clickable, so the last row can
         // never spill over the back/start buttons below the list.
         for row in 0..OPPONENT_VISIBLE_ROWS {
@@ -353,7 +395,7 @@ impl Ui {
                 let selected = if i == 0 {
                     self.opponent.is_none()
                 } else {
-                    self.opponent == Some(crate::content::ROSTER[i - 1])
+                    self.opponent == Some(roster[i - 1])
                 };
                 if selected {
                     outline(r.x, r.y, r.w, r.h, 2., GOLD);
@@ -367,14 +409,14 @@ impl Ui {
                         GOLD,
                     );
                     label(
-                        tr_key(zh, "ui.screen.draw_opponents.excludes_your_hero"),
+                        tr_key(zh, "ui.selection.random_in_group"),
                         r.x + 14.,
                         r.y + 61.,
-                        17.,
+                        fit_size(tr_key(zh, "ui.selection.random_in_group"), 17., r.w - 28.),
                         LIGHTGRAY,
                     );
                 } else {
-                    let id = crate::content::ROSTER[i - 1];
+                    let id = roster[i - 1];
                     let h = &HEROES[id];
                     draw_texture_ex(
                         thumbs,
@@ -429,7 +471,7 @@ impl Ui {
             .find_map(|(row, column)| {
                 let i = (scroll + row) * 2 + column;
                 (i > 0 && i < total && opponent_rect(row, column).contains(pointer))
-                    .then(|| crate::content::ROSTER[i - 1])
+                    .then(|| roster[i - 1])
             })
             .or(self.opponent);
         if let Some(id) = focus {
@@ -742,17 +784,17 @@ pub fn draw_scrollbar(area: Rect, offset: usize, total: usize, visible: usize) {
         Color::from_rgba(132, 143, 166, 255),
     );
 }
-pub fn opponent_row_count() -> usize {
-    (crate::content::ROSTER.len() + 1).div_ceil(2)
+pub fn opponent_row_count(roster_len: usize) -> usize {
+    (roster_len + 1).div_ceil(2)
 }
 pub fn opponent_list_rect() -> Rect {
-    Rect::new(230., 176., 564., 88. * OPPONENT_VISIBLE_ROWS as f32)
+    Rect::new(230., 220., 564., 88. * OPPONENT_VISIBLE_ROWS as f32)
 }
 /// Grid cell for an on-screen row and column, independent of the scroll offset.
 pub fn opponent_rect(row: usize, column: usize) -> Rect {
     Rect::new(
         230. + column as f32 * 288.,
-        176. + row as f32 * 88.,
+        220. + row as f32 * 88.,
         276.,
         80.,
     )
