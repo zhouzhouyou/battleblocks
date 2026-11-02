@@ -41,7 +41,9 @@ pub const DWARF: usize = 8;
 pub const PRIEST: usize = 9;
 pub const NUN: usize = 10;
 pub const FIRE_ELF: usize = 11;
-pub const ROSTER: &[usize] = &[DWARF, KNIGHT, PRIEST, NUN, 1, FIRE_ELF, 3, 4, 5, 6];
+#[path = "content/roster.rs"]
+mod roster;
+pub use roster::*;
 
 pub fn turn_start_effects(
     hero: usize,
