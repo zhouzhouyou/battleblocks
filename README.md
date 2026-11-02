@@ -6,6 +6,8 @@ Rust + Macroquad 的单机三消战斗游戏，保留原有像素素材。传统
 
 ## 安装、运行与打包
 
+角色强度与克制关系可用无窗口 [统计评估工具](docs/BALANCE-EVALUATION.md) 分析：支持总对局预算、评分与不确定性、增量缓存，以及与均匀采样的独立种子基准对比。
+
 需要 Rust stable（通过 rustup 安装）、Python 3.10+ 和 pip。首次构建会从网络下载锁定依赖与校验后的字体；后续使用本地缓存。Linux 原生音频需要 ALSA 开发包和 pkg-config，例如 Debian/Ubuntu 的 `pkg-config libasound2-dev`，并需要可用的桌面图形环境。macOS 需要 Command Line Tools；Windows 使用 Rust MSVC 工具链及 Visual Studio C++ Build Tools。
 
 ```sh
