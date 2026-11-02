@@ -66,16 +66,16 @@
 8|line|My hammer is called "Persuasion". It rarely needs a second argument.|我这把锤子叫“说服”。它很少需要说第二遍。
 8|line|I can reach the top shelf. I just need the floor to cooperate.|我够得到最上层。只需要地板配合一下。
 9|title|The Dirty Priest|脏牧
-9|intro|She preaches by day and steals by night. The Light handles the blessings; the chalice handles turning other people's good things into hers. May the Light bless you, especially your pockets, your tiles, and that card you just drew.|她白天布道，晚上顺牌。圣光负责祝福，圣杯负责把别人的好东西变成她的。愿圣光祝福你——尤其是你的口袋、你的方块，和你刚抽到的好牌。
+9|intro|The dog-headed priest offers blessings with one hand and slips a tile into one of two belt pockets with the other. The blue robe is plain; the staff is solid gold. May the Light bless you, especially anything left unattended.|狗头人牧师一手赐福，一手把方块悄悄塞进腰间的两个口袋。蓝袍朴素，法杖却是纯金的。愿圣光祝福你——尤其是你没看紧的东西。
 9|trait|A priest in name, a thief in practice.|名义上是牧师，手段一点都不干净。
 9|trait|If you cannot beat it, borrow it. If you cannot borrow it, resurrect it.|打不过就借，借不到就复生。
-9|line|May the Light bless you. Now hand over your hand.|愿圣光祝福你。现在，把手牌交给我。
+9|line|May the Light bless you. Now hand over that tile.|愿圣光祝福你。现在，把那块方块交给我。
 9|line|It is not stealing. I am holding it for the Light.|这不是偷，是替圣光保管。
-9|line|I drink because water is expensive. I steal cards because you have too many.|我喝酒是因为水太贵；我偷牌是因为你太多。
+9|line|The staff? Solid gold. A modest donation, really.|法杖？纯金的。只是笔微薄的捐赠。
 9|line|Death is not the end. Whose end it is, we can discuss later.|死亡不是终点。是谁的终点，之后再聊。
 9|line|Priests do not fight. We let the Light borrow your hand.|牧师不打架。我们只是让圣光借你的手打你。
 9|line|Do not look at me like that. The Light said it was fine.|别用那种眼神看我。圣光说可以。
-9|line|Your cards are lovely. They will be mine next turn.|你的牌很好，可惜下回合归我。
+9|line|That tile looks lovely. I will keep it safe for you.|这块方块真不错。我替你保管。
 9|line|I never lie. I preach.|我从不撒谎——我布道。
 9|line|Burial is for resurrection. Who gets resurrected depends on my mood.|埋葬是为了复活。至于复活的是谁，看心情。
 9|line|May the Light forgive you. I will not.|愿圣光宽恕你。我不宽恕。
