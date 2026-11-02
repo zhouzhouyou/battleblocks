@@ -1,0 +1,658 @@
+{
+  "schema": 1,
+  "manifest": {
+    "schema": 1,
+    "shared": "f8b7c301a34d6ed2459df02cd4635620d7a966d4de9601acfd64f8e1b1234649",
+    "target": "x86_64-pc-windows-msvc",
+    "heroes": [
+      {
+        "id": 0,
+        "name": "Knight (legacy)",
+        "fingerprint": "774cca565d33f3ca1d56e1d74af4d886d058b81998c7403ef80ca4d1b56c49ec"
+      },
+      {
+        "id": 1,
+        "name": "Elf",
+        "fingerprint": "703c2cb1b63cfec7b797719014405925351045d6260cdb50cfb48d0e51dbcf5c"
+      },
+      {
+        "id": 2,
+        "name": "Wizard",
+        "fingerprint": "ec66b451321adb0559f3dd0859a7a5f61ba976223eaa2176e83a9a9cf2e78547"
+      },
+      {
+        "id": 3,
+        "name": "Goblin",
+        "fingerprint": "b56d9191cd9ea58fc3e3268e5940eb8a1ce51b060eee9f08a88e59ecc29e3a1d"
+      },
+      {
+        "id": 4,
+        "name": "Imp",
+        "fingerprint": "9487fec30d78cb8e3dfa4524b153541cf20f373fe973d142a05727ef9a43e259"
+      },
+      {
+        "id": 5,
+        "name": "Chort",
+        "fingerprint": "8e502d2153acc8f905cf24527fff7f1a7e33555f0aede1b1a3348b2c0b86fd93"
+      },
+      {
+        "id": 6,
+        "name": "Big Zombie",
+        "fingerprint": "739af8adc8d1e88bf0861971fe596d9c1d0a19f128fc6663e65dfa298eabacd1"
+      },
+      {
+        "id": 7,
+        "name": "Knight",
+        "fingerprint": "33c5dc0d8739651cdff6e3a8b7292462a5ee8501bda27068ee2bc7db210f0666"
+      },
+      {
+        "id": 8,
+        "name": "Dwarf",
+        "fingerprint": "e698417d68f91f0e57dab644d839401b96ff9004b5fdcdc355dae81e6489d3ee"
+      },
+      {
+        "id": 9,
+        "name": "Priest",
+        "fingerprint": "98ebd640fd8ae51a89bafa59140b0907a6afecb27b3f380a0accf6b677e1d14d"
+      },
+      {
+        "id": 10,
+        "name": "Nun",
+        "fingerprint": "5cf01b1b3f157f36cadeb42ebc5a4dfd914f33442f6328cb99c5116f41e5391a"
+      },
+      {
+        "id": 11,
+        "name": "Elf Fire Mage",
+        "fingerprint": "3992670916a501c0d8806887a305ba1cc7745d817857bfa36cb8e75532210d72"
+      }
+    ]
+  },
+  "config": {
+    "budget": 40,
+    "seed": 124001,
+    "level": 2,
+    "max_steps": 20000,
+    "sampler": "adaptive",
+    "batch_size": 8,
+    "lower": 0.45,
+    "upper": 0.55,
+    "extreme": 0.75,
+    "width": 0.2
+  },
+  "roster": [
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "new_games": 40,
+  "reused_games": 0,
+  "games": 40,
+  "aborted": 0,
+  "heroes": [
+    {
+      "id": 10,
+      "name": "Nun",
+      "rating": 1606.2507373368546,
+      "rating_interval95_approx": [
+        1420.0596567667887,
+        1792.4418179069205
+      ],
+      "predicted_score": 0.6723921101245232,
+      "score_cs95": [
+        0.056983725862360154,
+        0.998644805580471
+      ],
+      "status": "needs_samples",
+      "games": 18,
+      "reason": "uniform-opponent score bounds [0.057, 0.999], target [0.450, 0.550]",
+      "opponents": [
+        {
+          "opponent": 11,
+          "prediction": 0.5305316139888345,
+          "interval": [
+            1.5831442463226653e-07,
+            0.9945804888374813
+          ]
+        },
+        {
+          "opponent": 7,
+          "prediction": 0.5673771507846188,
+          "interval": [
+            6.33257798865472e-07,
+            0.9999993667422012
+          ]
+        },
+        {
+          "opponent": 8,
+          "prediction": 0.7610967713938304,
+          "interval": [
+            6.33257798865472e-07,
+            0.9999993667422012
+          ]
+        },
+        {
+          "opponent": 9,
+          "prediction": 0.830562904330809,
+          "interval": [
+            0.22793347861941826,
+            1.0
+          ]
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Knight",
+      "rating": 1552.6191214174535,
+      "rating_interval95_approx": [
+        1313.8283921851748,
+        1791.409850649732
+      ],
+      "predicted_score": 0.5913444431715911,
+      "score_cs95": [
+        0.00031297494334908693,
+        0.9999995250566509
+      ],
+      "status": "needs_samples",
+      "games": 8,
+      "reason": "uniform-opponent score bounds [0.000, 1.000], target [0.450, 0.550]",
+      "opponents": [
+        {
+          "opponent": 10,
+          "prediction": 0.4326228492153812,
+          "interval": [
+            6.332577987822052e-07,
+            0.9999993667422011
+          ]
+        },
+        {
+          "opponent": 11,
+          "prediction": 0.5227908341116647,
+          "interval": [
+            6.332577987822052e-07,
+            0.9999993667422011
+          ]
+        },
+        {
+          "opponent": 9,
+          "prediction": 0.6419048235245917,
+          "interval": [
+            6.332577987822052e-07,
+            0.9999993667422011
+          ]
+        },
+        {
+          "opponent": 8,
+          "prediction": 0.768059265834727,
+          "interval": [
+            0.0012500000000000011,
+            1.0
+          ]
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "name": "Elf Fire Mage",
+      "rating": 1534.6005368055824,
+      "rating_interval95_approx": [
+        1339.8561960963866,
+        1729.344877514778
+      ],
+      "predicted_score": 0.5625704552449033,
+      "score_cs95": [
+        0.0017066108187908657,
+        0.9968549594365355
+      ],
+      "status": "needs_samples",
+      "games": 14,
+      "reason": "uniform-opponent score bounds [0.002, 0.997], target [0.450, 0.550]",
+      "opponents": [
+        {
+          "opponent": 10,
+          "prediction": 0.4694683860111655,
+          "interval": [
+            0.005419511162518709,
+            0.9999998416855753
+          ]
+        },
+        {
+          "opponent": 7,
+          "prediction": 0.4772091658883353,
+          "interval": [
+            6.33257798865472e-07,
+            0.9999993667422012
+          ]
+        },
+        {
+          "opponent": 9,
+          "prediction": 0.5536085234366418,
+          "interval": [
+            0.00015629885484580441,
+            0.9874206293183654
+          ]
+        },
+        {
+          "opponent": 8,
+          "prediction": 0.7499957456434708,
+          "interval": [
+            0.0012500000000000844,
+            1.0
+          ]
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Priest",
+      "rating": 1436.5084453157501,
+      "rating_interval95_approx": [
+        1280.6307673075112,
+        1592.386123323989
+      ],
+      "predicted_score": 0.39449531499002477,
+      "score_cs95": [
+        0.008543488318857581,
+        0.9425666865932811
+      ],
+      "status": "needs_samples",
+      "games": 26,
+      "reason": "uniform-opponent score bounds [0.009, 0.943], target [0.450, 0.550]",
+      "opponents": [
+        {
+          "opponent": 10,
+          "prediction": 0.16943709566919093,
+          "interval": [
+            0.0,
+            0.7720665213805817
+          ]
+        },
+        {
+          "opponent": 7,
+          "prediction": 0.35809517647540834,
+          "interval": [
+            6.33257798865472e-07,
+            0.9999993667422012
+          ]
+        },
+        {
+          "opponent": 11,
+          "prediction": 0.4463914765633582,
+          "interval": [
+            0.012579370681634672,
+            0.9998437011451542
+          ]
+        },
+        {
+          "opponent": 8,
+          "prediction": 0.6040575112521416,
+          "interval": [
+            0.021593949335996787,
+            0.9983571571051874
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Dwarf",
+      "rating": 1370.0211591243592,
+      "rating_interval95_approx": [
+        1166.1126242979935,
+        1573.9296939507249
+      ],
+      "predicted_score": 0.2791976764689576,
+      "score_cs95": [
+        0.0004108690381528597,
+        0.9939763543515511
+      ],
+      "status": "needs_samples",
+      "games": 14,
+      "reason": "uniform-opponent score bounds [0.000, 0.994], target [0.450, 0.550]",
+      "opponents": [
+        {
+          "opponent": 7,
+          "prediction": 0.23194073416527305,
+          "interval": [
+            0.0,
+            0.99875
+          ]
+        },
+        {
+          "opponent": 10,
+          "prediction": 0.23890322860616964,
+          "interval": [
+            6.332577987822052e-07,
+            0.9999993667422011
+          ]
+        },
+        {
+          "opponent": 11,
+          "prediction": 0.2500042543565292,
+          "interval": [
+            0.0,
+            0.9987499999999999
+          ]
+        },
+        {
+          "opponent": 9,
+          "prediction": 0.3959424887478585,
+          "interval": [
+            0.0016428428948126565,
+            0.9784060506640032
+          ]
+        }
+      ]
+    }
+  ],
+  "pairs": [
+    {
+      "a": 7,
+      "b": 8,
+      "games": 2,
+      "seed_pairs": 1,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": 1.0,
+      "score_cs95": [
+        0.0012500000000000011,
+        1.0
+      ],
+      "wins_a_completed_pairs": 2,
+      "observed_win_rate": 1.0,
+      "bt_prediction": 0.7390666740640678,
+      "prediction": 0.768059265834727,
+      "residual": 0.2609333259359322,
+      "first_seat_score": 0.5,
+      "first_seat_cs95": [
+        6.332577987822052e-07,
+        0.9999993667422011
+      ],
+      "a_first_score": 1.0,
+      "a_second_score": 1.0,
+      "status": "uncertain",
+      "extreme": false,
+      "suspected_extreme": true,
+      "seat_bias": false
+    },
+    {
+      "a": 7,
+      "b": 9,
+      "games": 2,
+      "seed_pairs": 1,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": 0.5,
+      "score_cs95": [
+        6.332577987822052e-07,
+        0.9999993667422011
+      ],
+      "wins_a_completed_pairs": 1,
+      "observed_win_rate": 0.5,
+      "bt_prediction": 0.6596429264651656,
+      "prediction": 0.6419048235245917,
+      "residual": -0.15964292646516565,
+      "first_seat_score": 0.0,
+      "first_seat_cs95": [
+        0.0,
+        0.9987499999999999
+      ],
+      "a_first_score": 0.0,
+      "a_second_score": 1.0,
+      "status": "uncertain",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 7,
+      "b": 10,
+      "games": 2,
+      "seed_pairs": 1,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": 0.5,
+      "score_cs95": [
+        6.332577987822052e-07,
+        0.9999993667422011
+      ],
+      "wins_a_completed_pairs": 1,
+      "observed_win_rate": 0.5,
+      "bt_prediction": 0.4242007053673038,
+      "prediction": 0.4326228492153812,
+      "residual": 0.07579929463269619,
+      "first_seat_score": 0.0,
+      "first_seat_cs95": [
+        0.0,
+        0.9987499999999999
+      ],
+      "a_first_score": 0.0,
+      "a_second_score": 1.0,
+      "status": "uncertain",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 7,
+      "b": 11,
+      "games": 2,
+      "seed_pairs": 1,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": 0.5,
+      "score_cs95": [
+        6.332577987822052e-07,
+        0.9999993667422011
+      ],
+      "wins_a_completed_pairs": 1,
+      "observed_win_rate": 0.5,
+      "bt_prediction": 0.5256396883756228,
+      "prediction": 0.5227908341116647,
+      "residual": -0.025639688375622804,
+      "first_seat_score": 1.0,
+      "first_seat_cs95": [
+        0.0012500000000000011,
+        1.0
+      ],
+      "a_first_score": 1.0,
+      "a_second_score": 0.0,
+      "status": "uncertain",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 8,
+      "b": 9,
+      "games": 8,
+      "seed_pairs": 4,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": 0.375,
+      "score_cs95": [
+        0.0016428428948126565,
+        0.9784060506640032
+      ],
+      "wins_a_completed_pairs": 3,
+      "observed_win_rate": 0.375,
+      "bt_prediction": 0.40641373312178775,
+      "prediction": 0.3959424887478585,
+      "residual": -0.031413733121787746,
+      "first_seat_score": 0.375,
+      "first_seat_cs95": [
+        0.0016428428948126565,
+        0.9784060506640032
+      ],
+      "a_first_score": 0.25,
+      "a_second_score": 0.5,
+      "status": "uncertain",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 8,
+      "b": 10,
+      "games": 2,
+      "seed_pairs": 1,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": 0.5,
+      "score_cs95": [
+        6.332577987822052e-07,
+        0.9999993667422011
+      ],
+      "wins_a_completed_pairs": 1,
+      "observed_win_rate": 0.5,
+      "bt_prediction": 0.20626613218194084,
+      "prediction": 0.23890322860616964,
+      "residual": 0.29373386781805916,
+      "first_seat_score": 1.0,
+      "first_seat_cs95": [
+        0.0012500000000000011,
+        1.0
+      ],
+      "a_first_score": 1.0,
+      "a_second_score": 0.0,
+      "status": "uncertain",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 8,
+      "b": 11,
+      "games": 2,
+      "seed_pairs": 1,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": 0.0,
+      "score_cs95": [
+        0.0,
+        0.9987499999999999
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": 0.0,
+      "bt_prediction": 0.28125478615109534,
+      "prediction": 0.2500042543565292,
+      "residual": -0.28125478615109534,
+      "first_seat_score": 0.5,
+      "first_seat_cs95": [
+        6.332577987822052e-07,
+        0.9999993667422011
+      ],
+      "a_first_score": 0.0,
+      "a_second_score": 0.0,
+      "status": "uncertain",
+      "extreme": false,
+      "suspected_extreme": true,
+      "seat_bias": false
+    },
+    {
+      "a": 9,
+      "b": 10,
+      "games": 10,
+      "seed_pairs": 5,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": 0.0,
+      "score_cs95": [
+        0.0,
+        0.7720665213805817
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": 0.0,
+      "bt_prediction": 0.2753352804624353,
+      "prediction": 0.16943709566919093,
+      "residual": -0.2753352804624353,
+      "first_seat_score": 0.5,
+      "first_seat_cs95": [
+        0.014997897984575431,
+        0.9850021020154245
+      ],
+      "a_first_score": 0.0,
+      "a_second_score": 0.0,
+      "status": "uncertain",
+      "extreme": false,
+      "suspected_extreme": true,
+      "seat_bias": false
+    },
+    {
+      "a": 9,
+      "b": 11,
+      "games": 6,
+      "seed_pairs": 3,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": 0.6666666666666666,
+      "score_cs95": [
+        0.012579370681634672,
+        0.9998437011451542
+      ],
+      "wins_a_completed_pairs": 4,
+      "observed_win_rate": 0.6666666666666666,
+      "bt_prediction": 0.3637882802746175,
+      "prediction": 0.4463914765633582,
+      "residual": 0.3028783863920491,
+      "first_seat_score": 0.16666666666666666,
+      "first_seat_cs95": [
+        7.036195784348998e-08,
+        0.962608089885602
+      ],
+      "a_first_score": 0.3333333333333333,
+      "a_second_score": 1.0,
+      "status": "uncertain",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 10,
+      "b": 11,
+      "games": 4,
+      "seed_pairs": 2,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": 0.25,
+      "score_cs95": [
+        1.5831442463226653e-07,
+        0.9945804888374813
+      ],
+      "wins_a_completed_pairs": 1,
+      "observed_win_rate": 0.25,
+      "bt_prediction": 0.6006645174860432,
+      "prediction": 0.5305316139888345,
+      "residual": -0.3506645174860432,
+      "first_seat_score": 0.75,
+      "first_seat_cs95": [
+        0.005419511162518625,
+        0.9999998416855753
+      ],
+      "a_first_score": 0.5,
+      "a_second_score": 0.0,
+      "status": "uncertain",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    }
+  ],
+  "confirmed_cycles": [],
+  "candidate_cycles": [
+    [
+      9,
+      11,
+      10
+    ]
+  ],
+  "first_seat_model_score": 0.44908642504832685,
+  "extreme_pair_fraction": 0.0,
+  "coverage": 1.0,
+  "uncertainty": "Empirical intervals: simultaneous 95% anytime-valid paired-seed confidence sequences; rating intervals: conditional Laplace approximations, not used for balance flags. Predictions on unobserved edges are model assumptions, not validation.",
+  "metric": "expected score = P(win) + 0.5 P(draw); aborted games are not draws. Any interrupted pair receives [0,1] empirical bounds.",
+  "policy": "Strength is conditional on the specified AI, normal starting-state distribution, roster and executable version.",
+  "analysis_fingerprint": "3ef09b015e64450efd1b0c631b2c8bb7e64e67c2ef2a6966ab73f5cb3544fb71",
+  "elapsed_seconds": 11.03813369999989
+}

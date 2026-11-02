@@ -1,0 +1,3312 @@
+{
+  "schema": 1,
+  "manifest": {
+    "schema": 1,
+    "shared": "f8b7c301a34d6ed2459df02cd4635620d7a966d4de9601acfd64f8e1b1234649",
+    "target": "x86_64-pc-windows-msvc",
+    "heroes": [
+      {
+        "id": 0,
+        "name": "Knight (legacy)",
+        "fingerprint": "774cca565d33f3ca1d56e1d74af4d886d058b81998c7403ef80ca4d1b56c49ec"
+      },
+      {
+        "id": 1,
+        "name": "Elf",
+        "fingerprint": "703c2cb1b63cfec7b797719014405925351045d6260cdb50cfb48d0e51dbcf5c"
+      },
+      {
+        "id": 2,
+        "name": "Wizard",
+        "fingerprint": "ec66b451321adb0559f3dd0859a7a5f61ba976223eaa2176e83a9a9cf2e78547"
+      },
+      {
+        "id": 3,
+        "name": "Goblin",
+        "fingerprint": "b56d9191cd9ea58fc3e3268e5940eb8a1ce51b060eee9f08a88e59ecc29e3a1d"
+      },
+      {
+        "id": 4,
+        "name": "Imp",
+        "fingerprint": "9487fec30d78cb8e3dfa4524b153541cf20f373fe973d142a05727ef9a43e259"
+      },
+      {
+        "id": 5,
+        "name": "Chort",
+        "fingerprint": "8e502d2153acc8f905cf24527fff7f1a7e33555f0aede1b1a3348b2c0b86fd93"
+      },
+      {
+        "id": 6,
+        "name": "Big Zombie",
+        "fingerprint": "739af8adc8d1e88bf0861971fe596d9c1d0a19f128fc6663e65dfa298eabacd1"
+      },
+      {
+        "id": 7,
+        "name": "Knight",
+        "fingerprint": "33c5dc0d8739651cdff6e3a8b7292462a5ee8501bda27068ee2bc7db210f0666"
+      },
+      {
+        "id": 8,
+        "name": "Dwarf",
+        "fingerprint": "e698417d68f91f0e57dab644d839401b96ff9004b5fdcdc355dae81e6489d3ee"
+      },
+      {
+        "id": 9,
+        "name": "Priest",
+        "fingerprint": "98ebd640fd8ae51a89bafa59140b0907a6afecb27b3f380a0accf6b677e1d14d"
+      },
+      {
+        "id": 10,
+        "name": "Nun",
+        "fingerprint": "5cf01b1b3f157f36cadeb42ebc5a4dfd914f33442f6328cb99c5116f41e5391a"
+      },
+      {
+        "id": 11,
+        "name": "Elf Fire Mage",
+        "fingerprint": "3992670916a501c0d8806887a305ba1cc7745d817857bfa36cb8e75532210d72"
+      }
+    ]
+  },
+  "config": {
+    "budget": 24,
+    "seed": 123001,
+    "level": 1,
+    "max_steps": 20000,
+    "sampler": "adaptive",
+    "batch_size": 8,
+    "lower": 0.45,
+    "upper": 0.55,
+    "extreme": 0.75,
+    "width": 0.2
+  },
+  "roster": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "new_games": 24,
+  "reused_games": 0,
+  "games": 24,
+  "aborted": 0,
+  "heroes": [
+    {
+      "id": 3,
+      "name": "Goblin",
+      "rating": 1581.9061778809028,
+      "rating_interval95_approx": [
+        1235.8951312398601,
+        1927.9172245219454
+      ],
+      "predicted_score": 0.6208221169885821,
+      "score_cs95": [
+        1.7218952453060266e-05,
+        0.9999999986784008
+      ],
+      "status": "needs_samples",
+      "games": 4,
+      "reason": "uniform-opponent score bounds [0.000, 1.000], target [0.450, 0.550]",
+      "opponents": [
+        {
+          "opponent": 9,
+          "prediction": 0.5,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 4,
+          "prediction": 0.5352045106867882,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 8,
+          "prediction": 0.5352045106867882,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 5,
+          "prediction": 0.5516392894628728,
+          "interval": [
+            1.4537589701490994e-08,
+            0.9999999854624102
+          ]
+        },
+        {
+          "opponent": 2,
+          "prediction": 0.5995387080718015,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 11,
+          "prediction": 0.5995387080718015,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 0,
+          "prediction": 0.6337784766097501,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 7,
+          "prediction": 0.6337784766097501,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 1,
+          "prediction": 0.706160869088411,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 10,
+          "prediction": 0.738809661411921,
+          "interval": [
+            0.00018939393939396143,
+            1.0
+          ]
+        },
+        {
+          "opponent": 6,
+          "prediction": 0.7953900761745192,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Priest",
+      "rating": 1581.9061778809028,
+      "rating_interval95_approx": [
+        1235.8951312398601,
+        1927.9172245219454
+      ],
+      "predicted_score": 0.6208221169885821,
+      "score_cs95": [
+        1.721895245307162e-05,
+        0.9999999986784011
+      ],
+      "status": "needs_samples",
+      "games": 4,
+      "reason": "uniform-opponent score bounds [0.000, 1.000], target [0.450, 0.550]",
+      "opponents": [
+        {
+          "opponent": 3,
+          "prediction": 0.5,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 4,
+          "prediction": 0.5352045106867882,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 8,
+          "prediction": 0.5352045106867882,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 5,
+          "prediction": 0.5516392894628729,
+          "interval": [
+            1.4537589798635508e-08,
+            0.9999999854624103
+          ]
+        },
+        {
+          "opponent": 2,
+          "prediction": 0.5995387080718015,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 11,
+          "prediction": 0.5995387080718015,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 0,
+          "prediction": 0.6337784766097501,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 7,
+          "prediction": 0.6337784766097501,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 10,
+          "prediction": 0.706160869088411,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 1,
+          "prediction": 0.7388096614119208,
+          "interval": [
+            0.00018939393939398919,
+            1.0
+          ]
+        },
+        {
+          "opponent": 6,
+          "prediction": 0.7953900761745193,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Imp",
+      "rating": 1556.804752645253,
+      "rating_interval95_approx": [
+        1205.8107447388131,
+        1907.798760551693
+      ],
+      "predicted_score": 0.5841188651857036,
+      "score_cs95": [
+        1.7218952453060266e-05,
+        0.9999999986784008
+      ],
+      "status": "needs_samples",
+      "games": 4,
+      "reason": "uniform-opponent score bounds [0.000, 1.000], target [0.450, 0.550]",
+      "opponents": [
+        {
+          "opponent": 9,
+          "prediction": 0.46479548931321174,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 3,
+          "prediction": 0.4647954893132118,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 8,
+          "prediction": 0.5,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 5,
+          "prediction": 0.523073658287991,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 11,
+          "prediction": 0.5579784507959307,
+          "interval": [
+            1.4537589701490994e-08,
+            0.9999999854624102
+          ]
+        },
+        {
+          "opponent": 2,
+          "prediction": 0.565225757145422,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 0,
+          "prediction": 0.6004201552169932,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 7,
+          "prediction": 0.6004201552169933,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 1,
+          "prediction": 0.6759538377478879,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 10,
+          "prediction": 0.6759538377478879,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 6,
+          "prediction": 0.7966906862572096,
+          "interval": [
+            0.00018939393939396143,
+            1.0
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Dwarf",
+      "rating": 1556.804752645253,
+      "rating_interval95_approx": [
+        1205.8107447388131,
+        1907.798760551693
+      ],
+      "predicted_score": 0.5841188651857036,
+      "score_cs95": [
+        1.721895245307162e-05,
+        0.9999999986784011
+      ],
+      "status": "needs_samples",
+      "games": 4,
+      "reason": "uniform-opponent score bounds [0.000, 1.000], target [0.450, 0.550]",
+      "opponents": [
+        {
+          "opponent": 3,
+          "prediction": 0.4647954893132118,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 9,
+          "prediction": 0.4647954893132118,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 4,
+          "prediction": 0.5,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 5,
+          "prediction": 0.5230736582879911,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 2,
+          "prediction": 0.5579784507959307,
+          "interval": [
+            1.4537589798635508e-08,
+            0.9999999854624103
+          ]
+        },
+        {
+          "opponent": 11,
+          "prediction": 0.565225757145422,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 0,
+          "prediction": 0.6004201552169933,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 7,
+          "prediction": 0.6004201552169933,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 1,
+          "prediction": 0.6759538377478879,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 10,
+          "prediction": 0.675953837747888,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 6,
+          "prediction": 0.7966906862572096,
+          "interval": [
+            0.00018939393939398919,
+            1.0
+          ]
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Chort",
+      "rating": 1540.3679852336347,
+      "rating_interval95_approx": [
+        1198.7676103365673,
+        1881.9683601307022
+      ],
+      "predicted_score": 0.5596935609734032,
+      "score_cs95": [
+        2.6431981363751367e-09,
+        0.9999999973568019
+      ],
+      "status": "needs_samples",
+      "games": 4,
+      "reason": "uniform-opponent score bounds [0.000, 1.000], target [0.450, 0.550]",
+      "opponents": [
+        {
+          "opponent": 9,
+          "prediction": 0.4483607105371271,
+          "interval": [
+            1.4537589701490994e-08,
+            0.9999999854624102
+          ]
+        },
+        {
+          "opponent": 3,
+          "prediction": 0.4483607105371272,
+          "interval": [
+            1.4537589798635508e-08,
+            0.9999999854624103
+          ]
+        },
+        {
+          "opponent": 8,
+          "prediction": 0.4769263417120089,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 4,
+          "prediction": 0.476926341712009,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 11,
+          "prediction": 0.5424008932400747,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 2,
+          "prediction": 0.5424008932400748,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 0,
+          "prediction": 0.5780519913808375,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 7,
+          "prediction": 0.5780519913808375,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 1,
+          "prediction": 0.6553457204243657,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 10,
+          "prediction": 0.6553457204243658,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 6,
+          "prediction": 0.7544578561186069,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Wizard",
+      "rating": 1510.1133543646151,
+      "rating_interval95_approx": [
+        1168.615490867515,
+        1851.6112178617152
+      ],
+      "predicted_score": 0.5142563648826258,
+      "score_cs95": [
+        2.643198127543817e-09,
+        0.9999999973568019
+      ],
+      "status": "needs_samples",
+      "games": 4,
+      "reason": "uniform-opponent score bounds [0.000, 1.000], target [0.450, 0.550]",
+      "opponents": [
+        {
+          "opponent": 3,
+          "prediction": 0.4004612919281984,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 9,
+          "prediction": 0.4004612919281984,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 4,
+          "prediction": 0.434774242854578,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 8,
+          "prediction": 0.44202154920406933,
+          "interval": [
+            1.4537589701490994e-08,
+            0.9999999854624102
+          ]
+        },
+        {
+          "opponent": 5,
+          "prediction": 0.45759910675992527,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 11,
+          "prediction": 0.5,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 7,
+          "prediction": 0.5321041630180092,
+          "interval": [
+            1.4537589701490994e-08,
+            0.9999999854624102
+          ]
+        },
+        {
+          "opponent": 0,
+          "prediction": 0.5361171833952604,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 1,
+          "prediction": 0.6159272695835626,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 10,
+          "prediction": 0.6159272695835627,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 6,
+          "prediction": 0.72142664545352,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "name": "Elf Fire Mage",
+      "rating": 1510.1133543646151,
+      "rating_interval95_approx": [
+        1168.615490867515,
+        1851.6112178617152
+      ],
+      "predicted_score": 0.5142563648826258,
+      "score_cs95": [
+        2.643198145206456e-09,
+        0.9999999973568019
+      ],
+      "status": "needs_samples",
+      "games": 4,
+      "reason": "uniform-opponent score bounds [0.000, 1.000], target [0.450, 0.550]",
+      "opponents": [
+        {
+          "opponent": 3,
+          "prediction": 0.40046129192819846,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 9,
+          "prediction": 0.40046129192819846,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 8,
+          "prediction": 0.434774242854578,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 4,
+          "prediction": 0.44202154920406933,
+          "interval": [
+            1.4537589798635508e-08,
+            0.9999999854624103
+          ]
+        },
+        {
+          "opponent": 5,
+          "prediction": 0.4575991067599253,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 2,
+          "prediction": 0.5,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 0,
+          "prediction": 0.5321041630180092,
+          "interval": [
+            1.4537589798635508e-08,
+            0.9999999854624103
+          ]
+        },
+        {
+          "opponent": 7,
+          "prediction": 0.5361171833952604,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 1,
+          "prediction": 0.6159272695835626,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 10,
+          "prediction": 0.6159272695835626,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 6,
+          "prediction": 0.72142664545352,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        }
+      ]
+    },
+    {
+      "id": 0,
+      "name": "Knight (legacy)",
+      "rating": 1484.3589901176124,
+      "rating_interval95_approx": [
+        1142.9220936041506,
+        1825.7958866310742
+      ],
+      "predicted_score": 0.4754441803707659,
+      "score_cs95": [
+        2.643198127543817e-09,
+        0.9999999973568019
+      ],
+      "status": "needs_samples",
+      "games": 4,
+      "reason": "uniform-opponent score bounds [0.000, 1.000], target [0.450, 0.550]",
+      "opponents": [
+        {
+          "opponent": 3,
+          "prediction": 0.36622152339024994,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 9,
+          "prediction": 0.36622152339024994,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 8,
+          "prediction": 0.3995798447830067,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 4,
+          "prediction": 0.39957984478300673,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 5,
+          "prediction": 0.4219480086191625,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 2,
+          "prediction": 0.4638828166047396,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 11,
+          "prediction": 0.4678958369819908,
+          "interval": [
+            1.4537589701490994e-08,
+            0.9999999854624102
+          ]
+        },
+        {
+          "opponent": 7,
+          "prediction": 0.5,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 1,
+          "prediction": 0.5721205587897407,
+          "interval": [
+            1.4537589701490994e-08,
+            0.9999999854624102
+          ]
+        },
+        {
+          "opponent": 10,
+          "prediction": 0.5811356286384582,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 6,
+          "prediction": 0.6913003980978205,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Knight",
+      "rating": 1484.3589901176124,
+      "rating_interval95_approx": [
+        1142.9220936041506,
+        1825.7958866310742
+      ],
+      "predicted_score": 0.4754441803707659,
+      "score_cs95": [
+        2.6431981363751367e-09,
+        0.9999999973568019
+      ],
+      "status": "needs_samples",
+      "games": 4,
+      "reason": "uniform-opponent score bounds [0.000, 1.000], target [0.450, 0.550]",
+      "opponents": [
+        {
+          "opponent": 3,
+          "prediction": 0.36622152339024994,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 9,
+          "prediction": 0.36622152339024994,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 4,
+          "prediction": 0.3995798447830067,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 8,
+          "prediction": 0.3995798447830067,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 5,
+          "prediction": 0.4219480086191625,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 11,
+          "prediction": 0.4638828166047396,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 2,
+          "prediction": 0.4678958369819908,
+          "interval": [
+            1.4537589798635508e-08,
+            0.9999999854624103
+          ]
+        },
+        {
+          "opponent": 0,
+          "prediction": 0.5,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 10,
+          "prediction": 0.5721205587897407,
+          "interval": [
+            1.4537589701490994e-08,
+            0.9999999854624102
+          ]
+        },
+        {
+          "opponent": 1,
+          "prediction": 0.5811356286384582,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 6,
+          "prediction": 0.6913003980978205,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "Elf",
+      "rating": 1426.099234145027,
+      "rating_interval95_approx": [
+        1079.722811003868,
+        1772.4756572861859
+      ],
+      "predicted_score": 0.3890860836242613,
+      "score_cs95": [
+        1.321599072603228e-09,
+        0.9999827810475469
+      ],
+      "status": "needs_samples",
+      "games": 4,
+      "reason": "uniform-opponent score bounds [0.000, 1.000], target [0.450, 0.550]",
+      "opponents": [
+        {
+          "opponent": 9,
+          "prediction": 0.2611903385880791,
+          "interval": [
+            0.0,
+            0.999810606060606
+          ]
+        },
+        {
+          "opponent": 3,
+          "prediction": 0.293839130911589,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 4,
+          "prediction": 0.32404616225211214,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 8,
+          "prediction": 0.32404616225211214,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 5,
+          "prediction": 0.3446542795756343,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 2,
+          "prediction": 0.3840727304164374,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 11,
+          "prediction": 0.3840727304164374,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 7,
+          "prediction": 0.41886437136154175,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 0,
+          "prediction": 0.42787944121025934,
+          "interval": [
+            1.4537589798635508e-08,
+            0.9999999854624103
+          ]
+        },
+        {
+          "opponent": 10,
+          "prediction": 0.5,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 6,
+          "prediction": 0.617281572882671,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Nun",
+      "rating": 1426.099234145027,
+      "rating_interval95_approx": [
+        1079.722811003868,
+        1772.4756572861859
+      ],
+      "predicted_score": 0.38908608362426117,
+      "score_cs95": [
+        1.321599072603228e-09,
+        0.9999827810475469
+      ],
+      "status": "needs_samples",
+      "games": 4,
+      "reason": "uniform-opponent score bounds [0.000, 1.000], target [0.450, 0.550]",
+      "opponents": [
+        {
+          "opponent": 3,
+          "prediction": 0.26119033858807905,
+          "interval": [
+            0.0,
+            0.999810606060606
+          ]
+        },
+        {
+          "opponent": 9,
+          "prediction": 0.293839130911589,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 8,
+          "prediction": 0.324046162252112,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 4,
+          "prediction": 0.32404616225211214,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 5,
+          "prediction": 0.3446542795756342,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 2,
+          "prediction": 0.3840727304164373,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 11,
+          "prediction": 0.3840727304164374,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 0,
+          "prediction": 0.41886437136154175,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 7,
+          "prediction": 0.42787944121025934,
+          "interval": [
+            1.4537589798635508e-08,
+            0.9999999854624103
+          ]
+        },
+        {
+          "opponent": 1,
+          "prediction": 0.5,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 6,
+          "prediction": 0.617281572882671,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Big Zombie",
+      "rating": 1341.0669964595445,
+      "rating_interval95_approx": [
+        980.3074461575536,
+        1701.8265467615354
+      ],
+      "predicted_score": 0.2728512169227193,
+      "score_cs95": [
+        0.0,
+        0.999965564738292
+      ],
+      "status": "needs_samples",
+      "games": 4,
+      "reason": "uniform-opponent score bounds [0.000, 1.000], target [0.450, 0.550]",
+      "opponents": [
+        {
+          "opponent": 4,
+          "prediction": 0.20330931374279038,
+          "interval": [
+            0.0,
+            0.999810606060606
+          ]
+        },
+        {
+          "opponent": 8,
+          "prediction": 0.20330931374279043,
+          "interval": [
+            0.0,
+            0.999810606060606
+          ]
+        },
+        {
+          "opponent": 9,
+          "prediction": 0.20460992382548074,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 3,
+          "prediction": 0.20460992382548082,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 5,
+          "prediction": 0.24554214388139306,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 2,
+          "prediction": 0.27857335454648,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 11,
+          "prediction": 0.27857335454648,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 7,
+          "prediction": 0.30869960190217943,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 0,
+          "prediction": 0.3086996019021795,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 1,
+          "prediction": 0.38271842711732895,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        },
+        {
+          "opponent": 10,
+          "prediction": 0.38271842711732895,
+          "interval": [
+            0.0,
+            1.0
+          ]
+        }
+      ]
+    }
+  ],
+  "pairs": [
+    {
+      "a": 0,
+      "b": 1,
+      "games": 2,
+      "seed_pairs": 1,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": 0.5,
+      "score_cs95": [
+        1.4537589701490994e-08,
+        0.9999999854624102
+      ],
+      "wins_a_completed_pairs": 1,
+      "observed_win_rate": 0.5,
+      "bt_prediction": 0.5811356286384582,
+      "prediction": 0.5721205587897407,
+      "residual": -0.08113562863845825,
+      "first_seat_score": 1.0,
+      "first_seat_cs95": [
+        0.00018939393939396143,
+        1.0
+      ],
+      "a_first_score": 1.0,
+      "a_second_score": 0.0,
+      "status": "uncertain",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 0,
+      "b": 2,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.4638828166047396,
+      "prediction": 0.4638828166047396,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 0,
+      "b": 3,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.36622152339024994,
+      "prediction": 0.36622152339024994,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 0,
+      "b": 4,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.39957984478300673,
+      "prediction": 0.39957984478300673,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 0,
+      "b": 5,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.4219480086191625,
+      "prediction": 0.4219480086191625,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 0,
+      "b": 6,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.6913003980978205,
+      "prediction": 0.6913003980978205,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 0,
+      "b": 7,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.5,
+      "prediction": 0.5,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 0,
+      "b": 8,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.3995798447830067,
+      "prediction": 0.3995798447830067,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 0,
+      "b": 9,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.36622152339024994,
+      "prediction": 0.36622152339024994,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 0,
+      "b": 10,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.5811356286384582,
+      "prediction": 0.5811356286384582,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 0,
+      "b": 11,
+      "games": 2,
+      "seed_pairs": 1,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": 0.5,
+      "score_cs95": [
+        1.4537589701490994e-08,
+        0.9999999854624102
+      ],
+      "wins_a_completed_pairs": 1,
+      "observed_win_rate": 0.5,
+      "bt_prediction": 0.4638828166047396,
+      "prediction": 0.4678958369819908,
+      "residual": 0.03611718339526038,
+      "first_seat_score": 0.0,
+      "first_seat_cs95": [
+        0.0,
+        0.999810606060606
+      ],
+      "a_first_score": 0.0,
+      "a_second_score": 1.0,
+      "status": "uncertain",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 1,
+      "b": 2,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.3840727304164374,
+      "prediction": 0.3840727304164374,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 1,
+      "b": 3,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.293839130911589,
+      "prediction": 0.293839130911589,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 1,
+      "b": 4,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.32404616225211214,
+      "prediction": 0.32404616225211214,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 1,
+      "b": 5,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.3446542795756343,
+      "prediction": 0.3446542795756343,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 1,
+      "b": 6,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.617281572882671,
+      "prediction": 0.617281572882671,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 1,
+      "b": 7,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.41886437136154175,
+      "prediction": 0.41886437136154175,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 1,
+      "b": 8,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.32404616225211214,
+      "prediction": 0.32404616225211214,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 1,
+      "b": 9,
+      "games": 2,
+      "seed_pairs": 1,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": 0.0,
+      "score_cs95": [
+        0.0,
+        0.999810606060606
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": 0.0,
+      "bt_prediction": 0.293839130911589,
+      "prediction": 0.2611903385880791,
+      "residual": -0.293839130911589,
+      "first_seat_score": 0.5,
+      "first_seat_cs95": [
+        1.4537589701490994e-08,
+        0.9999999854624102
+      ],
+      "a_first_score": 0.0,
+      "a_second_score": 0.0,
+      "status": "uncertain",
+      "extreme": false,
+      "suspected_extreme": true,
+      "seat_bias": false
+    },
+    {
+      "a": 1,
+      "b": 10,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.5,
+      "prediction": 0.5,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 1,
+      "b": 11,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.3840727304164374,
+      "prediction": 0.3840727304164374,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 2,
+      "b": 3,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.4004612919281984,
+      "prediction": 0.4004612919281984,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 2,
+      "b": 4,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.434774242854578,
+      "prediction": 0.434774242854578,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 2,
+      "b": 5,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.45759910675992527,
+      "prediction": 0.45759910675992527,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 2,
+      "b": 6,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.72142664545352,
+      "prediction": 0.72142664545352,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 2,
+      "b": 7,
+      "games": 2,
+      "seed_pairs": 1,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": 0.5,
+      "score_cs95": [
+        1.4537589701490994e-08,
+        0.9999999854624102
+      ],
+      "wins_a_completed_pairs": 1,
+      "observed_win_rate": 0.5,
+      "bt_prediction": 0.5361171833952604,
+      "prediction": 0.5321041630180092,
+      "residual": -0.03611718339526038,
+      "first_seat_score": 0.0,
+      "first_seat_cs95": [
+        0.0,
+        0.999810606060606
+      ],
+      "a_first_score": 0.0,
+      "a_second_score": 1.0,
+      "status": "uncertain",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 2,
+      "b": 8,
+      "games": 2,
+      "seed_pairs": 1,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": 0.5,
+      "score_cs95": [
+        1.4537589701490994e-08,
+        0.9999999854624102
+      ],
+      "wins_a_completed_pairs": 1,
+      "observed_win_rate": 0.5,
+      "bt_prediction": 0.434774242854578,
+      "prediction": 0.44202154920406933,
+      "residual": 0.065225757145422,
+      "first_seat_score": 1.0,
+      "first_seat_cs95": [
+        0.00018939393939396143,
+        1.0
+      ],
+      "a_first_score": 1.0,
+      "a_second_score": 0.0,
+      "status": "uncertain",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 2,
+      "b": 9,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.4004612919281984,
+      "prediction": 0.4004612919281984,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 2,
+      "b": 10,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.6159272695835627,
+      "prediction": 0.6159272695835627,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 2,
+      "b": 11,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.5,
+      "prediction": 0.5,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 3,
+      "b": 4,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.5352045106867882,
+      "prediction": 0.5352045106867882,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 3,
+      "b": 5,
+      "games": 2,
+      "seed_pairs": 1,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": 0.5,
+      "score_cs95": [
+        1.4537589701490994e-08,
+        0.9999999854624102
+      ],
+      "wins_a_completed_pairs": 1,
+      "observed_win_rate": 0.5,
+      "bt_prediction": 0.5580942006457319,
+      "prediction": 0.5516392894628728,
+      "residual": -0.0580942006457319,
+      "first_seat_score": 1.0,
+      "first_seat_cs95": [
+        0.00018939393939396143,
+        1.0
+      ],
+      "a_first_score": 1.0,
+      "a_second_score": 0.0,
+      "status": "uncertain",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 3,
+      "b": 6,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.7953900761745192,
+      "prediction": 0.7953900761745192,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 3,
+      "b": 7,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.6337784766097501,
+      "prediction": 0.6337784766097501,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 3,
+      "b": 8,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.5352045106867882,
+      "prediction": 0.5352045106867882,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 3,
+      "b": 9,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.5,
+      "prediction": 0.5,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 3,
+      "b": 10,
+      "games": 2,
+      "seed_pairs": 1,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": 1.0,
+      "score_cs95": [
+        0.00018939393939396143,
+        1.0
+      ],
+      "wins_a_completed_pairs": 2,
+      "observed_win_rate": 1.0,
+      "bt_prediction": 0.706160869088411,
+      "prediction": 0.738809661411921,
+      "residual": 0.293839130911589,
+      "first_seat_score": 0.5,
+      "first_seat_cs95": [
+        1.4537589701490994e-08,
+        0.9999999854624102
+      ],
+      "a_first_score": 1.0,
+      "a_second_score": 1.0,
+      "status": "uncertain",
+      "extreme": false,
+      "suspected_extreme": true,
+      "seat_bias": false
+    },
+    {
+      "a": 3,
+      "b": 11,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.5995387080718015,
+      "prediction": 0.5995387080718015,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 4,
+      "b": 5,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.523073658287991,
+      "prediction": 0.523073658287991,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 4,
+      "b": 6,
+      "games": 2,
+      "seed_pairs": 1,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": 1.0,
+      "score_cs95": [
+        0.00018939393939396143,
+        1.0
+      ],
+      "wins_a_completed_pairs": 2,
+      "observed_win_rate": 1.0,
+      "bt_prediction": 0.7712770220393608,
+      "prediction": 0.7966906862572096,
+      "residual": 0.22872297796063923,
+      "first_seat_score": 0.5,
+      "first_seat_cs95": [
+        1.4537589701490994e-08,
+        0.9999999854624102
+      ],
+      "a_first_score": 1.0,
+      "a_second_score": 1.0,
+      "status": "uncertain",
+      "extreme": false,
+      "suspected_extreme": true,
+      "seat_bias": false
+    },
+    {
+      "a": 4,
+      "b": 7,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.6004201552169933,
+      "prediction": 0.6004201552169933,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 4,
+      "b": 8,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.5,
+      "prediction": 0.5,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 4,
+      "b": 9,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.46479548931321174,
+      "prediction": 0.46479548931321174,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 4,
+      "b": 10,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.6759538377478879,
+      "prediction": 0.6759538377478879,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 4,
+      "b": 11,
+      "games": 2,
+      "seed_pairs": 1,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": 0.5,
+      "score_cs95": [
+        1.4537589701490994e-08,
+        0.9999999854624102
+      ],
+      "wins_a_completed_pairs": 1,
+      "observed_win_rate": 0.5,
+      "bt_prediction": 0.565225757145422,
+      "prediction": 0.5579784507959307,
+      "residual": -0.065225757145422,
+      "first_seat_score": 1.0,
+      "first_seat_cs95": [
+        0.00018939393939396143,
+        1.0
+      ],
+      "a_first_score": 1.0,
+      "a_second_score": 0.0,
+      "status": "uncertain",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 5,
+      "b": 6,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.7544578561186069,
+      "prediction": 0.7544578561186069,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 5,
+      "b": 7,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.5780519913808375,
+      "prediction": 0.5780519913808375,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 5,
+      "b": 8,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.4769263417120089,
+      "prediction": 0.4769263417120089,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 5,
+      "b": 9,
+      "games": 2,
+      "seed_pairs": 1,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": 0.5,
+      "score_cs95": [
+        1.4537589701490994e-08,
+        0.9999999854624102
+      ],
+      "wins_a_completed_pairs": 1,
+      "observed_win_rate": 0.5,
+      "bt_prediction": 0.441905799354268,
+      "prediction": 0.4483607105371271,
+      "residual": 0.05809420064573201,
+      "first_seat_score": 0.0,
+      "first_seat_cs95": [
+        0.0,
+        0.999810606060606
+      ],
+      "a_first_score": 0.0,
+      "a_second_score": 1.0,
+      "status": "uncertain",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 5,
+      "b": 10,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.6553457204243658,
+      "prediction": 0.6553457204243658,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 5,
+      "b": 11,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.5424008932400747,
+      "prediction": 0.5424008932400747,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 6,
+      "b": 7,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.30869960190217943,
+      "prediction": 0.30869960190217943,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 6,
+      "b": 8,
+      "games": 2,
+      "seed_pairs": 1,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": 0.0,
+      "score_cs95": [
+        0.0,
+        0.999810606060606
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": 0.0,
+      "bt_prediction": 0.22872297796063923,
+      "prediction": 0.20330931374279043,
+      "residual": -0.22872297796063923,
+      "first_seat_score": 0.5,
+      "first_seat_cs95": [
+        1.4537589701490994e-08,
+        0.9999999854624102
+      ],
+      "a_first_score": 0.0,
+      "a_second_score": 0.0,
+      "status": "uncertain",
+      "extreme": false,
+      "suspected_extreme": true,
+      "seat_bias": false
+    },
+    {
+      "a": 6,
+      "b": 9,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.20460992382548074,
+      "prediction": 0.20460992382548074,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 6,
+      "b": 10,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.38271842711732895,
+      "prediction": 0.38271842711732895,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 6,
+      "b": 11,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.27857335454648,
+      "prediction": 0.27857335454648,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 7,
+      "b": 8,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.3995798447830067,
+      "prediction": 0.3995798447830067,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 7,
+      "b": 9,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.36622152339024994,
+      "prediction": 0.36622152339024994,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 7,
+      "b": 10,
+      "games": 2,
+      "seed_pairs": 1,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": 0.5,
+      "score_cs95": [
+        1.4537589701490994e-08,
+        0.9999999854624102
+      ],
+      "wins_a_completed_pairs": 1,
+      "observed_win_rate": 0.5,
+      "bt_prediction": 0.5811356286384582,
+      "prediction": 0.5721205587897407,
+      "residual": -0.08113562863845825,
+      "first_seat_score": 1.0,
+      "first_seat_cs95": [
+        0.00018939393939396143,
+        1.0
+      ],
+      "a_first_score": 1.0,
+      "a_second_score": 0.0,
+      "status": "uncertain",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 7,
+      "b": 11,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.4638828166047396,
+      "prediction": 0.4638828166047396,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 8,
+      "b": 9,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.4647954893132118,
+      "prediction": 0.4647954893132118,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 8,
+      "b": 10,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.675953837747888,
+      "prediction": 0.675953837747888,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 8,
+      "b": 11,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.565225757145422,
+      "prediction": 0.565225757145422,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 9,
+      "b": 10,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.706160869088411,
+      "prediction": 0.706160869088411,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 9,
+      "b": 11,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.5995387080718015,
+      "prediction": 0.5995387080718015,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    },
+    {
+      "a": 10,
+      "b": 11,
+      "games": 0,
+      "seed_pairs": 0,
+      "draws": 0,
+      "aborted": 0,
+      "observed_score": null,
+      "score_cs95": [
+        0.0,
+        1.0
+      ],
+      "wins_a_completed_pairs": 0,
+      "observed_win_rate": null,
+      "bt_prediction": 0.3840727304164374,
+      "prediction": 0.3840727304164374,
+      "residual": null,
+      "first_seat_score": null,
+      "first_seat_cs95": [
+        0.0,
+        1.0
+      ],
+      "a_first_score": null,
+      "a_second_score": null,
+      "status": "predicted",
+      "extreme": false,
+      "suspected_extreme": false,
+      "seat_bias": false
+    }
+  ],
+  "confirmed_cycles": [],
+  "candidate_cycles": [],
+  "first_seat_model_score": 0.5772592712251102,
+  "extreme_pair_fraction": 0.0,
+  "coverage": 0.18181818181818182,
+  "uncertainty": "Empirical intervals: simultaneous 95% anytime-valid paired-seed confidence sequences; rating intervals: conditional Laplace approximations, not used for balance flags. Predictions on unobserved edges are model assumptions, not validation.",
+  "metric": "expected score = P(win) + 0.5 P(draw); aborted games are not draws. Any interrupted pair receives [0,1] empirical bounds.",
+  "policy": "Strength is conditional on the specified AI, normal starting-state distribution, roster and executable version.",
+  "analysis_fingerprint": "3ef09b015e64450efd1b0c631b2c8bb7e64e67c2ef2a6966ab73f5cb3544fb71",
+  "elapsed_seconds": 5.305408999993233
+}
