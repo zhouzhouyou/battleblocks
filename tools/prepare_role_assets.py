@@ -17,7 +17,7 @@ SPECS={
  'palette':['161820','373847','787080','E2D4BC','FFF0CD','653341','9F4350','D87066','583C31','BC8552','DAB573','885739','45658A','7699B7']},
  'dwarf': {'rows':[0,346,626,940,1254], 'body_heights':[270,266,240,240], 'height':32,
  'palette':['161820','373847','787080','E2D4BC','653341','9F4350','D87066','583C31','885739','BC8552','DAB573','FFF0CD','E66B27','F29A45']},
- 'priest': {'rows':[0,322,638,934,1254], 'body_heights':[302,296,284,276], 'height':64,
+ 'priest': {'rows':[0,322,638,934,1254], 'body_heights':[302,296,284,276], 'height':64, 'source_version':'v4',
  'palette':['161820','373847','535064','E2D4BC','FFF0CD','352736','9F4350','D87066','583C31','885739','BC8552','DAB573','293D32','426644']},
 }
 def clean_alpha(alpha):
@@ -41,7 +41,7 @@ def clean_alpha(alpha):
 
 report={}
 for name,spec in SPECS.items():
- directory=ROOT/'asset-sources/art-direction/characters'/name/'production/v3'
+ directory=ROOT/'asset-sources/art-direction/characters'/name/'production'/spec.get('source_version','v3')
  source=Image.open(directory/'animation-source.webp').convert('RGBA')
  assert source.size==(1254,1254), (name,source.size)
  opaque=source.getchannel('A').point(lambda a:255 if a>=160 else 0)
