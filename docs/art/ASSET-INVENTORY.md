@@ -24,7 +24,7 @@
 - `asset-sources/art-direction/f-reference.webp`：历史 F 参考。
 - `asset-sources/art-direction/archive/`：其他早期方块与角色候选，非矮人旧单体稿；本轮未删除。
 - `asset-sources/art-direction/characters/knight/`：K-A4 v8 人设、黑红金四稿 v3c、石中剑修订与提示词。
-- `asset-sources/art-direction/characters/priest/`：P-C v3 人设、饮酒四稿与提示词；参考图仅本地保存。
+- `asset-sources/art-direction/characters/priest/`：狗头人蓝金人设与 production/v4 当前游戏源图；P-C v3 人设、饮酒四稿与 production/v3 留作历史；参考原图仅本地保存。
 - `asset-sources/art-direction/characters/nun/`：N-A 人设、production/v1 立绘与动画、提示词；参考图仅本地保存。
 - `assets/roles/nun-standee-normal.webp`、`nun-standee-awake.webp`：修女普通／暗影立绘；当前未被渲染代码引用，按用户决定保留给未来的图片展览／图鉴功能，不视为待删资源。
 - `docs/art/characters/`：每位角色的用户设计、选择和最新素材指引。
