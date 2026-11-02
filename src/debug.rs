@@ -125,6 +125,9 @@ impl Console {
         let (file, receiver, path, open) = {
             use std::io::BufRead;
             let args: Vec<_> = std::env::args().collect();
+            // The evaluation protocol owns stdin and emits its own result stream.
+            // A console reader here could steal jobs or hold stdin until EOF.
+            let evaluation = args.iter().any(|arg| arg == "--evaluate-jobs");
             for pair in args.windows(2) {
                 if pair[0] == "--command" {
                     commands.push_back(pair[1].clone());
@@ -145,31 +148,36 @@ impl Console {
                 .map(|p| std::path::PathBuf::from(&p[1]))
                 .unwrap_or(default);
             let result = (|| {
+                if evaluation {
+                    return Ok(None);
+                }
                 if let Some(parent) = path.parent().filter(|p| !p.as_os_str().is_empty()) {
                     std::fs::create_dir_all(parent)?;
                 }
-                std::fs::File::create(&path)
+                std::fs::File::create(&path).map(Some)
             })();
             let file = match result {
-                Ok(file) => Some(std::io::BufWriter::new(file)),
+                Ok(file) => file.map(std::io::BufWriter::new),
                 Err(e) => {
                     eprintln!("Cannot open game log: {e}");
                     None
                 }
             };
             let (sender, receiver) = std::sync::mpsc::channel();
-            std::thread::spawn(move || {
-                for line in std::io::stdin().lock().lines() {
-                    match line {
-                        Ok(line) => {
-                            if sender.send(line).is_err() {
-                                break;
+            if !evaluation {
+                std::thread::spawn(move || {
+                    for line in std::io::stdin().lock().lines() {
+                        match line {
+                            Ok(line) => {
+                                if sender.send(line).is_err() {
+                                    break;
+                                }
                             }
+                            Err(_) => break,
                         }
-                        Err(_) => break,
                     }
-                }
-            });
+                });
+            }
             (
                 file,
                 receiver,
