@@ -9,4 +9,7 @@
 /.idea/
 
 /logs/
+/analysis/evaluation-cache.sqlite*
+/analysis/evaluation/
+/analysis/evaluation-runs/
 /asset-sources/art-direction/characters/*/references/

@@ -1,5 +1,7 @@
 use std::path::PathBuf;
 
+mod evaluation;
+
 const DEFAULT_MAX_STEPS: u64 = 200_000;
 const DEFAULT_BATCH_MAX_STEPS: u64 = 20_000;
 
@@ -12,6 +14,13 @@ fn option_value(args: &[String], name: &str) -> Option<String> {
 
 pub fn run() {
     let args: Vec<String> = std::env::args().collect();
+    if evaluation::requested(&args) {
+        if let Err(error) = evaluation::run(&args) {
+            eprintln!("EVALUATION_ERROR {error}");
+            std::process::exit(2);
+        }
+        return;
+    }
     if args.iter().any(|arg| arg == "--autoplay") {
         run_batch(&args);
         return;

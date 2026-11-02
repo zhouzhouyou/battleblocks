@@ -1,5 +1,7 @@
 # 代码结构与技能事件
 
+离线平衡评估通过 `src/headless/evaluation.rs` 将种子对任务交给同一个 `Session::headless_batch_match`；`tools/balance/` 只处理已完成对局的采样、版本缓存、统计与报告，不实现战斗规则。详见 [角色平衡评估](BALANCE-EVALUATION.md)。
+
 Headless `Session` 是权威游戏模型，GUI 只是同一模型的输入、帧循环和可视层。战斗规则通过同步、有类型的事件处理器执行；实际战斗、预览和 AI 调用同一套纯规则。通用流程不按角色或技能身份编写特殊分支。
 
 | 位置 | 职责 |
