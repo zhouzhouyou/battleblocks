@@ -183,28 +183,28 @@ passive.name.meteor_economy	Meteor economy	陨星节制
 passive.name.loot_mastery	Loot mastery	掠夺专精
 passive.name.blast_mastery	Blast mastery	爆裂专精
 passive.name.blood_sacrifice	Blood sacrifice	血祭
-passive.description.column_formation	Horizontal swaps move two columns.\nVertical swaps move two tiles.	左右交换相邻两整列\n上下仍交换两个方块
-passive.description.battle_training	Clear healing, damage and mana\nincrease by 6%.	消除治疗、伤害和魔力\n收益增加6%
-passive.description.forest_step	Diagonal adjacent swaps allowed.\nMatches remain horizontal/vertical.	可交换斜向相邻方块\n仍按横向、纵向三消判定
-passive.description.forest_pact	Clear healing, damage and mana\ndecrease by 7%.	消除治疗、伤害和魔力\n收益降低7%
-passive.description.arcane_conversion	Below cap, 50% of clear\nhealing becomes MP (floor).\nAt full MP, heal normally.	魔力未满时，50%消除治疗\n转为魔力；已满则正常治疗\n转换量向下取整
-passive.description.mana_seal	MP cap locked at 250.\nAwakening unlocks 400.	当前魔力上限锁定为250\n觉醒后解锁至400
+passive.description.column_formation	Horizontal swaps move two columns. Vertical swaps move two tiles.	左右交换相邻两整列；上下仍交换两个方块
+passive.description.battle_training	Clear healing, damage and mana increase by 6%.	消除治疗、伤害和魔力收益增加6%
+passive.description.forest_step	Diagonal adjacent swaps allowed. Matches remain horizontal/vertical.	可交换斜向相邻方块；仍按横向、纵向三消判定
+passive.description.forest_pact	Clear healing, damage and mana decrease by 7%.	消除治疗、伤害和魔力收益降低7%
+passive.description.arcane_conversion	Below cap, 50% of clear healing becomes MP (floor). At full MP, heal normally.	魔力未满时，50%消除治疗转为魔力；已满则正常治疗；转换量向下取整
+passive.description.mana_seal	MP cap locked at 250. Awakening unlocks 400.	当前魔力上限锁定为250；觉醒后解锁至400
 passive.description.mana_release	MP cap unlocked to 400.	魔力上限解锁至400
-passive.description.recycling	Every 2 overheal from clears\nbecomes 1 MP, obeying the cap.	消除产生的溢出治疗\n每2点转为1魔力，受上限限制
-passive.description.balanced_affinity	On a match, each balanced tile\ndeals 4 extra damage.	三消时，每个平衡方块\n额外造成4点伤害
-passive.description.balanced_resonance	On a match, each balanced tile\ndeals 6 extra damage.	三消时，每个平衡方块\n额外造成6点伤害
-passive.description.element_return	On a match, each balanced tile\nrestores 2 extra MP.	三消时，每个平衡方块\n额外回复2魔力
-passive.description.blood_fury	At or below 35% of initial HP,\nclear damage increases by 25%.\nChecked before each clear wave.	生命不高于初始上限35%时\n消除伤害增加25%\n每轮消除前判断
-passive.description.boiling_blood	At or below 50% of initial HP,\nclear damage increases by 25%.\nChecked before each clear wave.	生命不高于初始上限50%时\n消除伤害增加25%\n每轮消除前判断
-passive.description.flesh_casting	Each missing MP costs 2 HP.\nMust leave at least 1 HP.	缺少的每1魔力支付2生命\n支付后必须至少剩余1生命
-passive.description.flesh_conversion	1 HP pays 2 missing MP.\nRound HP cost up.\nMust leave at least 1 HP.	1生命抵2点缺少的魔力\n生命消耗向上取整\n支付后必须至少剩余1生命
+passive.description.recycling	Every 2 overheal from clears becomes 1 MP, obeying the cap.	消除产生的溢出治疗，每2点转为1魔力，受上限限制
+passive.description.balanced_affinity	On a match, each balanced tile deals 4 extra damage.	三消时，每个平衡方块额外造成4点伤害
+passive.description.balanced_resonance	On a match, each balanced tile deals 6 extra damage.	三消时，每个平衡方块额外造成6点伤害
+passive.description.element_return	On a match, each balanced tile restores 2 extra MP.	三消时，每个平衡方块额外回复2魔力
+passive.description.blood_fury	At or below 35% of initial HP, clear damage increases by 25%. Checked before each clear wave.	生命不高于初始上限35%时，消除伤害增加25%；每轮消除前判断
+passive.description.boiling_blood	At or below 50% of initial HP, clear damage increases by 25%. Checked before each clear wave.	生命不高于初始上限50%时，消除伤害增加25%；每轮消除前判断
+passive.description.flesh_casting	Each missing MP costs 2 HP. Must leave at least 1 HP.	缺少的每1魔力支付2生命；支付后必须至少剩余1生命
+passive.description.flesh_conversion	1 HP pays 2 missing MP. Round HP cost up. Must leave at least 1 HP.	1生命抵2点缺少的魔力；生命消耗向上取整；支付后必须至少剩余1生命
 passive.description.charge_mastery	Knight charge damage +25%.	骑士冲锋的伤害增加25%
-passive.description.guard_economy	Guard MP cost reduced\nfrom 150 to 80.	坚守回复的魔力消耗\n从150降低至80
-passive.description.elven_power	Clear damage gains 25% of base.\nAdditive with clear amplification.	消除伤害额外增加基础值25%\n与消除增幅加算
-passive.description.meteor_economy	Meteor MP cost reduced\nfrom 160 to 140.	陨星轰击的魔力消耗\n从160降低至140
-passive.description.loot_mastery	Area loot deals 30% more damage.\nLater cascades get no bonus.	区域掠夺的伤害提高30%\n后续连锁消除不享受此加成
-passive.description.blast_mastery	Blast gains 2 damage per tile:\n12 increases to 14.	平衡引爆每格额外造成2伤害\n单格伤害由12提高至14
-passive.description.blood_sacrifice	HP-paid skills deal 20% more\ndirect damage; later clears\nare unchanged.	使用生命代付的技能\n直接伤害增加20%\n不放大后续消除伤害
+passive.description.guard_economy	Guard MP cost reduced from 150 to 80.	坚守回复的魔力消耗从150降低至80
+passive.description.elven_power	Clear damage gains 25% of base. Additive with clear amplification.	消除伤害额外增加基础值25%；与消除增幅加算
+passive.description.meteor_economy	Meteor MP cost reduced from 160 to 140.	陨星轰击的魔力消耗从160降低至140
+passive.description.loot_mastery	Area loot deals 30% more damage. Later cascades get no bonus.	区域掠夺的伤害提高30%；后续连锁消除不享受此加成
+passive.description.blast_mastery	Blast gains 2 damage per tile: 12 increases to 14.	平衡引爆每格额外造成2伤害；单格伤害由12提高至14
+passive.description.blood_sacrifice	HP-paid skills deal 20% more direct damage; later clears are unchanged.	使用生命代付的技能直接伤害增加20%；不放大后续消除伤害
 passive.short_name.column_formation	Columns	列阵
 passive.short_name.battle_training	Training	战技训练
 passive.short_name.forest_step	Forest step	林间穿行

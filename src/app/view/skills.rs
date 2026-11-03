@@ -286,7 +286,7 @@ impl Session {
                 },
             );
             let description = content::skill_description_in(skill, self.rules(is_enemy), self.zh);
-            for (line, text) in wrap_preview_text(description, 12.)
+            for (line, text) in wrap_label_text(description, 15., 200.)
                 .iter()
                 .take(7)
                 .enumerate()
