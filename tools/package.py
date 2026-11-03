@@ -29,7 +29,7 @@ def licenses_for(target,out):
     (out/'DEPENDENCIES.json').write_text(json.dumps(manifest,indent=2))
     shutil.copy2(ROOT/'assets/FONT-LICENSE.txt',out/'FONT-LICENSE.txt')
     shutil.copytree(ROOT/'licenses/pixelfx',out/'pixelfx')
-    (out/'ASSETS.txt').write_text('Legacy artwork/audio originate from the original BattleBlocks repository. Original third-party redistribution rights have not been independently verified.\nHammer-smash, heavy-landing, Ember Blast and sleep motifs reference/adapt PixelFX (Patch / Hugo Duprez), MIT; see pixelfx/. No PixelFX fonts or stock characters are included.\n')
+    (out/'ASSETS.txt').write_text('Legacy artwork/audio originate from the original BattleBlocks repository. Original third-party redistribution rights have not been independently verified.\nHammer-smash, landing, Ember Blast, sleep, lightning and meteor effects reference/adapt PixelFX (Patch / Hugo Duprez), MIT; see pixelfx/. No PixelFX fonts or stock characters are included.\n')
 def zip_directory(name,directory):
     with zipfile.ZipFile(DIST/name,'w',zipfile.ZIP_DEFLATED,compresslevel=9,strict_timestamps=False) as archive:
         for file in sorted(directory.rglob('*')):

@@ -5,7 +5,10 @@ use macroquad::prelude::*;
 mod ember_blast;
 mod hammer_smash;
 mod heavy_landing;
+mod impact_clock;
 mod landing_motion;
+mod wizard_spells;
+mod wizard_timing;
 pub use landing_motion::lift as jump_lift;
 
 pub fn jump_pose(frames: Option<&[usize]>, elapsed: f64) -> Option<[usize; 4]> {
@@ -25,6 +28,7 @@ pub struct Textures {
     blast: Option<ember_blast::Blast>,
     cast_tiles: Vec<(usize, usize, u8)>,
     jumps: [Option<f64>; 2],
+    wizard: wizard_spells::Effects,
 }
 impl Textures {
     pub fn load() -> Self {
@@ -42,6 +46,7 @@ impl Textures {
             sleep_zzz: crate::graphics::texture(include_bytes!("../assets/effects/sleep-zzz.webp")),
             blast: None,
             jumps: [None; 2],
+            wizard: wizard_spells::Effects::load(),
         }
     }
     /// Capture presentation-only artwork before the model removes or replaces the tiles.
@@ -51,31 +56,44 @@ impl Textures {
         enemy: bool,
         cells: &[(usize, usize)],
         board: &crate::Board,
-    ) {
+    ) -> f64 {
         self.cast_tiles = cells.iter().map(|&(x, y)| (x, y, board[y][x])).collect();
+        self.wizard.capture(skill, enemy, cells, &self.cast_tiles);
         if skill == Skill::Jump {
             self.jumps[enemy as usize] = Some(get_time());
         }
         if skill == Skill::EmberBlast {
             self.blast = Some(ember_blast::Blast::new(get_time()));
         }
+        if matches!(skill, Skill::Lightning | Skill::Meteor) {
+            (wizard_timing::IMPACT - impact_clock::IMPACT) as f64
+        } else {
+            0.
+        }
     }
     pub fn clear(&mut self) {
         self.cast_tiles.clear();
         self.jumps = [None; 2];
         self.blast = None;
+        self.wizard.clear();
     }
-    pub fn board_cleared(&mut self, cells: &[(usize, usize)]) {
+    pub fn board_cleared(&mut self, cells: &[(usize, usize)]) -> f64 {
+        let delay = self.wizard.cleared(cells);
         if cells.len() == crate::N * crate::N {
             if let Some(blast) = &mut self.blast {
                 blast.cleared(get_time());
             }
         }
+        delay
     }
     pub fn holds_board(&self) -> bool {
         self.blast.as_ref().is_some_and(|blast| blast.waiting())
     }
-    pub fn draw_board_blast(&self, over: bool) {
+    pub fn holds_cell(&self, x: usize, y: usize) -> bool {
+        self.wizard.holds(x, y)
+    }
+    pub fn draw_board_blast(&self, over: bool, tiles: &[Texture2D; 7]) {
+        self.wizard.draw(over, tiles);
         if let Some(blast) = &self.blast {
             blast.draw(&self.ember_blast, over);
         }
@@ -103,7 +121,10 @@ impl Textures {
             let elapsed = progress * crate::presentation::CAST_TIME as f32;
             hammer_smash::draw_fragments(tiles, &self.cast_tiles, cells, elapsed);
             hammer_smash::draw(&self.hammer_smash, cells, elapsed);
-        } else if skill != Skill::Jump && skill != Skill::EmberBlast {
+        } else if !matches!(
+            skill,
+            Skill::Jump | Skill::EmberBlast | Skill::Lightning | Skill::Meteor
+        ) {
             draw(skill, cells, progress, enemy);
         }
     }
@@ -128,37 +149,6 @@ fn spark(center: Vec2, p: f32, color: Color, count: usize) {
         let a = center + direction * (6. + p * 24.);
         let b = center + direction * (12. + p * 34.);
         draw_line(a.x, a.y, b.x, b.y, 2., tint(color, 1. - p));
-    }
-}
-fn bolt(a: Vec2, b: Vec2, seed: usize, alpha: f32) {
-    let mut previous = a;
-    let direction = (b - a).normalize_or_zero();
-    let normal = vec2(-direction.y, direction.x);
-    for i in 1..=7 {
-        let t = i as f32 / 7.;
-        let offset = if i == 7 {
-            0.
-        } else {
-            ((seed * 13 + i * 7) as f32).sin() * 14.
-        };
-        let next = a.lerp(b, t) + normal * offset;
-        draw_line(
-            previous.x,
-            previous.y,
-            next.x,
-            next.y,
-            5.,
-            tint(SKYBLUE, alpha * 0.5),
-        );
-        draw_line(
-            previous.x,
-            previous.y,
-            next.x,
-            next.y,
-            2.,
-            tint(WHITE, alpha),
-        );
-        previous = next;
     }
 }
 fn cross(center: Vec2, size: f32, color: Color) {
@@ -226,38 +216,9 @@ fn draw(skill: Skill, cells: &[(usize, usize)], progress: f32, enemy: bool) {
     if q >= 1. {
         return;
     }
-    for (i, &(x, y)) in cells.iter().enumerate() {
+    for &(x, y) in cells {
         let c = vec2(288. + x as f32 * 64., 142. + y as f32 * 64.);
         match skill {
-            Skill::Lightning => {
-                if q < 0.6 {
-                    bolt(
-                        vec2(c.x + (i as f32).sin() * 25., 112.),
-                        c,
-                        i,
-                        1. - q / 0.65,
-                    );
-                }
-                draw_circle_lines(c.x, c.y, 5. + q * 28., 2., tint(SKYBLUE, 1. - q));
-                // Sparks converge on the caster: this spell restores mana.
-                let t = (q - 0.2).max(0.) / 0.8;
-                let at = c.lerp(actor, t);
-                draw_circle(at.x, at.y, 3., tint(SKYBLUE, 1. - q));
-            }
-            Skill::Meteor => {
-                let t = (q / 0.5).min(1.);
-                let start = c - vec2(80., 160.);
-                let at = start.lerp(c, t * t);
-                if q < 0.5 && at.x >= 268. && at.x <= 756. && at.y >= 122. && at.y <= 610. {
-                    draw_line(at.x - 25., at.y - 50., at.x, at.y, 8., tint(RED, 0.5));
-                    draw_circle(at.x, at.y, 11., ORANGE);
-                    draw_circle(at.x, at.y, 5., YELLOW);
-                } else if q >= 0.5 {
-                    let impact = (q - 0.5) * 2.;
-                    draw_circle_lines(c.x, c.y, 5. + impact * 30., 3., tint(ORANGE, 1. - impact));
-                    spark(c, impact, ORANGE, 5);
-                }
-            }
             Skill::Nature => {
                 draw_line(
                     c.x,

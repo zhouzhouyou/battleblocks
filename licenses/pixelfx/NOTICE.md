@@ -30,4 +30,16 @@ Rust rasterizer and timing integration are adapted for BattleBlocks. The sleep
 loop references `status/sleep`'s staggered rising Z motif; the small bitmap glyphs
 are drawn by our renderer, without loading a font or using the stock body/eyes.
 
+Legacy wizard effects reference/adapt `lightning/lightning-strike` and
+`fire/meteor` at the same revision: stepped leaders, forked strokes, a cooling
+channel, burning stone, a comet tail, fragments and a fading impact. PixelFX
+credits Hugo Duprez's MIT lightning/fire/explosion work for these techniques.
+BattleBlocks adds its own X-shaped board composition, single central meteor,
+diamond wave, mana-return paths and shared clear-triggered visual timing in Rust.
+
+The v2 wizard revision expands the Lightning Strike motif with a charging sigil,
+a thick primary stroke, forks and a cooling ground channel; the meteor's v2
+aftermath is a circular pressure wave with delayed, per-tile visual disappearance.
+The original board target sets and resource rules remain those of BattleBlocks.
+
 PixelFX's stock character, skeletal acting system, targets and fonts are not used.
