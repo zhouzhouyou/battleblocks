@@ -79,6 +79,10 @@ pub(crate) fn sprite_rect(enemy: bool) -> Rect {
 pub(crate) fn passive_rect(enemy: bool) -> Rect {
     Rect::new(if enemy { 796. } else { 20. }, 376., 208., 50.)
 }
+// The status strip owns the row between the passive tags and the skill cards.
+pub(crate) fn status_strip_rect(enemy: bool) -> Rect {
+    Rect::new(if enemy { 796. } else { 20. }, 430., 208., 24.)
+}
 // Cards keep three rows (number + name, cost, "does not end turn") and leave the
 // description to the hover panel; the pocket strip sits under the last card.
 pub(crate) fn player_skill_rect(i: usize) -> Rect {
