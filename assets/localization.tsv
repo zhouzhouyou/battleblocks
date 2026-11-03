@@ -8,7 +8,7 @@ ui.hud.draw_actors.active	ACTIVE	行动中
 ui.shared.advanced	Advanced	进阶
 ui.menu.draw.after_casting	After casting	释放后
 ui.skills.draw_skill_details.after_hp	After: HP	结算后生命
-ui.hud.draw_turns.ai	AI: 	AI 难度：
+ui.screen.draw_pause.ai_difficulty	AI: 	AI 难度：
 ui.screen.draw_opponents.ai_difficulty	AI difficulty	AI 难度
 ui.menu.draw.animated_preview	ANIMATED PREVIEW	角色动画预览
 ui.screen.draw_top.audio_m	Audio / M	音频 / M

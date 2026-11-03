@@ -482,21 +482,6 @@ impl Session {
                 );
             }
         }
-        label(
-            &format!(
-                "{}{}",
-                tr_key(self.zh, "ui.hud.draw_turns.ai"),
-                [
-                    tr_key(self.zh, "ui.shared.beginner"),
-                    tr_key(self.zh, "ui.shared.standard"),
-                    tr_key(self.zh, "ui.shared.advanced"),
-                ][self.difficulty]
-            ),
-            808.,
-            452.,
-            18.,
-            GOLD,
-        );
         // Below the board frame; the hint legend uses this line while hints are shown.
         if self.new_role_states[self.enemy_turn as usize].force_armed && !self.hints_shown {
             label(
