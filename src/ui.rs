@@ -803,7 +803,11 @@ pub fn opponent_rect(row: usize, column: usize) -> Rect {
 pub fn pause_rect(i: usize) -> Rect {
     Rect::new(322., 270. + i as f32 * 63., 380., 48.)
 }
-pub fn draw_pause(zh: bool, pointer: Vec2) {
+// Between the panel title and the first button; the battle HUD leaves no row for it.
+pub fn pause_difficulty_rect() -> Rect {
+    Rect::new(322., 242., 380., 20.)
+}
+pub fn draw_pause(zh: bool, difficulty: usize, pointer: Vec2) {
     flush_labels();
     draw_rectangle(0., 0., 1024., 720., Color::new(0., 0., 0., 0.72));
     draw_rectangle(282., 180., 460., 390., Color::from_rgba(24, 30, 43, 255));
@@ -814,6 +818,23 @@ pub fn draw_pause(zh: bool, pointer: Vec2) {
         232.,
         34.,
         GOLD,
+    );
+    let difficulty_text = format!(
+        "{}{}",
+        tr_key(zh, "ui.screen.draw_pause.ai_difficulty"),
+        [
+            tr_key(zh, "ui.shared.beginner"),
+            tr_key(zh, "ui.shared.standard"),
+            tr_key(zh, "ui.shared.advanced"),
+        ][difficulty.min(2)]
+    );
+    let difficulty_rect = pause_difficulty_rect();
+    label(
+        &difficulty_text,
+        difficulty_rect.x,
+        difficulty_rect.bottom() - 4.,
+        fit_size(&difficulty_text, 16., difficulty_rect.w),
+        LIGHTGRAY,
     );
     for (i, text) in [
         tr_key(zh, "ui.screen.draw_pause.continue"),
