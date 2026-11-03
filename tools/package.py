@@ -28,7 +28,8 @@ def licenses_for(target,out):
         manifest.append({'name':package['name'],'version':package['version'],'license':package.get('license')})
     (out/'DEPENDENCIES.json').write_text(json.dumps(manifest,indent=2))
     shutil.copy2(ROOT/'assets/FONT-LICENSE.txt',out/'FONT-LICENSE.txt')
-    (out/'ASSETS.txt').write_text('Artwork/audio originate from the original BattleBlocks repository. Original third-party redistribution rights have not been independently verified.\n')
+    shutil.copytree(ROOT/'licenses/pixelfx',out/'pixelfx')
+    (out/'ASSETS.txt').write_text('Legacy artwork/audio originate from the original BattleBlocks repository. Original third-party redistribution rights have not been independently verified.\nHammer-smash visual adapted from PixelFX (Patch / Hugo Duprez), MIT; see pixelfx/. No PixelFX fonts or stock characters are included.\n')
 def zip_directory(name,directory):
     with zipfile.ZipFile(DIST/name,'w',zipfile.ZIP_DEFLATED,compresslevel=9,strict_timestamps=False) as archive:
         for file in sorted(directory.rglob('*')):

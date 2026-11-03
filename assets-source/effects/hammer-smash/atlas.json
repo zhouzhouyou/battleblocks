@@ -1,0 +1,15 @@
+{
+  "width": 192,
+  "height": 128,
+  "frames": 28,
+  "columns": 7,
+  "fps": 30,
+  "pivot": [
+    96,
+    88
+  ],
+  "impact_frame": 12,
+  "impact_seconds": 0.4,
+  "upstream": "patch-gg/pixelfx@a84159688af3ca37a4be05a0d422b94451b2e24e",
+  "effect": "melee/hammer-smash"
+}

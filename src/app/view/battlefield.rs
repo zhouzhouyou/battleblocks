@@ -180,7 +180,13 @@ impl Session {
                     let charge_progress = self.presentation.destruction(x, y);
                     let clearing = self.pending.contains(&(x, y))
                         && (!self.presentation.busy() || charge_progress.is_some_and(|p| p > 0.));
-                    let clear_progress = if let Some(progress) = charge_progress {
+                    let hold_until_impact = effects::holds_tiles(
+                        self.last_cast,
+                        (presentation::CAST_TIME - self.cast_time) as f32,
+                    ) && self.skill_flash.contains(&(x, y));
+                    let clear_progress = if hold_until_impact {
+                        0.
+                    } else if let Some(progress) = charge_progress {
                         progress
                     } else if clearing {
                         (1. - self.deadline as f32 / CLEAR_TIME as f32).clamp(0., 1.)
