@@ -184,10 +184,9 @@ impl Session {
                         self.last_cast,
                         (presentation::CAST_TIME - self.cast_time) as f32,
                     ) && self.skill_flash.contains(&(x, y))
-                        || self
-                            .skill_effects
-                            .as_ref()
-                            .is_some_and(|effects| effects.holds_board());
+                        || self.skill_effects.as_ref().is_some_and(|effects| {
+                            effects.holds_board() || effects.holds_cell(x, y)
+                        });
                     let clear_progress = if hold_until_impact {
                         0.
                     } else if let Some(progress) = charge_progress {
