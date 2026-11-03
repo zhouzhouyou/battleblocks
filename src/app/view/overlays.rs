@@ -228,18 +228,22 @@ impl Session {
                     if self.zh { "状态" } else { "Effects" },
                     status_names.join(" / ")
                 );
-                draw_rectangle(area.x, 430., 208., 24., Color::from_rgba(38, 29, 54, 255));
+                let strip = status_strip_rect(enemy_side);
+                draw_rectangle(
+                    strip.x,
+                    strip.y,
+                    strip.w,
+                    strip.h,
+                    Color::from_rgba(38, 29, 54, 255),
+                );
                 label(
                     &text,
-                    area.x + 4.,
-                    447.,
-                    fit_size(&text, 12., 200.),
+                    strip.x + 4.,
+                    strip.y + 17.,
+                    fit_size(&text, 12., strip.w - 8.),
                     Color::from_rgba(211, 181, 255, 255),
                 );
-                if !show_moves
-                    && !frame.block_input
-                    && Rect::new(area.x, 430., 208., 24.).contains(frame.pointer)
-                {
+                if !show_moves && !frame.block_input && strip.contains(frame.pointer) {
                     let mut lines = Vec::new();
                     for status in self.new_role_states[enemy_side as usize]
                         .statuses
@@ -432,7 +436,7 @@ impl Session {
             ui::draw_game_over_buttons(self.zh, frame.pointer);
         }
         if self.paused {
-            ui::draw_pause(self.zh, frame.pointer);
+            ui::draw_pause(self.zh, self.difficulty, frame.pointer);
         }
         self.interface
             .draw_panel(self.zh, self.muted, self.tiles(), frame.pointer);

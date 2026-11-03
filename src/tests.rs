@@ -155,6 +155,32 @@ fn skill_cards_leave_the_pocket_strip_its_own_row() {
     }
 }
 #[test]
+fn status_strip_owns_the_row_above_the_skill_cards() {
+    // The enemy HUD used to draw the AI difficulty at (808, 452), on top of this
+    // row. Keep the strip alone between the passive tags and the first skill card.
+    for enemy in [false, true] {
+        let panel = side_panel_rect(enemy);
+        let passives = passive_rect(enemy);
+        let strip = status_strip_rect(enemy);
+        let first_card = if enemy {
+            enemy_skill_rect(0)
+        } else {
+            player_skill_rect(0)
+        };
+        assert!(strip.y >= passives.bottom());
+        assert!(strip.bottom() <= first_card.y);
+        assert!(strip.x >= panel.x && strip.right() <= panel.right());
+    }
+}
+#[test]
+fn pause_difficulty_line_stays_between_the_title_and_buttons() {
+    let line = ui::pause_difficulty_rect();
+    let panel = Rect::new(282., 180., 460., 390.);
+    assert!(line.x >= panel.x && line.right() <= panel.right());
+    assert!(line.bottom() <= ui::pause_rect(0).y);
+    assert!(line.y > 232., "the line must clear the panel title");
+}
+#[test]
 fn selecting_same_skill_cancels_and_different_skill_switches() {
     use content::Skill;
     let selected = toggle_skill_target(None, Skill::Lightning);
