@@ -2,6 +2,48 @@
 use crate::content::Skill;
 use crate::outline;
 use macroquad::prelude::*;
+mod hammer_smash;
+
+/// GUI-only resources. Headless sessions never decode or upload these textures.
+pub struct Textures {
+    hammer_smash: Texture2D,
+    cast_tiles: Vec<(usize, usize, u8)>,
+}
+impl Textures {
+    pub fn load() -> Self {
+        Self {
+            hammer_smash: crate::graphics::texture(include_bytes!(
+                "../assets/effects/hammer-smash.webp"
+            )),
+            cast_tiles: Vec::new(),
+        }
+    }
+    /// Capture presentation-only artwork before the model removes or replaces the tiles.
+    pub fn capture(&mut self, cells: &[(usize, usize)], board: &crate::Board) {
+        self.cast_tiles = cells.iter().map(|&(x, y)| (x, y, board[y][x])).collect();
+    }
+    pub fn draw(
+        &self,
+        skill: Skill,
+        cells: &[(usize, usize)],
+        progress: f32,
+        enemy: bool,
+        tiles: &[Texture2D; 7],
+    ) {
+        if skill == Skill::Hammer {
+            let elapsed = progress * crate::presentation::CAST_TIME as f32;
+            hammer_smash::draw_fragments(tiles, &self.cast_tiles, cells, elapsed);
+            hammer_smash::draw(&self.hammer_smash, cells, elapsed);
+        } else {
+            draw(skill, cells, progress, enemy);
+        }
+    }
+}
+
+/// Hammer's targets retain their mass until impact; ordinary clears keep their fade.
+pub fn holds_tiles(skill: Option<Skill>, elapsed: f32) -> bool {
+    skill == Some(Skill::Hammer) && elapsed < crate::presentation::CLEAR_TIME as f32
+}
 fn tint(c: Color, a: f32) -> Color {
     Color::new(c.r, c.g, c.b, a.clamp(0., 1.))
 }
@@ -49,11 +91,10 @@ fn cross(center: Vec2, size: f32, color: Color) {
     draw_rectangle(center.x - size, center.y - 2., size * 2., 4., color);
     draw_rectangle(center.x - 2., center.y - size, 4., size * 2., color);
 }
-pub fn draw(skill: Skill, cells: &[(usize, usize)], progress: f32, enemy: bool) {
+fn draw(skill: Skill, cells: &[(usize, usize)], progress: f32, enemy: bool) {
     let skill = match skill {
         Skill::Rush => Skill::Charge,
         Skill::Miracle | Skill::Jump | Skill::Copy => Skill::Strike,
-        Skill::Hammer => Skill::Meteor,
         Skill::Forge => Skill::War,
         Skill::Entomb => Skill::Greedy,
         Skill::Resurrect => Skill::Nature,

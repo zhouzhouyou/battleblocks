@@ -111,7 +111,15 @@ impl Session {
                 && !content::skill_profile(*s, self.rules(self.last_cast_enemy)).delayed_damage
         }) {
             let progress = 1. - self.cast_time as f32 / presentation::CAST_TIME as f32;
-            effects::draw(skill, &self.skill_flash, progress, self.last_cast_enemy);
+            if let Some(effects) = &self.skill_effects {
+                effects.draw(
+                    skill,
+                    &self.skill_flash,
+                    progress,
+                    self.last_cast_enemy,
+                    self.tiles(),
+                );
+            }
         }
     }
     pub(in crate::app) fn draw_pockets(&mut self, frame: &Frame) {
