@@ -202,7 +202,12 @@ impl Session {
         frame: &Frame,
         hover_context: Option<(content::Skill, bool)>,
     ) {
-        self.presentation.draw_health(self.zh);
+        let healing = [false, true].map(|side| {
+            self.skill_effects
+                .as_ref()
+                .is_some_and(|fx| fx.healing_active(side))
+        });
+        self.presentation.draw_health(self.zh, healing);
         let detail_context = self.targeting.map(|skill| (skill, false)).or(hover_context);
         if let Some((skill, is_enemy)) = detail_context {
             let (id, health, mana, opponent, boost) = if is_enemy {

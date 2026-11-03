@@ -1,0 +1,11 @@
+{
+  "width": 512,
+  "height": 512,
+  "frames": 29,
+  "columns": 6,
+  "fps": 10,
+  "impact_frame": 9,
+  "impact_seconds": 0.9,
+  "duration": 2.8,
+  "loop": false
+}

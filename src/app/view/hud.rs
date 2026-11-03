@@ -141,16 +141,29 @@ impl Session {
                 &sprites::SPRITES[id]
             };
             // New-role atlases carry a cast row per form; legacy sheets stay on idle.
-            let cast_indices = sprites::cast_frames(id, show_shadow);
+            let cast_elapsed = presentation::CAST_TIME - self.cast_time;
+            let configured_frames = sprites::cast_frames(id, show_shadow);
+            let jump_pose = effects::jump_pose(configured_frames, cast_elapsed);
+            let cast_indices = if self.last_cast == Some(content::Skill::Jump) {
+                jump_pose.as_ref().map(|frames| frames.as_slice())
+            } else {
+                configured_frames
+            };
             let casting = cast_indices.is_some()
                 && self.last_cast.is_some()
                 && self.last_cast_enemy == enemy_side
                 && self.cast_time > 0.;
-            let sleep_indices = sprites::sleep_frames(id).filter(|_| {
-                self.new_role_states[enemy_side as usize]
-                    .statuses
-                    .contains(content::StatusId::Sleep)
-            });
+            let role_state = &self.new_role_states[enemy_side as usize];
+            let sleeping = effects::sleeping(
+                role_state.statuses.contains(content::StatusId::Sleep),
+                role_state.sleep_pending,
+                (self.cast_time > 0. && self.last_cast_enemy == enemy_side)
+                    || self
+                        .skill_effects
+                        .as_ref()
+                        .is_some_and(|effects| effects.holds_board()),
+            );
+            let sleep_indices = sprites::sleep_frames(id).filter(|_| sleeping);
             let mut area = sprite_rect(enemy_side);
             if content::ability_capabilities(id, self.rules(enemy_side)).reach_visual {
                 let target = if show_awake {
@@ -194,15 +207,19 @@ impl Session {
                     area.h -= height * scale;
                 }
             }
-            let cast_elapsed = presentation::CAST_TIME - self.cast_time;
-            if casting
-                && content::skill_profile(self.last_cast.unwrap(), self.rules(enemy_side)).hop
-            {
-                area.y -= (cast_elapsed as f32 * std::f32::consts::PI
-                    / presentation::CAST_TIME as f32)
-                    .sin()
-                    .max(0.)
-                    * 12.;
+            let foot = vec2(area.x + area.w / 2., area.y + area.h);
+            let jump = self
+                .skill_effects
+                .as_ref()
+                .and_then(|effects| effects.jump_elapsed(enemy_side));
+            if let Some(elapsed) = jump {
+                area.y -= effects::jump_lift(elapsed);
+                if let Some(effects) = &self.skill_effects {
+                    effects.draw_landing(foot, elapsed, false, enemy_side);
+                }
+            }
+            if let Some(effects) = &self.skill_effects {
+                effects.draw_heal(foot, false, enemy_side);
             }
             actor(
                 if show_shadow {
@@ -229,6 +246,19 @@ impl Session {
                     sprite.indices
                 },
             );
+            if let Some(elapsed) = jump {
+                if let Some(effects) = &self.skill_effects {
+                    effects.draw_landing(foot, elapsed, true, enemy_side);
+                }
+            }
+            if let Some(effects) = &self.skill_effects {
+                effects.draw_heal(foot, true, enemy_side);
+            }
+            if sleeping {
+                if let Some(effects) = &self.skill_effects {
+                    effects.draw_sleep(area, foot, sleep_indices.is_some(), enemy_side);
+                }
+            }
         }
     }
     pub(in crate::app) fn draw_turns(&mut self, frame: &Frame) {
@@ -492,7 +522,16 @@ impl Session {
                 GOLD,
             );
         } else if self.feedback_time > 0. && self.targeting.is_none() && !self.hints_shown {
-            label(&self.feedback, 262., 670., 17., GOLD);
+            let y = if self
+                .skill_effects
+                .as_ref()
+                .is_some_and(|fx| fx.healing_active(false) || fx.healing_active(true))
+            {
+                690.
+            } else {
+                670.
+            };
+            label(&self.feedback, 262., y, 17., GOLD);
         }
     }
 }

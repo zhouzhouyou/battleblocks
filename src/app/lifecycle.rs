@@ -32,6 +32,9 @@ impl Session {
         self.presentation.clear();
         self.charge_damage = None;
         self.skill_flash.clear();
+        if let Some(effects) = &mut self.skill_effects {
+            effects.clear();
+        }
         self.last_cast = None;
         self.cast_time = 0.;
         self.reactions = [None, None];

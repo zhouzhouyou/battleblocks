@@ -80,6 +80,9 @@ impl Session {
         }
     }
     pub(in crate::app) fn draw_effects(&mut self) {
+        if let Some(effects) = &self.skill_effects {
+            effects.draw_board_blast(self.hp == 0 || self.enemy == 0, self.tiles());
+        }
         self.presentation.draw_awakening(self.zh);
         if self.presentation.charging() {
             let id = if self.last_cast_enemy {
@@ -111,7 +114,15 @@ impl Session {
                 && !content::skill_profile(*s, self.rules(self.last_cast_enemy)).delayed_damage
         }) {
             let progress = 1. - self.cast_time as f32 / presentation::CAST_TIME as f32;
-            effects::draw(skill, &self.skill_flash, progress, self.last_cast_enemy);
+            if let Some(effects) = &self.skill_effects {
+                effects.draw(
+                    skill,
+                    &self.skill_flash,
+                    progress,
+                    self.last_cast_enemy,
+                    self.tiles(),
+                );
+            }
         }
     }
     pub(in crate::app) fn draw_pockets(&mut self, frame: &Frame) {
