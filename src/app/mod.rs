@@ -563,6 +563,9 @@ impl Session {
             .or_else(|| {
                 settled.source_for(content::Resource::Healing, content::EventSide::Opponent)
             });
+        if let Some(effects) = &mut self.skill_effects {
+            effects.healing_rewards(&settled.events, side);
+        }
         self.present_ability_triggers(side, &settled.triggers);
         if side {
             self.enemy = settled.actor_hp;

@@ -395,7 +395,7 @@ impl Presentation {
             }
         }
     }
-    pub fn draw_health(&self, zh: bool) {
+    pub fn draw_health(&self, zh: bool, compact: [bool; 2]) {
         for side in [false, true] {
             for (i, p) in self
                 .popups
@@ -409,6 +409,43 @@ impl Presentation {
                 let y = 246. + i as f32 * 58. - (2.4 - p.time) * 8.;
                 let delta = p.after - p.before;
                 let color = if delta < 0 { ORANGE } else { GREEN };
+                // Keep spell overlays and status rows readable; use the strip below the board.
+                if compact[side as usize] {
+                    if i < 2 {
+                        let amount = crate::format_text(
+                            zh,
+                            if delta < 0 {
+                                "combat.popup_damage"
+                            } else {
+                                "combat.popup_heal"
+                            },
+                            &[&delta.abs().to_string()],
+                        );
+                        label(
+                            &format!(
+                                "{} {} · {}",
+                                if side {
+                                    if zh {
+                                        "敌方"
+                                    } else {
+                                        "Enemy"
+                                    }
+                                } else if zh {
+                                    "我方"
+                                } else {
+                                    "Player"
+                                },
+                                amount,
+                                p.source
+                            ),
+                            if side { 520. } else { 262. },
+                            651. + i as f32 * 16.,
+                            13.,
+                            color,
+                        );
+                    }
+                    continue;
+                }
                 draw_rectangle(x, y - 22., 200., 52., Color::new(0.04, 0.05, 0.08, 0.93));
                 label(
                     &crate::format_text(
