@@ -46,6 +46,8 @@ struct Awakening {
 const AWAKEN_TIME: f64 = 1.1;
 #[derive(Default)]
 pub struct Presentation {
+    hold: f64,
+    motion_delay: f64,
     awakenings: Vec<Awakening>,
     motions: Vec<Motion>,
     time: f64,
@@ -62,12 +64,17 @@ impl Presentation {
     pub fn stop_motion(&mut self) {
         self.motions.clear();
         self.time = 0.;
+        self.motion_delay = 0.;
+        self.hold = 0.;
     }
     pub fn clear(&mut self) {
         *self = Self::default();
     }
     pub fn tick(&mut self, dt: f64) {
-        self.time = (self.time - dt).max(0.);
+        self.hold = (self.hold - dt).max(0.);
+        let motion_dt = (dt - self.motion_delay).max(0.);
+        self.motion_delay = (self.motion_delay - dt).max(0.);
+        self.time = (self.time - motion_dt).max(0.);
         if self.time == 0. {
             self.charge_column = None;
             self.motions.clear();
@@ -82,6 +89,7 @@ impl Presentation {
         self.popups.retain(|p| p.time > 0.);
     }
     pub fn charge(&mut self, column: usize, remaining: f64) {
+        self.motion_delay = 0.;
         self.motions.clear();
         self.charge_column = Some(column.min(N - 2));
         self.time = remaining;
@@ -155,7 +163,7 @@ impl Presentation {
         self.busy().then_some(self.swapping)
     }
     pub fn busy(&self) -> bool {
-        self.time > 0. || !self.awakenings.is_empty()
+        self.time > 0. || self.hold > 0. || !self.awakenings.is_empty()
     }
     pub fn awakening(
         &mut self,
@@ -307,9 +315,11 @@ impl Presentation {
             }
         }
         self.time = SWAP_TIME;
+        self.motion_delay = 0.;
         self.duration = SWAP_TIME;
     }
     pub fn fall(&mut self, falls: Vec<TileFall>) {
+        self.motion_delay = 0.;
         self.swapping = false;
         self.motions = falls
             .into_iter()
@@ -321,6 +331,14 @@ impl Presentation {
             .collect();
         self.time = FALL_TIME;
         self.duration = FALL_TIME;
+    }
+    /// GUI pacing only: postpone resolution while a cast winds up.
+    pub fn hold(&mut self, seconds: f64) {
+        self.hold = self.hold.max(seconds);
+    }
+    /// Keep survivor tiles at their original positions until a removal wave has passed.
+    pub fn delay_fall(&mut self, seconds: f64) {
+        self.motion_delay = seconds.max(0.);
     }
     /// Show the actual current source independently for each affected side.
     pub fn health_sources(&mut self, before: [i32; 2], after: [i32; 2], sources: [&str; 2]) {
@@ -377,7 +395,7 @@ impl Presentation {
             }
         }
     }
-    pub fn draw_health(&self, zh: bool) {
+    pub fn draw_health(&self, zh: bool, compact: [bool; 2]) {
         for side in [false, true] {
             for (i, p) in self
                 .popups
@@ -391,6 +409,43 @@ impl Presentation {
                 let y = 246. + i as f32 * 58. - (2.4 - p.time) * 8.;
                 let delta = p.after - p.before;
                 let color = if delta < 0 { ORANGE } else { GREEN };
+                // Keep spell overlays and status rows readable; use the strip below the board.
+                if compact[side as usize] {
+                    if i < 2 {
+                        let amount = crate::format_text(
+                            zh,
+                            if delta < 0 {
+                                "combat.popup_damage"
+                            } else {
+                                "combat.popup_heal"
+                            },
+                            &[&delta.abs().to_string()],
+                        );
+                        label(
+                            &format!(
+                                "{} {} · {}",
+                                if side {
+                                    if zh {
+                                        "敌方"
+                                    } else {
+                                        "Enemy"
+                                    }
+                                } else if zh {
+                                    "我方"
+                                } else {
+                                    "Player"
+                                },
+                                amount,
+                                p.source
+                            ),
+                            if side { 520. } else { 262. },
+                            651. + i as f32 * 16.,
+                            13.,
+                            color,
+                        );
+                    }
+                    continue;
+                }
                 draw_rectangle(x, y - 22., 200., 52., Color::new(0.04, 0.05, 0.08, 0.93));
                 label(
                     &crate::format_text(
@@ -556,6 +611,28 @@ pub fn move_hint_anchor(a: (usize, usize), b: (usize, usize)) -> Vec2 {
 #[cfg(test)]
 mod awakening_animation_tests {
     use super::*;
+    #[test]
+    fn visual_windup_and_removal_wave_delay_only_the_motion_clock() {
+        let mut p = Presentation::default();
+        p.hold(0.5);
+        p.tick(0.3);
+        assert!(p.busy());
+        p.tick(0.21);
+        assert!(!p.busy());
+        p.fall(Vec::new());
+        p.delay_fall(1.25);
+        p.tick(1.);
+        assert_eq!(p.time, FALL_TIME);
+        assert!(p.busy());
+        p.tick(0.45);
+        assert!((p.time - 0.2).abs() < 0.001);
+        p.tick(0.21);
+        assert!(!p.busy());
+        p.hold(1.);
+        p.clear();
+        assert!(!p.busy());
+        assert_eq!(p.motion_delay, 0.);
+    }
     #[test]
     fn wizard_unlock_animation_keeps_mana_and_other_side_independent() {
         let mut p = Presentation::default();

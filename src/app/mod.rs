@@ -18,6 +18,7 @@ pub(crate) struct Session {
     defeat: Option<Texture2D>,
     zh: bool,
     tiles: Option<[Texture2D; 7]>,
+    skill_effects: Option<effects::Textures>,
     hero_id: usize,
     player_texture: Option<Texture2D>,
     thumbs: Option<Texture2D>,
@@ -170,6 +171,7 @@ impl Session {
             .map(|value| value != "en")
             .unwrap_or(true);
         let defeat = rendering.then(|| texture(include_bytes!("../../assets/defeat.webp")));
+        let skill_effects = rendering.then(effects::Textures::load);
         let tiles = rendering.then(|| {
             [
                 texture(include_bytes!("../../assets/balanced.webp")),
@@ -299,6 +301,7 @@ impl Session {
             defeat,
             zh,
             tiles,
+            skill_effects,
             hero_id,
             player_texture,
             thumbs,
@@ -560,6 +563,9 @@ impl Session {
             .or_else(|| {
                 settled.source_for(content::Resource::Healing, content::EventSide::Opponent)
             });
+        if let Some(effects) = &mut self.skill_effects {
+            effects.healing_rewards(&settled.events, side);
+        }
         self.present_ability_triggers(side, &settled.triggers);
         if side {
             self.enemy = settled.actor_hp;
@@ -686,6 +692,9 @@ impl Session {
                 .charge(column, state.charge_remaining.max(0.001));
         }
         self.skill_flash.clear();
+        if let Some(effects) = &mut self.skill_effects {
+            effects.clear();
+        }
         self.last_cast = None;
         self.cast_time = 0.;
         self.reactions = [None, None];
