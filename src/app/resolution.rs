@@ -5,6 +5,9 @@ impl Session {
             self.deadline -= dt;
         }
         if self.deadline <= 0. && !self.presentation.busy() {
+            if let Some(effects) = &mut self.skill_effects {
+                effects.board_cleared(&self.pending);
+            }
             if !self.muted {
                 if let Some(audio) = &self.audio {
                     audio.crush();
