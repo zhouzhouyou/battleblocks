@@ -269,3 +269,8 @@ ui.screen.draw_panel.fatigue_limits	Cumulative: damage up to 300%, healing down 
 ui.screen.draw_panel.fatigue_strip	The strip above the board shows the current ramp.	顶部提示条显示当前回合的加压幅度。
 ui.hud.draw_turns.fatigue_warning	Next round: +{0}% damage / −{1}% healing per round	下回合起：每回合伤害+{0}%、治疗−{1}%
 ui.hud.draw_turns.fatigue_active	Fatigue: +{0}% damage · −{1}% healing	终局加压：伤害+{0}% · 治疗−{1}%
+
+ui.selection.new	New	新角色
+ui.selection.legacy	Legacy	老角色
+ui.selection.group_hint	Tab: switch group	Tab：切换分组
+ui.selection.random_in_group	This group, excluding your hero	本组随机，排除自己

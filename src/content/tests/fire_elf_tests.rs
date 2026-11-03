@@ -5,8 +5,8 @@ fn board() -> Board {
 }
 
 #[test]
-fn fire_elf_identity_and_loadout_replace_the_wizard_slot() {
-    assert!(ROSTER.contains(&FIRE_ELF) && !ROSTER.contains(&2));
+fn fire_elf_identity_and_loadout_replace_the_autoplay_wizard_slot() {
+    assert!(DEFAULT_AUTOPLAY_ROSTER.contains(&FIRE_ELF) && !DEFAULT_AUTOPLAY_ROSTER.contains(&2));
     assert_eq!(HEROES[FIRE_ELF].hp, 620);
     assert_eq!(HEROES[FIRE_ELF].mp, 180);
     assert_eq!(skills(FIRE_ELF, false), &[Skill::EmberBlast]);
