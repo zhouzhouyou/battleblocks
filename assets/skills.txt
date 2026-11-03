@@ -1,28 +1,28 @@
 # id|English name|中文名称|English description|中文说明|cooldown|ends turn|awakened English description|觉醒中文说明|mana cost|tile operation
 Blood|Mana transfusion|魔力换血|Spend 80 mana to heal 100.|消耗80魔力回复100生命|0|true|||80|heal
-Balance|Balanced conversion|均衡置换|Turn selected 2×2 into\nbalanced tiles. Set up\nbalanced detonation.|选择2×2区域转化为平衡方块|0|true|||60|transform
-War|Attack conversion|战意转化|Turn selected 2×2 into\nattack tiles. Set up\nsame-type harvest.|选择2×2区域转化为伤害方块|0|true|||80|transform
-Drain|Life siphon|生命汲取|Clear selected 2×2.\nHeal 2× healing value,\ndeal 3×; no mana.|摧毁所选2×2区域\n触发200%治疗效果\n造成其治疗值300%的伤害|0|true|||50|destroy
-Charge|Knight charge|骑士冲锋|Clear 2 adjacent columns.\nDeal 60 + their attack value.\nNo healing or mana gain.|摧毁相邻两列并触发伤害效果\n额外造成60伤害|2|true|||100|destroy
-Guard|Steadfast recovery|坚守回复|Restore 20% of max HP.\nConsume pure healing tiles.|回复最大生命值的20%\n摧毁所有纯治疗方块|0|true|Heal 20% of awakened HP cap.\nDestroy pure healing tiles.|回复觉醒后生命上限的20%\n摧毁所有纯治疗方块|150|destroy
-Landslide|Landslide|三线换位|Next adjacent swap also\nswaps both parallel pairs.\nNo match required.\nDoes not end turn.|下次相邻交换附带两侧交换\n不要求交换后形成三消\n不结束回合|0|false|||200|prepare
-Strike|Sinister strike|消除增幅|Next match grants double\nhealing, damage and mana.\nOne cast per exchange.\nDoes not end turn.|下次三消额外触发100%效果\n每次交换前只能释放一次\n不结束回合|0|false|||35|prepare
-Nature|Nature's force|自然转化|Change a selected 2×2\nto balanced tiles.\nHeal 10, deal 25.|选择2×2区域转化为平衡方块\n造成25伤害、回复10生命|0|true|||60|transform
-Lightning|Lightning|雷能吸收|Clear both diagonals.\nGain their mana values.\nNo healing or damage.|摧毁两条对角线\n并触发魔力效果|0|true|||60|destroy
-Meteor|Meteor|陨星轰击|Destroy the central diamond.\nTrigger 50% attack and mana effects.\nDeal 60 extra damage.|摧毁中央菱形区域\n触发50%伤害和魔力效果\n额外造成60伤害|0|true|||160|destroy
-Greedy|Greedy|区域掠夺|Eliminate a selected 2×2.\nTrigger 50% additional effects.|消除所选2×2区域\n额外触发50%效果|0|true|||25|eliminate
-Imp|Imp's pact|平衡引爆|Destroy all balanced tiles.\nEach triggers 12 damage and 4 mana.|摧毁所有平衡方块\n每个方块触发12伤害、4魔力|0|true|Destroy all balanced tiles.\nEach triggers 14 damage and 4 mana.|摧毁所有平衡方块\n每个方块触发14伤害、4魔力|60|destroy
-Chort|Chort's pact|同类收割|Clear one selected type.\nPer tile: heal 2, deal 4,\nand restore 1 mana.|摧毁所有所选类型方块\n每个方块触发2治疗、4伤害、1魔力|0|true|||70|destroy
-Corrupt|Corrupt|伤害转生|Transform attack tiles into healing tiles.\nEach triggers 3 healing and 6 damage.|纯伤害方块转化为治疗方块\n每个方块触发3治疗、6伤害|0|true|||80|transform
-Rush|Charge|冲锋|Destroy two adjacent columns.\nTrigger each tile's attack and mana effects; no healing.|摧毁相邻两列\n每块触发攻击与魔力效果，不触发治疗|3|true|||100|destroy
-Miracle|Brute-force miracle|大力出奇迹|Force one adjacent non-matching swap.\nDoes not end turn.|强行执行一次不产生消除的相邻移动\n不结束回合|2|false|||40|prepare
-Hammer|Hammer 80|大锤80|Deal 80 damage.\nClear a random 2×2 area.|造成80伤害\n消除随机2×2区域|1|true|||80|eliminate
-Jump|Jump up|跳起来|Reach one more row this turn.\nDoes not end turn.|本回合可操作范围增加一行\n不结束回合|2|false|||0|prepare
-Forge|Forge|锻造|Transform a 2×2 area\ninto attack tiles.|将2×2区域转化为攻击方块|1|true|||80|transform
-Entomb|Entomb|埋葬|Store a tile in your pocket.\nCapacity: two tiles.|将一个方块置入口袋\n最多持有两个方块|1|true|||55|store
-Resurrect|Resurrect|复生|Insert a pocket tile.\nPush tiles down; destroy the bottom tile.\nDeal 6 damage. Does not end turn.|放入口袋中的方块\n下方方块下移，摧毁被挤出的底部方块\n造成6伤害；不结束回合|0|false|||25|insert
-Copy|Borrowed|复制|Copies an opponent active each turn.\nUses its cost and turn-ending rule.|每回合随机复制一个对手主动\n消耗及是否结束回合随复制技能|1|true|||0|copy
-Frenzy|Into frenzy|陷入癫狂|This turn, healing for the opponent becomes damage.\nDoes not end turn.|本回合为对手触发的治疗改为伤害\n不结束回合|1|false|||30|prepare
+Balance|Balanced conversion|均衡置换|Turn selected 2×2 into balanced tiles. Set up balanced detonation.|选择2×2区域转化为平衡方块|0|true|||60|transform
+War|Attack conversion|战意转化|Turn selected 2×2 into attack tiles. Set up same-type harvest.|选择2×2区域转化为伤害方块|0|true|||80|transform
+Drain|Life siphon|生命汲取|Clear selected 2×2. Heal 2× healing value, deal 3×; no mana.|摧毁所选2×2区域；触发200%治疗效果；造成其治疗值300%的伤害|0|true|||50|destroy
+Charge|Knight charge|骑士冲锋|Clear 2 adjacent columns. Deal 60 + their attack value. No healing or mana gain.|摧毁相邻两列并触发伤害效果；额外造成60伤害|2|true|||100|destroy
+Guard|Steadfast recovery|坚守回复|Restore 20% of max HP. Consume pure healing tiles.|回复最大生命值的20%；摧毁所有纯治疗方块|0|true|Heal 20% of awakened HP cap. Destroy pure healing tiles.|回复觉醒后生命上限的20%；摧毁所有纯治疗方块|150|destroy
+Landslide|Landslide|三线换位|Next adjacent swap also swaps both parallel pairs. No match required. Does not end turn.|下次相邻交换附带两侧交换；不要求交换后形成三消；不结束回合|0|false|||200|prepare
+Strike|Sinister strike|消除增幅|Next match grants double healing, damage and mana. One cast per exchange. Does not end turn.|下次三消额外触发100%效果；每次交换前只能释放一次；不结束回合|0|false|||35|prepare
+Nature|Nature's force|自然转化|Change a selected 2×2 to balanced tiles. Heal 10, deal 25.|选择2×2区域转化为平衡方块；造成25伤害、回复10生命|0|true|||60|transform
+Lightning|Lightning|雷能吸收|Clear both diagonals. Gain their mana values. No healing or damage.|摧毁两条对角线；并触发魔力效果|0|true|||60|destroy
+Meteor|Meteor|陨星轰击|Destroy the central diamond. Trigger 50% attack and mana effects. Deal 60 extra damage.|摧毁中央菱形区域；触发50%伤害和魔力效果；额外造成60伤害|0|true|||160|destroy
+Greedy|Greedy|区域掠夺|Eliminate a selected 2×2. Trigger 50% additional effects.|消除所选2×2区域；额外触发50%效果|0|true|||25|eliminate
+Imp|Imp's pact|平衡引爆|Destroy all balanced tiles. Each triggers 12 damage and 4 mana.|摧毁所有平衡方块；每个方块触发12伤害、4魔力|0|true|Destroy all balanced tiles. Each triggers 14 damage and 4 mana.|摧毁所有平衡方块；每个方块触发14伤害、4魔力|60|destroy
+Chort|Chort's pact|同类收割|Clear one selected type. Per tile: heal 2, deal 4, and restore 1 mana.|摧毁所有所选类型方块；每个方块触发2治疗、4伤害、1魔力|0|true|||70|destroy
+Corrupt|Corrupt|伤害转生|Transform attack tiles into healing tiles. Each triggers 3 healing and 6 damage.|纯伤害方块转化为治疗方块；每个方块触发3治疗、6伤害|0|true|||80|transform
+Rush|Charge|冲锋|Destroy two adjacent columns. Trigger each tile's attack and mana effects; no healing.|摧毁相邻两列；每块触发攻击与魔力效果，不触发治疗|3|true|||100|destroy
+Miracle|Brute-force miracle|大力出奇迹|Force one adjacent non-matching swap. Does not end turn.|强行执行一次不产生消除的相邻移动；不结束回合|2|false|||40|prepare
+Hammer|Hammer 80|大锤80|Deal 80 damage. Clear a random 2×2 area.|造成80伤害；消除随机2×2区域|1|true|||80|eliminate
+Jump|Jump up|跳起来|Reach one more row this turn. Does not end turn.|本回合可操作范围增加一行；不结束回合|2|false|||0|prepare
+Forge|Forge|锻造|Transform a 2×2 area into attack tiles.|将2×2区域转化为攻击方块|1|true|||80|transform
+Entomb|Entomb|埋葬|Store a tile in your pocket. Capacity: two tiles.|将一个方块置入口袋；最多持有两个方块|1|true|||55|store
+Resurrect|Resurrect|复生|Insert a pocket tile. Push tiles down; destroy the bottom tile. Deal 6 damage. Does not end turn.|放入口袋中的方块；下方方块下移，摧毁被挤出的底部方块；造成6伤害；不结束回合|0|false|||25|insert
+Copy|Borrowed|复制|Copies an opponent active each turn. Uses its cost and turn-ending rule.|每回合随机复制一个对手主动；消耗及是否结束回合随复制技能|1|true|||0|copy
+Frenzy|Into frenzy|陷入癫狂|This turn, healing for the opponent becomes damage. Does not end turn.|本回合为对手触发的治疗改为伤害；不结束回合|1|false|||30|prepare
 Healing|Healing prayer|治疗术|Restore 7% of each side's own max HP.|双方各回复自身最大生命值的7%|3|true|||60|heal
-Rational|Return to reason|回归理性|Disable Madness for this turn.\nDoes not end turn.|本回合禁用癫狂\n不结束回合|1|false|||30|prepare
-EmberBlast|Ember blast|炎爆术|Destroy the whole board.\nDeal 110% of MP spent + 25.\nThen sleep: skip your next turn.|摧毁全盘\n造成消耗魔力110%+25的伤害\n随后沉睡，跳过下一个自己的回合|0|true|Can cast at 80% MP; actually spend your current MP.\nDestroy the board; deal 110% of MP spent + 25.\nFull-MP cast deals +15% damage.\nThen sleep: skip your next turn.|魔力达到上限80%即可施放，消耗当前全部魔力\n摧毁全盘，造成消耗魔力110%+25的伤害\n满魔施放伤害+15%\n随后沉睡，跳过下回合|0|destroy
+Rational|Return to reason|回归理性|Disable Madness for this turn. Does not end turn.|本回合禁用癫狂；不结束回合|1|false|||30|prepare
+EmberBlast|Ember blast|炎爆术|Destroy the whole board. Deal 110% of MP spent + 25. Then sleep: skip your next turn.|摧毁全盘；造成消耗魔力110%+25的伤害；随后沉睡，跳过下一个自己的回合|0|true|Can cast at 80% MP; actually spend your current MP. Destroy the board; deal 110% of MP spent + 25. Full-MP cast deals +15% damage. Then sleep: skip your next turn.|魔力达到上限80%即可施放，消耗当前全部魔力；摧毁全盘，造成消耗魔力110%+25的伤害；满魔施放伤害+15%；随后沉睡，跳过下回合|0|destroy

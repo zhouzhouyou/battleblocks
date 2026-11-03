@@ -313,7 +313,7 @@ impl Session {
             }
         }
         if let Some((passive, id, health, mana, awake, enemy_side)) = passive_popup {
-            let lines = wrap_preview_text(passive.description(self.zh), 18.);
+            let lines = wrap_label_text(passive.description(self.zh), 18., 451.);
             let status = if content::ability_enabled(
                 &content::EventContext::new(id, health, mana, self.rules(enemy_side)),
                 content::AbilityId::Passive(passive),

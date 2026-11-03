@@ -6,17 +6,17 @@ DwarfStrength.description|Each attack-bearing tile deals 2 extra damage.|每个�
 Might.name|Might|大力
 Might.description|Each attack-bearing tile deals 2 extra damage.|每个攻击方块额外造成2伤害
 Short.name|Short|矮
-Short.description|Only reach the bottom four rows.\nOn enemy swaps, damage from tiles cleared in the top four rows is blocked.|只能操作下方四行\n敌方交换消除时，上方四行方块产生的伤害无效
+Short.description|Only reach the bottom four rows. On enemy swaps, damage from tiles cleared in the top four rows is blocked.|只能操作下方四行；敌方交换消除时，上方四行方块产生的伤害无效
 Grudge.name|Book of grudges|仇恨之书
-Grudge.description|At 80%, 60%, 40% current HP cap,\nreach one extra row per threshold.\nHealing reduces the book height.|生命不高于当前上限80%／60%／40%时\n每级额外触及一行，最多三级\n恢复生命会降低书的厚度与范围
+Grudge.description|At 80%, 60%, 40% current HP cap, reach one extra row per threshold. Healing reduces the book height.|生命不高于当前上限80%／60%／40%时，每级额外触及一行，最多三级；恢复生命会降低书的厚度与范围
 Clumsy.name|Clumsy|笨拙
-Clumsy.description|Horizontal swaps exchange whole adjacent columns.\nDirect clears from a column swap gain +8% rewards.|左右移动时交换相邻两整列\n整列交换产生的直接消除收益 +8%
+Clumsy.description|Horizontal swaps exchange whole adjacent columns. Direct clears from a column swap gain +8% rewards.|左右移动时交换相邻两整列；整列交换产生的直接消除收益 +8%
 ClumsyAwake.name|Clumsy+|笨拙·觉醒
-ClumsyAwake.description|Horizontal swaps exchange whole adjacent columns.\nDirect clears from a column swap gain +18% rewards.|左右移动时交换相邻两整列\n整列交换产生的直接消除收益 +18%
+ClumsyAwake.description|Horizontal swaps exchange whole adjacent columns. Direct clears from a column swap gain +18% rewards.|左右移动时交换相邻两整列；整列交换产生的直接消除收益 +18%
 MindVision.name|Mind vision|心灵视界
-MindVision.description|After each enemy turn, copy one directly cleared tile.\nSkip if pockets are full; capacity remains two.|对手回合结束时随机复制一个直接消除过的方块\n口袋已满则不复制，容量仍为两个
+MindVision.description|After each enemy turn, copy one directly cleared tile. Skip if pockets are full; capacity remains two.|对手回合结束时随机复制一个直接消除过的方块；口袋已满则不复制，容量仍为两个
 BorrowedSlot.name|Borrowed power|借来的力量
-BorrowedSlot.description|A third active slot copies an enemy active each turn.\nFixed cooldown 1; inherits its cost and end-turn rule.|每回合随机复制一个对手主动到额外栏位\n固定冷却1，消耗与结束回合规则随复制技能
+BorrowedSlot.description|A third active slot copies an enemy active each turn. Fixed cooldown 1; inherits its cost and end-turn rule.|每回合随机复制一个对手主动到额外栏位；固定冷却1，消耗与结束回合规则随复制技能
 Knight.awakening|Horizontal direct clears +10%; unlock Hammer 80.|左右移动的直接消除效果+10%；解锁大锤80
 Dwarf.awakening|The book increases reach at 80%, 60%, 40% HP.|仇恨之书在80%／60%／40%血量阶段增加范围
 Priest.awakening|Unlock a third slot that copies an enemy active each turn.|新增每回合随机复制对手主动的技能栏

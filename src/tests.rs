@@ -421,7 +421,7 @@ fn skill_cards_adapt_to_the_wrapped_description_height() {
     assert_eq!(base.len(), 1);
     assert_eq!(awake.len(), 1);
     assert_eq!(base[0].h, 88.);
-    assert!(awake[0].h > base[0].h);
+    assert_eq!(awake[0].h, 88., "three wrapped lines fit the existing card");
 }
 
 #[test]
@@ -479,4 +479,24 @@ fn awakening_page_previews_the_awakened_active() {
     // warm lantern instead of leaving her in the shadow form.
     assert!(!base.base_dark && base.dark);
     assert!(awakened.base_dark && !awakened.dark);
+}
+
+#[test]
+fn ability_descriptions_leave_line_breaks_to_the_layout() {
+    for zh in [false, true] {
+        for awake in [false, true] {
+            for hero in 0..HEROES.len() {
+                for &skill in content::skills(hero, awake) {
+                    let text = content::skill_description(skill, awake, zh);
+                    assert!(!text.contains('\n'), "{skill:?}: {text}");
+                    let narrow = wrap_label_text(text, 16., 200.);
+                    let wide = wrap_label_text(text, 16., 424.);
+                    assert!(wide.len() <= narrow.len());
+                }
+                for &passive in content::passives(hero, awake) {
+                    assert!(!passive.description(zh).contains('\n'), "{passive:?}");
+                }
+            }
+        }
+    }
 }
