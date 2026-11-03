@@ -1,0 +1,19 @@
+{
+  "width": 160,
+  "height": 192,
+  "frames": 40,
+  "columns": 8,
+  "layer_rows": 5,
+  "layers": [
+    "back",
+    "front"
+  ],
+  "fps": 20,
+  "duration": 2,
+  "origin": [
+    80,
+    176
+  ],
+  "reference": "pixelfx holy/heal; MIT; see licenses/pixelfx",
+  "character_assets_modified": false
+}
