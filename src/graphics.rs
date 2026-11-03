@@ -3,20 +3,38 @@ use std::cell::RefCell;
 use std::collections::HashMap;
 use std::sync::OnceLock;
 
+/// Wrap using the same font metrics as labels and the available panel width.
+/// The estimate keeps layout queries available without a GUI (headless/tests).
+pub(crate) fn wrap_label_text(text: &str, size: f32, width: f32) -> Vec<String> {
+    if UI_FONT.with(|slot| slot.borrow().is_some()) {
+        wrap_measured_text(text, width, |line| label_width(line, size))
+    } else {
+        wrap_preview_text(text, width / size)
+    }
+}
+
 pub(crate) fn wrap_preview_text(text: &str, limit: f32) -> Vec<String> {
-    fn width_of(text: &str) -> f32 {
+    wrap_measured_text(text, limit, |text| {
         text.chars()
             .map(|c| if c.is_ascii() { 0.55 } else { 1. })
             .sum()
-    }
+    })
+}
+
+fn wrap_measured_text(text: &str, limit: f32, measure: impl Fn(&str) -> f32) -> Vec<String> {
     let mut lines = Vec::new();
     for source in text.lines() {
         let mut line = String::new();
-        let mut width = 0.;
         for c in source.chars() {
-            let w = if c.is_ascii() { 0.55 } else { 1. };
-            // Prefer the last word boundary; CJK text without spaces still wraps by character.
-            while width + w > limit && !line.is_empty() {
+            let mut candidate = line.clone();
+            candidate.push(c);
+            if c.is_whitespace() && measure(&candidate) > limit && !line.is_empty() {
+                lines.push(line.trim_end().to_string());
+                line.clear();
+                continue;
+            }
+            // Prefer word boundaries; long words and CJK still wrap by character.
+            while measure(&candidate) > limit && !line.is_empty() {
                 if let Some(space) = line.rfind(' ') {
                     let rest = line.split_off(space + 1);
                     let head = line.trim_end().to_string();
@@ -24,17 +42,19 @@ pub(crate) fn wrap_preview_text(text: &str, limit: f32) -> Vec<String> {
                         lines.push(head);
                     }
                     line = rest.trim_start().to_string();
-                    width = width_of(&line);
                 } else {
                     lines.push(std::mem::take(&mut line));
-                    width = 0.;
                 }
+                candidate = line.clone();
+                candidate.push(c);
             }
-            line.push(c);
-            width += w;
+            // A space at the wrap boundary belongs between lines, not at the start.
+            if !line.is_empty() || !c.is_whitespace() {
+                line.push(c);
+            }
         }
-        if !line.is_empty() {
-            lines.push(line);
+        if !line.trim_end().is_empty() {
+            lines.push(line.trim_end().to_string());
         }
     }
     lines
@@ -584,5 +604,25 @@ pub(crate) fn init_font() {
                 pending: 0,
             })
         });
+    }
+}
+
+#[cfg(test)]
+mod wrapping_tests {
+    use super::*;
+
+    #[test]
+    fn measured_wrapping_uses_width_instead_of_character_count() {
+        let measure = |s: &str| s.chars().map(|c| if c == 'W' { 10. } else { 2. }).sum();
+        assert_eq!(wrap_measured_text("WWii", 24., measure), ["WWii"]);
+        assert_eq!(wrap_measured_text("WWii", 12., measure), ["W", "Wi", "i"]);
+        assert_eq!(
+            wrap_measured_text("one two three", 14., measure),
+            ["one two", "three"]
+        );
+        assert_eq!(
+            wrap_measured_text("one\ntwo", 100., measure),
+            ["one", "two"]
+        );
     }
 }
