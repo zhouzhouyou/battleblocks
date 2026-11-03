@@ -267,7 +267,7 @@ impl Session {
                     skill, &self.b, target, id, actor_hp, actor_mp, cast_rules,
                 );
                 if let Some(effects) = &mut self.skill_effects {
-                    effects.capture(&self.skill_flash, &self.b);
+                    effects.capture(effective, self.enemy_turn, &self.skill_flash, &self.b);
                 }
                 let effect_rules = self.rules(self.enemy_turn);
                 let e = content::effect_at_in(

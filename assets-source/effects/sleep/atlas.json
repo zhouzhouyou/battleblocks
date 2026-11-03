@@ -1,0 +1,13 @@
+{
+  "width": 96,
+  "height": 96,
+  "frames": 36,
+  "columns": 6,
+  "fps": 15,
+  "loop_seconds": 2.4,
+  "head_anchor": [
+    24,
+    70
+  ],
+  "font": "original bitmap glyphs, no external font"
+}

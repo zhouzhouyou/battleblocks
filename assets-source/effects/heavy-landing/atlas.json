@@ -1,0 +1,20 @@
+{
+  "width": 176,
+  "height": 80,
+  "frames": 22,
+  "columns": 7,
+  "layer_rows": 4,
+  "layers": [
+    "back",
+    "front"
+  ],
+  "fps": 30,
+  "pivot": [
+    88,
+    60
+  ],
+  "landing_seconds": 0.65,
+  "dust_duration": 0.7,
+  "upstream": "patch-gg/pixelfx@a84159688af3ca37a4be05a0d422b94451b2e24e",
+  "effect": "impacts/heavy-landing"
+}

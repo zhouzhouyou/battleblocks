@@ -80,6 +80,9 @@ impl Session {
         }
     }
     pub(in crate::app) fn draw_effects(&mut self) {
+        if let Some(effects) = &self.skill_effects {
+            effects.draw_board_blast(self.hp == 0 || self.enemy == 0);
+        }
         self.presentation.draw_awakening(self.zh);
         if self.presentation.charging() {
             let id = if self.last_cast_enemy {

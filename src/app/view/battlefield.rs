@@ -183,7 +183,11 @@ impl Session {
                     let hold_until_impact = effects::holds_tiles(
                         self.last_cast,
                         (presentation::CAST_TIME - self.cast_time) as f32,
-                    ) && self.skill_flash.contains(&(x, y));
+                    ) && self.skill_flash.contains(&(x, y))
+                        || self
+                            .skill_effects
+                            .as_ref()
+                            .is_some_and(|effects| effects.holds_board());
                     let clear_progress = if hold_until_impact {
                         0.
                     } else if let Some(progress) = charge_progress {
@@ -213,7 +217,7 @@ impl Session {
                     if preview_cells.contains(&(x, y)) {
                         outline(pos.x + 3., pos.y + 3., 58., 58., 3., SKYBLUE);
                     }
-                    if clearing {
+                    if clearing && !hold_until_impact {
                         let pulse = (get_time() as f32 * 14.).sin().abs();
                         draw_rectangle(
                             pos.x,
