@@ -2,12 +2,29 @@
 use crate::content::Skill;
 use crate::outline;
 use macroquad::prelude::*;
+mod ember_blast;
 mod hammer_smash;
+mod heavy_landing;
+mod landing_motion;
+pub use landing_motion::lift as jump_lift;
+
+pub fn jump_pose(frames: Option<&[usize]>, elapsed: f64) -> Option<[usize; 4]> {
+    if elapsed >= landing_motion::LANDING as f64 {
+        return None;
+    }
+    // Hold the existing wind-up frame; the following cast frames contain a weapon swing.
+    Some([*frames?.first()?; 4])
+}
 
 /// GUI-only resources. Headless sessions never decode or upload these textures.
 pub struct Textures {
     hammer_smash: Texture2D,
+    heavy_landing: Texture2D,
+    ember_blast: Texture2D,
+    sleep_zzz: Texture2D,
+    blast: Option<ember_blast::Blast>,
     cast_tiles: Vec<(usize, usize, u8)>,
+    jumps: [Option<f64>; 2],
 }
 impl Textures {
     pub fn load() -> Self {
@@ -15,12 +32,64 @@ impl Textures {
             hammer_smash: crate::graphics::texture(include_bytes!(
                 "../assets/effects/hammer-smash.webp"
             )),
+            heavy_landing: crate::graphics::texture(include_bytes!(
+                "../assets/effects/heavy-landing.webp"
+            )),
             cast_tiles: Vec::new(),
+            ember_blast: crate::graphics::texture(include_bytes!(
+                "../assets/effects/ember-blast.webp"
+            )),
+            sleep_zzz: crate::graphics::texture(include_bytes!("../assets/effects/sleep-zzz.webp")),
+            blast: None,
+            jumps: [None; 2],
         }
     }
     /// Capture presentation-only artwork before the model removes or replaces the tiles.
-    pub fn capture(&mut self, cells: &[(usize, usize)], board: &crate::Board) {
+    pub fn capture(
+        &mut self,
+        skill: Skill,
+        enemy: bool,
+        cells: &[(usize, usize)],
+        board: &crate::Board,
+    ) {
         self.cast_tiles = cells.iter().map(|&(x, y)| (x, y, board[y][x])).collect();
+        if skill == Skill::Jump {
+            self.jumps[enemy as usize] = Some(get_time());
+        }
+        if skill == Skill::EmberBlast {
+            self.blast = Some(ember_blast::Blast::new(get_time()));
+        }
+    }
+    pub fn clear(&mut self) {
+        self.cast_tiles.clear();
+        self.jumps = [None; 2];
+        self.blast = None;
+    }
+    pub fn board_cleared(&mut self, cells: &[(usize, usize)]) {
+        if cells.len() == crate::N * crate::N {
+            if let Some(blast) = &mut self.blast {
+                blast.cleared(get_time());
+            }
+        }
+    }
+    pub fn holds_board(&self) -> bool {
+        self.blast.as_ref().is_some_and(|blast| blast.waiting())
+    }
+    pub fn draw_board_blast(&self, over: bool) {
+        if let Some(blast) = &self.blast {
+            blast.draw(&self.ember_blast, over);
+        }
+    }
+    pub fn draw_sleep(&self, area: Rect, foot: Vec2, lying: bool, enemy: bool) {
+        ember_blast::draw_sleep(&self.sleep_zzz, area, foot, lying, enemy);
+    }
+    /// A subsequent non-turn-ending cast must not cancel a jump already in flight.
+    pub fn jump_elapsed(&self, enemy: bool) -> Option<f32> {
+        let elapsed = (get_time() - self.jumps[enemy as usize]?) as f32;
+        (elapsed < landing_motion::LANDING + landing_motion::DUST_DURATION).then_some(elapsed)
+    }
+    pub fn draw_landing(&self, foot: Vec2, elapsed: f32, front: bool, enemy: bool) {
+        heavy_landing::draw(&self.heavy_landing, foot, elapsed, front, enemy);
     }
     pub fn draw(
         &self,
@@ -34,7 +103,7 @@ impl Textures {
             let elapsed = progress * crate::presentation::CAST_TIME as f32;
             hammer_smash::draw_fragments(tiles, &self.cast_tiles, cells, elapsed);
             hammer_smash::draw(&self.hammer_smash, cells, elapsed);
-        } else {
+        } else if skill != Skill::Jump && skill != Skill::EmberBlast {
             draw(skill, cells, progress, enemy);
         }
     }
@@ -42,7 +111,12 @@ impl Textures {
 
 /// Hammer's targets retain their mass until impact; ordinary clears keep their fade.
 pub fn holds_tiles(skill: Option<Skill>, elapsed: f32) -> bool {
-    skill == Some(Skill::Hammer) && elapsed < crate::presentation::CLEAR_TIME as f32
+    matches!(skill, Some(Skill::Hammer | Skill::EmberBlast))
+        && elapsed < crate::presentation::CLEAR_TIME as f32
+}
+
+pub fn sleeping(active: bool, pending: bool, casting: bool) -> bool {
+    ember_blast::sleeping(active, pending, casting)
 }
 fn tint(c: Color, a: f32) -> Color {
     Color::new(c.r, c.g, c.b, a.clamp(0., 1.))
@@ -94,7 +168,7 @@ fn cross(center: Vec2, size: f32, color: Color) {
 fn draw(skill: Skill, cells: &[(usize, usize)], progress: f32, enemy: bool) {
     let skill = match skill {
         Skill::Rush => Skill::Charge,
-        Skill::Miracle | Skill::Jump | Skill::Copy => Skill::Strike,
+        Skill::Miracle | Skill::Copy => Skill::Strike,
         Skill::Forge => Skill::War,
         Skill::Entomb => Skill::Greedy,
         Skill::Resurrect => Skill::Nature,

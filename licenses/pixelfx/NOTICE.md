@@ -1,4 +1,4 @@
-# PixelFX hammer-smash
+# PixelFX effects
 
 BattleBlocks' hammer-smash visual is a Rust adaptation of `melee/hammer-smash`
 and its swing, stone, dust, crack and force-shell techniques from
@@ -14,5 +14,20 @@ Adaptations include Rust rendering, a fixed visual seed, a 0.4-second board impa
 shorter timing, the BattleBlocks palette, bounded particle paths, fading pixel
 clusters, and an independently placed 2x2 board impact. The generated WebP atlas
 is included in both native and web builds. Design sources remain outside packages.
+
+BattleBlocks' character landing dust is also a Rust adaptation of
+`impacts/heavy-landing` at the same revision. Its staggered dust rings, low puffs,
+pebbles and contact streak are adapted from Patch / Hugo Duprez's MIT work;
+PixelFX credits Sprite Fusion's explosion for rocks, grit and dust. BattleBlocks
+adds separate back/front atlas layers, its own palette and timing, and a shared
+Rust hop trajectory for the existing character sprites. No skeletal acting code
+is used.
+
+The full-board Ember Blast's expanding billows, ring and cooling ember motifs
+reference `fire/fire-ring` and `explosions/big-explosion` at the same revision,
+which credit Hugo Duprez's MIT fire/explosion effects. Its board-sized composition,
+Rust rasterizer and timing integration are adapted for BattleBlocks. The sleep
+loop references `status/sleep`'s staggered rising Z motif; the small bitmap glyphs
+are drawn by our renderer, without loading a font or using the stock body/eyes.
 
 PixelFX's stock character, skeletal acting system, targets and fonts are not used.
