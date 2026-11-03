@@ -2,6 +2,10 @@
 
 全局方向见 [ART-DIRECTION.md](ART-DIRECTION.md)。14 位角色的职业／种族意象已选定，性别、年龄、体型、打扮、个性与觉醒设计允许继续探索。历史名称不锁定最终性别；例如矮人战士可以是女性。
 
+## 2026-11-04 动画实现稿
+
+Issue #11 第一阶段覆盖新骑士、矮人、狗头人牧师、修女、精灵火法师，每人四组动作各 12 帧。当前目录：骑士／矮人 production/v4，牧师 production/v5，修女／火法师 production/v2。具体源图、提示词、动作检查与未决美术规则见各角色档案。其余七位旧角色的素材不在本阶段变更；Issue #11 保持打开。
+
 ## 评审流程
 
 1. 每次聚焦一位角色，先给至少 4 份实质不同的设计稿，全部同时对比。
@@ -16,11 +20,11 @@
 
 | 顺序 | 角色 | 状态 |
 | --- | --- | --- |
-| 1 | 矮人战士（1c） | 已接入并完成 2026-11-01 平衡；v5 造型、production/v3 高密度 16 帧、v6 独立书层；统一显示尺寸；选角尾页人物档案与矮人笑话已接入；2026-11-04 新增跳跃与脚底分层落地扬尘 v1，待用户视觉评审；[权威角色档案](characters/DWARF.md) |
-| 2 | 骑士（1a） | 已接入并完成 2026-11-01 平衡；K-A4 v8 造型、production/v3 高密度 16 帧，闭面罩比例与单辫已修正；冲锋改为摧毁并触发攻击／魔力，石中剑背景档案页已接入；2026-11-03 大锤80 新增棋盘 2×2 中心重击特效 v1，待用户视觉评审；[角色档案](characters/KNIGHT.md) |
-| 3 | 牧师（2a） | 狗头人蓝金人设已接入，[人设图 v1](../../asset-sources/art-direction/characters/priest/priest-kobold-model-sheet-e-v1.webp)可继续评审；运行时使用 production/v4 16 帧，双口袋、金杖与无图案方块已落实，脏牧档案文字同步更新；既定埋葬／复生、心灵视界及觉醒复制规则保留；[角色档案](characters/PRIEST.md) |
-| 4 | 修女（2b） | 已选 E 方案 N-A；[人设图](../../asset-sources/art-direction/characters/nun/nun-na-model-sheet-e-v1.webp)及[立绘／动画资源 v1](../../asset-sources/art-direction/characters/nun/production/v1/README.md)待视觉评审；已接入并完成 2026-11-01 平衡，台词与人物档案页已接入；[角色档案](characters/NUN.md) |
-| 5 | 精灵火法师（替代巫师 3a） | 人设图与动画 v1 已接入 GUI（待最终生产验收）；已接受 2026-11-01 平衡参数（新五人标准 52.6%、进阶 49.5%；旧十人 47.8%/47.7%）；2026-11-04 新增整盘炎爆与睡眠 ZZZ v1，待视觉评审；旧巫师/旧骑士已从选人列表移除、资源保留；[角色档案](characters/FOREST-FIRE-ELF.md) |
+| 1 | 矮人战士（1c） | 已接入并完成 2026-11-01 平衡；v5 造型、production/v4 高密度 48 帧、v6 独立书层；统一显示尺寸；选角尾页人物档案与矮人笑话已接入；2026-11-04 新增跳跃与脚底分层落地扬尘 v1，待用户视觉评审；[权威角色档案](characters/DWARF.md) |
+| 2 | 骑士（1a） | 已接入并完成 2026-11-01 平衡；K-A4 v8 造型、production/v4 高密度 48 帧，闭面罩比例与单辫已修正；冲锋改为摧毁并触发攻击／魔力，石中剑背景档案页已接入；2026-11-03 大锤80 新增棋盘 2×2 中心重击特效 v1，待用户视觉评审；[角色档案](characters/KNIGHT.md) |
+| 3 | 牧师（2a） | 狗头人蓝金人设已接入，[人设图 v1](../../asset-sources/art-direction/characters/priest/priest-kobold-model-sheet-e-v1.webp)可继续评审；运行时使用 production/v5 48 帧，双口袋、金杖与无图案方块已落实，脏牧档案文字同步更新；既定埋葬／复生、心灵视界及觉醒复制规则保留；[角色档案](characters/PRIEST.md) |
+| 4 | 修女（2b） | 已选 E 方案 N-A；[人设图](../../asset-sources/art-direction/characters/nun/nun-na-model-sheet-e-v1.webp)及 v1 立绘保留，[十二帧动画 v2](../../asset-sources/art-direction/characters/nun/production/v2/README.md)待视觉评审；已接入并完成 2026-11-01 平衡，台词与人物档案页已接入；[角色档案](characters/NUN.md) |
+| 5 | 精灵火法师（替代巫师 3a） | 人设图与十二帧动画 v2 已接入 GUI（待最终生产验收）；已接受 2026-11-01 平衡参数（新五人标准 52.6%、进阶 49.5%；旧十人 47.8%/47.7%）；2026-11-04 新增整盘炎爆与睡眠 ZZZ v1，待视觉评审；旧巫师/旧骑士已从选人列表移除、资源保留；[角色档案](characters/FOREST-FIRE-ELF.md) |
 | 6 | 女巫（3b） | 待评审 |
 | 7 | 吸血鬼伯爵（4a） | 待评审 |
 | 8 | 血族女爵（4b） | 待评审 |

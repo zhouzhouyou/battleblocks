@@ -72,7 +72,7 @@ pub(crate) struct Session {
     game_over_logged: bool,
     awakened: [bool; 2],
     reward_skill: Option<content::Skill>,
-    awake_textures: Vec<Texture2D>,
+    awake_textures: [Option<Texture2D>; 2],
     charge_damage: Option<content::PendingImpact>,
     presentation: presentation::Presentation,
     turn_log: turns::Log,
@@ -281,14 +281,14 @@ impl Session {
         let game_over_logged = false;
         let awakened = [false; 2];
         let reward_skill = None;
-        let awake_textures: Vec<_> = if rendering {
-            sprites::AWAKENED
-                .iter()
-                .map(|s| diagnostic_texture(s.bytes, "no_actors"))
-                .collect()
-        } else {
-            Vec::new()
-        };
+        let awake_textures = [
+            player_texture
+                .as_ref()
+                .map(|t| Self::load_awake_texture(hero_id, t)),
+            enemy_texture
+                .as_ref()
+                .map(|t| Self::load_awake_texture(enemy_id, t)),
+        ];
         let charge_damage: Option<content::PendingImpact> = None;
         let presentation = presentation::Presentation::default();
         let turn_log = turns::Log::new();
@@ -380,6 +380,16 @@ impl Session {
     fn enemy_texture(&self) -> &Texture2D {
         Self::required_texture(&self.enemy_texture)
     }
+    fn awake_texture(&self, enemy: bool) -> &Texture2D {
+        Self::required_texture(&self.awake_textures[enemy as usize])
+    }
+    fn load_awake_texture(id: usize, normal: &Texture2D) -> Texture2D {
+        if sprites::AWAKENED[id].bytes == sprites::SPRITES[id].bytes {
+            normal.clone()
+        } else {
+            diagnostic_texture(sprites::AWAKENED[id].bytes, "no_actors")
+        }
+    }
     fn thumbs(&self) -> &Texture2D {
         Self::required_texture(&self.thumbs)
     }
@@ -401,10 +411,21 @@ impl Session {
                 sprites::SPRITES[self.hero_id].bytes,
                 "no_actors",
             ));
-            self.enemy_texture = Some(diagnostic_texture(
-                sprites::SPRITES[self.enemy_id].bytes,
-                "no_actors",
-            ));
+            self.enemy_texture = if self.hero_id == self.enemy_id {
+                self.player_texture.clone()
+            } else {
+                Some(diagnostic_texture(
+                    sprites::SPRITES[self.enemy_id].bytes,
+                    "no_actors",
+                ))
+            };
+            let player = Self::load_awake_texture(self.hero_id, self.player_texture());
+            let enemy = if self.hero_id == self.enemy_id {
+                player.clone()
+            } else {
+                Self::load_awake_texture(self.enemy_id, self.enemy_texture())
+            };
+            self.awake_textures = [Some(player), Some(enemy)];
         }
     }
     fn refresh_preview(&mut self, skill: usize) {

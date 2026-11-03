@@ -4,774 +4,273 @@
       384,
       384
     ],
-    "frames": 16,
-    "visible_height": 320,
-    "display_scale": "uniform across all three roles",
+    "atlas_size": [
+      2304,
+      3072
+    ],
+    "frames": 48,
     "foot_anchor": [
       192,
       336
     ],
-    "palette": [
-      "FCF4D6",
-      "FAD39B",
-      "F9B267",
-      "F8913B",
-      "DFB8A4",
-      "D09F86",
-      "CD8F69",
-      "B08B81",
-      "E37934",
-      "E4751B",
-      "D7611B",
-      "AC7D73",
-      "AD765D",
-      "B06230",
-      "976E63",
-      "935E4C",
-      "865F55",
-      "735D58",
-      "C4420E",
-      "9F3C09",
-      "814C37",
-      "853006",
-      "6A4D47",
-      "6E473A",
-      "684034",
-      "653724",
-      "682604",
-      "533F38",
-      "53352C",
-      "513025",
-      "41332E",
-      "3D2D28",
-      "50240E",
-      "432519",
-      "3B261E",
-      "34241E",
-      "2B201B",
-      "451A0D",
-      "161B30",
-      "161820",
-      "171916",
-      "091A48",
-      "DC0F18",
-      "CD121B",
-      "C81119",
-      "B90F16",
-      "AE080E",
-      "9C090E",
-      "89080B",
-      "8B0206",
-      "700505",
-      "560803",
-      "3A1203",
-      "291208",
-      "330501",
-      "1C110C",
-      "1A0A04",
-      "1A0301",
-      "0E0807",
-      "0C0502",
-      "0C0201",
-      "050201",
-      "010205",
-      "010000"
-    ],
-    "checks": [
-      {
-        "row": 0,
-        "column": 0,
-        "colors": 64,
-        "bounds": [
-          54,
-          16,
-          329,
-          336
-        ]
+    "webp_bytes": 962044,
+    "detail_report": "asset-sources/art-direction/characters/knight/production/v4/report.json",
+    "clips": {
+      "normal-idle": {
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "duration_ms": 720,
+        "playback": "loop"
       },
-      {
-        "row": 0,
-        "column": 1,
-        "colors": 64,
-        "bounds": [
-          55,
+      "awake-idle": {
+        "indices": [
+          12,
+          13,
+          14,
+          15,
           16,
-          329,
-          336
-        ]
-      },
-      {
-        "row": 0,
-        "column": 2,
-        "colors": 64,
-        "bounds": [
-          51,
-          16,
-          333,
-          336
-        ]
-      },
-      {
-        "row": 0,
-        "column": 3,
-        "colors": 64,
-        "bounds": [
-          53,
           17,
-          331,
-          336
-        ]
-      },
-      {
-        "row": 1,
-        "column": 0,
-        "colors": 62,
-        "bounds": [
-          28,
-          16,
-          356,
-          336
-        ]
-      },
-      {
-        "row": 1,
-        "column": 1,
-        "colors": 62,
-        "bounds": [
-          27,
-          17,
-          356,
-          336
-        ]
-      },
-      {
-        "row": 1,
-        "column": 2,
-        "colors": 62,
-        "bounds": [
-          27,
-          16,
-          357,
-          336
-        ]
-      },
-      {
-        "row": 1,
-        "column": 3,
-        "colors": 62,
-        "bounds": [
-          23,
-          17,
-          361,
-          336
-        ]
-      },
-      {
-        "row": 2,
-        "column": 0,
-        "colors": 64,
-        "bounds": [
-          31,
-          50,
-          353,
-          336
-        ]
-      },
-      {
-        "row": 2,
-        "column": 1,
-        "colors": 64,
-        "bounds": [
-          33,
+          18,
           19,
-          351,
-          336
-        ]
+          20,
+          21,
+          22,
+          23
+        ],
+        "duration_ms": 720,
+        "playback": "loop"
       },
-      {
-        "row": 2,
-        "column": 2,
-        "colors": 64,
-        "bounds": [
+      "normal-cast": {
+        "indices": [
+          24,
           25,
-          16,
-          359,
-          336
-        ]
-      },
-      {
-        "row": 2,
-        "column": 3,
-        "colors": 64,
-        "bounds": [
+          26,
           27,
-          50,
-          357,
-          336
-        ]
-      },
-      {
-        "row": 3,
-        "column": 0,
-        "colors": 63,
-        "bounds": [
+          28,
           29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35
+        ],
+        "duration_ms": 1400,
+        "playback": "once"
+      },
+      "awake-cast": {
+        "indices": [
+          36,
           37,
-          354,
-          336
-        ]
-      },
-      {
-        "row": 3,
-        "column": 1,
-        "colors": 63,
-        "bounds": [
-          27,
-          24,
-          356,
-          336
-        ]
-      },
-      {
-        "row": 3,
-        "column": 2,
-        "colors": 63,
-        "bounds": [
-          24,
-          16,
-          359,
-          336
-        ]
-      },
-      {
-        "row": 3,
-        "column": 3,
-        "colors": 62,
-        "bounds": [
           38,
-          29,
-          346,
-          336
-        ]
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47
+        ],
+        "duration_ms": 1400,
+        "playback": "once"
       }
-    ],
-    "webp_bytes": 346042
+    }
   },
   "dwarf": {
     "frame_size": [
       384,
       384
     ],
-    "frames": 16,
-    "visible_height": 320,
-    "display_scale": "uniform across all three roles",
+    "atlas_size": [
+      2304,
+      3072
+    ],
+    "frames": 48,
     "foot_anchor": [
       192,
       336
     ],
-    "palette": [
-      "FBEDB9",
-      "F4C286",
-      "FDA977",
-      "ECA872",
-      "FB986A",
-      "F98A60",
-      "D2905F",
-      "F27852",
-      "D67739",
-      "E96333",
-      "B86F3D",
-      "B35F2B",
-      "876867",
-      "FB5215",
-      "FB4E0D",
-      "F6420E",
-      "D84B2B",
-      "A74F27",
-      "805043",
-      "8A4925",
-      "7D4027",
-      "685154",
-      "684034",
-      "564245",
-      "EC370D",
-      "DC3411",
-      "DD2A0A",
-      "C42E1F",
-      "C22613",
-      "BF200C",
-      "A4261C",
-      "7C301B",
-      "653828",
-      "642C1A",
-      "523734",
-      "4B312E",
-      "512F25",
-      "4D281C",
-      "4C2014",
-      "3F2E2F",
-      "3E231D",
-      "302528",
-      "321D1A",
-      "7F1A0F",
-      "2B1A17",
-      "161A27",
-      "161820",
-      "16191D",
-      "111924",
-      "991209",
-      "770F0A",
-      "590E0A",
-      "540504",
-      "38120C",
-      "2B130E",
-      "23120F",
-      "2E0605",
-      "1B0E0D",
-      "120B0C",
-      "160605",
-      "0B0505",
-      "0F0202",
-      "050102",
-      "010001"
-    ],
-    "checks": [
-      {
-        "row": 0,
-        "column": 0,
-        "colors": 64,
-        "bounds": [
-          21,
-          17,
-          363,
-          336
-        ]
-      },
-      {
-        "row": 0,
-        "column": 1,
-        "colors": 64,
-        "bounds": [
-          20,
-          18,
-          363,
-          336
-        ]
-      },
-      {
-        "row": 0,
-        "column": 2,
-        "colors": 64,
-        "bounds": [
-          20,
-          16,
-          364,
-          336
-        ]
-      },
-      {
-        "row": 0,
-        "column": 3,
-        "colors": 64,
-        "bounds": [
-          14,
-          18,
-          370,
-          336
-        ]
-      },
-      {
-        "row": 1,
-        "column": 0,
-        "colors": 64,
-        "bounds": [
-          18,
-          21,
-          366,
-          336
-        ]
-      },
-      {
-        "row": 1,
-        "column": 1,
-        "colors": 64,
-        "bounds": [
-          14,
-          16,
-          369,
-          336
-        ]
-      },
-      {
-        "row": 1,
-        "column": 2,
-        "colors": 64,
-        "bounds": [
-          13,
-          17,
-          371,
-          336
-        ]
-      },
-      {
-        "row": 1,
-        "column": 3,
-        "colors": 64,
-        "bounds": [
+    "webp_bytes": 1373530,
+    "detail_report": "asset-sources/art-direction/characters/dwarf/production/v4/report.json",
+    "clips": {
+      "normal-idle": {
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
           9,
-          17,
-          374,
-          336
-        ]
+          10,
+          11
+        ],
+        "duration_ms": 720,
+        "playback": "loop"
       },
-      {
-        "row": 2,
-        "column": 0,
-        "colors": 64,
-        "bounds": [
-          30,
-          32,
-          354,
-          336
-        ]
-      },
-      {
-        "row": 2,
-        "column": 1,
-        "colors": 64,
-        "bounds": [
-          54,
+      "awake-idle": {
+        "indices": [
+          12,
+          13,
+          14,
+          15,
           16,
-          330,
-          336
-        ]
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23
+        ],
+        "duration_ms": 720,
+        "playback": "loop"
       },
-      {
-        "row": 2,
-        "column": 2,
-        "colors": 64,
-        "bounds": [
-          34,
-          53,
-          349,
-          336
-        ]
-      },
-      {
-        "row": 2,
-        "column": 3,
-        "colors": 64,
-        "bounds": [
-          29,
-          101,
-          355,
-          336
-        ]
-      },
-      {
-        "row": 3,
-        "column": 0,
-        "colors": 64,
-        "bounds": [
+      "normal-cast": {
+        "indices": [
+          24,
           25,
           26,
-          359,
-          336
-        ]
-      },
-      {
-        "row": 3,
-        "column": 1,
-        "colors": 64,
-        "bounds": [
-          16,
-          16,
-          368,
-          336
-        ]
-      },
-      {
-        "row": 3,
-        "column": 2,
-        "colors": 64,
-        "bounds": [
           27,
-          66,
-          356,
-          336
-        ]
-      },
-      {
-        "row": 3,
-        "column": 3,
-        "colors": 64,
-        "bounds": [
-          26,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
           34,
-          358,
-          336
-        ]
+          35
+        ],
+        "duration_ms": 1400,
+        "playback": "once"
+      },
+      "awake-cast": {
+        "indices": [
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47
+        ],
+        "duration_ms": 1400,
+        "playback": "once"
       }
-    ],
-    "webp_bytes": 386902
+    }
   },
   "priest": {
     "frame_size": [
       384,
       384
     ],
-    "frames": 16,
-    "visible_height": 320,
-    "display_scale": "uniform across all three roles",
+    "atlas_size": [
+      2304,
+      3072
+    ],
+    "frames": 48,
     "foot_anchor": [
       192,
       336
     ],
-    "palette": [
-      "FCF1D5",
-      "FCEAB6",
-      "FCD878",
-      "FCBF2A",
-      "F5D999",
-      "F4BB33",
-      "E6C175",
-      "E7A93B",
-      "F2A413",
-      "E08810",
-      "D57320",
-      "CA7D29",
-      "C76825",
-      "A5773C",
-      "BE5F21",
-      "B45B1F",
-      "B4541E",
-      "AC531C",
-      "A15117",
-      "9F4919",
-      "9A4416",
-      "8D4714",
-      "8C3D13",
-      "664931",
-      "0742AF",
-      "073EAB",
-      "023DAC",
-      "093E9F",
-      "8D3611",
-      "7F350E",
-      "75310C",
-      "662E0B",
-      "612307",
-      "4A2911",
-      "491D07",
-      "182B5B",
-      "0538A0",
-      "052A77",
-      "0239AB",
-      "0239A5",
-      "0239A2",
-      "0136A1",
-      "02399D",
-      "02359C",
-      "01319E",
-      "023292",
-      "012E8C",
-      "012A83",
-      "01247A",
-      "012066",
-      "3E1909",
-      "161A2E",
-      "161820",
-      "16191A",
-      "041A51",
-      "3A1104",
-      "250E04",
-      "180D07",
-      "150401",
-      "031038",
-      "050712",
-      "0B0603",
-      "090101",
-      "010001"
-    ],
-    "checks": [
-      {
-        "row": 0,
-        "column": 0,
-        "colors": 64,
-        "bounds": [
-          91,
-          16,
-          293,
-          336
-        ]
+    "webp_bytes": 905084,
+    "detail_report": "asset-sources/art-direction/characters/priest/production/v5/report.json",
+    "clips": {
+      "normal-idle": {
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "duration_ms": 720,
+        "playback": "loop"
       },
-      {
-        "row": 0,
-        "column": 1,
-        "colors": 64,
-        "bounds": [
-          91,
+      "awake-idle": {
+        "indices": [
+          12,
+          13,
+          14,
+          15,
           16,
-          293,
-          336
-        ]
-      },
-      {
-        "row": 0,
-        "column": 2,
-        "colors": 64,
-        "bounds": [
-          94,
           17,
-          290,
-          336
-        ]
-      },
-      {
-        "row": 0,
-        "column": 3,
-        "colors": 64,
-        "bounds": [
-          89,
-          16,
-          294,
-          336
-        ]
-      },
-      {
-        "row": 1,
-        "column": 0,
-        "colors": 64,
-        "bounds": [
-          82,
-          16,
-          301,
-          336
-        ]
-      },
-      {
-        "row": 1,
-        "column": 1,
-        "colors": 64,
-        "bounds": [
-          82,
-          16,
-          302,
-          336
-        ]
-      },
-      {
-        "row": 1,
-        "column": 2,
-        "colors": 64,
-        "bounds": [
-          83,
-          17,
-          300,
-          336
-        ]
-      },
-      {
-        "row": 1,
-        "column": 3,
-        "colors": 64,
-        "bounds": [
-          79,
-          16,
-          305,
-          336
-        ]
-      },
-      {
-        "row": 2,
-        "column": 0,
-        "colors": 64,
-        "bounds": [
-          82,
-          16,
-          301,
-          336
-        ]
-      },
-      {
-        "row": 2,
-        "column": 1,
-        "colors": 64,
-        "bounds": [
-          87,
-          16,
-          297,
-          336
-        ]
-      },
-      {
-        "row": 2,
-        "column": 2,
-        "colors": 64,
-        "bounds": [
-          87,
-          16,
-          296,
-          336
-        ]
-      },
-      {
-        "row": 2,
-        "column": 3,
-        "colors": 64,
-        "bounds": [
-          81,
-          16,
-          302,
-          336
-        ]
-      },
-      {
-        "row": 3,
-        "column": 0,
-        "colors": 64,
-        "bounds": [
-          75,
-          17,
-          309,
-          336
-        ]
-      },
-      {
-        "row": 3,
-        "column": 1,
-        "colors": 64,
-        "bounds": [
-          80,
-          17,
-          304,
-          336
-        ]
-      },
-      {
-        "row": 3,
-        "column": 2,
-        "colors": 64,
-        "bounds": [
-          78,
-          16,
-          305,
-          336
-        ]
-      },
-      {
-        "row": 3,
-        "column": 3,
-        "colors": 64,
-        "bounds": [
-          74,
           18,
-          309,
-          336
-        ]
+          19,
+          20,
+          21,
+          22,
+          23
+        ],
+        "duration_ms": 720,
+        "playback": "loop"
+      },
+      "normal-cast": {
+        "indices": [
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35
+        ],
+        "duration_ms": 1400,
+        "playback": "once"
+      },
+      "awake-cast": {
+        "indices": [
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47
+        ],
+        "duration_ms": 1400,
+        "playback": "once"
       }
-    ],
-    "webp_bytes": 284336
+    }
   },
   "book": {
     "frame_size": [
@@ -786,5 +285,187 @@
       17
     ],
     "source": "dwarf/animations/v6/"
+  },
+  "nun": {
+    "frame_size": [
+      384,
+      384
+    ],
+    "atlas_size": [
+      2304,
+      3072
+    ],
+    "frames": 48,
+    "foot_anchor": [
+      192,
+      336
+    ],
+    "webp_bytes": 1151756,
+    "detail_report": "asset-sources/art-direction/characters/nun/production/v2/report.json",
+    "clips": {
+      "normal-idle": {
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "duration_ms": 720,
+        "playback": "loop"
+      },
+      "awake-idle": {
+        "indices": [
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23
+        ],
+        "duration_ms": 720,
+        "playback": "loop"
+      },
+      "normal-cast": {
+        "indices": [
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35
+        ],
+        "duration_ms": 1400,
+        "playback": "once"
+      },
+      "awake-cast": {
+        "indices": [
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47
+        ],
+        "duration_ms": 1400,
+        "playback": "once"
+      }
+    }
+  },
+  "fire-elf": {
+    "frame_size": [
+      384,
+      384
+    ],
+    "atlas_size": [
+      2304,
+      3072
+    ],
+    "frames": 48,
+    "foot_anchor": [
+      192,
+      336
+    ],
+    "webp_bytes": 872714,
+    "detail_report": "asset-sources/art-direction/characters/forest-fire-elf/production/v2/report.json",
+    "clips": {
+      "normal-idle": {
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11
+        ],
+        "duration_ms": 720,
+        "playback": "loop"
+      },
+      "awake-idle": {
+        "indices": [
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23
+        ],
+        "duration_ms": 720,
+        "playback": "loop"
+      },
+      "normal-cast": {
+        "indices": [
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35
+        ],
+        "duration_ms": 1400,
+        "playback": "once"
+      },
+      "sleep": {
+        "indices": [
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47
+        ],
+        "duration_ms": 1400,
+        "playback": "once"
+      }
+    }
   }
 }
