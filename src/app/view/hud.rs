@@ -218,6 +218,9 @@ impl Session {
                     effects.draw_landing(foot, elapsed, false, enemy_side);
                 }
             }
+            if let Some(effects) = &self.skill_effects {
+                effects.draw_heal(foot, false, enemy_side);
+            }
             actor(
                 if show_shadow {
                     &self.awake_textures[id]
@@ -247,6 +250,9 @@ impl Session {
                 if let Some(effects) = &self.skill_effects {
                     effects.draw_landing(foot, elapsed, true, enemy_side);
                 }
+            }
+            if let Some(effects) = &self.skill_effects {
+                effects.draw_heal(foot, true, enemy_side);
             }
             if sleeping {
                 if let Some(effects) = &self.skill_effects {
@@ -516,7 +522,16 @@ impl Session {
                 GOLD,
             );
         } else if self.feedback_time > 0. && self.targeting.is_none() && !self.hints_shown {
-            label(&self.feedback, 262., 670., 17., GOLD);
+            let y = if self
+                .skill_effects
+                .as_ref()
+                .is_some_and(|fx| fx.healing_active(false) || fx.healing_active(true))
+            {
+                690.
+            } else {
+                670.
+            };
+            label(&self.feedback, 262., y, 17., GOLD);
         }
     }
 }

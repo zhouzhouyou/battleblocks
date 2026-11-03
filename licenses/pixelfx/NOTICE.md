@@ -43,3 +43,9 @@ aftermath is a circular pressure wave with delayed, per-tile visual disappearanc
 The original board target sets and resource rules remain those of BattleBlocks.
 
 PixelFX's stock character, skeletal acting system, targets and fonts are not used.
+
+Nun healing overlays adapt `holy/heal` at the same pinned revision: eight foot
+petals, a body-height travelling hoop and spiralling heart motes. BattleBlocks
+uses an offline pixel rasterizer, two depth layers, gold/cream restoration and
+a violet/crimson descending broken-hoop variant, driven by settled reward
+events. No stock actor, body recolouring, acting system or fonts are used.
