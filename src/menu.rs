@@ -96,11 +96,10 @@ const SKILL_GAP: f32 = 6.;
 const SKILL_BOTTOM: f32 = 414.;
 
 fn skill_description_lines(skill: content::Skill, awake: bool, zh: bool) -> Vec<String> {
-    // `wrap_preview_text` counts CJK as one unit and ASCII as 0.55; at the
-    // card's 16px description size, this limit is the usable pixel width.
-    wrap_preview_text(
+    wrap_label_text(
         content::skill_description(skill, awake, zh),
-        (SKILL_W - 28.) / 16.,
+        16.,
+        SKILL_W - 28.,
     )
 }
 
@@ -798,7 +797,7 @@ fn draw_lore(hero: usize, zh: bool) {
 fn draw_passive_entries(items: &[content::Passive], zh: bool, changes: bool) {
     let mut y = 391.;
     for &passive in items {
-        let lines = wrap_preview_text(passive.description(zh), if zh { 14.5 } else { 16. });
+        let lines = wrap_label_text(passive.description(zh), if zh { 14. } else { 13. }, 220.);
         icons::draw_passive(passive, 304., y, 22.);
         label(
             passive.name(zh),
