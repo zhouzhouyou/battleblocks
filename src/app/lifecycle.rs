@@ -4,7 +4,10 @@ impl Session {
         self.b = fresh();
         self.hp = HEROES[self.hero_id].hp;
         self.enemy_id = self.interface.opponent.unwrap_or_else(|| {
-            let ids: Vec<_> = content::ROSTER
+            let ids: Vec<_> = self
+                .interface
+                .opponent_group
+                .roster()
                 .iter()
                 .copied()
                 .filter(|id| *id != self.hero_id)

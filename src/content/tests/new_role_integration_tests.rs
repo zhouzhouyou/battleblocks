@@ -3,9 +3,13 @@ fn board() -> Board {
     std::array::from_fn(|y| std::array::from_fn(|x| ((x + 2 * y) % 7) as u8))
 }
 #[test]
-fn public_roster_replaces_old_knight_and_unlocks_third_slots() {
-    assert!(!ROSTER.contains(&0));
-    assert!(ROSTER.contains(&KNIGHT) && ROSTER.contains(&DWARF) && ROSTER.contains(&PRIEST));
+fn autoplay_roster_keeps_new_knight_and_unlocks_third_slots() {
+    assert!(!DEFAULT_AUTOPLAY_ROSTER.contains(&0));
+    assert!(
+        DEFAULT_AUTOPLAY_ROSTER.contains(&KNIGHT)
+            && DEFAULT_AUTOPLAY_ROSTER.contains(&DWARF)
+            && DEFAULT_AUTOPLAY_ROSTER.contains(&PRIEST)
+    );
     assert_eq!(skills(KNIGHT, false), &[Skill::Rush, Skill::Miracle]);
     assert_eq!(
         skills(KNIGHT, true),

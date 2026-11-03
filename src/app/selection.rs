@@ -5,7 +5,30 @@ impl Session {
             if let Some(audio) = &self.audio {
                 audio.playing(false);
             }
+            self.sync_selection_groups();
+            let opponents = self.interface.opponent_step;
+            let group = if opponents {
+                self.interface.opponent_group
+            } else {
+                self.interface.hero_group
+            };
+            let mut requested_group = frame.key(KeyCode::Tab).then(|| group.other());
+            if frame.clicked(MouseButton::Left) {
+                for (i, candidate) in content::HeroGroup::ALL.into_iter().enumerate() {
+                    if ui::group_tab_rect(opponents, i).contains(frame.pointer) {
+                        requested_group = Some(candidate);
+                    }
+                }
+            }
+            if let Some(group) = requested_group {
+                if opponents {
+                    self.set_opponent_group(group);
+                } else {
+                    self.set_hero_group(group);
+                }
+            }
             if !self.interface.opponent_step {
+                let roster = self.interface.hero_group.roster();
                 let old_page = self.character_page;
                 if frame.clicked(MouseButton::Left) && menu::page_rect(0).contains(frame.pointer) {
                     self.character_page = self.character_page.saturating_sub(1);
@@ -18,7 +41,7 @@ impl Session {
                     // The awakening page lists different actives; preview the new list.
                     self.refresh_preview(0);
                 }
-                let roster_len = content::ROSTER.len();
+                let roster_len = roster.len();
                 self.interface.hero_scroll = ui::clamp_scroll(
                     self.interface.hero_scroll,
                     roster_len,
@@ -40,26 +63,25 @@ impl Session {
                 }
                 let old_hero = self.hero_id;
                 if frame.key(KeyCode::Down) {
-                    self.hero_id = content::ROSTER[(content::ROSTER
+                    self.hero_id = roster[(roster
                         .iter()
                         .position(|id| *id == self.hero_id)
                         .unwrap_or(0)
                         + 1)
-                        % content::ROSTER.len()];
+                        % roster.len()];
                 }
                 if frame.key(KeyCode::Up) {
-                    self.hero_id = content::ROSTER[(content::ROSTER
+                    self.hero_id = roster[(roster
                         .iter()
                         .position(|id| *id == self.hero_id)
                         .unwrap_or(0)
-                        + content::ROSTER.len()
+                        + roster.len()
                         - 1)
-                        % content::ROSTER.len()];
+                        % roster.len()];
                 }
                 if frame.clicked(MouseButton::Left) {
                     for row in 0..menu::HERO_VISIBLE_ROWS {
-                        let Some(&id) = content::ROSTER.get(self.interface.hero_scroll + row)
-                        else {
+                        let Some(&id) = roster.get(self.interface.hero_scroll + row) else {
                             break;
                         };
                         if menu::hero_rect(row).contains(frame.pointer) {
@@ -88,8 +110,9 @@ impl Session {
                 || (frame.clicked(MouseButton::Left) && menu::start_rect().contains(frame.pointer));
             let start_battle = self.interface.opponent_step && next;
             if self.interface.opponent_step {
-                let roster_len = content::ROSTER.len();
-                let opponent_rows = ui::opponent_row_count();
+                let roster = self.interface.opponent_group.roster();
+                let roster_len = roster.len();
+                let opponent_rows = ui::opponent_row_count(roster.len());
                 self.interface.opponent_scroll = ui::clamp_scroll(
                     self.interface.opponent_scroll,
                     opponent_rows,
@@ -131,7 +154,7 @@ impl Session {
                                 self.interface.opponent = if slot == 0 {
                                     None
                                 } else {
-                                    Some(content::ROSTER[slot - 1])
+                                    Some(roster[slot - 1])
                                 };
                             }
                         }
@@ -140,7 +163,7 @@ impl Session {
                 let index = self
                     .interface
                     .opponent
-                    .and_then(|id| content::ROSTER.iter().position(|v| *v == id))
+                    .and_then(|id| roster.iter().position(|v| *v == id))
                     .map(|i| i + 1)
                     .unwrap_or(0);
                 let delta = if frame.key(KeyCode::Right) {
@@ -155,13 +178,8 @@ impl Session {
                     0
                 };
                 if delta != 0 {
-                    let i = (index as i32 + delta).rem_euclid(content::ROSTER.len() as i32 + 1)
-                        as usize;
-                    self.interface.opponent = if i == 0 {
-                        None
-                    } else {
-                        Some(content::ROSTER[i - 1])
-                    };
+                    let i = (index as i32 + delta).rem_euclid(roster.len() as i32 + 1) as usize;
+                    self.interface.opponent = if i == 0 { None } else { Some(roster[i - 1]) };
                     self.reveal_opponent();
                 }
             } else if next {
@@ -194,6 +212,7 @@ impl Session {
                 } else {
                     menu::draw(
                         self.hero_id,
+                        self.interface.hero_group,
                         self.zh,
                         self.player_texture(),
                         self.thumbs(),
@@ -218,32 +237,73 @@ impl Session {
 
         false
     }
+    /// Environment overrides, console edits and rollback may select a hero outside
+    /// the last menu group. Follow that hero without changing the other page.
+    fn sync_selection_groups(&mut self) {
+        let group = content::HeroGroup::for_hero(self.hero_id).expect("registered hero");
+        if self.interface.hero_group != group {
+            self.interface.hero_group = group;
+            self.interface.hero_scroll = 0;
+            self.reveal_hero();
+        }
+        if let Some(id) = self.interface.opponent {
+            let group = content::HeroGroup::for_hero(id).expect("registered opponent");
+            if self.interface.opponent_group != group {
+                self.interface.opponent_group = group;
+                self.interface.opponent_scroll = 0;
+                self.reveal_opponent();
+            }
+        }
+    }
+    fn set_hero_group(&mut self, group: content::HeroGroup) {
+        if self.interface.hero_group == group {
+            return;
+        }
+        self.interface.hero_group = group;
+        self.interface.hero_scroll = 0;
+        self.hero_id = group.roster()[0];
+        self.refresh_actor_textures();
+        self.refresh_preview(0);
+    }
+    fn set_opponent_group(&mut self, group: content::HeroGroup) {
+        if self.interface.opponent_group == group {
+            return;
+        }
+        self.interface.opponent_group = group;
+        self.interface.opponent_scroll = 0;
+        self.interface.opponent = None;
+    }
     /// Keep the selected hero inside the visible window, e.g. after arrow-key navigation.
     fn reveal_hero(&mut self) {
-        let index = content::ROSTER
+        let roster = self.interface.hero_group.roster();
+        let index = roster
             .iter()
             .position(|id| *id == self.hero_id)
             .unwrap_or(0);
         self.interface.hero_scroll = ui::scroll_to_show(
             self.interface.hero_scroll,
             index,
-            content::ROSTER.len(),
+            roster.len(),
             menu::HERO_VISIBLE_ROWS,
         );
     }
     /// Same for the opponent grid, whose random entry occupies index 0.
     fn reveal_opponent(&mut self) {
+        let roster = self.interface.opponent_group.roster();
         let index = self
             .interface
             .opponent
-            .and_then(|id| content::ROSTER.iter().position(|v| *v == id))
+            .and_then(|id| roster.iter().position(|v| *v == id))
             .map(|i| i + 1)
             .unwrap_or(0);
         self.interface.opponent_scroll = ui::scroll_to_show(
             self.interface.opponent_scroll,
             index / 2,
-            ui::opponent_row_count(),
+            ui::opponent_row_count(roster.len()),
             ui::OPPONENT_VISIBLE_ROWS,
         );
     }
 }
+
+#[cfg(test)]
+mod tests;
