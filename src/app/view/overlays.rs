@@ -98,7 +98,7 @@ impl Session {
             };
             self.presentation.draw_charge(
                 if is_awake {
-                    &self.awake_textures[id]
+                    self.awake_texture(self.last_cast_enemy)
                 } else if self.last_cast_enemy {
                     self.enemy_texture()
                 } else {

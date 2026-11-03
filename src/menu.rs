@@ -152,14 +152,7 @@ fn panel(rect: Rect, color: Color) {
     );
 }
 fn sprite(texture: &Texture2D, asset: &SpriteAsset, area: Rect) {
-    sprite_frames(
-        texture,
-        asset,
-        area,
-        get_time(),
-        asset.durations,
-        asset.indices,
-    );
+    sprite_frames(texture, asset, area, get_time(), asset.idle());
 }
 /// Draw one frame of an arbitrary atlas row (e.g. the hero's cast row).
 fn sprite_frames(
@@ -167,32 +160,23 @@ fn sprite_frames(
     asset: &SpriteAsset,
     area: Rect,
     time: f64,
-    durations: &[f64],
-    indices: &[usize],
+    clip: sprites::AnimationClip,
 ) {
-    let time = time % durations.iter().sum::<f64>();
-    let mut end = 0.;
-    let mut frame = 0;
-    for (i, d) in durations.iter().enumerate() {
-        end += d;
-        if time < end {
-            frame = i;
-            break;
-        }
-    }
-    let new_role = asset.w == 384. && asset.h == 384.;
+    let frame = clip.frame(time);
+    let new_role = asset.anchor.is_some();
     let scale = if new_role {
         crate::role_scale(area) * 96. / asset.w
     } else {
         (area.w / asset.w).min(area.h / asset.h)
     };
     let size = vec2(asset.w * scale, asset.h * scale);
-    let (size, rotation) = crate::presentation::idle_pose(size, get_time(), indices.len() == 1);
+    let (size, rotation) =
+        crate::presentation::idle_pose(size, get_time(), clip.indices.len() == 1);
     draw_texture_ex(
         texture,
         area.x + (area.w - size.x) / 2.,
-        if new_role {
-            area.y + area.h - 84. * (asset.w / 96.) * scale
+        if let Some(anchor) = asset.anchor {
+            area.y + area.h - anchor[1] * scale
         } else {
             area.y + area.h - size.y
         },
@@ -202,8 +186,8 @@ fn sprite_frames(
             rotation,
             pivot: Some(vec2(area.x + area.w / 2., area.y + area.h)),
             source: Some(Rect::new(
-                (indices[frame] % (texture.width() / asset.w) as usize) as f32 * asset.w,
-                (indices[frame] / (texture.width() / asset.w) as usize) as f32 * asset.h,
+                (frame % (texture.width() / asset.w) as usize) as f32 * asset.w,
+                (frame / (texture.width() / asset.w) as usize) as f32 * asset.h,
                 asset.w,
                 asset.h,
             )),
@@ -267,15 +251,14 @@ fn draw_skill_actor(
     let area = Rect::new(area.x, area.y - lift, area.w, area.h);
     // After the cast point the hero performs the skill: play its cast row (the same
     // frames the battle uses) instead of standing in the idle loop.
-    match sprites::cast_frames(hero, dark).filter(|_| after) {
-        Some(frames) => sprite_frames(
+    match asset.action(preview.hop).filter(|_| after) {
+        Some(clip) => sprite_frames(
             texture,
             asset,
             area,
             // One cast gesture, then hold its last key for the rest of the phase.
-            (t as f64 * 1.65).min(presentation::CAST_TIME - 0.001),
-            &sprites::CAST_FRAME_TIME,
-            frames,
+            t as f64 * 1.65,
+            clip,
         ),
         None => sprite(texture, asset, area),
     }

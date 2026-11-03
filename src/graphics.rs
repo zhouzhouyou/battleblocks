@@ -537,28 +537,18 @@ pub(crate) fn role_scale(area: Rect) -> f32 {
 }
 pub(crate) fn actor(
     t: &Texture2D,
-    w: f32,
-    h: f32,
+    asset: &SpriteAsset,
     area: Rect,
     time: f64,
-    durations: &[f64],
-    indices: &[usize],
+    clip: sprites::AnimationClip,
 ) {
     if diagnostic("no_actors") {
         return;
     }
-    let total: f64 = durations.iter().sum();
-    let mut elapsed = time % total;
-    let mut frame = 0;
-    for (i, d) in durations.iter().enumerate() {
-        frame = i;
-        if elapsed < *d {
-            break;
-        }
-        elapsed -= d;
-    }
+    let frame = clip.frame(time);
+    let (w, h) = (asset.w, asset.h);
     // Fit the frame into its slot and stand it on the slot's bottom edge.
-    let new_role = w == 384. && h == 384.;
+    let new_role = asset.anchor.is_some();
     let scale = if new_role {
         role_scale(area) * 96. / w
     } else {
@@ -567,13 +557,13 @@ pub(crate) fn actor(
             .min(if h <= 96. { 3. } else { 0.55 })
     };
     let size = vec2(w * scale, h * scale);
-    let (size, rotation) = presentation::idle_pose(size, time, indices.len() == 1);
+    let (size, rotation) = presentation::idle_pose(size, time, clip.indices.len() == 1);
     let foot = vec2(area.x + area.w / 2., area.y + area.h);
     draw_texture_ex(
         t,
         area.x + (area.w - size.x) / 2.,
-        if new_role {
-            area.y + area.h - 84. * (w / 96.) * scale
+        if let Some(anchor) = asset.anchor {
+            area.y + area.h - anchor[1] * scale
         } else {
             area.y + area.h - size.y
         },
@@ -581,8 +571,8 @@ pub(crate) fn actor(
         DrawTextureParams {
             dest_size: Some(size),
             source: Some(Rect::new(
-                (indices[frame] % (t.width() / w) as usize) as f32 * w,
-                (indices[frame] / (t.width() / w) as usize) as f32 * h,
+                (frame % (t.width() / w) as usize) as f32 * w,
+                (frame / (t.width() / w) as usize) as f32 * h,
                 w,
                 h,
             )),
