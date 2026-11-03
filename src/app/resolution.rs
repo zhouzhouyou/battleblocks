@@ -5,9 +5,11 @@ impl Session {
             self.deadline -= dt;
         }
         if self.deadline <= 0. && !self.presentation.busy() {
-            if let Some(effects) = &mut self.skill_effects {
-                effects.board_cleared(&self.pending);
-            }
+            let fall_delay = self
+                .skill_effects
+                .as_mut()
+                .map(|effects| effects.board_cleared(&self.pending))
+                .unwrap_or(0.);
             if !self.muted {
                 if let Some(audio) = &self.audio {
                     audio.crush();
@@ -109,6 +111,7 @@ impl Session {
             }
             self.presentation
                 .fall(board::drop_board_animated(&mut self.b));
+            self.presentation.delay_fall(fall_delay);
             self.pending = matches(&self.b);
             self.reward = true;
             if !self.pending.is_empty() {

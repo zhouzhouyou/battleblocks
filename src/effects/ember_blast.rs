@@ -1,36 +1,11 @@
 //! A single board-sized atlas. ZZZ is an independent, status-driven loop.
+pub(super) use super::impact_clock::ImpactClock as Blast;
+#[cfg(test)]
+use super::impact_clock::IMPACT;
 use macroquad::prelude::*;
-pub const IMPACT: f32 = 0.4;
 pub const DURATION: f32 = 1.4;
 
-pub(super) struct Blast {
-    started: f64,
-    impact: Option<f64>,
-}
 impl Blast {
-    pub fn new(now: f64) -> Self {
-        Self {
-            started: now,
-            impact: None,
-        }
-    }
-    pub fn cleared(&mut self, now: f64) {
-        if self.impact.is_none() {
-            self.impact = Some(now);
-        }
-    }
-    pub fn waiting(&self) -> bool {
-        self.impact.is_none()
-    }
-    fn elapsed(&self, now: f64, over: bool) -> f32 {
-        if let Some(hit) = self.impact {
-            IMPACT + (now - hit) as f32
-        } else if over {
-            (now - self.started) as f32
-        } else {
-            ((now - self.started) as f32).min(IMPACT - 1. / 15.)
-        }
-    }
     pub fn draw(&self, texture: &Texture2D, over: bool) {
         if let Some(source) = board_frame(self.elapsed(get_time(), over)) {
             draw_texture_ex(
