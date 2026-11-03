@@ -36,7 +36,7 @@
 - 调试版未优化解码时启动至首条日志 23.42 秒、触发 15 秒 GUI 测试超时；修正后 2.14 秒，release 2.04 秒（本机单次测量，不是性能基准）。
 - Windows 包 `dist/windows-x64.zip`；网页包 `dist/web.zip`。WASM 7,817,585 bytes，网页启动资源 gzip 总计 7,273,464 bytes。
 
-macOS：新增 PR 触发的 `macos-build.yml`，在 `macos-15` 上执行同一构建脚本、headless 验证并上传评审包。当前待推送后执行，不将本机 Windows 结果当作 macOS 通过。
+macOS：新增 PR 触发的 `macos-build.yml`。提交 `c79e66b` 在 `macos-15` 的[构建记录](https://github.com/zhouzhouyou/battleblocks/actions/runs/41719477936)已成功：同一构建脚本的测试、原生编译、打包和 headless 验证通过。产物 `macos-arm64.zip`（7,987,584 bytes，`aarch64-apple-darwin`）已下载到本机 `dist/macos-review/`；本机另有 Windows／网页包。macOS 原生窗口交互未验证。
 
 ## 独立审查修复
 
