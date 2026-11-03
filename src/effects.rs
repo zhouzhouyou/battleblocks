@@ -7,6 +7,7 @@ mod hammer_smash;
 mod heavy_landing;
 mod impact_clock;
 mod landing_motion;
+mod nun_heal;
 mod wizard_spells;
 mod wizard_timing;
 pub use landing_motion::lift as jump_lift;
@@ -29,6 +30,7 @@ pub struct Textures {
     cast_tiles: Vec<(usize, usize, u8)>,
     jumps: [Option<f64>; 2],
     wizard: wizard_spells::Effects,
+    heal: nun_heal::Effects,
 }
 impl Textures {
     pub fn load() -> Self {
@@ -47,6 +49,7 @@ impl Textures {
             blast: None,
             jumps: [None; 2],
             wizard: wizard_spells::Effects::load(),
+            heal: nun_heal::Effects::load(),
         }
     }
     /// Capture presentation-only artwork before the model removes or replaces the tiles.
@@ -76,6 +79,16 @@ impl Textures {
         self.jumps = [None; 2];
         self.blast = None;
         self.wizard.clear();
+        self.heal.clear();
+    }
+    pub fn healing_rewards(&mut self, events: &[crate::content::RewardEvent], enemy: bool) {
+        self.heal.rewards(events, enemy);
+    }
+    pub fn healing_active(&self, enemy: bool) -> bool {
+        self.heal.active(enemy)
+    }
+    pub fn draw_heal(&self, foot: Vec2, front: bool, enemy: bool) {
+        self.heal.draw(foot, front, enemy);
     }
     pub fn board_cleared(&mut self, cells: &[(usize, usize)]) -> f64 {
         let delay = self.wizard.cleared(cells);
