@@ -162,6 +162,19 @@ pub fn draw(skill: Skill, x: f32, y: f32, size: f32) {
             draw_line(cx - r * 0.6, cy, cx + r * 0.6, cy, 3., color);
             draw_line(cx, cy - r * 0.6, cx, cy + r * 0.6, 3., color);
         }
+        Skill::PortalPair => {
+            outline(cx - r, cy - r, r * 0.7, r * 2., 3., SKYBLUE);
+            outline(cx + r * 0.3, cy - r, r * 0.7, r * 2., 3., ORANGE);
+        }
+        Skill::GravityShift => {
+            draw_line(cx, cy - r, cx, cy + r, 3., SKYBLUE);
+            draw_triangle(
+                vec2(cx - r * 0.6, cy + r * 0.2),
+                vec2(cx + r * 0.6, cy + r * 0.2),
+                vec2(cx, cy + r),
+                SKYBLUE,
+            );
+        }
         Skill::EmberBlast => {
             draw_circle(cx, cy + r * 0.1, r * 0.62, color);
             draw_triangle(
@@ -183,6 +196,7 @@ pub fn draw_passive(passive: crate::content::Passive, x: f32, y: f32, size: f32)
         KnightStrength | DwarfStrength | Might => Skill::Charge,
         Short | Grudge | Clumsy | ClumsyAwake => Skill::Landslide,
         MindVision | BorrowedSlot => Skill::Greedy,
+        PortalYield => Skill::PortalPair,
         FriendMilk => Skill::Healing,
         AutoRecovery => Skill::Guard,
         Madness => Skill::Frenzy,

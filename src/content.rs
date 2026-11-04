@@ -13,6 +13,9 @@ mod status;
 pub use status::*;
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct Rules {
+    pub actor_enemy: bool,
+    pub board_mechanics: crate::board::BoardMechanics,
+    pub target_anchor: Option<(usize, usize)>,
     pub awake: bool,
     pub initial_loot: bool,
     pub opponent_hp: Option<i32>,
@@ -41,6 +44,7 @@ pub const DWARF: usize = 8;
 pub const PRIEST: usize = 9;
 pub const NUN: usize = 10;
 pub const FIRE_ELF: usize = 11;
+pub const PORTAL_CUBE: usize = 12;
 #[path = "content/roster.rs"]
 mod roster;
 pub use roster::*;
@@ -115,6 +119,9 @@ mod passive_status_tests;
 #[cfg(test)]
 #[path = "content/tests/passive_tests.rs"]
 mod passive_tests;
+#[cfg(test)]
+#[path = "content/tests/portal_tests.rs"]
+mod portal_tests;
 #[cfg(test)]
 #[path = "content/tests/preview_tests.rs"]
 mod preview_tests;

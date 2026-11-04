@@ -121,6 +121,16 @@ pub const SPRITES: &[SpriteAsset] = &[
         sleep: Some(SLEEP),
         anchor: Some([192., 336.]),
     },
+    SpriteAsset {
+        bytes: include_bytes!("../../assets/goblin.webp"),
+        w: 200.,
+        h: 200.,
+        durations: &[0.13, 0.13, 0.13, 0.13],
+        indices: &[0, 1, 2, 1],
+        cast: None,
+        sleep: None,
+        anchor: None,
+    },
 ];
 pub const AWAKENED: &[SpriteAsset] = &[
     SpriteAsset {
@@ -242,5 +252,15 @@ pub const AWAKENED: &[SpriteAsset] = &[
         cast: Some(NORMAL_CAST),
         sleep: Some(SLEEP),
         anchor: Some([192., 336.]),
+    },
+    SpriteAsset {
+        bytes: include_bytes!("../../assets/goblin.webp"),
+        w: 200.,
+        h: 200.,
+        durations: &[0.13, 0.13, 0.13, 0.13],
+        indices: &[0, 1, 2, 1],
+        cast: None,
+        sleep: None,
+        anchor: None,
     },
 ];

@@ -184,10 +184,15 @@ impl Session {
             frame.command_move = Some(m);
         } else if self.armed {
             // Match the enemy AI fallback for a three-line swap with no scoring move.
-            frame.command_move = Some(((0, 0), (1, 0)));
+            frame.command_move =
+                board::move_hints_in(&self.b, self.hero_id, true, self.board_mechanics)
+                    .into_iter()
+                    .find(|&(a, b)| {
+                        content::legal_swap_region(self.hero_id, self.hp, a, b, self.rules(false))
+                    });
         } else {
             // Match the enemy AI reroll when neither a skill nor a swap is chosen.
-            self.b = board::fresh_for(self.hero_id);
+            self.b = board::fresh_for_in(self.hero_id, self.board_mechanics);
             self.turn_log.current.actions.push(turns::Action::Reroll);
             self.selected = None;
             self.presentation.stop_motion();

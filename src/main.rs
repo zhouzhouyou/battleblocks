@@ -3,8 +3,10 @@ mod board;
 use board::drop_board;
 mod content;
 #[cfg(test)]
+use board::matches;
+#[cfg(test)]
 use board::valid_swap;
-use board::{fresh, matches, parallel_swap, swap, Board, N};
+use board::{fresh, parallel_swap, swap, Board, N};
 mod debug;
 mod effects;
 mod icons;

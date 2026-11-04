@@ -1,5 +1,115 @@
 use super::*;
 impl Session {
+    fn draw_board_mechanics(&self, frame: &Frame) {
+        let draw_edge = |edge: board::PortalEdge, color: Color| {
+            if edge.cells().is_none() {
+                return;
+            }
+            let (x, y) = edge.cell;
+            let px = 256. + x as f32 * 64.;
+            let py = 110. + y as f32 * 64.;
+            let (left, top, w, h) = if edge.horizontal {
+                (px + 4., py + 60., 56., 8.)
+            } else {
+                (px + 60., py + 4., 8., 56.)
+            };
+            draw_rectangle(
+                left - 2.,
+                top - 2.,
+                w + 4.,
+                h + 4.,
+                Color::from_rgba(22, 24, 32, 255),
+            );
+            draw_rectangle(left, top, w, h, color);
+            draw_rectangle(left + 2., top + 2., w - 4., h - 4., WHITE);
+        };
+        for pair in self.board_mechanics.portals.iter().flatten() {
+            draw_edge(pair.a, SKYBLUE);
+            draw_edge(pair.b, ORANGE);
+        }
+        if let Some(anchor) = self.target_anchor {
+            draw_edge(
+                board::PortalEdge::at(anchor, self.board_mechanics.gravity()),
+                GOLD,
+            );
+        }
+        if let Some(skill) = self.targeting {
+            if content::skill_profile(skill, self.rules(false)).paired_target {
+                label_centered(
+                    if self.zh {
+                        if self.target_anchor.is_some() {
+                            "选择第二扇门 · 不同重力行列"
+                        } else {
+                            "选择第一扇门 · 方块下边／右边"
+                        }
+                    } else {
+                        if self.target_anchor.is_some() {
+                            "Choose second portal on another gravity line"
+                        } else {
+                            "Choose first portal: bottom / right tile edge"
+                        }
+                    },
+                    512.,
+                    100.,
+                    16.,
+                    GOLD,
+                );
+            }
+            if content::effective_skill(skill, self.rules(false)) == content::Skill::GravityShift {
+                for (text, x, y) in if self.zh {
+                    [
+                        ("向上", 384., 230.),
+                        ("向右", 640., 230.),
+                        ("向左", 384., 486.),
+                        ("向下", 640., 486.),
+                    ]
+                } else {
+                    [
+                        ("UP", 384., 230.),
+                        ("RIGHT", 640., 230.),
+                        ("LEFT", 384., 486.),
+                        ("DOWN", 640., 486.),
+                    ]
+                } {
+                    label_centered(text, x, y, 24., GOLD);
+                }
+                draw_line(512., 110., 512., 622., 2., GOLD);
+                draw_line(256., 366., 768., 366., 2., GOLD);
+            }
+            if frame.pointer.x >= 256.
+                && frame.pointer.x < 768.
+                && frame.pointer.y >= 110.
+                && frame.pointer.y < 622.
+                && content::skill_profile(skill, self.rules(false)).paired_target
+            {
+                let target = (
+                    ((frame.pointer.x - 256.) / 64.) as usize,
+                    ((frame.pointer.y - 110.) / 64.) as usize,
+                );
+                let allowed = content::legal_target(
+                    self.hero_id,
+                    self.hp,
+                    skill,
+                    &self.b,
+                    target,
+                    self.rules(false),
+                );
+                draw_edge(
+                    board::PortalEdge::at(target, self.board_mechanics.gravity()),
+                    if allowed { GREEN } else { RED },
+                );
+            }
+        }
+        if self.board_mechanics.gravity_effect.is_some() {
+            let (dx, dy) = self.board_mechanics.gravity().vector();
+            let end = vec2(744. + dx as f32 * 14., 86. + dy as f32 * 14.);
+            draw_line(744., 86., end.x, end.y, 3., SKYBLUE);
+            let d = vec2(dx as f32, dy as f32);
+            let n = vec2(-d.y, d.x);
+            draw_triangle(end, end - d * 8. + n * 5., end - d * 8. - n * 5., SKYBLUE);
+        }
+    }
+
     pub(in crate::app) fn hints_ready(&self, frame: &Frame) -> bool {
         self.targeting.is_none()
             && !self.action_done
@@ -129,8 +239,8 @@ impl Session {
                         ((frame.pointer.y - 110.) / 64.) as usize,
                     );
                     let mut copy = self.b;
-                    if board::hero_swap(&mut copy, a, c, self.hero_id) {
-                        preview_cells = matches(&copy);
+                    if board::hero_swap_in(&mut copy, a, c, self.hero_id, self.board_mechanics) {
+                        preview_cells = self.board_mechanics.matches(&copy);
                     }
                     if content::movement_profile(self.hero_id).columns
                         && board::adjacent(a, c, self.hero_id)
@@ -248,6 +358,7 @@ impl Session {
             }
         }
         self.presentation.draw_tiles(self.tiles());
+        self.draw_board_mechanics(frame);
         if content::reachable_rows(self.hero_id, self.hp, self.rules(false)) < N
             && !self.enemy_turn
             && self.pending.is_empty()

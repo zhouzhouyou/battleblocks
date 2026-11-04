@@ -318,3 +318,31 @@ pub fn turn_end_rewards(hero: usize, hp: i32, mp: i32, rules: Rules) -> RewardBa
     batch.triggers.extend(triggers);
     batch
 }
+
+/// Passive rewards consume immutable movement records, never replay gravity.
+pub fn portal_transit_batch(
+    hero: usize,
+    hp: i32,
+    mp: i32,
+    falls: &[crate::board::TileFall],
+    rules: Rules,
+) -> RewardBatch {
+    let ctx = EventContext::new(hero, hp, mp, rules);
+    let mut batch = RewardBatch::default();
+    let mut triggers = Vec::new();
+    for fall in falls {
+        for &(_, position) in &fall.portals {
+            dispatch_rules(
+                &ctx,
+                &mut RuleEvent::PortalTransit {
+                    tile: fall.kind,
+                    position,
+                    batch: &mut batch,
+                },
+                &mut triggers,
+            );
+        }
+    }
+    batch.triggers = triggers;
+    batch
+}

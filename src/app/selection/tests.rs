@@ -3,7 +3,7 @@ use content::HeroGroup::{Legacy, New};
 
 #[test]
 fn groups_cover_every_hero_once_with_complete_assets_and_descriptions() {
-    assert_eq!(New.roster().len(), 5);
+    assert_eq!(New.roster().len(), 6);
     assert_eq!(Legacy.roster().len(), 7);
     let mut ids: Vec<_> = content::HeroGroup::ALL
         .into_iter()

@@ -2,6 +2,8 @@ use super::*;
 impl Session {
     pub(super) fn reset_battle(&mut self) {
         self.b = fresh();
+        self.board_mechanics = Default::default();
+        self.target_anchor = None;
         self.hp = HEROES[self.hero_id].hp;
         self.enemy_id = self.interface.opponent.unwrap_or_else(|| {
             let ids: Vec<_> = self

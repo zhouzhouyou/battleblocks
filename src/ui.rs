@@ -425,7 +425,12 @@ impl Ui {
                         WHITE,
                         DrawTextureParams {
                             dest_size: Some(vec2(40., 48.)),
-                            source: Some(Rect::new(id as f32 * 40., 0., 40., 48.)),
+                            source: Some(Rect::new(
+                                crate::sprites::thumbnail_index(id) as f32 * 40.,
+                                0.,
+                                40.,
+                                48.,
+                            )),
                             ..Default::default()
                         },
                     );

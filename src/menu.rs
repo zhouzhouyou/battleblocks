@@ -336,7 +336,12 @@ pub fn draw(
             WHITE,
             DrawTextureParams {
                 dest_size: Some(vec2(32., 38.)),
-                source: Some(Rect::new(i as f32 * 40., 0., 40., 48.)),
+                source: Some(Rect::new(
+                    crate::sprites::thumbnail_index(i) as f32 * 40.,
+                    0.,
+                    40.,
+                    48.,
+                )),
                 ..Default::default()
             },
         );

@@ -5,6 +5,7 @@ fn state(enemy_turn: bool, hp: i32) -> Snapshot {
         new_role_states: Default::default(),
         awakened: [false; 2],
         reward_skill: None,
+        board_mechanics: Default::default(),
         board: [[1; 8]; 8],
         hero: 0,
         enemy: 1,

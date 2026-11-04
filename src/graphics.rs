@@ -383,6 +383,7 @@ pub(crate) fn format_text(zh: bool, key: &'static str, args: &[&str]) -> String 
 pub(crate) fn localized_note(zh: bool, note: &str) -> &str {
     let key = match note {
         "note.skill_cast" => "note.skill_cast",
+        "note.invalid_target" => "note.invalid_target",
         "note.not_enough_mana" => "note.not_enough_mana",
         "note.no_moves" => "note.no_moves",
         "note.match" => "note.match",

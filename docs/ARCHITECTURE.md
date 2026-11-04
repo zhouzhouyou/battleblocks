@@ -18,7 +18,8 @@ Headless `Session` 是权威游戏模型，GUI 只是同一模型的输入、帧
 | `src/abilities.rs`、`src/content/definitions.rs` | 稳定能力身份、配置读取和展示元数据 |
 | `src/role_state.rs` | 可回滚容器、准备动作和状态列表；通过施法／动作事件更新 |
 | `src/app/` | 输入、调用规则、将结果写入状态、执行随机选择与表现反馈 |
-| `src/board/gravity.rs` | 压实、随机填充及移动起终点；不含能力规则 |
+| `src/board/topology.rs` | 四向重力图、门边界与成对重连、全局验环、共享棋盘效果生命周期；不含角色规则 |
+| `src/board/gravity.rs` | 沿统一重力链压实、随机填充及含穿门路径的移动记录；不含能力规则 |
 | `src/debug/` | 命令、完整快照与结构化事件日志 |
 | `src/headless.rs` | 无窗口命令行入口、脚本读取、命令队列推进和稳定状态推进 |
 | `src/app/headless.rs` | 权威模型的固定步长命令驱动与 idle 判定；不包含另一套战斗规则 |
@@ -72,3 +73,5 @@ Headless `Session` 是权威游戏模型，GUI 只是同一模型的输入、帧
 新增技能应注册处理器、配置身份和参数，在处理器内接收事件／检查来源／生成结果或子事件。通用结算、输入、预览或 AI 中出现具体角色／技能身份判断，意味着规则尚未迁入处理器。素材身份、图标和动画注册属于表现配置。
 
 改动收益或事件顺序时验证实际规则、费用、上限、目标差异、来源链、事件终止、预览纯度及回滚。运行 Rust 测试、`tools/check_debug_console.py` 、`tools/check_new_roles.py` 和 `tools/check_ability_events.py`；用 `.build-tools/python-path.txt` 指定的 Python 运行 `tools/build.py` 更新 macOS 和网页包。
+
+传送门与重力接入见 [PORTAL-MECHANICS.md](PORTAL-MECHANICS.md)。`BoardMechanics` 是共享棋盘状态，含施法者与下次自己回合开始过期语义，进入 Snapshot／JSONL；角色被动只监听 `PortalTransit`，不搬运方块。

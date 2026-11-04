@@ -23,7 +23,7 @@ pub fn utility(
                 crate::strategy::choose_force_move_in(b, id, hp, mp, bonus, prepared)
                     .map(|(a, c)| {
                         let mut next = *b;
-                        state.complete_force(&mut next, a, c, id);
+                        state.complete_force_in(&mut next, a, c, id, rules.board_mechanics);
                         let next_rules = Rules {
                             statuses: state.statuses,
                             ..rules
@@ -31,7 +31,13 @@ pub fn utility(
                         crate::strategy::choose_move_in(&next, hp, id, mp, id, 1, next_rules)
                             .map(|(p, q)| {
                                 let mut after = next;
-                                crate::board::hero_swap(&mut after, p, q, id);
+                                crate::board::hero_swap_in(
+                                    &mut after,
+                                    p,
+                                    q,
+                                    id,
+                                    next_rules.board_mechanics,
+                                );
                                 crate::strategy::score(
                                     &after,
                                     id,
@@ -60,7 +66,7 @@ pub fn utility(
             let future = crate::strategy::choose_move_in(b, hp, id, mp, id, 1, next_rules)
                 .map(|(a, c)| {
                     let mut next = *b;
-                    crate::board::hero_swap(&mut next, a, c, id);
+                    crate::board::hero_swap_in(&mut next, a, c, id, rules.board_mechanics);
                     crate::strategy::score(
                         &next,
                         id,

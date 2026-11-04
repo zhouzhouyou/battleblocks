@@ -1,6 +1,7 @@
 use crate::board::Board;
 #[derive(Debug, PartialEq)]
 pub enum Command {
+    CastPair(usize, (usize, usize), (usize, usize)),
     Help,
     Status,
     Board,
@@ -159,6 +160,17 @@ pub fn parse(input: &str) -> Result<Command, ParseError> {
             (coord(1)?, coord(2)?),
             (coord(3)?, coord(4)?),
         )),
+        "cast" if words.len() == 6 => {
+            let slot = n(1)?;
+            if !(1..=3).contains(&slot) {
+                return Err(ParseError::SkillSlot);
+            }
+            Ok(Command::CastPair(
+                (slot - 1) as usize,
+                (coord(2)?, coord(3)?),
+                (coord(4)?, coord(5)?),
+            ))
+        }
         "cast" if words.len() == 2 || words.len() == 4 => {
             let slot = n(1)?;
             if !(1..=3).contains(&slot) {

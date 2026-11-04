@@ -33,6 +33,8 @@ pub(crate) struct Session {
     choosing: bool,
     audio: Option<audio::Audio>,
     b: Board,
+    board_mechanics: board::BoardMechanics,
+    target_anchor: Option<(usize, usize)>,
     selected: Option<(usize, usize)>,
     move_hint_page: usize,
     hints_hover_open: bool,
@@ -316,6 +318,8 @@ impl Session {
             choosing,
             audio,
             b,
+            board_mechanics: Default::default(),
+            target_anchor: None,
             selected,
             move_hint_page,
             hints_hover_open,
@@ -438,6 +442,9 @@ impl Session {
     }
     fn rules(&self, side: bool) -> content::Rules {
         content::Rules {
+            board_mechanics: self.board_mechanics,
+            actor_enemy: side,
+            target_anchor: if side { None } else { self.target_anchor },
             horizontal: self.new_role_states[side as usize].horizontal,
             swap_clear: self.new_role_states[side as usize].swap_clear,
             pockets: self.new_role_states[side as usize].pockets,
@@ -568,8 +575,14 @@ impl Session {
         result
     }
     fn apply_batch_rewards(&mut self, batch: content::RewardBatch) -> AppliedRewards {
+        self.apply_batch_rewards_for(batch, self.enemy_turn)
+    }
+    fn apply_batch_rewards_for(
+        &mut self,
+        batch: content::RewardBatch,
+        side: bool,
+    ) -> AppliedRewards {
         let before_rewards = self.snapshot();
-        let side = self.enemy_turn;
         let (id, hp, mp) = if side {
             (self.enemy_id, self.enemy, self.enemy_mp)
         } else {
@@ -599,10 +612,14 @@ impl Session {
         }
         let hit = self.damage(settled.damage, !side, "damage");
         for event in &settled.events {
+            // Reward Actor/Opponent are relative to this batch's owner, which
+            // can differ from the current turn when an off-turn passive fires.
+            let event_json = event.json();
+            let payload = format!("{{\"actor_enemy\":{side},{}", &event_json[1..]);
             self.console.event_payload(
                 "reward_event",
                 &format!("{:?}", event),
-                Some(&event.json()),
+                Some(&payload),
                 &before_rewards,
                 &self.snapshot(),
             );
@@ -643,6 +660,7 @@ impl Session {
             awakened: self.awakened,
             reward_skill: self.reward_skill,
             board: self.b,
+            board_mechanics: self.board_mechanics,
             hero: self.hero_id,
             enemy: self.enemy_id,
             hp: self.hp,
@@ -676,6 +694,8 @@ impl Session {
         self.book_levels = [0.; 2];
         self.reward_skill = state.reward_skill;
         self.b = state.board;
+        self.board_mechanics = state.board_mechanics;
+        self.target_anchor = None;
         self.hero_id = state.hero;
         self.enemy_id = state.enemy;
         self.hp = state.hp;
@@ -766,3 +786,5 @@ impl Session {
         self.draw(&frame);
     }
 }
+#[cfg(test)]
+mod portal_tests;

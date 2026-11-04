@@ -8,8 +8,32 @@ pub const VALUES: [(i32, i32, i32); 7] = [
     (3, 0, 7),
     (0, 7, 7),
 ];
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum BoardChange {
+    Portals(crate::board::PortalPair),
+    Gravity(crate::board::Gravity),
+}
+impl BoardChange {
+    pub fn apply(
+        self,
+        board: &mut crate::board::BoardMechanics,
+        owner: bool,
+    ) -> Result<(), &'static str> {
+        match self {
+            Self::Portals(mut pair) => {
+                pair.owner = owner;
+                board.place(pair)
+            }
+            Self::Gravity(g) => {
+                board.set_gravity(g, owner);
+                Ok(())
+            }
+        }
+    }
+}
 #[derive(Default)]
 pub struct Effect {
+    pub board_change: Option<BoardChange>,
     pub cells: Vec<(usize, usize)>,
     pub hp: i32,
     pub opponent_heal: i32,
@@ -63,10 +87,13 @@ pub fn target_cells_in(
     hero: usize,
     hp: i32,
     mp: i32,
-    rules: Rules,
+    mut rules: Rules,
 ) -> Vec<(usize, usize)> {
     let mut copy = *b;
     let e = effect_at_in(skill, &mut copy, target, hero, hp, mp, rules);
+    if let Some(change) = e.board_change {
+        let _ = change.apply(&mut rules.board_mechanics, rules.actor_enemy);
+    }
     let transformed_only = e.cells.is_empty();
     let mut cells = e.cells;
     for y in 0..N {
@@ -77,7 +104,7 @@ pub fn target_cells_in(
         }
     }
     if transformed_only {
-        for cell in crate::matches(&copy) {
+        for cell in rules.board_mechanics.matches(&copy) {
             if !cells.contains(&cell) {
                 cells.push(cell);
             }

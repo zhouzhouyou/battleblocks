@@ -100,3 +100,7 @@
 11|line|The forest is fine. The forest is just... very far away now.|森林没事。森林只是……现在离得有点远。
 11|line|I did not miss. I removed the concept of missing.|我没有打偏。我只是把“打偏”这个概念一起炸掉了。
 11|line|Ten out of ten. Would nap again.|十分。下次还睡。
+12|title|Portal Cube|友谊方块
+12|intro|A companion cube holding a portal gun, inspired by Portal. Prototype art reuses an existing sprite while board mechanics are developed.|一个握着传送枪的友谊方块，参考《传送门》系列。本阶段先开发棋盘机制，暂时复用现有外观。
+12|trait|Changes gravity paths; both players share the portals.|改变重力补位路径，双方共用传送门。
+12|line|Character introduction and voice lines await the user's additions.|完整角色介绍与台词待用户补充。

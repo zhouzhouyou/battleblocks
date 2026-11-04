@@ -87,7 +87,17 @@ impl RoleState {
         b: (usize, usize),
         hero: usize,
     ) -> bool {
-        if !self.force_armed || !force_swap(board, a, b, hero) {
+        self.complete_force_in(board, a, b, hero, board::BoardMechanics::default())
+    }
+    pub fn complete_force_in(
+        &mut self,
+        board: &mut Board,
+        a: board::Cell,
+        b: board::Cell,
+        hero: usize,
+        mechanics: board::BoardMechanics,
+    ) -> bool {
+        if !self.force_armed || !force_swap_in(board, a, b, hero, mechanics) {
             return false;
         }
         self.force_armed = false;
@@ -98,7 +108,16 @@ impl RoleState {
 /// Force a movement obeying the caster's movement passive; reject any movement
 /// that produces a match, with no mutation on rejection.
 pub fn force_swap(board: &mut Board, a: (usize, usize), b: (usize, usize), hero: usize) -> bool {
-    if !board::adjacent(a, b, hero) {
+    force_swap_in(board, a, b, hero, board::BoardMechanics::default())
+}
+pub fn force_swap_in(
+    board: &mut Board,
+    a: board::Cell,
+    b: board::Cell,
+    hero: usize,
+    mechanics: board::BoardMechanics,
+) -> bool {
+    if !board::adjacent(a, b, hero) || !board::exchange_allowed(a, b, hero, false, mechanics) {
         return false;
     }
     let mut copy = *board;
@@ -109,7 +128,7 @@ pub fn force_swap(board: &mut Board, a: (usize, usize), b: (usize, usize), hero:
     } else {
         board::swap(&mut copy, a, b);
     }
-    if copy == *board || !board::matches(&copy).is_empty() {
+    if copy == *board || !mechanics.matches(&copy).is_empty() {
         return false;
     }
     *board = copy;

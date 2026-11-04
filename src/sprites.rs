@@ -54,3 +54,12 @@ pub const BOOK_BYTES: &[u8] = include_bytes!("../assets/roles/grudge-book.webp")
 pub const BOOK_COVER: &[u8] = include_bytes!("../assets/roles/book-cover.webp");
 pub const BOOK_PAGES: &[u8] = include_bytes!("../assets/roles/book-pages.webp");
 pub const BOOK_BOTTOM: &[u8] = include_bytes!("../assets/roles/book-bottom.webp");
+
+/// Prototype cube shares the goblin's existing thumbnail and sprite.
+pub fn thumbnail_index(hero: usize) -> usize {
+    if hero == content::PORTAL_CUBE {
+        3
+    } else {
+        hero
+    }
+}
