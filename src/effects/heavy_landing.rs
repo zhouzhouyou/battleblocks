@@ -53,15 +53,13 @@ mod tests {
     use image::GenericImageView;
     #[test]
     fn dust_starts_only_after_feet_land_and_layers_stay_in_their_panels() {
-        // Animation work may relocate cast frames; the jump follows configuration.
-        assert_eq!(
-            crate::effects::jump_pose(Some(&[40, 41, 42, 43]), 0.2),
-            Some([40; 4])
-        );
-        assert_eq!(
-            crate::effects::jump_pose(Some(&[40, 41, 42, 43]), 0.65),
-            None
-        );
+        // Jump keeps the weapon at rest but animates every authored idle pose.
+        let dwarf = &crate::sprites::SPRITES[crate::content::DWARF];
+        let jump = dwarf.action(true).unwrap();
+        assert_eq!(jump.indices, dwarf.indices);
+        assert_eq!(jump.indices.len(), 12);
+        assert_ne!(jump.frame(0.1), jump.frame(0.6));
+        assert_eq!(jump.frame(1.4), *dwarf.indices.last().unwrap());
         assert_eq!(lift(TAKEOFF), 0.);
         assert_eq!(lift(LANDING), 0.);
         assert_eq!(lift((TAKEOFF + LANDING) / 2.), 14.);

@@ -12,14 +12,6 @@ mod wizard_spells;
 mod wizard_timing;
 pub use landing_motion::lift as jump_lift;
 
-pub fn jump_pose(frames: Option<&[usize]>, elapsed: f64) -> Option<[usize; 4]> {
-    if elapsed >= landing_motion::LANDING as f64 {
-        return None;
-    }
-    // Hold the existing wind-up frame; the following cast frames contain a weapon swing.
-    Some([*frames?.first()?; 4])
-}
-
 /// GUI-only resources. Headless sessions never decode or upload these textures.
 pub struct Textures {
     hammer_smash: Texture2D,
@@ -29,6 +21,7 @@ pub struct Textures {
     blast: Option<ember_blast::Blast>,
     cast_tiles: Vec<(usize, usize, u8)>,
     jumps: [Option<f64>; 2],
+    sleep_clocks: [crate::sprites::SleepClock; 2],
     wizard: wizard_spells::Effects,
     heal: nun_heal::Effects,
 }
@@ -48,6 +41,7 @@ impl Textures {
             sleep_zzz: crate::graphics::texture(include_bytes!("../assets/effects/sleep-zzz.webp")),
             blast: None,
             jumps: [None; 2],
+            sleep_clocks: Default::default(),
             wizard: wizard_spells::Effects::load(),
             heal: nun_heal::Effects::load(),
         }
@@ -77,6 +71,7 @@ impl Textures {
     pub fn clear(&mut self) {
         self.cast_tiles.clear();
         self.jumps = [None; 2];
+        self.sleep_clocks = Default::default();
         self.blast = None;
         self.wizard.clear();
         self.heal.clear();
@@ -86,6 +81,9 @@ impl Textures {
     }
     pub fn healing_active(&self, enemy: bool) -> bool {
         self.heal.active(enemy)
+    }
+    pub fn sleep_elapsed(&mut self, enemy: bool, sleeping: bool) -> f64 {
+        self.sleep_clocks[enemy as usize].elapsed(sleeping, get_time())
     }
     pub fn draw_heal(&self, foot: Vec2, front: bool, enemy: bool) {
         self.heal.draw(foot, front, enemy);
