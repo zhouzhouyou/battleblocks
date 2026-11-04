@@ -20,3 +20,8 @@ lto = true
 codegen-units = 1
 strip = true
 panic = "abort"
+
+# Large lossless character atlases should not stall native debug startup/selection.
+# Keep game code unoptimized for debugging; optimize only the existing decoder.
+[profile.dev.package.image]
+opt-level = 2

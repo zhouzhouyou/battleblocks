@@ -18,13 +18,7 @@ mod rng;
 mod strategy;
 mod turns;
 use content::{effect, HEROES, VALUES};
-struct SpriteAsset {
-    bytes: &'static [u8],
-    w: f32,
-    h: f32,
-    durations: &'static [f64],
-    indices: &'static [usize],
-}
+use sprites::SpriteAsset;
 mod audio;
 mod sprites;
 use macroquad::prelude::*;

@@ -140,16 +140,9 @@ impl Session {
             } else {
                 &sprites::SPRITES[id]
             };
-            // New-role atlases carry a cast row per form; legacy sheets stay on idle.
             let cast_elapsed = presentation::CAST_TIME - self.cast_time;
-            let configured_frames = sprites::cast_frames(id, show_shadow);
-            let jump_pose = effects::jump_pose(configured_frames, cast_elapsed);
-            let cast_indices = if self.last_cast == Some(content::Skill::Jump) {
-                jump_pose.as_ref().map(|frames| frames.as_slice())
-            } else {
-                configured_frames
-            };
-            let casting = cast_indices.is_some()
+            let cast_clip = sprite.action(self.last_cast == Some(content::Skill::Jump));
+            let casting = cast_clip.is_some()
                 && self.last_cast.is_some()
                 && self.last_cast_enemy == enemy_side
                 && self.cast_time > 0.;
@@ -163,7 +156,19 @@ impl Session {
                         .as_ref()
                         .is_some_and(|effects| effects.holds_board()),
             );
-            let sleep_indices = sprites::sleep_frames(id).filter(|_| sleeping);
+            let sleep_clip = sprite.sleep.filter(|_| sleeping);
+            let sleep_elapsed = self
+                .skill_effects
+                .as_mut()
+                .map(|effects| effects.sleep_elapsed(enemy_side, sleeping))
+                .unwrap_or(0.);
+            let (clip, elapsed) = if casting {
+                (cast_clip.unwrap(), cast_elapsed)
+            } else if let Some(clip) = sleep_clip {
+                (clip, sleep_elapsed)
+            } else {
+                (sprite.idle(), get_time())
+            };
             let mut area = sprite_rect(enemy_side);
             if content::ability_capabilities(id, self.rules(enemy_side)).reach_visual {
                 let target = if show_awake {
@@ -223,28 +228,16 @@ impl Session {
             }
             actor(
                 if show_shadow {
-                    &self.awake_textures[id]
+                    self.awake_texture(enemy_side)
                 } else if enemy_side {
                     self.enemy_texture()
                 } else {
                     self.player_texture()
                 },
-                sprite.w,
-                sprite.h,
+                sprite,
                 area,
-                if casting { cast_elapsed } else { get_time() },
-                if casting {
-                    &sprites::CAST_FRAME_TIME
-                } else {
-                    sprite.durations
-                },
-                if casting {
-                    cast_indices.unwrap()
-                } else if let Some(frames) = sleep_indices {
-                    frames
-                } else {
-                    sprite.indices
-                },
+                elapsed,
+                clip,
             );
             if let Some(elapsed) = jump {
                 if let Some(effects) = &self.skill_effects {
@@ -256,7 +249,7 @@ impl Session {
             }
             if sleeping {
                 if let Some(effects) = &self.skill_effects {
-                    effects.draw_sleep(area, foot, sleep_indices.is_some(), enemy_side);
+                    effects.draw_sleep(area, foot, sleep_clip.is_some(), enemy_side);
                 }
             }
         }
