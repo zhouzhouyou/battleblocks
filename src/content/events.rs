@@ -38,6 +38,10 @@ pub enum EventSource {
     Cost(Skill),
     Passive(Passive),
     Status(StatusId),
+    Portal {
+        position: (usize, usize),
+        tile: u8,
+    },
     Unspecified,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -212,6 +216,7 @@ pub struct MovementProfile {
 }
 #[derive(Clone, Copy, Debug, Default)]
 pub struct SkillProfile {
+    pub paired_target: bool,
     pub force_move: bool,
     pub random_target: bool,
     pub delayed_damage: bool,
@@ -235,6 +240,11 @@ pub enum StateCommand {
     CopySkill { options: Vec<Skill> },
 }
 pub enum RuleEvent<'a> {
+    PortalTransit {
+        tile: u8,
+        position: (usize, usize),
+        batch: &'a mut RewardBatch,
+    },
     AbilityEnabled {
         ability: AbilityId,
         enabled: &'a mut bool,
@@ -461,6 +471,7 @@ impl EventSource {
     /// Human-readable current source for feedback. Logs retain the structured chain.
     pub fn name(self, zh: bool) -> &'static str {
         match self {
+            Self::Portal { .. } => super::role_text("PortalYield.name", zh),
             Self::Tile { .. } => crate::tr_key(zh, "ui.resolution.resolve_pending.clear"),
             Self::Skill(skill) => skill.name(zh),
             Self::Passive(passive) => passive.name(zh),
@@ -476,6 +487,7 @@ impl EventSource {
             Self::Passive(p)=>format!("{{\"kind\":\"passive\",\"id\":\"{p:?}\"}}"),
             Self::Status(s)=>format!("{{\"kind\":\"status\",\"id\":\"{s:?}\"}}"),
             Self::Cost(s)=>format!("{{\"kind\":\"health_cost\",\"id\":\"{s:?}\"}}"),
+            Self::Portal{position:(x,y),tile}=>format!("{{\"kind\":\"portal_transit\",\"position\":[{x},{y}],\"tile\":{tile}}}"),
             Self::Unspecified=>"{\"kind\":\"unspecified\"}".into(),
         }
     }

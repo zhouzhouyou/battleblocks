@@ -115,10 +115,25 @@ impl Session {
                 );
                 self.feedback_time = 2.;
             }
-            self.presentation
-                .fall(board::drop_board_animated(&mut self.b));
+            let falls = board::drop_board_in(&mut self.b, self.board_mechanics)
+                .expect("validated board topology");
+            // Freeze the complete movement list before dispatching transit rewards.
+            // Each owner receives their own passive yield, including off-turn crossings.
+            for side in [false, true] {
+                let id = if side { self.enemy_id } else { self.hero_id };
+                let (hp, mp) = if side {
+                    (self.enemy, self.enemy_mp)
+                } else {
+                    (self.hp, self.mp)
+                };
+                let batch = content::portal_transit_batch(id, hp, mp, &falls, self.rules(side));
+                if !batch.events.is_empty() {
+                    self.apply_batch_rewards_for(batch, side);
+                }
+            }
+            self.presentation.fall(falls);
             self.presentation.delay_fall(fall_delay);
-            self.pending = matches(&self.b);
+            self.pending = self.board_mechanics.matches(&self.b);
             self.reward = true;
             if !self.pending.is_empty() {
                 self.chain += 1;

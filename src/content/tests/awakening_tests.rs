@@ -254,7 +254,7 @@ fn wizard_full_mana_heals_normally_and_checks_phase_cap_before_clear() {
 fn reduced_reserves_cover_each_roles_largest_skill() {
     assert_eq!(
         HEROES.iter().map(|h| h.mp).collect::<Vec<_>>(),
-        [200, 120, 400, 160, 120, 160, 100, 200, 130, 160, 160, 180]
+        [200, 120, 400, 160, 120, 160, 100, 200, 130, 160, 160, 180, 160]
     );
     for hero in 0..HEROES.len() {
         for awake in [false, true] {

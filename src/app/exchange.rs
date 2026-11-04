@@ -96,8 +96,13 @@ impl Session {
                             a,
                             c,
                             self.rules(false),
-                        ) && role_state::force_swap(&mut preview, a, c, self.hero_id)
-                        {
+                        ) && role_state::force_swap_in(
+                            &mut preview,
+                            a,
+                            c,
+                            self.hero_id,
+                            self.board_mechanics,
+                        ) {
                             let force_skill = self.targeting;
                             self.targeting = None;
                             if !self.cast_skill(frame, force_skill, true) {
@@ -113,11 +118,23 @@ impl Session {
                     let forced = self.new_role_states[0].force_armed;
                     let reachable =
                         content::legal_swap_region(self.hero_id, self.hp, a, c, self.rules(false));
-                    let legal = if !reachable {
+                    let legal = if !reachable
+                        || !board::exchange_allowed(
+                            a,
+                            c,
+                            self.hero_id,
+                            self.armed,
+                            self.board_mechanics,
+                        ) {
                         false
                     } else if forced {
-                        let ok =
-                            self.new_role_states[0].complete_force(&mut self.b, a, c, self.hero_id);
+                        let ok = self.new_role_states[0].complete_force_in(
+                            &mut self.b,
+                            a,
+                            c,
+                            self.hero_id,
+                            self.board_mechanics,
+                        );
                         if ok {
                             self.new_role_states[0].force_armed = false;
                         }
@@ -130,7 +147,7 @@ impl Session {
                             .consume(content::StatusDuration::UntilSwap);
                         true
                     } else {
-                        board::hero_swap(&mut self.b, a, c, self.hero_id)
+                        board::hero_swap_in(&mut self.b, a, c, self.hero_id, self.board_mechanics)
                     };
                     if legal {
                         self.presentation.swap(
@@ -152,7 +169,7 @@ impl Session {
                         self.new_role_states[0].record_swap(a, c);
                         self.action_done = !forced;
                         self.move_flash = Some((a, c));
-                        self.pending = matches(&self.b);
+                        self.pending = self.board_mechanics.matches(&self.b);
                         self.reward = true;
                         self.deadline = CLEAR_TIME;
                         self.chain = 1;

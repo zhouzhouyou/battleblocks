@@ -29,6 +29,29 @@ impl Session {
                 Err(error) => self.console.say(error.message(self.console.zh)),
                 Ok(command) => {
                     use debug::Command;
+                    let command = match command {
+                        Command::CastPair(slot, a, b) => {
+                            let paired = content::skills(self.hero_id, self.awakened[0])
+                                .get(slot)
+                                .is_some_and(|s| {
+                                    content::skill_profile(*s, self.rules(false)).paired_target
+                                });
+                            if !paired {
+                                self.console.say_tr(
+                                    "This skill does not accept two targets",
+                                    "该技能不接受两个目标",
+                                );
+                                return false;
+                            }
+                            self.target_anchor = Some(a);
+                            Command::Cast(slot, b)
+                        }
+                        Command::Cast(slot, b) => {
+                            self.target_anchor = None;
+                            Command::Cast(slot, b)
+                        }
+                        other => other,
+                    };
                     let before = self.snapshot();
                     match command {
                         Command::Help => self.console.help(),
@@ -255,7 +278,7 @@ impl Session {
                                     }
                                     Command::Pause(value) => self.paused = value,
                                     Command::Resolve => {
-                                        self.pending = matches(&self.b);
+                                        self.pending = self.board_mechanics.matches(&self.b);
                                         self.action_done = true;
                                         self.deadline = 0.28;
                                         self.reward = true;

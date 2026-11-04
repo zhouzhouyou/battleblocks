@@ -29,7 +29,7 @@ pub fn move_options_in(
     hp: i32,
     rules: Rules,
 ) -> Vec<((usize, usize), (usize, usize))> {
-    crate::board::hero_options(board, hero)
+    crate::board::hero_options_in(board, hero, rules.board_mechanics)
         .into_iter()
         .filter(|&(a, b)| legal_swap_region(hero, hp, a, b, rules))
         .collect()
@@ -41,7 +41,9 @@ pub fn legal_swap_region(
     b: (usize, usize),
     rules: Rules,
 ) -> bool {
-    a.1 >= N - reachable_rows(hero, hp, rules) && b.1 >= N - reachable_rows(hero, hp, rules)
+    !rules.board_mechanics.blocks(a, b)
+        && a.1 >= N - reachable_rows(hero, hp, rules)
+        && b.1 >= N - reachable_rows(hero, hp, rules)
 }
 
 pub fn legal_target(
@@ -158,6 +160,6 @@ pub fn must_refresh_in(
     rules: Rules,
 ) -> bool {
     !armed
-        && crate::board::hero_options(board, hero).is_empty()
+        && crate::board::hero_options_in(board, hero, rules.board_mechanics).is_empty()
         && usable_skills_in(board, hero, hp, mp, rules).is_empty()
 }

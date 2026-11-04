@@ -7,10 +7,12 @@ mod fire_elf_effect;
 mod knight;
 mod legacy;
 mod nun;
+mod portal;
 mod priest;
 // Registration binds identities to implementations; rule behavior belongs to handlers.
 pub fn passive_handler(p: Passive) -> RuleHandler {
     match p {
+        Passive::PortalYield => portal::passive,
         Passive::DwarfStrength | Passive::Short | Passive::Grudge => dwarf::handle,
         Passive::KnightStrength | Passive::Might | Passive::Clumsy | Passive::ClumsyAwake => {
             knight::handle
@@ -44,6 +46,7 @@ pub fn passive_handler(p: Passive) -> RuleHandler {
 }
 pub fn active_handler(skill: Skill) -> RuleHandler {
     match skill {
+        Skill::PortalPair | Skill::GravityShift => portal::active,
         Skill::Charge
         | Skill::Guard
         | Skill::Landslide

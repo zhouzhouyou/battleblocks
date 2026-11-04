@@ -40,6 +40,7 @@ pub enum Passive {
     ManaAffinity,
     SleepRecovery,
     SoundSleep,
+    PortalYield,
 }
 use Passive::*;
 pub struct AbilityLoadout {
@@ -140,6 +141,7 @@ impl Passive {
         Self::ManaAffinity,
         Self::SleepRecovery,
         Self::SoundSleep,
+        Self::PortalYield,
     ];
     fn is_new(self) -> bool {
         matches!(
@@ -159,6 +161,7 @@ impl Passive {
                 | ManaAffinity
                 | SleepRecovery
                 | SoundSleep
+                | PortalYield
         )
     }
     pub fn replaces(self) -> Option<Self> {
@@ -180,7 +183,7 @@ impl Passive {
         let key = match self {
             KnightStrength | DwarfStrength | Might | Short | Grudge | Clumsy | ClumsyAwake
             | MindVision | BorrowedSlot | FriendMilk | AutoRecovery | Madness | ManaAffinity
-            | SleepRecovery | SoundSleep => {
+            | SleepRecovery | SoundSleep | PortalYield => {
                 unreachable!()
             }
             ColumnFormation => "passive.name.column_formation",
@@ -218,7 +221,7 @@ impl Passive {
         let key = match self {
             KnightStrength | DwarfStrength | Might | Short | Grudge | Clumsy | ClumsyAwake
             | MindVision | BorrowedSlot | FriendMilk | AutoRecovery | Madness | ManaAffinity
-            | SleepRecovery | SoundSleep => {
+            | SleepRecovery | SoundSleep | PortalYield => {
                 unreachable!()
             }
             ColumnFormation => "passive.short_name.column_formation",
@@ -253,7 +256,7 @@ impl Passive {
         let key = match self {
             KnightStrength | DwarfStrength | Might | Short | Grudge | Clumsy | ClumsyAwake
             | MindVision | BorrowedSlot | FriendMilk | AutoRecovery | Madness | ManaAffinity
-            | SleepRecovery | SoundSleep => {
+            | SleepRecovery | SoundSleep | PortalYield => {
                 unreachable!()
             }
             ColumnFormation => "passive.description.column_formation",

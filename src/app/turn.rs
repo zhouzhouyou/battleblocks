@@ -173,6 +173,12 @@ impl Session {
             self.present_ability_triggers(receiver, &triggers);
             self.new_role_states[self.enemy_turn as usize].end_turn();
             self.enemy_turn = !self.enemy_turn;
+            if self.board_mechanics.start_turn(self.enemy_turn) {
+                self.pending = self.board_mechanics.matches(&self.b);
+                self.reward = true;
+                self.deadline = CLEAR_TIME;
+            }
+            self.target_anchor = None;
             if !self.enemy_turn {
                 self.round += 1;
             }
@@ -188,7 +194,7 @@ impl Session {
             self.selected = None;
             self.enemy_clock = 0.;
             self.move_flash = None;
-            self.chain = 0;
+            self.chain = if self.pending.is_empty() { 0 } else { 1 };
             self.console.event(
                 "turn_start",
                 "All cascades resolved; next actor",
@@ -229,7 +235,7 @@ impl Session {
                 if voluntary {
                     self.console.checkpoint(before.clone());
                 }
-                self.b = board::fresh_for(id);
+                self.b = board::fresh_for_in(id, self.board_mechanics);
                 self.turn_log.current.actions.push(turns::Action::Reroll);
                 self.selected = None;
                 self.move_flash = None;

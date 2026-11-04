@@ -1,19 +1,35 @@
 use crate::rng;
 pub const N: usize = 8;
 pub type Board = [[u8; N]; N];
+#[path = "board/topology.rs"]
+mod topology;
+pub use topology::*;
 pub fn matches(b: &Board) -> Vec<(usize, usize)> {
+    matches_in(b, BoardMechanics::default())
+}
+pub fn matches_in(b: &Board, mechanics: BoardMechanics) -> Vec<(usize, usize)> {
     let mut hit = [[false; N]; N];
     for y in 0..N {
         for x in 0..N {
             if b[y][x] == 255 {
                 continue;
             }
-            if x + 2 < N && b[y][x] == b[y][x + 1] && b[y][x] == b[y][x + 2] {
+            if x + 2 < N
+                && b[y][x] == b[y][x + 1]
+                && b[y][x] == b[y][x + 2]
+                && !mechanics.blocks((x, y), (x + 1, y))
+                && !mechanics.blocks((x + 1, y), (x + 2, y))
+            {
                 hit[y][x] = true;
                 hit[y][x + 1] = true;
                 hit[y][x + 2] = true;
             }
-            if y + 2 < N && b[y][x] == b[y + 1][x] && b[y][x] == b[y + 2][x] {
+            if y + 2 < N
+                && b[y][x] == b[y + 1][x]
+                && b[y][x] == b[y + 2][x]
+                && !mechanics.blocks((x, y), (x, y + 1))
+                && !mechanics.blocks((x, y + 1), (x, y + 2))
+            {
                 hit[y][x] = true;
                 hit[y + 1][x] = true;
                 hit[y + 2][x] = true;
@@ -117,8 +133,18 @@ mod gravity;
 pub use gravity::*;
 
 /// Role-specific swaps are transactional, including invalid coordinates.
+#[allow(dead_code)] // Legacy probes and tests use the default-topology wrapper.
 pub fn hero_swap(b: &mut Board, a: (usize, usize), c: (usize, usize), hero: usize) -> bool {
-    if !adjacent(a, c, hero) {
+    hero_swap_in(b, a, c, hero, BoardMechanics::default())
+}
+pub fn hero_swap_in(
+    b: &mut Board,
+    a: Cell,
+    c: Cell,
+    hero: usize,
+    mechanics: BoardMechanics,
+) -> bool {
+    if !adjacent(a, c, hero) || !exchange_allowed(a, c, hero, false, mechanics) {
         return false;
     }
     let original = *b;
@@ -129,7 +155,7 @@ pub fn hero_swap(b: &mut Board, a: (usize, usize), c: (usize, usize), hero: usiz
     } else {
         swap(b, a, c);
     }
-    if matches(b).is_empty() {
+    if matches_in(b, mechanics).is_empty() {
         *b = original;
         false
     } else {
@@ -145,6 +171,9 @@ pub fn adjacent(a: (usize, usize), c: (usize, usize), hero: usize) -> bool {
     dx + dy == 1 || (crate::content::movement_profile(hero).diagonal && dx == 1 && dy == 1)
 }
 pub fn hero_options(b: &Board, hero: usize) -> Vec<((usize, usize), (usize, usize))> {
+    hero_options_in(b, hero, BoardMechanics::default())
+}
+pub fn hero_options_in(b: &Board, hero: usize, mechanics: BoardMechanics) -> Vec<(Cell, Cell)> {
     let mut out = Vec::new();
     for y in 0..N {
         for x in 0..N {
@@ -157,7 +186,7 @@ pub fn hero_options(b: &Board, hero: usize) -> Vec<((usize, usize), (usize, usiz
                     continue;
                 }
                 let c = (cx as usize, cy as usize);
-                if hero_swap(&mut b.clone(), (x, y), c, hero) {
+                if hero_swap_in(&mut b.clone(), (x, y), c, hero, mechanics) {
                     out.push(((x, y), c));
                 }
             }
@@ -251,15 +280,24 @@ mod refresh_tests {
 
 /// Enumerate actual exchange inputs, including a prepared parallel exchange.
 /// This is a read-only query; column exchanges are deduplicated by column pair.
+#[cfg(test)]
 pub fn move_hints(b: &Board, hero: usize, armed: bool) -> Vec<((usize, usize), (usize, usize))> {
+    move_hints_in(b, hero, armed, BoardMechanics::default())
+}
+pub fn move_hints_in(
+    b: &Board,
+    hero: usize,
+    armed: bool,
+    mechanics: BoardMechanics,
+) -> Vec<(Cell, Cell)> {
     if !armed {
-        return hero_options(b, hero);
+        return hero_options_in(b, hero, mechanics);
     }
     let mut moves = Vec::new();
     for y in 0..N {
         for x in 0..N {
             for c in [(x + 1, y), (x, y + 1)] {
-                if c.0 < N && c.1 < N {
+                if c.0 < N && c.1 < N && exchange_allowed((x, y), c, hero, true, mechanics) {
                     moves.push(((x, y), c));
                 }
             }
@@ -269,7 +307,7 @@ pub fn move_hints(b: &Board, hero: usize, armed: bool) -> Vec<((usize, usize), (
     // the orthogonal parallel preparation, matching the input handler.
     if crate::content::movement_profile(hero).diagonal {
         moves.extend(
-            hero_options(b, hero)
+            hero_options_in(b, hero, mechanics)
                 .into_iter()
                 .filter(|&(a, c)| a.0 != c.0 && a.1 != c.1),
         );
@@ -330,3 +368,47 @@ mod hint_tests {
         }
     }
 }
+
+/// Multi-tile exchanges cannot smuggle a tile through a blocked boundary.
+pub fn exchange_allowed(a: Cell, b: Cell, hero: usize, parallel: bool, m: BoardMechanics) -> bool {
+    if m.blocks(a, b) {
+        return false;
+    }
+    if !parallel && crate::content::movement_profile(hero).columns && a.1 == b.1 {
+        return (0..N).all(|y| !m.blocks((a.0, y), (b.0, y)));
+    }
+    if parallel {
+        for d in [-1isize, 1] {
+            let (p, q) = if a.0 == b.0 {
+                (
+                    (a.0 as isize + d, a.1 as isize),
+                    (b.0 as isize + d, b.1 as isize),
+                )
+            } else {
+                (
+                    (a.0 as isize, a.1 as isize + d),
+                    (b.0 as isize, b.1 as isize + d),
+                )
+            };
+            if [p.0, p.1, q.0, q.1]
+                .iter()
+                .all(|&v| v >= 0 && v < N as isize)
+                && m.blocks((p.0 as usize, p.1 as usize), (q.0 as usize, q.1 as usize))
+            {
+                return false;
+            }
+        }
+    }
+    true
+}
+pub fn fresh_for_in(hero: usize, m: BoardMechanics) -> Board {
+    loop {
+        let b = new_board();
+        if !hero_options_in(&b, hero, m).is_empty() {
+            return b;
+        }
+    }
+}
+#[cfg(test)]
+#[path = "board/topology_tests.rs"]
+mod topology_tests;

@@ -40,7 +40,13 @@ impl Session {
                 ) {
                     let before = self.snapshot();
                     self.console.checkpoint(before.clone());
-                    self.new_role_states[1].complete_force(&mut self.b, a, c, self.enemy_id);
+                    self.new_role_states[1].complete_force_in(
+                        &mut self.b,
+                        a,
+                        c,
+                        self.enemy_id,
+                        self.board_mechanics,
+                    );
                     self.presentation
                         .swap(&before.board, a, c, false, true, self.enemy_id);
                     self.turn_log.current.actions.push(turns::Action::Swap {
@@ -85,8 +91,23 @@ impl Session {
                         self.difficulty,
                         self.rules(true),
                     )
-                    .or_else(|| self.armed.then_some(((0, 0), (1, 0))))
-                    {
+                    .or_else(|| {
+                        if self.armed {
+                            board::move_hints_in(&self.b, self.enemy_id, true, self.board_mechanics)
+                                .into_iter()
+                                .find(|&(a, b)| {
+                                    content::legal_swap_region(
+                                        self.enemy_id,
+                                        self.enemy,
+                                        a,
+                                        b,
+                                        self.rules(true),
+                                    )
+                                })
+                        } else {
+                            None
+                        }
+                    }) {
                         let before = enemy_before.clone();
                         self.console.checkpoint(before.clone());
                         self.presentation.swap(
@@ -111,10 +132,16 @@ impl Session {
                                 .statuses
                                 .consume(content::StatusDuration::UntilSwap);
                         } else {
-                            board::hero_swap(&mut self.b, a, c, self.enemy_id);
+                            board::hero_swap_in(
+                                &mut self.b,
+                                a,
+                                c,
+                                self.enemy_id,
+                                self.board_mechanics,
+                            );
                         }
                         self.new_role_states[1].record_swap(a, c);
-                        self.pending = matches(&self.b);
+                        self.pending = self.board_mechanics.matches(&self.b);
                         self.deadline = CLEAR_TIME;
                         self.reward = true;
                         self.chain = 1;
@@ -175,6 +202,7 @@ impl Session {
                 && cancel_skill_rect().contains(frame.pointer));
         if cancel_target {
             self.targeting = None;
+            self.target_anchor = None;
             self.selected = None;
             cast = None;
         }
@@ -189,6 +217,7 @@ impl Session {
                     && frame.command_skill.is_none()
                 {
                     self.targeting = toggle_skill_target(self.targeting, skill);
+                    self.target_anchor = None;
                     self.selected = None;
                     cast = None;
                 }
@@ -198,8 +227,19 @@ impl Session {
                     && board_target.is_some()
                     && frame.clicked(MouseButton::Left)
                 {
-                    cast = Some(skill);
-                    self.targeting = None;
+                    let target = board_target.unwrap();
+                    if content::skill_profile(skill, self.rules(false)).paired_target
+                        && self.target_anchor.is_none()
+                    {
+                        if board::PortalEdge::at(target, self.board_mechanics.gravity())
+                            .cells()
+                            .is_some()
+                        {
+                            self.target_anchor = Some(target);
+                        }
+                    } else {
+                        cast = Some(skill);
+                    }
                 }
             }
         }
@@ -271,7 +311,10 @@ impl Session {
                         effects.capture(effective, self.enemy_turn, &self.skill_flash, &self.b);
                     self.presentation.hold(hold);
                 }
-                let effect_rules = self.rules(self.enemy_turn);
+                let effect_rules = content::Rules {
+                    target_anchor: cast_rules.target_anchor,
+                    ..self.rules(self.enemy_turn)
+                };
                 let e = content::effect_at_in(
                     skill,
                     &mut self.b,
@@ -286,6 +329,13 @@ impl Session {
                     &before.board,
                     target,
                 );
+                if let Some(change) = e.board_change {
+                    change
+                        .apply(&mut self.board_mechanics, self.enemy_turn)
+                        .expect("validated board change");
+                }
+                self.target_anchor = None;
+                self.targeting = None;
                 let mut batch = e.reward_batch(effective);
                 if content::skill_profile(effective, effect_rules).delayed_damage {
                     let mut delayed = content::RewardBatch::default();
@@ -394,7 +444,7 @@ impl Session {
                 self.pending = e.cells;
                 self.reward = e.reward;
                 if self.pending.is_empty() {
-                    self.pending = matches(&self.b);
+                    self.pending = self.board_mechanics.matches(&self.b);
                     self.reward = true;
                 }
                 self.deadline = if self.pending.is_empty() {
@@ -433,7 +483,12 @@ impl Session {
                         self.targeting = Some(skill);
                     }
                 }
-                self.note = "note.not_enough_mana";
+                self.note =
+                    if content::payment_in(id, actor_hp, actor_mp, skill, cast_rules).is_some() {
+                        "note.invalid_target"
+                    } else {
+                        "note.not_enough_mana"
+                    };
             }
         }
 

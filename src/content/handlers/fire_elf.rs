@@ -3,7 +3,11 @@ use super::*;
 /// How many non-mana tiles Mana Affinity turns into mana tiles each turn.
 const MANA_AFFINITY_TILES: usize = 2;
 
-fn convert_one(board: &mut Board, eligible: &mut Vec<(usize, usize)>) -> bool {
+fn convert_one(
+    board: &mut Board,
+    eligible: &mut Vec<(usize, usize)>,
+    mechanics: crate::board::BoardMechanics,
+) -> bool {
     let attempts = eligible.len().saturating_mul(2).max(1);
     for _ in 0..attempts {
         if eligible.is_empty() {
@@ -13,7 +17,7 @@ fn convert_one(board: &mut Board, eligible: &mut Vec<(usize, usize)>) -> bool {
         let (x, y) = eligible[index];
         let original = board[y][x];
         board[y][x] = 3;
-        if crate::matches(board).is_empty() {
+        if mechanics.matches(board).is_empty() {
             eligible.swap_remove(index);
             return true;
         }
@@ -24,7 +28,7 @@ fn convert_one(board: &mut Board, eligible: &mut Vec<(usize, usize)>) -> bool {
 
 pub fn handle(
     id: AbilityId,
-    _ctx: &EventContext,
+    ctx: &EventContext,
     event: &mut RuleEvent<'_>,
     out: &mut Vec<AbilityTrigger>,
 ) {
@@ -43,7 +47,7 @@ pub fn handle(
         .collect();
     let mut changed = false;
     for _ in 0..MANA_AFFINITY_TILES {
-        if !convert_one(board, &mut eligible) {
+        if !convert_one(board, &mut eligible, ctx.rules.board_mechanics) {
             break;
         }
         changed = true;
@@ -177,7 +181,7 @@ pub fn status_handle(
         }
         RuleEvent::Incoming { reward }
             if reward.resource == Resource::Damage
-                && reward.recipient == EventSide::Actor
+                && reward.recipient == ctx.owner
                 && passives(ctx.hero, ctx.rules.awake).contains(&Passive::SoundSleep)
                 && !reward.has_source(EventSource::Status(StatusId::Sleep)) =>
         {

@@ -274,3 +274,4 @@ ui.selection.new	New	新角色
 ui.selection.legacy	Legacy	老角色
 ui.selection.group_hint	Tab: switch group	Tab：切换分组
 ui.selection.random_in_group	This group, excluding your hero	本组随机，排除自己
+note.invalid_target	Invalid target: choose another position	目标无效，请选择其他位置

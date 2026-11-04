@@ -1,8 +1,17 @@
 use crate::content::Rules;
-use crate::{content::Skill, matches, Board, N};
+use crate::{content::Skill, Board, N};
 type Move = ((usize, usize), (usize, usize));
 pub(crate) fn score(b: &Board, hero: usize, hp: i32, mp: i32, rules: Rules) -> f32 {
-    let batch = crate::content::clear_batch_in(hero, hp, mp, b, &matches(b), 1, 0, rules);
+    let batch = crate::content::clear_batch_in(
+        hero,
+        hp,
+        mp,
+        b,
+        &rules.board_mechanics.matches(b),
+        1,
+        0,
+        rules,
+    );
     let original_opponent_hp = rules.opponent_hp.unwrap_or(10000);
     let settled = crate::content::settle_batch_in(hero, hp, mp, original_opponent_hp, batch, rules);
     let progress = if let (Some((id, mut awake)), Some(_)) = (rules.opponent, rules.opponent_hp) {
@@ -46,7 +55,7 @@ pub fn choose_move_in(
         .into_iter()
         .map(|(a, c)| {
             let mut copy = *b;
-            crate::board::hero_swap(&mut copy, a, c, hero);
+            crate::board::hero_swap_in(&mut copy, a, c, hero, rules.board_mechanics);
             let mut value = score(
                 &copy,
                 hero,
@@ -59,14 +68,20 @@ pub fn choose_move_in(
                 },
             );
             if level == 2 {
-                for (x, y) in matches(&copy) {
+                for (x, y) in rules.board_mechanics.matches(&copy) {
                     copy[y][x] = 255;
                 }
-                let threat = crate::board::hero_options(&copy, opponent)
+                let threat = crate::board::hero_options_in(&copy, opponent, rules.board_mechanics)
                     .into_iter()
                     .map(|(p, q)| {
                         let mut reply = copy;
-                        crate::board::hero_swap(&mut reply, p, q, opponent);
+                        crate::board::hero_swap_in(
+                            &mut reply,
+                            p,
+                            q,
+                            opponent,
+                            rules.board_mechanics,
+                        );
                         score(
                             &reply,
                             opponent,
@@ -76,6 +91,7 @@ pub fn choose_move_in(
                             ),
                             0,
                             Rules {
+                                board_mechanics: rules.board_mechanics,
                                 awake: rules.opponent.is_some_and(|(_, a)| a),
                                 ..Rules::default()
                             },
@@ -158,7 +174,7 @@ pub fn choose_skill_available_in(
     let swap_value = choose_move_in(b, hp, id, mp, id, 1, rules)
         .map(|(a, c)| {
             let mut copy = *b;
-            crate::board::hero_swap(&mut copy, a, c, id);
+            crate::board::hero_swap_in(&mut copy, a, c, id, rules.board_mechanics);
             score(&copy, id, hp, mp, rules)
         })
         .unwrap_or(0.);
@@ -290,7 +306,7 @@ pub fn choose_force_move_in(
                     statuses: rules.statuses,
                     ..Default::default()
                 };
-                if !state.complete_force(&mut next, a, c, id) {
+                if !state.complete_force_in(&mut next, a, c, id, rules.board_mechanics) {
                     continue;
                 }
                 let next_rules = Rules {
@@ -300,7 +316,13 @@ pub fn choose_force_move_in(
                 let value = choose_move_in(&next, hp, id, mp, id, 1, next_rules)
                     .map(|(p, q)| {
                         let mut after = next;
-                        crate::board::hero_swap(&mut after, p, q, id);
+                        crate::board::hero_swap_in(
+                            &mut after,
+                            p,
+                            q,
+                            id,
+                            next_rules.board_mechanics,
+                        );
                         score(
                             &after,
                             id,

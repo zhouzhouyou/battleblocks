@@ -77,6 +77,9 @@ pub fn preview_rewards_in(
         ..rules
     };
     let e = effect_at_in(skill, &mut copy, target, hero, hp, mp, rules);
+    if let Some(change) = e.board_change {
+        let _ = change.apply(&mut rules.board_mechanics, rules.actor_enemy);
+    }
     let mut state = crate::role_state::RoleState {
         statuses: rules.statuses,
         ..Default::default()
@@ -97,7 +100,7 @@ pub fn preview_rewards_in(
     let spent = mp - pay.mana;
     let mut mana = settled.actor_mp;
     let (cells, rewarded) = if e.cells.is_empty() {
-        (crate::matches(&copy), true)
+        (rules.board_mechanics.matches(&copy), true)
     } else {
         (e.cells.clone(), e.reward)
     };
@@ -250,9 +253,12 @@ pub fn preview_move_in(
     rules: Rules,
 ) -> Option<MovePreview> {
     let mut copy = *board;
+    if !crate::board::exchange_allowed(a, c, hero, armed, rules.board_mechanics) {
+        return None;
+    }
     if armed && crate::board::adjacent(a, c, hero) && a.0.abs_diff(c.0) + a.1.abs_diff(c.1) == 1 {
         crate::board::parallel_swap(&mut copy, a, c);
-    } else if !crate::board::hero_swap(&mut copy, a, c, hero) {
+    } else if !crate::board::hero_swap_in(&mut copy, a, c, hero, rules.board_mechanics) {
         return None;
     }
     if a.1 < N - reachable_rows(hero, hp, rules) || c.1 < N - reachable_rows(hero, hp, rules) {
@@ -263,7 +269,7 @@ pub fn preview_move_in(
         swap_clear: true,
         ..rules
     };
-    let cells = crate::matches(&copy);
+    let cells = rules.board_mechanics.matches(&copy);
     let batch = clear_batch_in(hero, hp, mp, &copy, &cells, 1, bonus, rules);
     let settled = settle_batch_in(hero, hp, mp, enemy_hp, batch, rules);
     let health_after = settled.actor_hp;
@@ -315,7 +321,7 @@ pub fn ranked_moves_in(
     armed: bool,
     rules: Rules,
 ) -> Vec<(((usize, usize), (usize, usize)), Option<MovePreview>)> {
-    let mut moves: Vec<_> = crate::board::move_hints(board, hero, armed)
+    let mut moves: Vec<_> = crate::board::move_hints_in(board, hero, armed, rules.board_mechanics)
         .into_iter()
         .map(|(a, c)| {
             let p = preview_move_in(board, hero, hp, mp, enemy_hp, bonus, armed, a, c, rules);

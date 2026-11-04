@@ -27,6 +27,7 @@ struct Motion {
     from: Vec2,
     to: Vec2,
     kind: u8,
+    portals: Vec<(Vec2, Vec2)>,
 }
 struct Popup {
     enemy: bool,
@@ -321,6 +322,7 @@ impl Presentation {
                     from: pos(from.0 as isize, from.1 as isize),
                     to: pos(to.0 as isize, to.1 as isize),
                     kind: before[from.1][from.0],
+                    portals: Vec::new(),
                 });
             }
         }
@@ -337,6 +339,16 @@ impl Presentation {
                 from: pos(f.from.0, f.from.1),
                 to: pos(f.to.0 as isize, f.to.1 as isize),
                 kind: f.kind,
+                portals: f
+                    .portals
+                    .into_iter()
+                    .map(|(a, b)| {
+                        (
+                            pos(a.0 as isize, a.1 as isize),
+                            pos(b.0 as isize, b.1 as isize),
+                        )
+                    })
+                    .collect(),
             })
             .collect();
         self.time = FALL_TIME;
@@ -371,24 +383,50 @@ impl Presentation {
         let t = 1. - (self.time / self.duration) as f32;
         let eased = t * t * (3. - 2. * t);
         for m in &self.motions {
-            let p = m.from.lerp(m.to, eased);
-            let crop = (110. - p.y).max(0.);
-            if crop >= 64. {
+            // Fade out at each entrance and appear at the exit: never fly across
+            // unrelated board cells along a diagonal teleport segment.
+            let (p, alpha) = if m.portals.is_empty() {
+                (m.from.lerp(m.to, eased), 1.)
+            } else {
+                let steps = m.portals.len() + 1;
+                let phase = (eased * steps as f32).min(steps as f32 - 0.00001);
+                let i = phase.floor() as usize;
+                let t = phase.fract();
+                let from = if i == 0 { m.from } else { m.portals[i - 1].1 };
+                let to = if i == m.portals.len() {
+                    m.to
+                } else {
+                    m.portals[i].0
+                };
+                let fade = if i > 0 { (t * 4.).min(1.) } else { 1. }
+                    * if i < m.portals.len() {
+                        ((1. - t) * 4.).min(1.)
+                    } else {
+                        1.
+                    };
+                (from.lerp(to, t), fade)
+            };
+            let left = (256. - p.x).clamp(0., 64.);
+            let top = (110. - p.y).clamp(0., 64.);
+            let right = (p.x + 64. - 768.).clamp(0., 64.);
+            let bottom = (p.y + 64. - 622.).clamp(0., 64.);
+            let (w, h) = (64. - left - right, 64. - top - bottom);
+            if w <= 0. || h <= 0. {
                 continue;
             }
             let texture = &tiles[m.kind as usize];
             draw_texture_ex(
                 texture,
-                p.x,
-                p.y + crop,
-                WHITE,
+                p.x + left,
+                p.y + top,
+                Color::new(1., 1., 1., alpha),
                 DrawTextureParams {
-                    dest_size: Some(vec2(64., 64. - crop)),
+                    dest_size: Some(vec2(w, h)),
                     source: Some(Rect::new(
-                        0.,
-                        crop / 64. * texture.height(),
-                        texture.width(),
-                        (1. - crop / 64.) * texture.height(),
+                        left / 64. * texture.width(),
+                        top / 64. * texture.height(),
+                        w / 64. * texture.width(),
+                        h / 64. * texture.height(),
                     )),
                     ..Default::default()
                 },
@@ -491,6 +529,7 @@ mod tests {
     fn refill_animation_accepts_horizontal_and_off_board_origins() {
         let mut p = Presentation::default();
         p.fall(vec![TileFall {
+            portals: Vec::new(),
             from: (-2, 3),
             to: (1, 3),
             kind: 2,
