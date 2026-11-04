@@ -22,42 +22,64 @@ fn every_character_webp_decodes_with_its_original_atlas_dimensions() {
     }
 }
 #[test]
-fn new_role_atlases_have_all_animation_frames_and_fixed_binary_palettes() {
-    for id in [content::KNIGHT, content::DWARF, content::PRIEST] {
-        let image = image::load_from_memory(sprites::SPRITES[id].bytes)
-            .unwrap()
-            .to_rgba8();
-        assert_eq!(image.dimensions(), (384 * 4, 384 * 4));
-        // Visible idle rows must share the same display height across roles;
-        // transparent canvas padding must not shrink the priest or dwarf.
-        for row in 0..2 {
-            let max_height = (0..4)
-                .map(|column| {
-                    let occupied: Vec<_> = (0..384)
-                        .filter(|&y| {
-                            (0..384)
-                                .any(|x| image.get_pixel(column * 384 + x, row * 384 + y)[3] > 0)
-                        })
-                        .collect();
-                    occupied.last().unwrap() - occupied.first().unwrap() + 1
-                })
-                .max()
-                .unwrap();
-            assert_eq!(max_height, 320, "role {id} idle row {row}");
-        }
-        for frame in 0..16 {
-            let mut colors = std::collections::HashSet::new();
-            for y in frame / 4 * 384..(frame / 4 + 1) * 384 {
-                for x in frame % 4 * 384..(frame % 4 + 1) * 384 {
-                    let pixel = image.get_pixel(x, y);
-                    assert!(pixel[3] == 0 || pixel[3] == 255);
-                    if pixel[3] > 0 {
-                        colors.insert([pixel[0], pixel[1], pixel[2]]);
+fn new_role_atlases_have_twelve_distinct_poses_per_action_and_shared_palettes() {
+    use std::hash::{Hash, Hasher};
+    for id in [
+        content::KNIGHT,
+        content::DWARF,
+        content::PRIEST,
+        content::NUN,
+        content::FIRE_ELF,
+    ] {
+        let asset = &sprites::SPRITES[id];
+        let image = image::load_from_memory(asset.bytes).unwrap().to_rgba8();
+        assert_eq!(image.dimensions(), (384 * 6, 384 * 8));
+        assert_eq!(asset.anchor, Some([192., 336.]));
+        let awake = &sprites::AWAKENED[id];
+        let clips = [
+            asset.idle(),
+            awake.idle(),
+            asset.cast.unwrap(),
+            asset.sleep.unwrap_or_else(|| awake.cast.unwrap()),
+        ];
+        let mut colors = std::collections::HashSet::new();
+        for clip in clips {
+            assert_eq!(clip.indices.len(), 12);
+            assert_eq!(clip.indices.len(), clip.durations.len());
+            let mut hashes = std::collections::HashSet::new();
+            let mut max_height = 0;
+            for &frame in clip.indices {
+                assert!(frame < 48);
+                let mut hash = std::collections::hash_map::DefaultHasher::new();
+                let mut bottom = 0;
+                let mut top = 384;
+                let mut visible = 0;
+                for y in 0..384 {
+                    for x in 0..384 {
+                        let pixel = image
+                            .get_pixel((frame as u32 % 6) * 384 + x, (frame as u32 / 6) * 384 + y);
+                        pixel.0.hash(&mut hash);
+                        assert!(pixel[3] == 0 || pixel[3] == 255);
+                        if pixel[3] != 0 {
+                            colors.insert([pixel[0], pixel[1], pixel[2]]);
+                            bottom = y + 1;
+                            top = top.min(y);
+                            visible += 1;
+                            assert!(x > 0 && x < 383, "clipped pose {id}/{frame}");
+                        }
                     }
                 }
+                assert!(visible > 1000);
+                assert_eq!(bottom, 336, "foot baseline {id}/{frame}");
+                max_height = max_height.max(bottom - top);
+                hashes.insert(hash.finish());
             }
-            assert!(!colors.is_empty() && colors.len() <= 64);
+            assert_eq!(hashes.len(), 12, "duplicate poses in role {id}");
+            if clip.playback == sprites::Playback::Loop {
+                assert_eq!(max_height, 320, "uniform idle display height {id}");
+            }
         }
+        assert!(colors.len() <= 64, "one palette across every pose and form");
     }
     let book = image::load_from_memory(sprites::BOOK_BYTES).unwrap();
     assert_eq!((book.width(), book.height()), (1536, 384));
@@ -451,39 +473,68 @@ fn skill_cards_adapt_to_the_wrapped_description_height() {
 }
 
 #[test]
-fn only_new_role_atlases_have_cast_rows() {
-    // 4×4 new-role sheets: idle, awakened idle, cast, awakened cast.
-    // The fire elf's fourth row is its sleep pose; both forms share the cast row.
-    assert_eq!(
-        sprites::cast_frames(content::NUN, false),
-        Some([8, 9, 10, 11].as_slice())
-    );
-    assert_eq!(
-        sprites::cast_frames(content::NUN, true),
-        Some([12, 13, 14, 15].as_slice())
-    );
-    assert_eq!(
-        sprites::cast_frames(content::DWARF, false).map(|f| f.len()),
-        Some(4)
-    );
-    assert_eq!(
-        sprites::cast_frames(content::FIRE_ELF, false),
-        Some([8, 9, 10, 11].as_slice())
-    );
-    assert_eq!(
-        sprites::cast_frames(content::FIRE_ELF, true),
-        Some([8, 9, 10, 11].as_slice())
-    );
-    assert_eq!(
-        sprites::sleep_frames(content::FIRE_ELF),
-        Some([12, 13, 14, 15].as_slice())
-    );
-    assert_eq!(sprites::sleep_frames(content::NUN), None);
-    // Legacy sheets have no cast row, so battle and preview keep their idle frames.
-    assert_eq!(sprites::cast_frames(0, false), None);
-    assert_eq!(sprites::cast_frames(6, true), None);
-    let total: f64 = sprites::CAST_FRAME_TIME.iter().sum();
-    assert!((total - presentation::CAST_TIME).abs() < 1e-9);
+fn action_metadata_preserves_legacy_fallback_and_fire_elf_sleep() {
+    for id in 0..HEROES.len() {
+        for asset in [&sprites::SPRITES[id], &sprites::AWAKENED[id]] {
+            assert_eq!(asset.indices.len(), asset.durations.len());
+            if id < content::KNIGHT {
+                assert!(asset.cast.is_none() && asset.sleep.is_none());
+                assert!(asset.action(true).is_none());
+            } else {
+                let cast = asset.cast.unwrap();
+                assert_eq!(cast.indices.len(), 12);
+                assert!((cast.duration() - presentation::CAST_TIME).abs() < 1e-9);
+                assert!((asset.idle().duration() - 0.72).abs() < 1e-9);
+                assert_eq!(cast.playback, sprites::Playback::Once);
+            }
+        }
+    }
+    let fire = &sprites::SPRITES[content::FIRE_ELF];
+    assert_eq!(fire.cast, sprites::AWAKENED[content::FIRE_ELF].cast);
+    assert_ne!(fire.cast, fire.sleep);
+    assert_eq!(fire.sleep.unwrap().frame(60.), 47);
+    assert!(sprites::SPRITES[content::NUN].sleep.is_none());
+}
+
+#[test]
+fn nuns_shadow_lantern_keeps_its_purple_identity_after_quantization() {
+    let image = image::load_from_memory(sprites::SPRITES[content::NUN].bytes)
+        .unwrap()
+        .to_rgba8();
+    for (dark, asset) in [
+        (false, &sprites::SPRITES[content::NUN]),
+        (true, &sprites::AWAKENED[content::NUN]),
+    ] {
+        for clip in [asset.idle(), asset.cast.unwrap()] {
+            for &frame in clip.indices {
+                let mut purple = 0;
+                for y in 0..384 {
+                    for x in 0..384 {
+                        let p = image
+                            .get_pixel((frame as u32 % 6) * 384 + x, (frame as u32 / 6) * 384 + y);
+                        if p[3] > 0
+                            && p[2] > 70
+                            && u32::from(p[2]) * 10 > u32::from(p[1]) * 13
+                            && u32::from(p[0]) * 10 > u32::from(p[1]) * 13
+                        {
+                            purple += 1;
+                        }
+                    }
+                }
+                if dark {
+                    assert!(
+                        purple > 100,
+                        "shadow lantern color was lost in frame {frame}: {purple}"
+                    );
+                } else {
+                    assert_eq!(
+                        purple, 0,
+                        "normal lantern must remain warm in frame {frame}"
+                    );
+                }
+            }
+        }
+    }
 }
 
 #[test]

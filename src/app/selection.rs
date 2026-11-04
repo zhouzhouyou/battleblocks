@@ -221,7 +221,7 @@ impl Session {
                         frame.pointer,
                         self.character_page,
                         self.interface.hero_scroll,
-                        &self.awake_textures[self.hero_id],
+                        self.awake_texture(false),
                     );
                 }
                 self.interface
