@@ -3,7 +3,7 @@ import sys
 from asset_paths import legacy_role, report_path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / '.build-tools/art-site'))
 from PIL import Image
-import json, shutil
+import json
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "assets"
 OUT.mkdir(exist_ok=True)
@@ -21,9 +21,7 @@ def webp_durations(path):
         pos += 8 + size + (size & 1)
     return durations
 
-for name in ("balanced", "hp", "damage", "mp", "hd", "hm", "dm"):
-    Image.open(ROOT / f"assets-source/ui/{name}.webp").convert("RGBA").save(OUT / "ui" / f"{name}.webp", lossless=True, exact=True, method=6)
-shutil.copy2(ROOT / "assets-source/audio/crush.wav", OUT / "audio/runtime/crush.wav")
+# UI tiles and crush.wav are already final assets; use them directly.
 report = {}
 for name in ("knight", "elf", "wizzard", "goblin", "imp", "chort", "big_zombie"):
     source = ROOT / f"assets-source/roles/{legacy_role(name)}/animation/normal-original.webp"

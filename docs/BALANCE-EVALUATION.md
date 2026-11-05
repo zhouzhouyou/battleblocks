@@ -1,6 +1,6 @@
 # 可复现的角色平衡评估
 
-本工具完成 Issue #12 的真实对局统计评估路线：总预算、稀疏采样、统一评分、不确定性、先手检测、增量复用、克制关系与基准比较。技能 EV、训练状态价值函数、修改策略 AI 和自动调参属于后续研究，不包含在此工具中。
+本工具通过真实对局评估角色平衡，提供：总预算、稀疏采样、统一评分、不确定性、先手检测、增量复用、克制关系与基准比较。技能 EV、训练状态价值函数、修改策略 AI 和自动调参属于后续研究，不包含在此工具中。
 
 ## 运行
 
@@ -21,12 +21,12 @@ python tools/evaluate_balance.py --roster all --budget 800 --out .local/analysis
 
 ## 输出与定义
 
-默认输出 `analysis/evaluation/`：
+默认输出 `.local/analysis/evaluation/`：
 
 - `report.json`：机器可读配置、编译版本、评分、区间、配对矩阵（每个无序配对一行，反向取 1-p）、先手统计、候选与确认循环。
 - `report.md`：便于阅读的中文报告及角色标记原因。
 - `matches.jsonl`：每个种子对的两局原始结果，包含种子、位置、难度、步数限制、胜负、终止原因、回合数、剩余生命，以及配对版本键。
-- `analysis/evaluation-cache.sqlite`：持久化原始种子对，事务提交，版本冲突时保留旧记录。原始数据不因模型或报告阈值改变而失效。
+- `.local/analysis/evaluation-cache.sqlite`：持久化原始种子对，事务提交，版本冲突时保留旧记录。原始数据不因模型或报告阈值改变而失效。
 
 统一度量为**得分率 = 胜率 + 50% × 平局率**，无平局时等于胜率。超步数不当作平局；任一方向中断的种子对不参与模型拟合，该配对实测区间退回 `[0,1]`，自动判定保持保守。未完成的模拟仍消耗预算。评分反映指定 AI 与正常开局分布下的表现，不代表真人操作上限。
 
@@ -64,14 +64,14 @@ python tools/evaluate_balance.py --roster all --budget 800 --out .local/analysis
 ```sh
 python tools/evaluate_balance.py --sampler uniform --budget 1280 --seed 121001 --out .local/analysis/evaluation-runs/train
 python tools/evaluate_balance.py --sampler uniform --budget 2560 --seed 122001 --out .local/analysis/evaluation-runs/reference
-python tools/benchmark_balance.py --training analysis/evaluation-runs/train --reference analysis/evaluation-runs/reference --budgets 100,200,400,800 --repetitions 12 --out .local/analysis/evaluation-benchmark.json
+python tools/benchmark_balance.py --training .local/analysis/evaluation-runs/train --reference .local/analysis/evaluation-runs/reference --budgets 100,200,400,800 --repetitions 12 --out .local/analysis/evaluation-benchmark.json
 ```
 
 基准保留三个明确不同的比较列：`uniform_raw_empirical_rmse` 是原有均匀采样＋原始配对得分率；`uniform_rmse` 是均匀采样＋新收缩估计；`adaptive_rmse` 是自适应采样＋新收缩估计。第一列与第三列比较整个系统的收益；第二列与第三列使用**相同估计器、训练池与总预算**，才隔离采样策略的贡献。不能把收缩估计带来的优势归功于自适应采样。
 
 参考种子严格不重叠，全部配对必须有数据，不能包含中断；导入逐条校验编译版本键、英雄位置、派生种子、难度及步数上限，支持 gzip 压缩的 JSONL 证据。训练池重排重复用于观察采样稳定性，重复之间复用同一有限数据池，因此重放标准误仅为描述性结果。参考胜率本身仍有误差，不能称为真实概率。
 
-比较配对 RMSE、留出得分 Brier、综合表现排名相关性、候选极端克制精确率／召回率、正式确认数与区间覆盖参考均值的比例。报告各预算，不只挑最好一个。真实优势以提交的实验数据为准，不保证所有预算、所有阵容均优于均匀采样。统计测试另用已知概率验证区间，不拿参考均值覆盖率冒充真实概率覆盖率。
+比较配对 RMSE、留出得分 Brier、综合表现排名相关性、候选极端克制精确率／召回率、正式确认数与区间覆盖参考均值的比例。报告各预算，不只挑最好一个。实际效果以本地独立种子评估结果为准，不保证所有预算、所有阵容均优于均匀采样。统计测试另用已知概率验证区间，不拿参考均值覆盖率冒充真实概率覆盖率。
 
 验证命令：`cargo test --locked`、`python tools/test_balance.py`、`python tools/check_headless.py`、`python tools/check_balance.py`、指定 Python 执行 `tools/build.py`。本功能不改 GUI，不要求窗口验证。
 
