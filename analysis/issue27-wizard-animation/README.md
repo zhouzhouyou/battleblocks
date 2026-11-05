@@ -43,4 +43,4 @@
 
 macOS arm64 在实现提交上运行 `tools/build.py --native-only` 和 `check_headless.py` 全部通过，[CI及下载产物](https://github.com/zhouzhouyou/battleblocks/actions/runs/41970921353)。已下载至本机 `dist/macos-review/macos-arm64.zip`；网页包 `dist/web.zip` 8,488,968字节，Windows包8,860,653字节，macOS包8,918,003字节。包内仅运行时资产与必要运行文件，设计源图和录像不进入包。macOS运行界面在本机Windows上未验证，已验证macOS构建及headless。
 
-独立审查结论在交付前追加。待用户最终看：普通全身造型与旧半身像的差异、脸部浅色块与细密衣褶、觉醒差异是否足够明确、施法下压力度与循环节奏。角色介绍原文仍待补充，不影响已授权动画实现；主 Issue #11保留。
+独立 `reasoning_effort=medium` subagent 在 `18e45a9` 完成完整差异、实际图集、播放抽帧及原始数据审查，结论为**无可确认的阻塞发现**，163个源码／资产绑定哈希全部匹配；没有确认需修复问题。[完整审查结论与未验证范围](independent-review.md)。待用户最终看：普通全身造型与旧半身像的差异、脸部浅色块与细密衣褶、觉醒差异是否足够明确、施法下压力度与循环节奏。角色介绍原文仍待补充，不影响已授权动画实现；主 Issue #11保留。
