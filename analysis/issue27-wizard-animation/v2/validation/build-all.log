@@ -1,0 +1,406 @@
+info: component rust-std for target wasm32-unknown-unknown is up to date
+   Compiling battleblocks v0.1.1 (C:\Users\dongs\Desktop\battleblocks)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.40s
+     Running unittests src\bin\balance_probe.rs (target\debug\deps\balance_probe-ea16728ab2e670cf.exe)
+
+running 93 tests
+test board::gravity::fall_tests::falling_motion_tracks_survivors_and_refill ... ok
+test board::passive_tests::column_swap_moves_all_rows_and_rejects_without_mutation ... ok
+test board::passive_tests::diagonal_swap_only_for_elf_and_preserves_match_rules ... ok
+test content::awakening_tests::awakened_flesh_casting_rounds_up_and_requires_survival ... ok
+test content::awakening_tests::awakened_guard_heals_its_new_cap_and_preserves_tile_consumption ... ok
+test content::awakening_tests::awakened_buffs_costs_and_caps_use_the_actual_shared_rules ... ok
+test content::awakening_tests::awakened_flesh_preview_matches_payment_effect_targets_and_caps ... ok
+test content::awakening_tests::every_role_triggers_exactly_at_its_line_and_survives_a_lethal_hit ... ok
+test content::awakening_tests::payment_can_awaken_before_healing_and_boost_that_same_skill ... ok
+test content::abilities::tests::displayed_phase_identities_drive_costs_cap_payment_and_live_status ... ok
+test content::abilities::tests::upgrades_replace_identity_while_new_powers_keep_inherited_passives ... ok
+test content::awakening_tests::loot_boost_applies_only_to_its_first_clear_and_mana_still_caps ... ok
+test content::awakening_tests::reduced_reserves_cover_each_roles_largest_skill ... ok
+test content::awakening_tests::same_role_has_independent_flags_and_reset_is_a_plain_snapshot_restore ... ok
+test content::awakening_tests::phase_health_changes_reach_actual_caps_without_changing_costs_or_preview_state ... ok
+test content::awakening_tests::wizard_full_mana_heals_normally_and_checks_phase_cap_before_clear ... ok
+test content::awakening_tests::wizard_reserve_caps_skill_and_swap_rewards_in_both_phases ... ok
+test content::awakening_tests::imp_strength_moves_from_blast_to_rewarded_clears_in_both_phases ... ok
+test content::cooldown_tests::cooldown_counts_only_owner_turns_and_zero_is_unlimited ... ok
+test content::fire_elf_tests::copied_ember_blast_does_not_grant_the_fire_elfs_sleep_recovery ... ok
+test content::fire_elf_tests::copied_ember_blast_does_not_hijack_the_priests_other_skill_payments ... ok
+test content::fire_elf_tests::ember_blast_requires_full_mana_then_spends_everything ... ok
+test content::fire_elf_tests::copied_ember_blast_uses_the_casters_cap_and_makes_the_caster_sleep ... ok
+test content::fire_elf_tests::ember_blast_is_one_full_board_destroy_and_scales_with_mana ... ok
+test content::fire_elf_tests::mana_affinity_converts_two_non_mana_tiles_without_creating_a_match ... ok
+test content::awakening_tests::tuned_enemy_caps_match_real_hits_for_every_target_and_phase ... ok
+test content::fire_elf_tests::sleep_is_inserted_after_the_cast_turn_and_consumed_after_the_skip ... ok
+test content::fire_elf_tests::mana_affinity_does_not_touch_mana_tiles_or_force_a_match ... ok
+test content::fire_elf_tests::fire_elf_identity_and_loadout_replace_the_autoplay_wizard_slot ... ok
+test content::fire_elf_tests::sleep_recovers_at_turn_end_and_sound_sleep_improves_it ... ok
+test content::fire_elf_tests::sound_sleep_reduces_incoming_damage_while_asleep ... ok
+test content::keyword_tests::keywords_are_configured_and_percentage_triggers_floor_after_aggregation ... ok
+test content::new_role_integration_tests::autoplay_roster_keeps_new_knight_and_unlocks_third_slots ... ok
+test content::move_preview_tests::previews_use_role_exchange_rules_rewards_caps_and_bonus ... ok
+test content::new_role_integration_tests::copied_skill_uses_native_cost_and_end_turn_rule_but_slot_cooldown_is_one ... ok
+test content::move_preview_tests::ranked_moves_sort_by_total_then_heal_damage_mana ... ok
+test board::hint_tests::no_match_board_has_no_hints_unless_prepared ... ok
+test content::new_role_integration_tests::dwarf_swap_immunity_tracks_each_cleared_tiles_row_and_preserves_other_rewards ... ok
+test content::new_role_integration_tests::dwarf_reach_tracks_current_health_and_jump_and_preserves_rejected_targets ... ok
+test content::new_role_integration_tests::priest_previews_are_pure_and_obey_capacity_costs_and_resource_caps ... ok
+test content::nun_tests::automatic_recovery_restores_mana_to_cap_and_converts_its_ten_healing ... ok
+test content::new_role_integration_tests::strength_and_horizontal_awakened_bonus_are_exact_and_do_not_leak_to_cascades ... ok
+test content::deadlock_tests::skill_escape_checks_effects_caps_and_blood_before_heal ... ok
+test content::awakening_tests::previews_simulate_opponent_awakening_and_subsequent_damage_without_mutation ... ok
+test content::nun_tests::automatic_recovery_converted_by_madness_reports_madness_as_immediate_source ... ok
+test content::nun_tests::awakening_keeps_friendship_and_reason_only_disables_madness ... ok
+test content::nun_tests::friendship_uses_raw_healing_even_when_full_and_frenzy_changes_only_opponent_healing ... ok
+test content::nun_tests::conversion_preserves_causal_chain_but_changes_immediate_source_for_dwarf ... ok
+test content::nun_tests::healing_prayer_counts_each_side_maximum_and_friendship_adds_a_second_enemy_heal ... ok
+test content::nun_tests::ordinary_match_healing_runs_through_friendship_settlement ... ok
+test content::nun_tests::two_nuns_do_not_retrigger_friendship_from_received_healing ... ok
+test content::nun_tests::preview_is_pure_and_matches_direct_healing_and_conversion ... ok
+test content::passive_status_tests::badges_follow_health_thresholds_and_real_payment_capacity ... ok
+test content::passive_tests::blood_preview_is_pure_accounts_for_cost_caps_and_targets ... ok
+test content::passive_tests::clear_passives_have_exact_rewards_and_thresholds ... ok
+test content::passive_tests::payment_requires_surviving_before_any_heal ... ok
+test content::preview_tests::healing_and_damage_obey_caps ... ok
+test content::new_role_integration_tests::hammer_is_normal_elimination_plus_eighty_and_preview_never_draws_randomness ... ok
+test content::deadlock_tests::deadlock_respects_role_moves_and_preparation ... ok
+test content::nun_tests::frenzy_changes_rewards_without_arming_board_or_adding_legal_moves ... ok
+test content::preview_tests::guard_consumes_pure_healing_only_without_additional_rewards ... ok
+test content::preview_tests::lightning_shows_cost_and_actual_mana ... ok
+test content::preview_tests::transformations_count_first_matches_and_preview_is_pure ... ok
+test content::preview_tests::charge_target_preview_is_positive_and_matches_selected_columns ... ok
+test content::rework_tests::every_hero_has_a_character_file_and_the_four_have_full_voice_lines ... ok
+test content::reward_tests::cascades_are_bounded_and_first_wave_is_linear ... ok
+test content::rework_tests::charge_destroys_two_columns_and_triggers_only_attack_and_mana ... ok
+test content::rework_tests::fatigue_starts_after_twelve_rounds_and_shortens_grindy_games ... ok
+test content::rework_tests::miracle_no_longer_penalises_the_turn_and_forces_one_move ... ok
+test content::tests::all_heroes_can_pay_their_skills ... ok
+test content::rework_tests::no_cooldown_repeat_casts_raise_mana_cost_and_reset_each_turn ... ok
+test content::status::tests::owner_turn_countdown_and_consumed_preparations_are_independent ... ok
+test content::rework_tests::might_is_shared_and_column_swaps_carry_the_knight_identity ... ok
+test content::tests::clear_shapes_and_rewards_match_skill_rules ... ok
+test content::tests::effects_are_unique_and_in_bounds ... ok
+test content::tests::corrupt_and_nature_change_board ... ok
+test content::tests::selected_targets_and_new_combos ... ok
+test content::tests::knight_charge_and_guard_rules ... ok
+test rng::tests::restore_reproduces_refill ... ok
+test role_state::tests::new_cooldowns_share_config_and_restore_with_snapshots ... ok
+test role_state::tests::pocket_capacity_and_selection_follow_actual_contents ... ok
+test role_state::tests::force_swap_obeys_caster_movement_and_is_transactional ... ok
+test role_state::tests::conversion_mode_is_snapshot_owned_and_expires_at_turn_end ... ok
+test role_state::tests::resurrection_inserts_and_destroys_bottom_without_tile_rewards ... ok
+test content::passive_tests::passive_skill_preview_matches_manual_first_wave_with_caps ... ok
+test strategy::tests::ai_cannot_spend_unavailable_mana ... ok
+test content::move_preview_tests::every_hint_has_pure_preview_including_prepared_swaps ... ok
+test content::preview_tests::target_ranges_cover_every_target ... ok
+test board::passive_tests::all_role_options_are_legal_unique_and_match_playability ... ok
+test board::hint_tests::hints_cover_every_legal_input_without_changing_state ... ok
+test strategy::tests::ai_only_chooses_legal_moves ... ok
+test board::refresh_tests::refreshed_boards_are_match_free_and_playable_for_actor ... ok
+test content::move_preview_tests::ranked_moves_keep_every_hint_with_its_pure_preview ... ok
+
+test result: ok. 93 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.47s
+
+     Running unittests src\main.rs (target\debug\deps\battleblocks-d76988939d313093.exe)
+
+running 172 tests
+test audio::native::tests::native_output_stream_effect_pause_resume ... ignored, Requires a real audio output device
+test board::gravity::fall_tests::falling_motion_tracks_survivors_and_refill ... ok
+test audio::native::tests::malformed_effect_is_rejected ... ok
+test board::passive_tests::column_swap_moves_all_rows_and_rejects_without_mutation ... ok
+test app::selection::tests::groups_cover_every_hero_once_with_complete_assets_and_descriptions ... ok
+test board::passive_tests::diagonal_swap_only_for_elf_and_preserves_match_rules ... ok
+test app::selection::tests::switching_groups_resets_only_that_pages_selection_and_preview ... ok
+test app::selection::tests::explicit_cross_group_opponents_and_mirrors_survive_restart ... ok
+test app::selection::tests::console_edits_and_rollback_reveal_the_actual_hero_on_return ... ok
+test content::awakening_tests::awakened_buffs_costs_and_caps_use_the_actual_shared_rules ... ok
+test content::awakening_tests::awakened_flesh_casting_rounds_up_and_requires_survival ... ok
+test content::awakening_tests::awakened_flesh_preview_matches_payment_effect_targets_and_caps ... ok
+test content::awakening_tests::every_role_triggers_exactly_at_its_line_and_survives_a_lethal_hit ... ok
+test content::awakening_tests::awakened_guard_heals_its_new_cap_and_preserves_tile_consumption ... ok
+test content::abilities::tests::displayed_phase_identities_drive_costs_cap_payment_and_live_status ... ok
+test content::abilities::tests::upgrades_replace_identity_while_new_powers_keep_inherited_passives ... ok
+test content::awakening_tests::payment_can_awaken_before_healing_and_boost_that_same_skill ... ok
+test audio::native::tests::ring_capacity_and_stereo_order_are_bounded ... ok
+test content::awakening_tests::loot_boost_applies_only_to_its_first_clear_and_mana_still_caps ... ok
+test content::awakening_tests::phase_health_changes_reach_actual_caps_without_changing_costs_or_preview_state ... ok
+test content::awakening_tests::same_role_has_independent_flags_and_reset_is_a_plain_snapshot_restore ... ok
+test content::awakening_tests::reduced_reserves_cover_each_roles_largest_skill ... ok
+test content::awakening_tests::wizard_full_mana_heals_normally_and_checks_phase_cap_before_clear ... ok
+test content::cooldown_tests::cooldown_counts_only_owner_turns_and_zero_is_unlimited ... ok
+test content::awakening_tests::wizard_reserve_caps_skill_and_swap_rewards_in_both_phases ... ok
+test content::awakening_tests::imp_strength_moves_from_blast_to_rewarded_clears_in_both_phases ... ok
+test content::awakening_tests::tuned_enemy_caps_match_real_hits_for_every_target_and_phase ... ok
+test content::fire_elf_tests::copied_ember_blast_does_not_grant_the_fire_elfs_sleep_recovery ... ok
+test content::fire_elf_tests::copied_ember_blast_does_not_hijack_the_priests_other_skill_payments ... ok
+test content::fire_elf_tests::ember_blast_is_one_full_board_destroy_and_scales_with_mana ... ok
+test content::fire_elf_tests::copied_ember_blast_uses_the_casters_cap_and_makes_the_caster_sleep ... ok
+test content::fire_elf_tests::ember_blast_requires_full_mana_then_spends_everything ... ok
+test content::fire_elf_tests::fire_elf_identity_and_loadout_replace_the_autoplay_wizard_slot ... ok
+test board::hint_tests::no_match_board_has_no_hints_unless_prepared ... ok
+test content::fire_elf_tests::mana_affinity_converts_two_non_mana_tiles_without_creating_a_match ... ok
+test content::fire_elf_tests::mana_affinity_does_not_touch_mana_tiles_or_force_a_match ... ok
+test content::fire_elf_tests::sleep_recovers_at_turn_end_and_sound_sleep_improves_it ... ok
+test content::fire_elf_tests::sound_sleep_reduces_incoming_damage_while_asleep ... ok
+test content::fire_elf_tests::sleep_is_inserted_after_the_cast_turn_and_consumed_after_the_skip ... ok
+test content::move_preview_tests::previews_use_role_exchange_rules_rewards_caps_and_bonus ... ok
+test content::keyword_tests::keywords_are_configured_and_percentage_triggers_floor_after_aggregation ... ok
+test audio::native::tests::effect_is_finite_and_has_expected_duration ... ok
+test content::move_preview_tests::ranked_moves_sort_by_total_then_heal_damage_mana ... ok
+test content::new_role_integration_tests::autoplay_roster_keeps_new_knight_and_unlocks_third_slots ... ok
+test content::new_role_integration_tests::copied_skill_uses_native_cost_and_end_turn_rule_but_slot_cooldown_is_one ... ok
+test content::new_role_integration_tests::dwarf_reach_tracks_current_health_and_jump_and_preserves_rejected_targets ... ok
+test content::new_role_integration_tests::dwarf_swap_immunity_tracks_each_cleared_tiles_row_and_preserves_other_rewards ... ok
+test content::new_role_integration_tests::priest_previews_are_pure_and_obey_capacity_costs_and_resource_caps ... ok
+test content::deadlock_tests::skill_escape_checks_effects_caps_and_blood_before_heal ... ok
+test content::awakening_tests::previews_simulate_opponent_awakening_and_subsequent_damage_without_mutation ... ok
+test content::nun_tests::automatic_recovery_converted_by_madness_reports_madness_as_immediate_source ... ok
+test content::new_role_integration_tests::hammer_is_normal_elimination_plus_eighty_and_preview_never_draws_randomness ... ok
+test content::new_role_integration_tests::strength_and_horizontal_awakened_bonus_are_exact_and_do_not_leak_to_cascades ... ok
+test content::nun_tests::awakening_keeps_friendship_and_reason_only_disables_madness ... ok
+test content::nun_tests::automatic_recovery_restores_mana_to_cap_and_converts_its_ten_healing ... ok
+test content::nun_tests::conversion_preserves_causal_chain_but_changes_immediate_source_for_dwarf ... ok
+test content::nun_tests::friendship_uses_raw_healing_even_when_full_and_frenzy_changes_only_opponent_healing ... ok
+test content::nun_tests::healing_prayer_counts_each_side_maximum_and_friendship_adds_a_second_enemy_heal ... ok
+test content::nun_tests::ordinary_match_healing_runs_through_friendship_settlement ... ok
+test content::nun_tests::two_nuns_do_not_retrigger_friendship_from_received_healing ... ok
+test content::nun_tests::preview_is_pure_and_matches_direct_healing_and_conversion ... ok
+test content::passive_status_tests::badges_follow_health_thresholds_and_real_payment_capacity ... ok
+test content::passive_tests::blood_preview_is_pure_accounts_for_cost_caps_and_targets ... ok
+test content::passive_tests::clear_passives_have_exact_rewards_and_thresholds ... ok
+test content::passive_tests::payment_requires_surviving_before_any_heal ... ok
+test content::preview_tests::charge_target_preview_is_positive_and_matches_selected_columns ... ok
+test content::preview_tests::guard_consumes_pure_healing_only_without_additional_rewards ... ok
+test content::preview_tests::healing_and_damage_obey_caps ... ok
+test content::deadlock_tests::deadlock_respects_role_moves_and_preparation ... ok
+test content::preview_tests::lightning_shows_cost_and_actual_mana ... ok
+test content::preview_tests::transformations_count_first_matches_and_preview_is_pure ... ok
+test content::rework_tests::charge_destroys_two_columns_and_triggers_only_attack_and_mana ... ok
+test content::reward_tests::cascades_are_bounded_and_first_wave_is_linear ... ok
+test content::rework_tests::every_hero_has_a_character_file_and_the_four_have_full_voice_lines ... ok
+test content::rework_tests::fatigue_starts_after_twelve_rounds_and_shortens_grindy_games ... ok
+test content::rework_tests::might_is_shared_and_column_swaps_carry_the_knight_identity ... ok
+test content::rework_tests::miracle_no_longer_penalises_the_turn_and_forces_one_move ... ok
+test content::status::tests::owner_turn_countdown_and_consumed_preparations_are_independent ... ok
+test content::rework_tests::no_cooldown_repeat_casts_raise_mana_cost_and_reset_each_turn ... ok
+test content::tests::all_heroes_can_pay_their_skills ... ok
+test content::tests::clear_shapes_and_rewards_match_skill_rules ... ok
+test content::tests::corrupt_and_nature_change_board ... ok
+test content::tests::knight_charge_and_guard_rules ... ok
+test content::nun_tests::frenzy_changes_rewards_without_arming_board_or_adding_legal_moves ... ok
+test content::tests::effects_are_unique_and_in_bounds ... ok
+test content::tests::selected_targets_and_new_combos ... ok
+test debug::tests::board_load_requires_64_valid_tiles ... ok
+test debug::tests::command_validation ... ok
+test debug::tests::console_language_follows_the_game_until_fixed ... ok
+test debug::tests::console_names_events_in_chinese_but_keeps_log_identifiers ... ok
+test debug::tests::every_parse_error_has_both_languages ... ok
+test debug::tests::help_switches_language_and_keeps_the_same_sections ... ok
+test debug::tests::json_escapes_control_characters ... ok
+test debug::tests::lang_command_and_errors_are_specific ... ok
+test debug::tests::undo_latest_retains_earlier_checkpoints ... ok
+test debug::tests::undo_player_removes_enemy_actions_and_debug_edits ... ok
+test debug::tests::wrapped_rows_stay_within_the_limit_and_keep_the_text ... ok
+test effects::ember_blast::tests::blast_waits_for_real_clear_and_can_finish_after_a_lethal_hit ... ok
+test content::passive_tests::passive_skill_preview_matches_manual_first_wave_with_caps ... ok
+test effects::hammer_smash::tests::every_two_by_two_landing_stays_on_board_and_uses_one_frame ... ok
+test effects::hammer_smash::tests::original_tile_pieces_exist_only_after_impact_and_stay_on_board ... ok
+test effects::heavy_landing::tests::dust_starts_only_after_feet_land_and_layers_stay_in_their_panels ... ok
+test effects::hammer_smash::tests::baked_atlas_matches_runtime_layout_and_ends_empty ... ok
+test effects::nun_heal::tests::heal_variants_follow_settled_conversions_caps_and_actor_side ... ok
+test effects::heavy_landing::tests::landing_atlas_has_two_transparent_ending_layers ... ok
+test effects::wizard_spells::tests::actor_waits_with_both_spells_and_recovers_from_the_actual_clear ... ok
+test content::move_preview_tests::every_hint_has_pure_preview_including_prepared_swaps ... ok
+test effects::wizard_spells::tests::wave_clears_inner_tiles_before_outer_tiles_and_waits_before_falling ... ok
+test graphics::wrapping_tests::measured_wrapping_uses_width_instead_of_character_count ... ok
+test headless::evaluation::tests::validates_jobs_without_truncating_u64_or_clamping_levels ... ok
+test presentation::awakening_animation_tests::awakening_shrinks_refills_normalizes_and_blocks_resolution ... ok
+test presentation::awakening_animation_tests::visual_windup_and_removal_wave_delay_only_the_motion_clock ... ok
+test presentation::awakening_animation_tests::wizard_unlock_animation_keeps_mana_and_other_side_independent ... ok
+test presentation::tests::animation_covers_every_parallel_pair_and_rollback_clears_it ... ok
+test presentation::tests::charge_sweep_clears_only_selected_columns_in_order ... ok
+test presentation::tests::health_popups_keep_the_current_source_for_each_side ... ok
+test headless::evaluation::tests::step_limit_is_not_a_draw ... ok
+test presentation::tests::motion_finishes_without_resetting_health_feedback ... ok
+test presentation::tests::refill_animation_accepts_horizontal_and_off_board_origins ... ok
+test rng::tests::restore_reproduces_refill ... ok
+test role_state::tests::conversion_mode_is_snapshot_owned_and_expires_at_turn_end ... ok
+test role_state::tests::force_swap_obeys_caster_movement_and_is_transactional ... ok
+test role_state::tests::new_cooldowns_share_config_and_restore_with_snapshots ... ok
+test role_state::tests::pocket_capacity_and_selection_follow_actual_contents ... ok
+test sprites::animation::tests::idle_wraps_but_sleep_restarts_only_after_leaving_sleep ... ok
+test role_state::tests::resurrection_inserts_and_destroys_bottom_without_tile_rewards ... ok
+test sprites::animation::tests::one_pose_sequence_aligns_to_different_impacts_without_stretching_recovery ... ok
+test sprites::animation::tests::one_shots_cover_all_poses_and_hold_the_last_at_and_after_the_end ... ok
+test sprites::nun_visual_tests::nun_appearance_follows_permanent_and_temporary_effects ... ok
+test strategy::tests::ai_cannot_spend_unavailable_mana ... ok
+test app::selection::tests::random_battle_and_restart_follow_opponent_group_for_every_player ... ok
+test tests::ability_descriptions_leave_line_breaks_to_the_layout ... ok
+test tests::action_metadata_preserves_legacy_fallback_and_fire_elf_sleep ... ok
+test tests::bent_three_do_not_match ... ok
+test tests::awakening_page_previews_the_awakened_active ... ok
+test tests::english_wrapping_keeps_words_whole_while_cjk_still_wraps_by_character ... ok
+test tests::character_file_is_the_fourth_and_final_selection_page ... ok
+test tests::global_skills_cast_directly_even_when_paid_with_health ... ok
+test tests::gravity_preserves_survivor_order ... ok
+test content::preview_tests::target_ranges_cover_every_target ... ok
+test board::passive_tests::all_role_options_are_legal_unique_and_match_playability ... ok
+test tests::help_tabs_share_the_panel_width_without_leaving_it ... ok
+test tests::hint_clicks_hit_rows_on_the_shown_page_and_board_badges ... ok
+test tests::illegal_swap_restores_board ... ok
+test tests::legal_swap_creates_a_line ... ok
+test tests::no_initial_match ... ok
+test board::hint_tests::hints_cover_every_legal_input_without_changing_state ... ok
+test tests::pause_difficulty_line_stays_between_the_title_and_buttons ... ok
+test tests::raster_sizes_stay_bounded_while_visual_size_is_preserved ... ok
+test tests::selecting_same_skill_cancels_and_different_skill_switches ... ok
+test tests::selection_scroll_keeps_rows_inside_their_viewport ... ok
+test tests::selection_tabs_fit_above_each_list_without_overlapping_other_controls ... ok
+test tests::sidebar_labels_are_short_and_localized ... ok
+test tests::skill_cards_adapt_to_the_wrapped_description_height ... ok
+test tests::skill_cards_leave_the_pocket_strip_its_own_row ... ok
+test tests::skill_preview_shows_the_hero_when_no_tile_changes ... ok
+test tests::status_strip_owns_the_row_above_the_skill_cards ... ok
+test tests::straight_and_cross_deduplicate ... ok
+test effects::ember_blast::tests::blast_peak_covers_every_corner_and_sleep_frames_remain_visible ... ok
+test effects::wizard_spells::tests::expanded_spell_atlases_hit_and_end_transparent ... ok
+test turns::tests::next_turn_keeps_the_last_turn_that_did_something ... ok
+test turns::tests::turns_describe_actions_and_only_nonzero_results ... ok
+test strategy::tests::ai_only_chooses_legal_moves ... ok
+test board::refresh_tests::refreshed_boards_are_match_free_and_playable_for_actor ... ok
+test content::move_preview_tests::ranked_moves_keep_every_hint_with_its_pure_preview ... ok
+test tests::nuns_shadow_lantern_keeps_its_purple_identity_after_quantization ... ok
+test audio::native::tests::original_music_rewinds_without_changing_opening_samples ... ok
+test effects::nun_heal::tests::atlases_have_two_layers_and_transparent_endings ... ok
+test tests::every_character_webp_decodes_with_its_original_atlas_dimensions ... ok
+test tests::wizard_preserves_original_neutral_portrait_and_coarse_pixel_grid ... ok
+test tests::headless_autoplay_finishes_and_replays_the_same_seed ... ok
+test tests::new_role_atlases_have_twelve_distinct_poses_per_action_and_shared_palettes ... ok
+
+test result: ok. 171 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 19.10s
+
+     Running unittests src\bin\match_probe.rs (target\debug\deps\match_probe-5839bfeae36e60b0.exe)
+
+running 93 tests
+test board::gravity::fall_tests::falling_motion_tracks_survivors_and_refill ... ok
+test board::passive_tests::diagonal_swap_only_for_elf_and_preserves_match_rules ... ok
+test content::awakening_tests::awakened_flesh_casting_rounds_up_and_requires_survival ... ok
+test board::passive_tests::column_swap_moves_all_rows_and_rejects_without_mutation ... ok
+test content::awakening_tests::awakened_guard_heals_its_new_cap_and_preserves_tile_consumption ... ok
+test content::awakening_tests::awakened_flesh_preview_matches_payment_effect_targets_and_caps ... ok
+test content::awakening_tests::every_role_triggers_exactly_at_its_line_and_survives_a_lethal_hit ... ok
+test content::awakening_tests::awakened_buffs_costs_and_caps_use_the_actual_shared_rules ... ok
+test content::awakening_tests::payment_can_awaken_before_healing_and_boost_that_same_skill ... ok
+test content::abilities::tests::displayed_phase_identities_drive_costs_cap_payment_and_live_status ... ok
+test content::abilities::tests::upgrades_replace_identity_while_new_powers_keep_inherited_passives ... ok
+test content::awakening_tests::same_role_has_independent_flags_and_reset_is_a_plain_snapshot_restore ... ok
+test content::awakening_tests::loot_boost_applies_only_to_its_first_clear_and_mana_still_caps ... ok
+test content::awakening_tests::reduced_reserves_cover_each_roles_largest_skill ... ok
+test content::awakening_tests::phase_health_changes_reach_actual_caps_without_changing_costs_or_preview_state ... ok
+test content::cooldown_tests::cooldown_counts_only_owner_turns_and_zero_is_unlimited ... ok
+test content::fire_elf_tests::copied_ember_blast_does_not_grant_the_fire_elfs_sleep_recovery ... ok
+test content::awakening_tests::wizard_reserve_caps_skill_and_swap_rewards_in_both_phases ... ok
+test content::awakening_tests::wizard_full_mana_heals_normally_and_checks_phase_cap_before_clear ... ok
+test content::fire_elf_tests::ember_blast_is_one_full_board_destroy_and_scales_with_mana ... ok
+test content::awakening_tests::imp_strength_moves_from_blast_to_rewarded_clears_in_both_phases ... ok
+test content::fire_elf_tests::copied_ember_blast_does_not_hijack_the_priests_other_skill_payments ... ok
+test content::fire_elf_tests::copied_ember_blast_uses_the_casters_cap_and_makes_the_caster_sleep ... ok
+test content::fire_elf_tests::ember_blast_requires_full_mana_then_spends_everything ... ok
+test content::fire_elf_tests::fire_elf_identity_and_loadout_replace_the_autoplay_wizard_slot ... ok
+test content::fire_elf_tests::mana_affinity_does_not_touch_mana_tiles_or_force_a_match ... ok
+test content::fire_elf_tests::sleep_is_inserted_after_the_cast_turn_and_consumed_after_the_skip ... ok
+test content::fire_elf_tests::mana_affinity_converts_two_non_mana_tiles_without_creating_a_match ... ok
+test content::fire_elf_tests::sound_sleep_reduces_incoming_damage_while_asleep ... ok
+test content::awakening_tests::tuned_enemy_caps_match_real_hits_for_every_target_and_phase ... ok
+test content::fire_elf_tests::sleep_recovers_at_turn_end_and_sound_sleep_improves_it ... ok
+test content::keyword_tests::keywords_are_configured_and_percentage_triggers_floor_after_aggregation ... ok
+test content::move_preview_tests::previews_use_role_exchange_rules_rewards_caps_and_bonus ... ok
+test content::new_role_integration_tests::autoplay_roster_keeps_new_knight_and_unlocks_third_slots ... ok
+test content::new_role_integration_tests::copied_skill_uses_native_cost_and_end_turn_rule_but_slot_cooldown_is_one ... ok
+test content::new_role_integration_tests::dwarf_reach_tracks_current_health_and_jump_and_preserves_rejected_targets ... ok
+test content::new_role_integration_tests::dwarf_swap_immunity_tracks_each_cleared_tiles_row_and_preserves_other_rewards ... ok
+test content::move_preview_tests::ranked_moves_sort_by_total_then_heal_damage_mana ... ok
+test content::new_role_integration_tests::priest_previews_are_pure_and_obey_capacity_costs_and_resource_caps ... ok
+test board::hint_tests::no_match_board_has_no_hints_unless_prepared ... ok
+test content::deadlock_tests::skill_escape_checks_effects_caps_and_blood_before_heal ... ok
+test content::nun_tests::automatic_recovery_restores_mana_to_cap_and_converts_its_ten_healing ... ok
+test content::awakening_tests::previews_simulate_opponent_awakening_and_subsequent_damage_without_mutation ... ok
+test content::new_role_integration_tests::hammer_is_normal_elimination_plus_eighty_and_preview_never_draws_randomness ... ok
+test content::new_role_integration_tests::strength_and_horizontal_awakened_bonus_are_exact_and_do_not_leak_to_cascades ... ok
+test content::nun_tests::automatic_recovery_converted_by_madness_reports_madness_as_immediate_source ... ok
+test content::nun_tests::ordinary_match_healing_runs_through_friendship_settlement ... ok
+test content::nun_tests::awakening_keeps_friendship_and_reason_only_disables_madness ... ok
+test content::nun_tests::conversion_preserves_causal_chain_but_changes_immediate_source_for_dwarf ... ok
+test content::nun_tests::friendship_uses_raw_healing_even_when_full_and_frenzy_changes_only_opponent_healing ... ok
+test content::nun_tests::healing_prayer_counts_each_side_maximum_and_friendship_adds_a_second_enemy_heal ... ok
+test content::nun_tests::preview_is_pure_and_matches_direct_healing_and_conversion ... ok
+test content::passive_status_tests::badges_follow_health_thresholds_and_real_payment_capacity ... ok
+test content::nun_tests::two_nuns_do_not_retrigger_friendship_from_received_healing ... ok
+test content::passive_tests::clear_passives_have_exact_rewards_and_thresholds ... ok
+test content::passive_tests::blood_preview_is_pure_accounts_for_cost_caps_and_targets ... ok
+test content::deadlock_tests::deadlock_respects_role_moves_and_preparation ... ok
+test content::preview_tests::guard_consumes_pure_healing_only_without_additional_rewards ... ok
+test content::passive_tests::payment_requires_surviving_before_any_heal ... ok
+test content::preview_tests::healing_and_damage_obey_caps ... ok
+test content::preview_tests::charge_target_preview_is_positive_and_matches_selected_columns ... ok
+test content::preview_tests::lightning_shows_cost_and_actual_mana ... ok
+test content::preview_tests::transformations_count_first_matches_and_preview_is_pure ... ok
+test content::nun_tests::frenzy_changes_rewards_without_arming_board_or_adding_legal_moves ... ok
+test content::reward_tests::cascades_are_bounded_and_first_wave_is_linear ... ok
+test content::rework_tests::fatigue_starts_after_twelve_rounds_and_shortens_grindy_games ... ok
+test content::rework_tests::every_hero_has_a_character_file_and_the_four_have_full_voice_lines ... ok
+test content::rework_tests::charge_destroys_two_columns_and_triggers_only_attack_and_mana ... ok
+test content::rework_tests::no_cooldown_repeat_casts_raise_mana_cost_and_reset_each_turn ... ok
+test content::rework_tests::miracle_no_longer_penalises_the_turn_and_forces_one_move ... ok
+test content::status::tests::owner_turn_countdown_and_consumed_preparations_are_independent ... ok
+test content::rework_tests::might_is_shared_and_column_swaps_carry_the_knight_identity ... ok
+test content::tests::all_heroes_can_pay_their_skills ... ok
+test content::tests::knight_charge_and_guard_rules ... ok
+test content::tests::clear_shapes_and_rewards_match_skill_rules ... ok
+test content::tests::effects_are_unique_and_in_bounds ... ok
+test content::tests::corrupt_and_nature_change_board ... ok
+test content::tests::selected_targets_and_new_combos ... ok
+test rng::tests::restore_reproduces_refill ... ok
+test role_state::tests::conversion_mode_is_snapshot_owned_and_expires_at_turn_end ... ok
+test role_state::tests::new_cooldowns_share_config_and_restore_with_snapshots ... ok
+test role_state::tests::pocket_capacity_and_selection_follow_actual_contents ... ok
+test role_state::tests::force_swap_obeys_caster_movement_and_is_transactional ... ok
+test role_state::tests::resurrection_inserts_and_destroys_bottom_without_tile_rewards ... ok
+test content::passive_tests::passive_skill_preview_matches_manual_first_wave_with_caps ... ok
+test strategy::tests::ai_cannot_spend_unavailable_mana ... ok
+test content::move_preview_tests::every_hint_has_pure_preview_including_prepared_swaps ... ok
+test content::preview_tests::target_ranges_cover_every_target ... ok
+test board::passive_tests::all_role_options_are_legal_unique_and_match_playability ... ok
+test board::hint_tests::hints_cover_every_legal_input_without_changing_state ... ok
+test strategy::tests::ai_only_chooses_legal_moves ... ok
+test board::refresh_tests::refreshed_boards_are_match_free_and_playable_for_actor ... ok
+test content::move_preview_tests::ranked_moves_keep_every_hint_with_its_pure_preview ... ok
+
+test result: ok. 93 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.53s
+
+     Running unittests src\bin\memory_probe.rs (target\debug\deps\memory_probe-835e41a65a0ecc73.exe)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+..................
+----------------------------------------------------------------------
+Ran 18 tests in 2.067s
+
+OK
+   Compiling battleblocks v0.1.1 (C:\Users\dongs\Desktop\battleblocks)
+    Finished `release` profile [optimized] target(s) in 1m 33s
+   Compiling battleblocks v0.1.1 (C:\Users\dongs\Desktop\battleblocks)
+    Finished `release` profile [optimized] target(s) in 1m 00s
+{
+  "macroquad": "0.4.16",
+  "native_target": "x86_64-pc-windows-msvc",
+  "wasm_bytes": 7817898,
+  "web_startup_gzip_bytes": 7272523,
+  "web_bgm_bytes": 169994,
+  "web_zip_bytes": 7562946,
+  "native_executable_bytes": 8529920,
+  "native_package_bytes": 9062565,
+  "native_zip_bytes": 7933643,
+  "native_zip": "windows-x64.zip"
+}

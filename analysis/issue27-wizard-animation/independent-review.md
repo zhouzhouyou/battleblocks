@@ -1,5 +1,7 @@
 # 独立审查 · 2026-11-05
 
+此为v1历史审查。用户随后要求恢复粗像素，v2替换了素材；此报告不覆盖v2，当前结果见 [v2验收](v2/README.md)。
+
 审查者：独立 subagent `wizard_independent_review`，`reasoning_effort=medium`，不继承主代理对话，仅接收固定任务与证据路径；只读，没有构建、安装、修改或清理。
 
 基线 `500673e2326acffb7ff0fbf971607f3c55ae2b53`，审查head `18e45a90a12d01118db04b0fd544acbb4c07dee5`，工作树干净。实现提交 `caff6becdf02a3217c224bda026d62864172ac74`；之后提交仅增加证据文档。遵循当前AGENTS与按基线归因审查技能，并检索Nowledge项目记忆。

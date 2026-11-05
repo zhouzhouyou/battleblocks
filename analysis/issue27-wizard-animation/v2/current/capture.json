@@ -1,0 +1,95 @@
+{
+  "binary_sha256": "e00631de247ba27c204abad7afd0de88c2c3ba9aa5c8ab35cba1575eb37745f5",
+  "git_head": "5f5c876d44237605a85d54b0d7abccfd0217532b",
+  "fps": 60,
+  "device_pixel_crop": "1280:900",
+  "scenes": {
+    "normal-menu": {
+      "video": "normal-menu.mp4",
+      "events": "normal-menu.jsonl",
+      "recorded_frames_expected": 360
+    },
+    "awake-menu": {
+      "video": "awake-menu.mp4",
+      "events": "awake-menu.jsonl",
+      "recorded_frames_expected": 360
+    },
+    "normal-lightning": {
+      "video": "normal-lightning.mp4",
+      "events": "normal-lightning.jsonl",
+      "recorded_frames_expected": 360,
+      "skill_seq": 28,
+      "skill_time": 2.4009406566619873,
+      "skill": "Lightning effective=Lightning target=[4,4] cost=60 blood_cost=0 direct_heal=0 direct_damage=0 direct_mana=68 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=60",
+      "skill_observed_seconds_after_recorder_start": 1.0505014000009396,
+      "clear_seconds_after_skill": 0.8947453498840332,
+      "player_awake": false
+    },
+    "normal-meteor": {
+      "video": "normal-meteor.mp4",
+      "events": "normal-meteor.jsonl",
+      "recorded_frames_expected": 360,
+      "skill_seq": 65,
+      "skill_time": 2.3233940601348877,
+      "skill": "Meteor effective=Meteor target=[4,4] cost=160 blood_cost=0 direct_heal=0 direct_damage=144 direct_mana=86 bonus=0 armed=false actual_heal=0 actual_damage=144 actual_mana=86",
+      "skill_observed_seconds_after_recorder_start": 1.0722067999959108,
+      "clear_seconds_after_skill": 0.9065251350402832,
+      "player_awake": false
+    },
+    "awake-lightning": {
+      "video": "awake-lightning.mp4",
+      "events": "awake-lightning.jsonl",
+      "recorded_frames_expected": 360,
+      "skill_seq": 59,
+      "skill_time": 7.129772901535034,
+      "skill": "Lightning effective=Lightning target=[4,4] cost=60 blood_cost=0 direct_heal=0 direct_damage=0 direct_mana=68 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=60",
+      "skill_observed_seconds_after_recorder_start": 1.0720192000007955,
+      "clear_seconds_after_skill": 0.9465858936309814,
+      "player_awake": true
+    },
+    "awake-meteor": {
+      "video": "awake-meteor.mp4",
+      "events": "awake-meteor.jsonl",
+      "recorded_frames_expected": 360,
+      "skill_seq": 96,
+      "skill_time": 7.220678806304932,
+      "skill": "Meteor effective=Meteor target=[4,4] cost=140 blood_cost=0 direct_heal=0 direct_damage=144 direct_mana=86 bonus=0 armed=false actual_heal=0 actual_damage=144 actual_mana=86",
+      "skill_observed_seconds_after_recorder_start": 1.1256139999968582,
+      "clear_seconds_after_skill": 0.9075918197631836,
+      "player_awake": true
+    },
+    "delayed-meteor": {
+      "video": "delayed-meteor.mp4",
+      "events": "delayed-meteor.jsonl",
+      "recorded_frames_expected": 360,
+      "skill_seq": 68,
+      "skill_time": 2.1198556423187256,
+      "skill": "Meteor effective=Meteor target=[4,4] cost=160 blood_cost=0 direct_heal=0 direct_damage=144 direct_mana=86 bonus=0 armed=false actual_heal=0 actual_damage=144 actual_mana=86",
+      "skill_observed_seconds_after_recorder_start": 1.0718139999953564,
+      "clear_seconds_after_skill": 1.5154592990875244,
+      "player_awake": false
+    },
+    "terminal-meteor": {
+      "video": "terminal-meteor.mp4",
+      "events": "terminal-meteor.jsonl",
+      "recorded_frames_expected": 360,
+      "skill_seq": 147,
+      "skill_time": 10.153252124786377,
+      "skill": "Meteor effective=Meteor target=[4,4] cost=160 blood_cost=0 direct_heal=0 direct_damage=144 direct_mana=86 bonus=0 armed=false actual_heal=0 actual_damage=1 actual_mana=86",
+      "skill_observed_seconds_after_recorder_start": 1.1133370000025025,
+      "clear_seconds_after_skill": null,
+      "player_awake": false
+    },
+    "rollback": {
+      "video": "rollback.mp4",
+      "events": "rollback.jsonl",
+      "recorded_frames_expected": 360,
+      "skill_seq": 28,
+      "skill_time": 1.8796436786651611,
+      "skill": "Lightning effective=Lightning target=[4,4] cost=60 blood_cost=0 direct_heal=0 direct_damage=0 direct_mana=68 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=60",
+      "skill_observed_seconds_after_recorder_start": 1.0519023000015295,
+      "clear_seconds_after_skill": null,
+      "player_awake": false
+    }
+  }
+}
