@@ -39,7 +39,7 @@ Issue #11 第一阶段覆盖新骑士、矮人、狗头人牧师、修女、精�
 
 2026-11-04 老巫师（历史 ID 2）特效已修订为 v2：技能1为 Lightning Strike 式主雷柱、分叉脉冲与魔力回收；技能2单颗陨星后以扩张压力波逐层退去目标方块，放慢至约 2.8 秒，待视觉评审。不修改角色素材或公开名单。见 [老巫师记录](characters/WIZARD-LEGACY.md)。
 
-2026-11-05 Issue #27：用户试玩后要求「改回去，粗像素小人保留」。细密全身重绘v1已撤回，当前v2普通保留原粗像素半身，觉醒保留小全身装备；四组十二姿势与真实命中同步继续保留。见 [当前v2验收](../../analysis/issue27-wizard-animation/v2/README.md) 与 [角色档案](characters/WIZARD-LEGACY.md)。仍待用户最终视觉验收与角色介绍原文；Draft PR使用Closes #27、Refs #11，保留主Issue。
+2026-11-05 Issue #27最终范围已随#11及全部子项修订：普通粗像素版原样保留，不重绘、不扩帧；仅优化觉醒细像素待机和施法各12帧。当前v3共24个觉醒姿势，普通恢复原四帧及播放配置；v1普通重绘和v2两形态粗像素均撤回。见 [当前v3验收](../../analysis/issue27-wizard-animation/README.md) 与 [角色档案](characters/WIZARD-LEGACY.md)。仍待用户最终视觉验收与角色介绍原文；Draft PR使用Closes #27、Refs #11，主Issue保留。
 
 ## 矮人战士 · 首轮候选（历史）
 

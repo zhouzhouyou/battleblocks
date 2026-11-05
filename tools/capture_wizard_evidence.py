@@ -19,7 +19,7 @@ parser.add_argument('--binary', required=True, type=Path)
 parser.add_argument('--label', required=True)
 parser.add_argument('--ffmpeg')
 parser.add_argument('--size', default='1280:900')
-parser.add_argument('--scenes', default='normal-menu,awake-menu,normal-lightning,normal-meteor,awake-lightning,awake-meteor,delayed-meteor,terminal-meteor,rollback')
+parser.add_argument('--scenes', default='normal-menu,awake-menu,normal-lightning,normal-meteor,awake-lightning,awake-meteor,awake-delayed-meteor,awake-terminal-meteor,awake-rollback')
 args = parser.parse_args()
 if sys.platform != 'win32':
     parser.error('This recorder uses Windows gdigrab; gameplay probes remain platform independent.')
@@ -102,9 +102,9 @@ for scene in args.scenes.split(','):
             edit(board_command)
             edit('mp player 400')
             edit('hp enemy 700')
-        if scene == 'delayed-meteor':
+        if scene.endswith('delayed-meteor'):
             edit('hp enemy 221')
-        if scene == 'terminal-meteor':
+        if scene.endswith('terminal-meteor'):
             edit('hp enemy 1')
             marker = records()[-1]['seq']
             send('pause off')
@@ -133,11 +133,11 @@ for scene in args.scenes.split(','):
             time.sleep(1.)
             marker = records()[-1]['seq']
             send('pause off')
-            send('cast 1' if 'lightning' in scene or scene == 'rollback' else 'cast 2')
+            send('cast 1' if 'lightning' in scene or scene.endswith('rollback') else 'cast 2')
             data = wait(lambda rows: any(e['seq'] > marker and e['event'] == 'skill' for e in rows))
             skill = next(e for e in data if e['seq'] > marker and e['event'] == 'skill')
             seen = time.monotonic() - started
-            if scene == 'rollback':
+            if scene.endswith('rollback'):
                 time.sleep(.55)
                 send('undo player')
                 data = wait(lambda rows: any(e['seq'] > skill['seq'] and e['event'] == 'rollback' for e in rows))
@@ -155,9 +155,9 @@ for scene in args.scenes.split(','):
                          skill_observed_seconds_after_recorder_start=seen,
                          clear_seconds_after_skill=None if hit is None else hit['time'] - skill['time'],
                          player_awake=skill['before']['awakened'][0])
-            if scene not in ('terminal-meteor', 'rollback'):
+            if not scene.endswith(('terminal-meteor', 'rollback')):
                 assert hit is not None, 'video must include actual board clear'
-            if scene == 'delayed-meteor':
+            if scene.endswith('delayed-meteor'):
                 assert entry['clear_seconds_after_skill'] > 1.4, 'must exercise a cast beyond the old lifetime'
         summary['scenes'][scene] = entry
         summary_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')

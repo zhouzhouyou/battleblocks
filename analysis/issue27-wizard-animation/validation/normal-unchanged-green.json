@@ -1,0 +1,24 @@
+{
+  "baseline": "500673e2326acffb7ff0fbf971607f3c55ae2b53",
+  "candidate": "working-tree",
+  "files": {
+    "assets/wizzard.webp": {
+      "unchanged": true,
+      "comparison": "exact bytes",
+      "sha256": "e11a425ca2ecad9b974bfef2ccd27619736639a500fade0ac4879991a30c3f72"
+    },
+    "assets/wizzard.json": {
+      "unchanged": true,
+      "comparison": "LF-normalized text",
+      "sha256": "70387ffdf05928524c37b57d9be85d4ef527e57cf9c211c18ffe839f6e2e36d1"
+    },
+    "assets/hero-thumbnails.webp": {
+      "unchanged": true,
+      "comparison": "exact bytes",
+      "sha256": "e0a14f25435123d080f3a9ebf694b07e40b163c1a11ed241f7bd8029923b2d99"
+    }
+  },
+  "normal_registry_unchanged": true,
+  "passed": true,
+  "changed": []
+}

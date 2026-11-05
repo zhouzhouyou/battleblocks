@@ -1,5 +1,0 @@
-normal-lightning: actor=112, effect=112, delta=0 frames
-normal-meteor: actor=115, effect=115, delta=0 frames
-awake-lightning: actor=115, effect=115, delta=0 frames
-awake-meteor: actor=114, effect=114, delta=0 frames
-delayed-meteor: actor=149, effect=149, delta=0 frames

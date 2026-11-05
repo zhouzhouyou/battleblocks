@@ -1,48 +1,45 @@
-# Issue #27 老巫师动画验收
+# 老巫师觉醒动画 · 当前验收
 
-**当前视觉版本为 [v2粗像素恢复](v2/README.md)。** 用户试玩后撤回细密全身画法，明确要求保留粗像素小人。下面的v1录像、造型描述及独立审查为历史记录，不能用于证明当前v2已验收。
+普通版保持原来的粗像素素材和播放方式；本 PR 只增加细像素觉醒待机与施法，各 12 个独立姿势，共 24 帧。普通版未扩帧、未重绘，仍为 300×400、四帧、每帧 0.1 秒，沿用原缩略图、缩放和施法回退。
 
-基线：最新 `origin/main` **500673e2326acffb7ff0fbf971607f3c55ae2b53**（PR #26合并），从该提交创建 `codex/27-wizard-animation`。调研阅读了 #27、#11 最新讨论、PR #26实现与APPROVED评审，以及本机 Nowledge 项目记忆；以当前代码复核历史笔记中的帧数、解码与量化问题。用户批准推荐方案并明确 Draft PR 使用 `Closes #27`、`Refs #11`。
+已按用户要求先更新 [主 Issue #11](https://github.com/zhouzhouyou/battleblocks/issues/11) 和全部子项 [#27](https://github.com/zhouzhouyou/battleblocks/issues/27)、[#28](https://github.com/zhouzhouyou/battleblocks/issues/28)、[#29](https://github.com/zhouzhouyou/battleblocks/issues/29)，回读确认后才改代码。[范围正文快照](issue-scope/) 保留本次核实内容。Draft PR 使用 `Closes #27`、`Refs #11`；主 Issue 保持打开。
 
-## 实现与现状更正
+## 看图与实战
 
-旧普通图为4帧半身像，觉醒为单帧全身图，没有独立施法。现为普通待机、觉醒待机、普通施法、觉醒施法各12张独立姿势，共48张。保留蓝紫帽、白胡须、蓝袍，普通补齐鞋与木杖；觉醒以站姿和蓝晶亮度区别，不增加装备。四组共享64色和比例，按鞋底而非手杖包围盒注册。
+- [普通同尺寸对比](normal-menu-comparison.webp)：左为 main，右为当前；同一原始姿势的真实窗口裁剪。普通素材、缩略图字节及普通注册配置与基线一致。
+- [觉醒同尺寸对比](awake-menu-comparison.webp)：左为 main 单帧，右为细像素动画；[实际选角录像](current/awake-menu.mp4)。
+- [24 帧图集](atlas-contact.webp)、[待机 11→12→1→2 与鞋底线](idle-seams.webp)：按实际选角尺寸检查接缝，不是实战录像。
+- 觉醒实战：[落雷](current/awake-lightning.mp4)、[陨石](current/awake-meteor.mp4)、[延迟命中陨石](current/awake-delayed-meteor.mp4)、[终局](current/awake-terminal-meteor.mp4)、[回滚](current/awake-rollback.mp4)。
+- 普通回归录像：[待机](current/normal-menu.mp4)、[落雷](current/normal-lightning.mp4)、[陨石](current/normal-meteor.mp4)。
+- [交互检查页](index.html)：通过本地仓库 HTTP 服务打开；可逐帧看图集、切换实际选角／战斗尺寸，并播放真实窗口录像。
+- [版本化觉醒源图、提示词及导出报告](../../asset-sources/art-direction/characters/wizard/production/v3/README.md)。
 
-入口：选角 `src/menu.rs` 读取普通／觉醒idle；战斗 `src/app/view/hud.rs` 选择cast或idle。选角技能小棋盘仍展示原有技能预览。施法第5帧在0.32s释放，第7帧引导，第8帧匹配真实命中，随后0.5s收势。落雷、陨石当前名义命中均为0.9s，不是两套固定出手速度；差别包括清除后的落块等待0.85/1.25s与余效，整段特效约2.8s。模型收益在施法调用时结算，视觉清除发生较晚，陨石触发对手觉醒还会延迟；没有修改这些规则。
+觉醒图集为 2304×1536、384×384 帧、64 共享色、二值透明、鞋底锚点 (192,336)。0–11 为待机，12–23 为施法，普通帧不在此图集中。最终用户视觉验收仍需看觉醒脸部浅色块、袍褶密度、施法幅度及待机循环；测试通过不代替审美确认。
 
-人物读取与技能特效相同的 `ImpactClock`，等待时停在第7帧，可越过旧1.4s倒计时；真实清除后进入第8帧。通用 `AnimationClip.impact` 支持同一动作适配不同名义命中时点，收势时长不变，已有测试覆盖0.4/0.9/1.8s。终局没有清除事件则按墙钟完成；回滚清空表现时钟。后续六人可复用动作语义、脚底注册、共同比例／色板、相同纹理解码与实际尺寸/事件录像检查；是否接入命中时钟按技能语义决定。
+## 两技能共用一组觉醒施法
 
-## 可直接查看的证据
+第 5 帧出手，第 7 帧引导等待，第 8 帧命中，随后 0.5 秒收势。人物和两技能特效共用实际命中时钟；对手觉醒延迟清除时保持引导姿势，收到真实清除通知后一起命中。终局无清除通知时按墙钟结束，回滚重置表现时钟。普通版没有新增施法 clip，不进入此同步分支。
 
-- [普通同尺寸前后对比](normal-menu-comparison.webp)、[觉醒同尺寸前后对比](awake-menu-comparison.webp)：真实窗口、1:1设备像素裁剪，左右基线／当前；不是重新排版模拟。
-- [实际图集48姿势](atlas-contact.webp)、[11→12→1→2脚底接缝](idle-seams.webp)：后者为运行时图集按实际选角比例采样诊断，区别于真实录像。
-- [交互检查页](index.html)：本地提供角色帧、时长、延迟命中滑杆及下列视频。用仓库根目录HTTP服务打开即可。
-- 普通 [落雷](current/normal-lightning.mp4) / [陨石](current/normal-meteor.mp4)，觉醒 [落雷](current/awake-lightning.mp4) / [陨石](current/awake-meteor.mp4)。
-- [延迟陨石](current/delayed-meteor.mp4)、[终局陨石](current/terminal-meteor.mp4)、[施法中回滚](current/rollback.mp4)。
-- [普通选角循环](current/normal-menu.mp4)、[觉醒选角循环](current/awake-menu.mp4)；`baseline/` 保留原始前对比录像。
+以下为重新录制的真实游戏窗口，60fps、1280×900 设备像素；通过原控制台驱动同一个 Session，同名 JSONL 为实际事件。同步由人物图集和特效命中图的录像像素匹配定位，未把控制台发送时刻当作命中时刻。
 
-原生窗口录制为60fps、1280×900（125%DPI，1024×720逻辑画面）；FFmpeg gdigrab裁掉窗口捕获的黑色扩展区，不缩放。场景由现有stdin控制台设置固定棋盘、种子和资源，施法、觉醒和回滚全部运行真实 Session。每段6秒，旁边同名JSONL是实际事件。`tools/capture_wizard_evidence.py` 可复录；`tools/review_wizard_animation.py` 导出画面；`tools/check_wizard_recordings.py` 从录像像素匹配实际人物图集与特效命中图，并输出 [逐帧数据](recording-measurements.json)。评审脚本另需 numpy2.4、imageio-ffmpeg0.6、Pillow13，仅本地工具缓存，不进入游戏依赖。
-
-| 场景 | 施法事件到清除事件 | 人物第8帧 / 特效命中视频帧（从0开始） | 差值 |
+| 觉醒场景 | 施法至清除事件 | 人物第8帧 / 特效命中帧（从0开始） | 差值 |
 | --- | --- | --- | --- |
-| 普通落雷 | 0.879s | 112 / 112 | 0帧 |
-| 普通陨石 | 0.892s | 115 / 115 | 0帧 |
-| 觉醒落雷 | 0.904s | 115 / 115 | 0帧 |
-| 觉醒陨石 | 0.895s | 114 / 114 | 0帧 |
-| 对手觉醒延迟陨石 | 1.490s | 149 / 149 | 0帧 |
+| 落雷 | 0.915s | 114 / 114 | 0帧 |
+| 陨石 | 0.878s | 111 / 111 | 0帧 |
+| 延迟陨石 | 1.459s | 151 / 151 | 0帧 |
 
-`*-synchronization.webp` 是命中前1帧、命中帧、后1/6帧的完整游戏画面，供同时看人物与棋盘。帧匹配受60fps录制采样限制，不声称亚帧精度。终局胜利面板遮挡特效，故不作为像素同步测量；录像显示人物正常收势回待机，单位测试验证没有清除通知也不会卡住。回滚脚本断言完整快照等于施法前状态；选角首尾与脚线人工检查未见跳动。
+[逐帧测量](recording-measurements.json)及三张 `*-synchronization.webp` 可复核。终局胜利面板遮挡特效，不计入像素同步测量；回滚脚本断言完整快照恢复。
 
-`capture.json` 中的 `git_head` 是录制时尚未提交改动的基线HEAD，不能当作新版源码提交；二进制SHA256才绑定实际录制文件：基线 `680ff9d5945784a2ef1e2af9eb811de2cb0d2f7c7e7f97f09d16cb2a79e2fdfd`，当前 `65eaecc5f8d81c839d40679ddd0645abb8e9f45254efa14bf7e9844f4a23bbea`。实现提交为 `caff6becdf02a3217c224bda026d62864172ac74`，[source-binding.json](source-binding.json)记录源码／资产逐文件SHA256与该录制二进制哈希；后续证据文档提交不改变实现。
+## 验证与复现
 
-## 验证
+基线为 `500673e2326acffb7ff0fbf971607f3c55ae2b53`。录制时 HEAD 尚为 `6961e8d`，实现改动在工作树；`current/capture.json` 的 HEAD 不是本版源码提交。最终实现、捕获二进制与源文件哈希由 `source-binding.json` 绑定。
 
-基线 cargo test：354通过、1音频设备测试忽略；headless 134事件及2局autoplay通过。
+- 普通不变检查：[GREEN](validation/normal-unchanged-green.json) 全部通过；同一个检查在误改普通版的 `77d5769` 上 [RED](validation/normal-unchanged-red.json) 正确失败。WebP 与缩略图按字节比较，JSON 和 Rust 注册配置忽略 CRLF/LF 差异。
+- Rust 357 通过、1 个音频设备测试忽略；Python 18 通过。新增测试锁定普通原配置、觉醒独立姿势、细像素密度、透明度、图集和脚底边界。
+- Headless 134 事件与 2 局 autoplay 通过；控制台、角色及能力事件三组窗口回归通过。
+- 完整素材重建后 `assets/` 哈希变化为 0；Windows release、WASM、Windows 包及网页包构建通过。macOS CI 与独立审查在交付记录中补充。
+- 日志位于 [validation](validation/)。Windows 脚本使用 `.build-tools/python-path.txt` 指定 Python，`PYTHONUTF8=1`。
 
-当前 `.build-tools/python-path.txt` 指定Python运行 `tools/build.py`：Rust356通过、1音频设备测试忽略；Python平衡测试18通过；Windows release、WASM、Windows zip和网页zip均生成。`tools/check_headless.py` 134事件及2局autoplay通过；`check_debug_console.py` 314事件、`check_new_roles.py` 196事件、`check_ability_events.py` 事件链和完整回滚均通过。实测网页WASM普通／觉醒选角页正常显示并播放，无浏览器warning/error。
+复现顺序：`tools/check_wizard_normal_unchanged.py`；`tools/prepare_assets.py`；`tools/build.py`；设置 `BATTLEBLOCKS_BIN=target/debug/battleblocks.exe` 后运行 headless 与三组 GUI 检查；`tools/capture_wizard_evidence.py --binary target/debug/battleblocks.exe --label current`；`tools/check_wizard_recordings.py`；`tools/review_wizard_animation.py`。录制脚本拒绝把不同二进制的录像混进同一目录；重新录制不同构建时先将旧证据归档到仓库外。
 
-完整 `tools/prepare_assets.py` 重建通过，前后所有 assets 文件SHA256一致（变化0），其他五位角色图集未改变。`cargo fmt --check` 与 `git diff --check` 通过。原始验证输出在 [validation/](validation/)。
-
-macOS arm64 在实现提交上运行 `tools/build.py --native-only` 和 `check_headless.py` 全部通过，[CI及下载产物](https://github.com/zhouzhouyou/battleblocks/actions/runs/41970921353)。已下载至本机 `dist/macos-review/macos-arm64.zip`；网页包 `dist/web.zip` 8,488,968字节，Windows包8,860,653字节，macOS包8,918,003字节。包内仅运行时资产与必要运行文件，设计源图和录像不进入包。macOS运行界面在本机Windows上未验证，已验证macOS构建及headless。
-
-独立 `reasoning_effort=medium` subagent 在 `18e45a9` 完成完整差异、实际图集、播放抽帧及原始数据审查，结论为**无可确认的阻塞发现**，163个源码／资产绑定哈希全部匹配；没有确认需修复问题。[完整审查结论与未验证范围](independent-review.md)。待用户最终看：普通全身造型与旧半身像的差异、脸部浅色块与细密衣褶、觉醒差异是否足够明确、施法下压力度与循环节奏。角色介绍原文仍待补充，不影响已授权动画实现；主 Issue #11保留。
+本目录只保留最终版本。`baseline/` 是原 main 的必要对比输入，不是另一版实现；被替代的 v1/v2 验收与生产源稿已移出工作树，可通过 Git 历史追溯。后续六人可复用“普通不变检查、仅觉醒接入、脚底注册、关键帧与真实命中时钟分离、同尺寸与实战双重验收”的方式，按各自技能指定命中关键帧。

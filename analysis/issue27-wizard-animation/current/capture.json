@@ -1,6 +1,6 @@
 {
-  "binary_sha256": "65eaecc5f8d81c839d40679ddd0645abb8e9f45254efa14bf7e9844f4a23bbea",
-  "git_head": "500673e2326acffb7ff0fbf971607f3c55ae2b53",
+  "binary_sha256": "7bdd6acce62b00a766698ceb99b018d02f2d8d74684bb6669e254908852fa92a",
+  "git_head": "6961e8d170015f3760f175809e3ed2c9fe46a769",
   "fps": 60,
   "device_pixel_crop": "1280:900",
   "scenes": {
@@ -19,10 +19,10 @@
       "events": "normal-lightning.jsonl",
       "recorded_frames_expected": 360,
       "skill_seq": 28,
-      "skill_time": 2.4296693801879883,
+      "skill_time": 1.9609627723693848,
       "skill": "Lightning effective=Lightning target=[4,4] cost=60 blood_cost=0 direct_heal=0 direct_damage=0 direct_mana=68 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=60",
-      "skill_observed_seconds_after_recorder_start": 1.0435579999975744,
-      "clear_seconds_after_skill": 0.8788490295410156,
+      "skill_observed_seconds_after_recorder_start": 1.0445125000042026,
+      "clear_seconds_after_skill": 0.9114296436309814,
       "player_awake": false
     },
     "normal-meteor": {
@@ -30,10 +30,10 @@
       "events": "normal-meteor.jsonl",
       "recorded_frames_expected": 360,
       "skill_seq": 65,
-      "skill_time": 1.9063806533813477,
+      "skill_time": 2.085463762283325,
       "skill": "Meteor effective=Meteor target=[4,4] cost=160 blood_cost=0 direct_heal=0 direct_damage=144 direct_mana=86 bonus=0 armed=false actual_heal=0 actual_damage=144 actual_mana=86",
-      "skill_observed_seconds_after_recorder_start": 1.0688127000030363,
-      "clear_seconds_after_skill": 0.8915841579437256,
+      "skill_observed_seconds_after_recorder_start": 1.1017775000000256,
+      "clear_seconds_after_skill": 0.8738701343536377,
       "player_awake": false
     },
     "awake-lightning": {
@@ -41,10 +41,10 @@
       "events": "awake-lightning.jsonl",
       "recorded_frames_expected": 360,
       "skill_seq": 59,
-      "skill_time": 7.854798793792725,
+      "skill_time": 7.052333354949951,
       "skill": "Lightning effective=Lightning target=[4,4] cost=60 blood_cost=0 direct_heal=0 direct_damage=0 direct_mana=68 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=60",
-      "skill_observed_seconds_after_recorder_start": 1.0625700999953551,
-      "clear_seconds_after_skill": 0.9041333198547363,
+      "skill_observed_seconds_after_recorder_start": 1.0603466000029584,
+      "clear_seconds_after_skill": 0.9153943061828613,
       "player_awake": true
     },
     "awake-meteor": {
@@ -52,44 +52,44 @@
       "events": "awake-meteor.jsonl",
       "recorded_frames_expected": 360,
       "skill_seq": 96,
-      "skill_time": 7.203512907028198,
+      "skill_time": 7.194014310836792,
       "skill": "Meteor effective=Meteor target=[4,4] cost=140 blood_cost=0 direct_heal=0 direct_damage=144 direct_mana=86 bonus=0 armed=false actual_heal=0 actual_damage=144 actual_mana=86",
-      "skill_observed_seconds_after_recorder_start": 1.0603578000009293,
-      "clear_seconds_after_skill": 0.894547700881958,
+      "skill_observed_seconds_after_recorder_start": 1.0999663000038709,
+      "clear_seconds_after_skill": 0.8782615661621094,
       "player_awake": true
     },
-    "delayed-meteor": {
-      "video": "delayed-meteor.mp4",
-      "events": "delayed-meteor.jsonl",
+    "awake-delayed-meteor": {
+      "video": "awake-delayed-meteor.mp4",
+      "events": "awake-delayed-meteor.jsonl",
       "recorded_frames_expected": 360,
-      "skill_seq": 68,
-      "skill_time": 1.9773030281066895,
-      "skill": "Meteor effective=Meteor target=[4,4] cost=160 blood_cost=0 direct_heal=0 direct_damage=144 direct_mana=86 bonus=0 armed=false actual_heal=0 actual_damage=144 actual_mana=86",
-      "skill_observed_seconds_after_recorder_start": 1.0494531000003917,
-      "clear_seconds_after_skill": 1.490072250366211,
-      "player_awake": false
+      "skill_seq": 99,
+      "skill_time": 7.387503385543823,
+      "skill": "Meteor effective=Meteor target=[4,4] cost=140 blood_cost=0 direct_heal=0 direct_damage=144 direct_mana=86 bonus=0 armed=false actual_heal=0 actual_damage=144 actual_mana=86",
+      "skill_observed_seconds_after_recorder_start": 1.1461104999980307,
+      "clear_seconds_after_skill": 1.4593887329101562,
+      "player_awake": true
     },
-    "terminal-meteor": {
-      "video": "terminal-meteor.mp4",
-      "events": "terminal-meteor.jsonl",
+    "awake-terminal-meteor": {
+      "video": "awake-terminal-meteor.mp4",
+      "events": "awake-terminal-meteor.jsonl",
       "recorded_frames_expected": 360,
-      "skill_seq": 147,
-      "skill_time": 10.289151668548584,
-      "skill": "Meteor effective=Meteor target=[4,4] cost=160 blood_cost=0 direct_heal=0 direct_damage=144 direct_mana=86 bonus=0 armed=false actual_heal=0 actual_damage=1 actual_mana=86",
-      "skill_observed_seconds_after_recorder_start": 1.1457029000011971,
+      "skill_seq": 208,
+      "skill_time": 17.296088695526123,
+      "skill": "Meteor effective=Meteor target=[4,4] cost=140 blood_cost=0 direct_heal=0 direct_damage=144 direct_mana=86 bonus=0 armed=false actual_heal=0 actual_damage=1 actual_mana=86",
+      "skill_observed_seconds_after_recorder_start": 1.1019740999981877,
       "clear_seconds_after_skill": null,
-      "player_awake": false
+      "player_awake": true
     },
-    "rollback": {
-      "video": "rollback.mp4",
-      "events": "rollback.jsonl",
+    "awake-rollback": {
+      "video": "awake-rollback.mp4",
+      "events": "awake-rollback.jsonl",
       "recorded_frames_expected": 360,
-      "skill_seq": 28,
-      "skill_time": 1.901179552078247,
+      "skill_seq": 59,
+      "skill_time": 7.2791852951049805,
       "skill": "Lightning effective=Lightning target=[4,4] cost=60 blood_cost=0 direct_heal=0 direct_damage=0 direct_mana=68 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=60",
-      "skill_observed_seconds_after_recorder_start": 1.0439005000007455,
+      "skill_observed_seconds_after_recorder_start": 1.1059994000024744,
       "clear_seconds_after_skill": null,
-      "player_awake": false
+      "player_awake": true
     }
   }
 }

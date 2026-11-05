@@ -26,7 +26,7 @@ xs = np.floor((np.arange(300) + .5 - left) / scale).astype(int)
 ys = np.floor((np.arange(275) + 205 + .5 - top) / scale).astype(int)
 valid = (ys[:,None]>=0)&(ys[:,None]<384)&(xs[None,:]>=0)&(xs[None,:]<384)
 templates=[]
-for index in range(48):
+for index in range(24):
     cell=np.array(atlas.crop((index%6*384,index//6*384,index%6*384+384,index//6*384+384)))
     rendered=cell[ys.clip(0,383)[:,None], xs.clip(0,383)[None,:]].copy()
     rendered[:,:,3]*=valid
@@ -40,7 +40,7 @@ alphas=templates[:,:,:,3][:,mask].astype(np.float32)/255
 report={}
 # Victory overlays obscure the spell landmarks. Its no-clear recovery is checked
 # by the clock test and terminal recording, not counted as pixel-sync evidence.
-for scene in ('normal-lightning','normal-meteor','awake-lightning','awake-meteor','delayed-meteor'):
+for scene in ('awake-lightning','awake-meteor','awake-delayed-meteor'):
     kind='lightning' if 'lightning' in scene else 'meteor'
     fx=Image.open(ROOT/f'assets/effects/wizard-{kind}.webp').convert('RGBA')
     def effect_frame(i):
@@ -56,8 +56,7 @@ for scene in ('normal-lightning','normal-meteor','awake-lightning','awake-meteor
     process=subprocess.Popen([FFMPEG,'-hide_banner','-loglevel','error','-i',str(OUT/'current'/f'{scene}.mp4'),
         '-f','rawvideo','-pix_fmt','rgb24','-'],stdout=subprocess.PIPE)
     samples=[];selected=[]
-    awake=scene.startswith('awake')
-    candidates=list(range(12,24) if awake else range(12))+list(range(36,48) if awake else range(24,36))
+    candidates=list(range(24))
     index=0
     while True:
         raw=process.stdout.read(1280*900*3)
@@ -77,7 +76,7 @@ for scene in ('normal-lightning','normal-meteor','awake-lightning','awake-meteor
         index+=1
     if process.wait():raise RuntimeError('decoder failed')
     hit_frames=[s['frame'] for s in samples if s['seconds']>.8 and s['impact_match']>.7]
-    actor_frames=[s['frame'] for s in samples if s['seconds']>.8 and s['atlas_pose']==(43 if awake else 31)]
+    actor_frames=[s['frame'] for s in samples if s['seconds']>.8 and s['atlas_pose']==19]
     if not hit_frames or not actor_frames:
         raise AssertionError(f'{scene}: impact not observable; inspect landmarks/templates')
     first_hit,first_actor=hit_frames[0],actor_frames[0]

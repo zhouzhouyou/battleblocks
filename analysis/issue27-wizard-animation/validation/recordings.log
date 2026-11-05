@@ -1,0 +1,3 @@
+awake-lightning: actor=114, effect=114, delta=0 frames
+awake-meteor: actor=111, effect=111, delta=0 frames
+awake-delayed-meteor: actor=151, effect=151, delta=0 frames
