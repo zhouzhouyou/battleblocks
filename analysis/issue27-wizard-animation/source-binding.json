@@ -222,7 +222,8 @@
     "tools/prepare_wizard_assets.py": "ebfc419c878c0ef80e3cd56900eada5ff600c8546d6a65fef9e0f4470ff495c6",
     "tools/prepare_wizard_spells.py": "29ec1b819163327be69aaa59db5f8e9a200cc567bdcec8b85c5923aa023c34ac",
     "tools/review_character_animations.py": "30ded2f4eb5138c57b681999155c08e96febae66d9624dfb0368f71c18c535d6",
-    "tools/review_wizard_animation.py": "b3077f2aaf3b8ee170869e9ad90832040545d1895b5ae3a88c5787eb04ab1240",
+    "tools/review_wizard_animation.py": "dc7ae5e804cd4ec1912bc9978a351f3e8c392a7a867f0494405408f26e584a98",
     "tools/test_balance.py": "bdd9bd29a3f12b91e6e0fbe0f6aafeb147f62d0b92d1296fecbd8e189c8ed9e1"
-  }
+  },
+  "evidence_export_correction": "After 0710a36, review-only export selects exact decoded frame indices. Runtime sources, assets and capture binary remain at implementation_commit."
 }

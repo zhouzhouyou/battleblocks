@@ -28,6 +28,15 @@ def extract(path, seconds):
     return Image.open(io.BytesIO(raw)).convert('RGB')
 
 
+def extract_frame(path, index):
+    # Video timestamps need not start at zero. Select the decoded frame index
+    # used by check_wizard_recordings, rather than rounding index / fps via -ss.
+    raw = subprocess.check_output([FFMPEG, '-hide_banner', '-loglevel', 'error',
+        '-i', str(path), '-vf', f'select=eq(n\\,{index})', '-frames:v', '1',
+        '-fps_mode', 'vfr', '-f', 'image2pipe', '-vcodec', 'png', '-'])
+    return Image.open(io.BytesIO(raw)).convert('RGB')
+
+
 # These are actual unscaled 1280x900 window captures, not a reconstruction of the menu.
 for form in ('normal', 'awake'):
     panel = Image.new('RGB', (610, 680), '#20232d')
@@ -103,11 +112,11 @@ for scene in ('normal-lightning','normal-meteor','awake-lightning','awake-meteor
     measurements = json.loads((OUT/'recording-measurements.json').read_text())
     if scene in measurements:
         hit_frame = measurements[scene]['effect_impact_frame']
-        keys = [('guide', (hit_frame-1)/60), ('impact', hit_frame/60)]
+        keys = [('guide', hit_frame-1), ('impact', hit_frame)]
     else:
-        keys = [('sample', 2.1)]
-    for tag,t in keys:
-        save(extract(OUT/'current'/f'{scene}.mp4',t),OUT/'current'/f'{scene}-{tag}.webp')
+        keys = [('sample', 126)]
+    for tag,frame_index in keys:
+        save(extract_frame(OUT/'current'/f'{scene}.mp4',frame_index),OUT/'current'/f'{scene}-{tag}.webp')
 
 page='''<!doctype html><meta charset="utf-8"><title>老巫师动作验收 · #27</title>
 <style>body{background:#191d28;color:#edf0f8;font:16px system-ui;margin:28px;max-width:1100px}button,select,input{font:inherit;margin:6px}canvas{image-rendering:pixelated;border:1px solid #465567}video{width:100%;max-width:900px}small{color:#b6c4d5}a{color:#83cfff}</style>
