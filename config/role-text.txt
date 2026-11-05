@@ -39,7 +39,7 @@ Status.double|Double rewards|消除增幅准备
 Status.parallel|Parallel swap|三线换位准备
 Status.frenzy.description|Your healing for the opponent becomes damage. Your own healing still works.|为对手触发的治疗改为伤害；自身治疗照常生效
 Status.rational.description|Madness is disabled. Normal attacks still deal damage.|暂时禁用癫狂；普通攻击仍造成伤害
-Status.reach.description|You can reach one additional row.|可操作范围增加一行
+Status.reach.description|You can reach one additional row or column.|可操作范围增加一行或一列
 Status.double.description|Your next clear gains 100% additional effects.|下次消除额外触发100%效果
 Status.parallel.description|The next orthogonal exchange includes its two parallel pairs.|下次正交交换附带两侧平行交换
 ManaAffinity.name|Mana affinity|魔力亲和
