@@ -27,7 +27,7 @@ if args.setup_only:raise SystemExit(0)
 cargo=shutil.which('cargo') or str(Path.home()/'.cargo/bin/cargo')
 rustup=shutil.which('rustup') or str(Path.home()/'.cargo/bin/rustup')
 if not args.native_only:subprocess.run([rustup,'target','add','wasm32-unknown-unknown'],check=True)
-commands=[[cargo,'test','--locked']]
+commands=[[sys.executable,str(ROOT/'tools/check_repository.py')], [cargo,'test','--locked']]
 commands.append([sys.executable, str(ROOT/'tools/test_balance.py')])
 if not args.web_only:commands.append([cargo,'build','--release','--locked','--bin','battleblocks'])
 if not args.native_only:commands.append([cargo,'build','--release','--locked','--bin','battleblocks','--target','wasm32-unknown-unknown'])

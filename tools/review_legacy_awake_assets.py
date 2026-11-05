@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT/'.build-tools/art-site'))
 from PIL import Image, ImageDraw, ImageChops
 from prepare_legacy_awake_assets import ROLES, source_dir
-OUT = ROOT/'analysis/issue28-awake-animation/art'
+OUT = ROOT/'.local/analysis/issue28-awake-animation/art'
 OUT.mkdir(parents=True, exist_ok=True)
 report = {}
 for role in ROLES:

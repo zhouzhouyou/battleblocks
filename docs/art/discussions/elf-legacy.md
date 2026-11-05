@@ -1,0 +1,46 @@
+# 制作讨论与提示词
+
+以下文字记录设计讨论与制作过程；当前采用资源以角色档案为准。
+
+---
+
+# 精灵 · 林间游侠 — 觉醒动画 production/
+
+用户已批准 #28 推荐方案，范围仅觉醒。内置 image_gen 生成；实际提示词为 awake-idle-prompt-.md 与 awake-cast-prompt-.md，参考已有 assets/awakened/elf-awakening.webp。源图无损保存，不打包进游戏。
+
+registration.json 锁定每张源表的12个脚底中心和一次性密度校准；palette.json 为两动作共用64色。导入只做4×3切帧、alpha>=160二值化、最近邻缩放、脚部注册和量化，没有复制/平移帧扩充动作。
+
+运行指定 Python：tools/prepare_character_animations.py --role elf-legacy，然后 --registry-only。完整 tools/prepare_assets.py 同样可复现。runtime图集 assets/roles/elf-legacy/runtime/atlas.webp；每个源表12独立姿势，施法预览WebP为1.4秒循环以便评审，运行时明确 Once，按技能采样时长见 src/sprites/legacy.rs；待机0.72秒循环。
+
+最终视觉待用户验收；逐帧/实战证据见 analysis/issue28-awake-animation。普通角色文件不属于该导入器输出。
+
+
+
+---
+
+Act as the art director for an original game. Establish densely detailed pixel illustration as the global visual language for the entire project. Apply this direction consistently to characters, environments, props, items, UI, icons, visual effects, animation, loading screens and promotional art. Keep the project's existing genre, mechanics, camera and target platform; when one is unspecified, state an assumption before proposing assets.
+
+Use carefully shaped pixel clusters, nuanced hue shifts and richer stepped ramps to describe cloth, foliage, stone and architecture. Keep a consistent pixel scale and concentrate intricate detail around focal assets, allowing quieter surfaces and distance to preserve hierarchy. Give characters expressive but readable frame animation and materials that match the environment's cluster language. Design UI icons at intentional resolutions rather than downscaling painted images. Effects may use controlled soft light, but must preserve the underlying pixel contours. Avoid random pixel noise, inconsistent sprite density and detail that vanishes or flickers at the target display size.
+
+Create a compact art bible with a locked palette, silhouette and proportion rules, material examples, lighting hierarchy, UI/icon rules, motion guidelines and a short list of visual mistakes to avoid. Define measurable asset specifications appropriate to the chosen platform and camera, then keep them consistent across every batch. Preserve gameplay readability, accessible text and clear interactive targets at the actual display size. Use original designs and compositions rather than copying a particular game's characters, logos or artwork. When asked for one asset, deliver that asset within this art direction; do not redesign the style for each request.
+
+Use case: stylized-concept. PRODUCTION ANIMATION SPRITE SHEET, not a character concept sheet. Input image is an IDENTITY reference only; expand its AWAKENED fine-pixel character into a detailed animation sheet while retaining exact outfit, equipment, proportions and color identity. Do not create a normal form.
+The same young adult female forest elf archer as reference: golden orange long hair, long pointed ears, blue eyes, green tunic and leggings, brown boots, one curved wood bow in image-right arm, ONE arrow stays nocked in its string. Preserve petite athletic proportions and 3/4-facing-right view. Fine densely detailed pixel clusters in hair and cloth. No staff, armor, wings, cape or extra arrows.
+Create EXACTLY TWELVE independently drawn FULL BODY cast poses in a precise FOUR COLUMNS by THREE ROWS grid, read left to right top to bottom. Canvas ideally 1448x1086 with twelve equal SQUARE cells. Each character centered on the same vertical axis, soles on the same baseline at 88% of each cell height, no ground shadow. Approximately 80% cell height including all equipment. Same camera, anatomical scale and equipment scale across all twelve poses. Leave a generous completely transparent gutter inside every cell; no weapons, hair, ears or feet touch a cell boundary. Transparent RGBA background, no text, labels, numbers, grid lines or other objects. Fine hard-edged hand-authored pixel illustration with small pixel clusters and stepped material ramps, NO giant pixels, no smooth painting/3D gradients, no blur, no antialiasing halos. Left upper light; restrained consistent palette.
+Pose sequence: 1 bow wrist leads outward and rear hand activates natural magic; 2 shoulders open; 3 rear elbow lifts; 4 torso rotates slightly; 5 bow forearm opens clearly away from body; 6 guiding wrist gesture; 7 maximally open guiding pose; 8 torso returns; 9 rear elbow lowers; 10 bow restores guard angle; 11 shoulders relax; 12 idle entry with original ready bow. The same ONE arrow remains nocked, NO shooting arrow, NO released projectile, NO extra hands, no particle effects; all 12 gestures clearly distinct in shoulders, forearms and torso. Feet remain planted.
+Important: visibly independent anatomical poses, not repeated frames, no global translation/scale/rotation as substitute for drawing poses. Do not alter head shape or costume as the pose changes. Correctly connected hands, elbows, weapons and planted shoes. The final pose should naturally lead to the neutral first idle pose. Output only this single 4x3 transparent sprite sheet.
+
+
+---
+
+Act as the art director for an original game. Establish densely detailed pixel illustration as the global visual language for the entire project. Apply this direction consistently to characters, environments, props, items, UI, icons, visual effects, animation, loading screens and promotional art. Keep the project's existing genre, mechanics, camera and target platform; when one is unspecified, state an assumption before proposing assets.
+
+Use carefully shaped pixel clusters, nuanced hue shifts and richer stepped ramps to describe cloth, foliage, stone and architecture. Keep a consistent pixel scale and concentrate intricate detail around focal assets, allowing quieter surfaces and distance to preserve hierarchy. Give characters expressive but readable frame animation and materials that match the environment's cluster language. Design UI icons at intentional resolutions rather than downscaling painted images. Effects may use controlled soft light, but must preserve the underlying pixel contours. Avoid random pixel noise, inconsistent sprite density and detail that vanishes or flickers at the target display size.
+
+Create a compact art bible with a locked palette, silhouette and proportion rules, material examples, lighting hierarchy, UI/icon rules, motion guidelines and a short list of visual mistakes to avoid. Define measurable asset specifications appropriate to the chosen platform and camera, then keep them consistent across every batch. Preserve gameplay readability, accessible text and clear interactive targets at the actual display size. Use original designs and compositions rather than copying a particular game's characters, logos or artwork. When asked for one asset, deliver that asset within this art direction; do not redesign the style for each request.
+
+Use case: stylized-concept. PRODUCTION ANIMATION SPRITE SHEET, not a character concept sheet. Input image is an IDENTITY reference only; expand its AWAKENED fine-pixel character into a detailed animation sheet while retaining exact outfit, equipment, proportions and color identity. Do not create a normal form.
+The same young adult female forest elf archer as reference: golden orange long hair, long pointed ears, blue eyes, green tunic and leggings, brown boots, one curved wood bow in image-right arm, ONE arrow stays nocked in its string. Preserve petite athletic proportions and 3/4-facing-right view. Fine densely detailed pixel clusters in hair and cloth. No staff, armor, wings, cape or extra arrows.
+Create EXACTLY TWELVE independently drawn FULL BODY idle poses in a precise FOUR COLUMNS by THREE ROWS grid, read left to right top to bottom. Canvas ideally 1448x1086 with twelve equal SQUARE cells. Each character centered on the same vertical axis, soles on the same baseline at 88% of each cell height, no ground shadow. Approximately 80% cell height including all equipment. Same camera, anatomical scale and equipment scale across all twelve poses. Leave a generous completely transparent gutter inside every cell; no weapons, hair, ears or feet touch a cell boundary. Transparent RGBA background, no text, labels, numbers, grid lines or other objects. Fine hard-edged hand-authored pixel illustration with small pixel clusters and stepped material ramps, NO giant pixels, no smooth painting/3D gradients, no blur, no antialiasing halos. Left upper light; restrained consistent palette.
+Pose sequence: 1 ready archer stance; 2 subtle inhale; 3 bow elbow rises a little; 4 head turns slightly attentive; 5 rear shoulder opens; 6 hair trails to the left; 7 exhale; 8 bow wrist relaxes; 9 rear elbow draws back; 10 head returns; 11 hair settles; 12 nearly pose1 natural loop transition. Both boots planted and bow and arrow complete in every cell. Each is a separately drawn expressive joint pose.
+Important: visibly independent anatomical poses, not repeated frames, no global translation/scale/rotation as substitute for drawing poses. Do not alter head shape or costume as the pose changes. Correctly connected hands, elbows, weapons and planted shoes. The final pose should naturally lead to the neutral first idle pose. Output only this single 4x3 transparent sprite sheet.

@@ -4,7 +4,7 @@
 
 > 哥布林把别人不要的东西变成自己的经济。每块废料都是资源，每份资源都是计划。
 
-来源：assets/role-lore.txt 既有游戏文案，用户原始设定原文未提供；本批用户批准原样沿用，不擅自补写背景。待用户补充来源或新介绍，不阻塞本次动画开发。
+来源：config/role-lore.txt 既有游戏文案，用户原始设定原文未提供；本批用户批准原样沿用，不擅自补写背景。待用户补充来源或新介绍，不阻塞本次动画开发。
 
 ## 本批决定与范围
 
@@ -12,9 +12,9 @@
 
 绿色方头、白眼、深灰围巾/短衣、棕腰带、单短匕首。空手收取，刀手侧守；不新增袋子、兜帽、钱堆或自伤动作。
 
-普通版锁定：3独立姿势，0,1,2,1；每步130ms；200×200。原 assets/goblin.webp、JSON、源图、缩略图、普通 SPRITES 注册及原施法表现保持不变；无新增普通施法。普通与觉醒不统一画风/构图。
+普通版锁定：3独立姿势，0,1,2,1；每步130ms；200×200。原 assets/roles/goblin-legacy/runtime/normal.webp、JSON、源图、缩略图、普通 SPRITES 注册及原施法表现保持不变；无新增普通施法。普通与觉醒不统一画风/构图。
 
-## 觉醒生产 
+## 觉醒生产
 
 两组各12独立绘制姿势，共24。E细像素风，384×384帧，2304×1536图集，角色共享64色、二值透明、最近邻、无损WebP；脚锚(192,336)，站立可见高度约273生产像素。每张源表固定密度校准，整组同一比例，非逐帧裁框居中。原觉醒静态图留作历史参考。
 
@@ -22,7 +22,7 @@
 
 源码时序入口 src/sprites/legacy.rs 与 src/effects/legacy_actors.rs。表现实例按真实游戏行动归属、施法方和目标清除通知同步；暂停编辑不替换行动；新行动接管、形态/棋盘编辑取消旧实例。回滚清理实例，待冲锋快照按剩余时间恢复表现，不重复结算。终局有界退场不伪造命中或收益。
 
-[全部源图、实际提示词和注册](../../../asset-sources/art-direction/characters/goblin-legacy/production//README.md) · [生产图集](../../../assets/roles/goblin-legacy.webp) · [24姿势实际选角尺度检查](../../../analysis/issue28-awake-animation/art/goblin-legacy-poses.webp) · [待机接缝](../../../analysis/issue28-awake-animation/art/goblin-legacy-seam.webp)
+全部源图、实际提示词和注册（图片不入库） · [生产图集](../../../assets/roles/goblin-legacy/runtime/atlas.webp) · 24姿势实际选角尺度检查（图片不入库） · 待机接缝（图片不入库）
 
 ## 验收与未决
 

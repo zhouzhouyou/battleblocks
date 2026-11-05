@@ -24,9 +24,9 @@ def colored(image, palette, binary=False):
 
 
 def import_book():
-    root = ROOT / "asset-sources/art-direction/characters/dwarf"
-    palette = palette_from(root / "animations/v6/runtime-palette.json")
-    layers = {name: Image.open(root / f"animations/v6/book-{name}.webp").convert("RGBA")
+    root = ROOT / "assets-source/roles/dwarf/equipment"
+    palette = palette_from(root / "runtime-palette.json")
+    layers = {name: Image.open(root / f"book-{name}.webp").convert("RGBA")
               for name in ("cover", "pages", "bottom")}
     cover = layers["cover"].resize((160, 24), Image.Resampling.NEAREST)
     bottom = layers["bottom"].resize((160, 8), Image.Resampling.NEAREST)
@@ -37,19 +37,19 @@ def import_book():
         atlas.alpha_composite(cover, (384 * level + 112, y))
         atlas.alpha_composite(pages, (384 * level + 112, y + 24))
         atlas.alpha_composite(bottom, (384 * level + 112, 328))
-    save_webp(colored(atlas, palette), ROOT / "assets/roles/grudge-book.webp")
+    save_webp(colored(atlas, palette), ROOT / "assets/roles/dwarf/runtime/grudge-book.webp")
     for name, layer in (("cover", cover), ("bottom", bottom),
                         ("pages", layers["pages"].resize((160, 12), Image.Resampling.NEAREST))):
-        save_webp(colored(layer, palette), ROOT / f"assets/roles/book-{name}.webp")
+        save_webp(colored(layer, palette), ROOT / f"assets/roles/dwarf/runtime/book-{name}.webp")
 
 
 def import_standees():
-    root = ROOT / "asset-sources/art-direction/characters/nun/production/v1"
-    palette = palette_from(root / "report.json")
+    root = ROOT / "assets-source/roles/nun/gallery"
+    palette = palette_from(root / "palette.json")
     for name in ("normal", "awake"):
-        source = Image.open(root / f"standee-{name}-source-v1.webp").convert("RGBA")
+        source = Image.open(root / f"standee-{name}-source.webp").convert("RGBA")
         result = colored(source, palette, binary=True)
-        save_webp(result, ROOT / f"assets/roles/nun-standee-{name}.webp")
+        save_webp(result, ROOT / f"gallery/nun/{name}.webp")
 
 
 if __name__ == "__main__":

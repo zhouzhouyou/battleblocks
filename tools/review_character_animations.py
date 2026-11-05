@@ -16,16 +16,15 @@ def frame(atlas, index, columns):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--baseline", default="3ac9de1")
+    parser.add_argument("--baseline", type=Path, required=True, help="External folder with retained baseline atlases; discarded artwork is not in Git")
     args = parser.parse_args()
-    baseline = subprocess.check_output(["git", "rev-parse", args.baseline], cwd=ROOT, text=True).strip()
-    out = ROOT / "analysis/issue11-animation"
+    baseline = args.baseline.resolve()
+    out = ROOT / ".local/analysis/issue11-animation"
     out.mkdir(parents=True, exist_ok=True)
     images = []
     for role in ROLES:
-        old = Image.open(io.BytesIO(subprocess.check_output(
-            ["git", "show", f"{baseline}:assets/roles/{role}.webp"], cwd=ROOT))).convert("RGBA")
-        new = Image.open(ROOT / f"assets/roles/{role}.webp").convert("RGBA")
+        old = Image.open(baseline / f"{role}.webp").convert("RGBA")
+        new = Image.open(ROOT / f"assets/roles/{role}/runtime/atlas.webp").convert("RGBA")
         images.append((role, old, new))
     for awake in (False, True):
         sequence = []
@@ -64,7 +63,7 @@ def main():
 <button id="replay">重播</button><button id="pause">暂停</button><input id="seek" type="range" min="0" max="2000" value="0"><output id="time"></output>
 <canvas id="view" width="1000" height="240"></canvas><small>384px 原帧缩至 192px；同一运行时图集，最近邻采样。完整来源及检查记录见角色 production 目录。</small>
 <script>const metadata=METADATA;const roles=Object.keys(metadata);const images={};const view=document.querySelector('#view'),ctx=view.getContext('2d');let start=performance.now(),elapsed=0,playing=true;
-Promise.all(roles.map(role=>new Promise(resolve=>{const img=new Image();img.onload=()=>{images[role]=img;resolve()};img.src='../../assets/roles/'+role+'.webp'}))).then(()=>requestAnimationFrame(draw));
+Promise.all(roles.map(role=>new Promise(resolve=>{const img=new Image();img.onload=()=>{images[role]=img;resolve()};img.src='../../../assets/roles/'+role+'/runtime/atlas.webp'}))).then(()=>requestAnimationFrame(draw));
 document.querySelector('#replay').onclick=()=>{elapsed=0;start=performance.now();playing=true};document.querySelector('#pause').onclick=()=>{playing=!playing;start=performance.now()-elapsed};
 document.querySelector('#clip').onchange=()=>{elapsed=0;start=performance.now()};document.querySelector('#seek').oninput=e=>{elapsed=+e.target.value;playing=false};
 function draw(now){if(playing)elapsed=now-start;ctx.fillStyle='#20232d';ctx.fillRect(0,0,1000,240);ctx.imageSmoothingEnabled=false;roles.forEach((role,r)=>{let name=document.querySelector('#clip').value;if(role==='fire-elf'&&name==='awake-cast')name='sleep';const clip=metadata[role].clips[name];let pos=clip.playback==='loop'?(elapsed%clip.duration_ms):Math.min(elapsed,clip.duration_ms-1);let index=clip.indices[Math.min(11,Math.floor(pos/clip.duration_ms*12))];ctx.drawImage(images[role],index%6*384,Math.floor(index/6)*384,384,384,r*200,30,192,192);ctx.fillStyle='white';ctx.font='14px system-ui';ctx.fillText(role+' · '+(clip.indices.indexOf(index)+1)+'/12',r*200+10,20)});document.querySelector('#seek').value=Math.min(2000,elapsed);document.querySelector('#time').textContent=(elapsed/1000).toFixed(2)+'s';requestAnimationFrame(draw)}

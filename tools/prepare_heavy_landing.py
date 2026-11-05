@@ -7,7 +7,9 @@ import tempfile
 from PIL import Image, ImageDraw
 
 ROOT=Path(__file__).resolve().parents[1]
-SOURCE=ROOT/'asset-sources/effects/heavy-landing/v1'
+SOURCE=ROOT/'assets-source/effects/heavy-landing'
+PREVIEWS=ROOT/'.local/previews/heavy_landing'
+PREVIEWS.mkdir(parents=True,exist_ok=True)
 W,H,N,COLUMNS=176,80,22,7
 with tempfile.TemporaryDirectory(prefix='battleblocks-landing-') as directory:
     binary=Path(directory)/'landing'
@@ -33,7 +35,7 @@ with Image.open(out) as decoded: assert decoded.convert('RGBA').tobytes()==atlas
 (SOURCE/'atlas.json').write_text(json.dumps(dict(width=W,height=H,frames=N,columns=COLUMNS,layer_rows=4,layers=['back','front'],fps=30,pivot=[88,60],landing_seconds=0.65,dust_duration=0.7,upstream='patch-gg/pixelfx@a84159688af3ca37a4be05a0d422b94451b2e24e',effect='impacts/heavy-landing'),indent=2)+'\n')
 
 # Match the game's 208x184 actor slot, 384x384 frame, and (192,336) foot anchor.
-dwarf=Image.open(ROOT/'assets/roles/dwarf.webp').convert('RGBA')
+dwarf=Image.open(ROOT/'assets/roles/dwarf/runtime/atlas.webp').convert('RGBA')
 scale=min(208/84,184/83,3)*96/384
 size=round(384*scale)
 reviews=[]
@@ -52,11 +54,11 @@ for i,height in enumerate(lift):
         ImageDraw.Draw(front).rectangle((0,64,W,H),fill=(0,0,0,0))
         frame.alpha_composite(front,(128-88,228-60))
     reviews.append(frame.convert('RGB'))
-reviews[0].save(SOURCE/'dwarf-preview.webp',save_all=True,append_images=reviews[1:],duration=33,loop=0,lossless=True,method=6)
+reviews[0].save(PREVIEWS/'dwarf-preview.webp',save_all=True,append_images=reviews[1:],duration=33,loop=0,lossless=True,method=6)
 contact=Image.new('RGB',(1024,3*292),'#161820')
 draw=ImageDraw.Draw(contact)
 for j,i in enumerate([0,6,10,15,19,20,22,25,28,32,37,42]):
     contact.paste(reviews[i],((j%4)*256,(j//4)*292+20))
     draw.text(((j%4)*256+6,(j//4)*292+4),f'{i/30:.2f}s',fill='#E2D4BC')
-contact.save(SOURCE/'contact.webp',lossless=True,method=6)
+contact.save(PREVIEWS/'contact.webp',lossless=True,method=6)
 print(f'{out.relative_to(ROOT)}: {out.stat().st_size} bytes; two layers, {N} frames each; lossless pixels, empty borders and ending verified')

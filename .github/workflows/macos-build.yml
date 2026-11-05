@@ -9,6 +9,7 @@ on:
       - 'build.rs'
       - 'src/**'
       - 'assets/**'
+      - 'config/**'
       - 'tools/**'
   workflow_dispatch:
 

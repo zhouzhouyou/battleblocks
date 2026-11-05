@@ -1,5 +1,6 @@
 from pathlib import Path
 import sys
+from asset_paths import legacy_role
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / '.build-tools/art-site'))
 from PIL import Image
 import json, shutil
@@ -21,11 +22,11 @@ def webp_durations(path):
     return durations
 
 for name in ("balanced", "hp", "damage", "mp", "hd", "hm", "dm"):
-    Image.open(ROOT / f"asset-sources/{name}.webp").convert("RGBA").save(OUT / f"{name}.webp", lossless=True, exact=True, method=6)
-shutil.copy2(ROOT / "asset-sources/crush.wav", OUT / "crush.wav")
+    Image.open(ROOT / f"assets-source/ui/{name}.webp").convert("RGBA").save(OUT / "ui" / f"{name}.webp", lossless=True, exact=True, method=6)
+shutil.copy2(ROOT / "assets-source/audio/crush.wav", OUT / "audio/runtime/crush.wav")
 report = {}
 for name in ("knight", "elf", "wizzard", "goblin", "imp", "chort", "big_zombie", "big_demon_ro"):
-    source = ROOT / f"asset-sources/{name}.webp"
+    source = ROOT / f"assets-source/roles/{legacy_role(name)}/animation/normal-original.webp"
     gif = Image.open(source)
     frame_durations = webp_durations(source)
     assert len(frame_durations) == gif.n_frames, (name, len(frame_durations), gif.n_frames)
@@ -57,11 +58,11 @@ for name in ("knight", "elf", "wizzard", "goblin", "imp", "chort", "big_zombie",
         restored = Image.new("RGBA", original.size)
         restored.paste(unique[index], (bounds[0], bounds[1]))
         assert restored.tobytes() == original.tobytes(), f"Frame mismatch: {name}"
-    atlas.save(OUT / f"{name}.webp", lossless=True, exact=True, method=6)
+    atlas.save(OUT / "roles" / legacy_role(name) / "runtime/normal.webp", lossless=True, exact=True, method=6)
     meta = {"original_size": list(gif.size), "bounds": list(bounds), "frame_size": [w,h], "indices": indices, "durations": durations}
-    (OUT / f"{name}.json").write_text(json.dumps(meta, indent=2))
-    report[name] = {**meta, "unique_frames": len(unique), "original_rgba_bytes": gif.width * gif.height * 4 * len(frames), "atlas_rgba_bytes": atlas.width * atlas.height * 4, "atlas_webp_bytes": (OUT / f"{name}.webp").stat().st_size}
-(OUT / "report.json").write_text(json.dumps(report, indent=2))
+    (ROOT / "assets-source/roles" / legacy_role(name) / "animation/normal.json").write_text(json.dumps(meta, indent=2))
+    report[name] = {**meta, "unique_frames": len(unique), "original_rgba_bytes": gif.width * gif.height * 4 * len(frames), "atlas_rgba_bytes": atlas.width * atlas.height * 4, "atlas_webp_bytes": (OUT / "roles" / legacy_role(name) / "runtime/normal.webp").stat().st_size}
+(ROOT / "config/legacy-sprites.json").write_text(json.dumps(report, indent=2))
 print(json.dumps(report, indent=2))
 
 # Rebuild the approved new-role atlases and final combined registry.

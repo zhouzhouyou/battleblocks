@@ -1,6 +1,6 @@
 from pathlib import Path
 import json,os,re,subprocess,time
-ROOT=Path(__file__).resolve().parents[1];LAB=ROOT/'analysis/audio-lab';OUT=LAB/'results';OUT.mkdir(exist_ok=True)
+ROOT=Path(__file__).resolve().parents[1];LAB=ROOT/'experiments/audio-lab';OUT=LAB/'results';OUT.mkdir(exist_ok=True)
 rows=[]
 with (OUT/'stream-stability.log').open('w') as log:
  p=subprocess.Popen([str(LAB/'target/release/battleblocks-audio-lab'),'stream','60'],env=dict(os.environ,AUDIO_LAB_GAIN='0'),stdout=log,stderr=log)

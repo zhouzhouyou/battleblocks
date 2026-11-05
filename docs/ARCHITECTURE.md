@@ -6,8 +6,8 @@ Headless `Session` 是权威游戏模型，GUI 只是同一模型的输入、帧
 
 | 位置 | 职责 |
 | --- | --- |
-| `assets/ability-loadouts.txt` | 各角色普通／觉醒的被动、主动身份与觉醒说明；身份配置不是规则实现 |
-| `assets/role-lore.txt` | 选角尾页的人物档案：称号、介绍、特质与台词，按角色 ID 解析 |
+| `config/ability-loadouts.txt` | 各角色普通／觉醒的被动、主动身份与觉醒说明；身份配置不是规则实现 |
+| `config/role-lore.txt` | 选角尾页的人物档案：称号、介绍、特质与台词，按角色 ID 解析 |
 | `src/content/events.rs` | 事件、来源链、处理上下文、注册分发、能力反馈、状态操作请求 |
 | `src/content/handlers/` | 主动、被动、临时状态自身的事件过滤与行为；`mod.rs` 只绑定身份和处理器 |
 | `src/content/skills/` | 各主动的棋盘操作实现，由施法事件调用 |

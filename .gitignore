@@ -1,6 +1,6 @@
 /target/
 /dist/
-/.build-tools/
+/.build-tools
 /assets/ui-subset.ttf
 /analysis/memory-comparison/*/target/
 /analysis/memory-comparison/results*/
@@ -12,4 +12,13 @@
 /analysis/evaluation-cache.sqlite*
 /analysis/evaluation/
 /analysis/evaluation-runs/
-/asset-sources/art-direction/characters/*/references/
+
+/.local/
+**/references/
+**/previews/
+**/*preview*.webp
+**/*preview*.png
+**/*contact*.webp
+**/*contact*.png
+/experiments/**/target/
+/experiments/**/results*/

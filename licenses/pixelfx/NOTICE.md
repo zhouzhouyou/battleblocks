@@ -37,8 +37,8 @@ credits Hugo Duprez's MIT lightning/fire/explosion work for these techniques.
 BattleBlocks adds its own X-shaped board composition, single central meteor,
 diamond wave, mana-return paths and shared clear-triggered visual timing in Rust.
 
-The v2 wizard revision expands the Lightning Strike motif with a charging sigil,
-a thick primary stroke, forks and a cooling ground channel; the meteor's v2
+The  wizard revision expands the Lightning Strike motif with a charging sigil,
+a thick primary stroke, forks and a cooling ground channel; the meteor's
 aftermath is a circular pressure wave with delayed, per-tile visual disappearance.
 The original board target sets and resource rules remain those of BattleBlocks.
 

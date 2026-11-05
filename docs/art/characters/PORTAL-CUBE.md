@@ -4,9 +4,9 @@
 
 2026-11-06，用户要求「我只需要保留最终版本」。项目仅保留已选 A 的完善人设图与  刚体修复动画，以及当前提示词、检查记录和复现工具。未选候选、A 的早期对比稿、两轮问题动画及其源图已从工作树删除；不从生成缓存恢复。
 
-- [人设图](../../../asset-sources/art-direction/characters/portal-cube/model-sheet/portal-cube-a-model-sheet-e-.webp) · [人设提示词](../../../asset-sources/art-direction/characters/portal-cube/model-sheet/portal-cube-a-model-sheet-e--prompt.txt)
-- [最终保留动画说明](../../../asset-sources/art-direction/characters/portal-cube/production//README.md) · [检查记录](../../../asset-sources/art-direction/characters/portal-cube/production//report.json)
-- [普通待机](../../../asset-sources/art-direction/characters/portal-cube/production//normal-idle.webp) · [普通开门](../../../asset-sources/art-direction/characters/portal-cube/production//normal-portal-cast.webp) · [普通重力](../../../asset-sources/art-direction/characters/portal-cube/production//normal-gravity-cast.webp)
+- [人设图](../../../assets-source/roles/portal-cube/design/model-sheet.webp) · 人设提示词（图片不入库）
+- 最终保留动画说明（图片不入库） · [检查记录](../../../assets-source/roles/portal-cube/animation/report.json)
+- 普通待机（图片不入库） · 普通开门（图片不入库） · 普通重力（图片不入库）
 - 动画提示词随最终版本保存在 `production//prompts/`。复现工具 `tools/prepare_portal_cube_animations.py` 直接验证最终图集；`--export` 从最终图集重建预览，`--install` 安装到运行时，无旧源图依赖。
 - 稳定角色 ID 12，主动 ID 27 `PortalPair`／28 `GravityShift`，被动 `PortalYield`。机制开发已提交 `0a34212`；本轮美术尚未自动提交。
 - 背景与台词已进入角色档案页；用户已授权替换占位角色，运行时已使用  方块动画与独立缩略图。美术最终视觉验收、觉醒玩法及参数平衡仍待完成。
@@ -48,7 +48,7 @@
 
 具体机制见 [传送门机制](../../PORTAL-MECHANICS.md) 和 [Issue #30](https://github.com/zhouzhouyou/battleblocks/issues/30)。标准难度六角色共 60 局均正常结束，友谊方块 0/20 胜，当前数值明显偏弱，尚未平衡。
 
-## 原创台词 
+## 原创台词
 
 情境标签用于档案页组织，不代表已经接入语音或逐事件播报。
 
@@ -86,7 +86,7 @@
 
 > 替换之前的占位角色。
 
-- `assets/roles/portal-cube.webp` 替代角色 12 的哥布林占位图；普通、觉醒共用同一运行时图集，避免重复纹理解码／上传。
+- `assets/roles/portal-cube/runtime/atlas.webp` 替代角色 12 的哥布林占位图；普通、觉醒共用同一运行时图集，避免重复纹理解码／上传。
 - 运行时将最终 96 帧按 10 列重排为 3840×3840，两个轴都低于 WebGL 4096 基准；每帧仍为 384×384，逐像素比较最终源图，身体与枪械均未拉伸或重新绘制。设计目录仍只保留最终 。
 - 普通／觉醒待机各 16 帧、720 ms；开门分别使用 32–47／48–63，重力改向分别使用 64–79／80–95，各 16 帧、1400 ms。施法动作一次播放并保持末帧，待机循环。
 - `src/sprites/portal_cube.rs` 登记角色素材、帧时序与按技能选择的动作；菜单预览及双方战斗 HUD 共用 `sprites::cast_clip`，其他角色保持原有默认施法与跳跃表现。

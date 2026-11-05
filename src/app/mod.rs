@@ -172,17 +172,17 @@ impl Session {
         let zh = std::env::var("BATTLEBLOCKS_LANG")
             .map(|value| value != "en")
             .unwrap_or(true);
-        let defeat = rendering.then(|| texture(include_bytes!("../../assets/defeat.webp")));
+        let defeat = rendering.then(|| texture(include_bytes!("../../assets/ui/defeat.webp")));
         let skill_effects = rendering.then(effects::Textures::load);
         let tiles = rendering.then(|| {
             [
-                texture(include_bytes!("../../assets/balanced.webp")),
-                texture(include_bytes!("../../assets/hp.webp")),
-                texture(include_bytes!("../../assets/damage.webp")),
-                texture(include_bytes!("../../assets/mp.webp")),
-                texture(include_bytes!("../../assets/hd.webp")),
-                texture(include_bytes!("../../assets/hm.webp")),
-                texture(include_bytes!("../../assets/dm.webp")),
+                texture(include_bytes!("../../assets/ui/balanced.webp")),
+                texture(include_bytes!("../../assets/ui/hp.webp")),
+                texture(include_bytes!("../../assets/ui/damage.webp")),
+                texture(include_bytes!("../../assets/ui/mp.webp")),
+                texture(include_bytes!("../../assets/ui/hd.webp")),
+                texture(include_bytes!("../../assets/ui/hm.webp")),
+                texture(include_bytes!("../../assets/ui/dm.webp")),
             ]
         });
         #[cfg(not(target_arch = "wasm32"))]
@@ -207,7 +207,7 @@ impl Session {
         let player_texture =
             rendering.then(|| diagnostic_texture(sprites::SPRITES[hero_id].bytes, "no_actors"));
         let thumbs =
-            rendering.then(|| texture(include_bytes!("../../assets/hero-thumbnails.webp")));
+            rendering.then(|| texture(include_bytes!("../../assets/ui/hero-thumbnails.webp")));
         let book_cover = rendering.then(|| texture(sprites::BOOK_COVER));
         let book_pages = rendering.then(|| texture(sprites::BOOK_PAGES));
         let book_bottom = rendering.then(|| texture(sprites::BOOK_BOTTOM));

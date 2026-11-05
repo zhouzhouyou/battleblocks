@@ -1,0 +1,430 @@
+{
+  "assets/audio/runtime/bgm.ogg": {
+    "sha256": "609fe494f88eabeea00988635f92fbe073fab65444d06aaa6ec3e474d148d05f",
+    "bytes": 169994
+  },
+  "assets/audio/runtime/crush.wav": {
+    "sha256": "bde2cc2844e65e5db3f01751cd49296830d5c1f9df41ec875a07cb9827fc4360",
+    "bytes": 150688
+  },
+  "assets-source/audio/bgm.wav": {
+    "sha256": "b04f566ad7a40e43bdaedfd94efa37212985197729e7bd6bb58af0a585eb6013",
+    "bytes": 2309998
+  },
+  "assets-source/audio/crush.wav": {
+    "sha256": "bde2cc2844e65e5db3f01751cd49296830d5c1f9df41ec875a07cb9827fc4360",
+    "bytes": 150688
+  },
+  "assets/effects/ember-blast.webp": {
+    "sha256": "17466d9f8160bcd73a691c6b21d5a15f04970dbd55ba6a60d91346cfb8111025",
+    "bytes": 616448
+  },
+  "assets/effects/hammer-smash.webp": {
+    "sha256": "3e85b7a816840a3729329e81799d36bea114b502073011b6774163c26c2fbb91",
+    "bytes": 21678
+  },
+  "assets/effects/heavy-landing.webp": {
+    "sha256": "181c420c065ddef8868457a2425d13aea54888ce2d7637a7fc47485c5437f675",
+    "bytes": 35418
+  },
+  "assets/effects/nun-heal-damage.webp": {
+    "sha256": "f1c14876c4dd3892e3a4feec157f5ac2e3adac637d63eadbe1ca1ac97efadd89",
+    "bytes": 17318
+  },
+  "assets/effects/nun-heal-normal.webp": {
+    "sha256": "0c62a61a46ea283b51653f60ec2400acaa1817fa40fdef87d68c616303feab21",
+    "bytes": 17634
+  },
+  "assets/effects/sleep-zzz.webp": {
+    "sha256": "d3bdce19055bdb760e62415c83f7d09bfc7919a5598d16d7f09d979d693c07c7",
+    "bytes": 2200
+  },
+  "assets/effects/wizard-lightning.webp": {
+    "sha256": "134ab81b7141226bc2bd68194c7760dc16a181e7aa31272d494e92c5ce2f58cf",
+    "bytes": 407306
+  },
+  "assets/effects/wizard-meteor.webp": {
+    "sha256": "c592f39453f9cf32036f0ccf29dd09bfe8299eca78f483b6bfa84fb0a370dab2",
+    "bytes": 161282
+  },
+  "assets-source/environment/board_bg.webp": {
+    "sha256": "de9c0131527ab68ae4b24b8a048f63faa0546980982c8514377581b0970b6530",
+    "bytes": 676
+  },
+  "assets-source/environment/cell_bg.webp": {
+    "sha256": "cc050a9efe414181c2d8261f5ab9808b8e0d67c3d23aa6bd37056b5468620bbd",
+    "bytes": 162
+  },
+  "assets/roles/chort/runtime/awake.webp": {
+    "sha256": "93883e90c0bdd0099118c2a20b7ee89ecd9c41394197c8a25051db61a5831d8d",
+    "bytes": 7042
+  },
+  "assets/roles/chort/runtime/normal.webp": {
+    "sha256": "b9e8219a60a5a32e52bc176d9c9f793a3fd9abeb046cdf9311adce65ec4fd040",
+    "bytes": 430
+  },
+  "assets-source/roles/chort/animation/normal-original.webp": {
+    "sha256": "2787038d1f1c53a262916ee0c1f3023f1fa2254e5442676751e876f2039a3c0e",
+    "bytes": 1060
+  },
+  "assets-source/roles/demon/original/normal.webp": {
+    "sha256": "c1c3a935558d851e786679e7579f97606be7e547d55c7b3b85c81387fb74e8b6",
+    "bytes": 5222
+  },
+  "assets-source/roles/demon/animation/normal-original.webp": {
+    "sha256": "15c2df83eb1cffc52a6967affb9dd49de93f9088bd396cc82e94eea641742f6a",
+    "bytes": 9910
+  },
+  "assets-source/roles/dwarf/design/model-sheet.webp": {
+    "sha256": "3b7c93960c22f2bb239acde25b760e164e9804bd499f061978a3c555007f6af8",
+    "bytes": 1693534
+  },
+  "assets/roles/dwarf/runtime/atlas.webp": {
+    "sha256": "c4d45f2c74abb78e71629ae3369443a8bf20a34c1d1daae87d6eb62539a65e3c",
+    "bytes": 1373530
+  },
+  "assets/roles/dwarf/runtime/book-bottom.webp": {
+    "sha256": "727ee2743d901d876af037d0d3813d1a9d046ee79f467013d279ca1303d62b9c",
+    "bytes": 504
+  },
+  "assets/roles/dwarf/runtime/book-cover.webp": {
+    "sha256": "5916b2c406dd4c1a31dccf83128c11453d406f6e3723cf4741953f9ce05fdaf5",
+    "bytes": 1606
+  },
+  "assets/roles/dwarf/runtime/book-pages.webp": {
+    "sha256": "b458b872c2a7e2de7633521279eace27dfdba1a18b5f6120e10743f9d67b3bc1",
+    "bytes": 408
+  },
+  "assets/roles/dwarf/runtime/grudge-book.webp": {
+    "sha256": "083128e571b77bab2856533fa3689739d88e80d2eff24db0414630d7edb1101c",
+    "bytes": 2668
+  },
+  "assets-source/roles/dwarf/animation/awake-cast-source.webp": {
+    "sha256": "bc03173112875c66f00d8db430c4248f0e3dd031a07d3d626fde4e9c7e094ec8",
+    "bytes": 1385842
+  },
+  "assets-source/roles/dwarf/animation/awake-idle-source.webp": {
+    "sha256": "192fddba04a1a530f72ba65ba428de0b411aec80fa5937e791385799f34e2cfe",
+    "bytes": 1576530
+  },
+  "assets-source/roles/dwarf/equipment/book-bottom.webp": {
+    "sha256": "8260a53640c36c747aa9e456f4606741bef5b08476f1caa25363ed0c93f29d06",
+    "bytes": 1640
+  },
+  "assets-source/roles/dwarf/equipment/book-cover.webp": {
+    "sha256": "0abc7e93af5e28293481b328e320ebdd038c23a485e242f06f06c0ba325a9472",
+    "bytes": 33882
+  },
+  "assets-source/roles/dwarf/equipment/book-pages.webp": {
+    "sha256": "8b46d9c4c679d0a8e8fedfa1757b9008ebf2483fac3097bd35fca1d1745d1aa1",
+    "bytes": 2274
+  },
+  "assets-source/roles/dwarf/animation/normal-cast-source.webp": {
+    "sha256": "613db0e7192326778d7dfcff1e12267d7a8001bbcd7a89297a72e16e27d8e97d",
+    "bytes": 1337040
+  },
+  "assets-source/roles/dwarf/animation/normal-idle-source.webp": {
+    "sha256": "33bb8d8b3d8fdc6fc8a9a11ab587be3489a48241c53c55560cc4b7ba874f2291",
+    "bytes": 1548126
+  },
+  "assets/roles/elf-legacy/runtime/atlas.webp": {
+    "sha256": "bcb4daa60f2177cddb4e10e7a38279ebb2af60216a13f3b1de1664b5591806e1",
+    "bytes": 454390
+  },
+  "assets/roles/elf-legacy/runtime/normal.webp": {
+    "sha256": "909c1e3f1f9e1fed80ebb935b480aa35c9a4ca60990fff92d2768cb16fbffbaf",
+    "bytes": 448
+  },
+  "assets-source/roles/elf-legacy/animation/awake-cast-source.webp": {
+    "sha256": "501bcee528d6243908d944227bc9fc9ff42c6a49256f612b0868f697d6277573",
+    "bytes": 2501116
+  },
+  "assets-source/roles/elf-legacy/animation/awake-idle-source.webp": {
+    "sha256": "6ad75ae954583c28b3bac61671aadfab48b0a7d87b663f77d86afee959ce8c9c",
+    "bytes": 1435442
+  },
+  "assets-source/roles/elf-legacy/animation/normal-original.webp": {
+    "sha256": "df66d687ebb0be9bc0e5521a4d600c11e1029b52942d9ba79ad585674f4c97dc",
+    "bytes": 962
+  },
+  "assets-source/roles/fire-elf/design/model-sheet.webp": {
+    "sha256": "8fded7484b5c8e4cf1ff1cf02274f94adf72db99e0f60715ab1adbf061d3ccf7",
+    "bytes": 1583722
+  },
+  "assets/roles/fire-elf/runtime/atlas.webp": {
+    "sha256": "3bf4a418213c5d55cbb7ea5c7f95f8224b6d32c37724a1d3be41c56e2b05364a",
+    "bytes": 872714
+  },
+  "assets-source/roles/fire-elf/animation/awake-idle-source.webp": {
+    "sha256": "d0a7ee6a1bad01849d06470d2b2283a8576bdbb3fb523c1fbe1a7225441a9d02",
+    "bytes": 1193476
+  },
+  "assets-source/roles/fire-elf/animation/normal-cast-source.webp": {
+    "sha256": "ea52af6351f77e8dfaafe77c089bfce62b851d3a61d269fe9ed73faebe6a7e3d",
+    "bytes": 1169286
+  },
+  "assets-source/roles/fire-elf/animation/normal-idle-source.webp": {
+    "sha256": "918417ca710a74cf520e923fbf272e2424f74887823968ad3a6324d4ae5903fd",
+    "bytes": 1108500
+  },
+  "assets-source/roles/fire-elf/animation/sleep-source.webp": {
+    "sha256": "2b68553ac4b7e3579f2a540695d9989a3a9b5653fe9ec5a36bcb0a579d2031c3",
+    "bytes": 1049588
+  },
+  "assets/roles/goblin-legacy/runtime/atlas.webp": {
+    "sha256": "dbbe93a1ecedf0283f77d02784f4cf9cc6d1a05613d17af782bc2cb540cdb25d",
+    "bytes": 407120
+  },
+  "assets/roles/goblin-legacy/runtime/normal.webp": {
+    "sha256": "7ae05f203b699ac2a4c86564e99279c25e31e2a705ca5a2c2f94f9b04189bf59",
+    "bytes": 208
+  },
+  "assets-source/roles/goblin-legacy/animation/awake-cast-source.webp": {
+    "sha256": "bcbbe401588e04418b33fbf374008f3bb38ffbc00cfbefa8389c09a6f60cd0e2",
+    "bytes": 979830
+  },
+  "assets-source/roles/goblin-legacy/animation/awake-idle-source.webp": {
+    "sha256": "49bda900817e3acfa062dcde7624fb8ebfa1114b5668216f9e35709cdc2488fa",
+    "bytes": 947940
+  },
+  "assets-source/roles/goblin-legacy/animation/normal-original.webp": {
+    "sha256": "8c5c09f31c5007a86afe6fb775c00d0c1d5df54a2a3db6b917cd6f4ae786b02e",
+    "bytes": 620
+  },
+  "assets/roles/imp/runtime/awake.webp": {
+    "sha256": "29f3fb604d63d88a30fa9cd09ddf4b181b62980b67ce4f374347ff62ce7459ed",
+    "bytes": 7102
+  },
+  "assets/roles/imp/runtime/normal.webp": {
+    "sha256": "368cc3b16dd6ef45440fc56e4ab01d0a3af921423cda96e3d5dcf797b47e1795",
+    "bytes": 316
+  },
+  "assets-source/roles/imp/animation/normal-original.webp": {
+    "sha256": "22abdb5a5fa51c5749d3d9318c6591236cfaa082f3cdd0e0b250e752ada7cc1f",
+    "bytes": 686
+  },
+  "assets-source/roles/knight/design/model-sheet.webp": {
+    "sha256": "61739746ef2d85965e2dfc1cd1d48312578eca4ea2289c055ceab3c8c5ee2df0",
+    "bytes": 1639968
+  },
+  "assets/roles/knight/runtime/atlas.webp": {
+    "sha256": "b7bcd005019123aea2b5a81918060ae9fecc6f50dfded0a6df78e31002a78be2",
+    "bytes": 962044
+  },
+  "assets-source/roles/knight/animation/awake-cast-source.webp": {
+    "sha256": "f0a6b8f5b9eab03b68881da6bfbdef3abf09075c4eb210ba8b64c054da47cef2",
+    "bytes": 904622
+  },
+  "assets-source/roles/knight/animation/awake-idle-source.webp": {
+    "sha256": "4422becfc3de2c3a3ab0015bb2d1894164fa868e291b0a8513f27db37cb358c5",
+    "bytes": 1558780
+  },
+  "assets-source/roles/knight/animation/normal-cast-source.webp": {
+    "sha256": "cb7c3ba479d5a537412bc974ebb21484d4904d1e60f6d9dfbe25394fefd625d1",
+    "bytes": 1103026
+  },
+  "assets-source/roles/knight/animation/normal-idle-source.webp": {
+    "sha256": "ba4c9ea05951f2ceb80c823b6b685483f75187bfd9b5301be128651dadc2b6f2",
+    "bytes": 1427132
+  },
+  "assets/roles/knight-legacy/runtime/atlas.webp": {
+    "sha256": "056ce959553d001a00141de090e923be4f32b82082806ab37f87013887babf1c",
+    "bytes": 307048
+  },
+  "assets/roles/knight-legacy/runtime/normal.webp": {
+    "sha256": "017870411cfaba10f6794af037f9b23c064f17c0ecad0cf75cb4d5a99b8c20de",
+    "bytes": 422
+  },
+  "assets-source/roles/knight-legacy/animation/awake-cast-source.webp": {
+    "sha256": "dcd60b7c4d4159bc2188ca028c098e34081e8a03a34b60bab46ea86b6d417962",
+    "bytes": 662282
+  },
+  "assets-source/roles/knight-legacy/animation/awake-idle-source.webp": {
+    "sha256": "aeb17db72ee3a5197ae4b7480503815179d36ca4ad090d0d9b57c9d9d5791df1",
+    "bytes": 977844
+  },
+  "assets-source/roles/knight-legacy/animation/normal-original.webp": {
+    "sha256": "6cc8bb89abc2bd7fc7003a89c879fbd641e0c9477f00c83991b1d04108c46ad2",
+    "bytes": 908
+  },
+  "assets-source/roles/nun/design/model-sheet.webp": {
+    "sha256": "80589b8b11e018100ab7665c74d6ef5c2c35b939f6b392e75b96dd3363a9bd41",
+    "bytes": 1634440
+  },
+  "gallery/nun/awake.webp": {
+    "sha256": "e4bec9bbe47577835539f3ade96c9b52d629735ee856e5d1dd0d62027f747240",
+    "bytes": 264656
+  },
+  "gallery/nun/normal.webp": {
+    "sha256": "6bc55da219b88972986c77aaad44b47f3534edfd57ee9a5926f1bb8fe0815a7d",
+    "bytes": 280222
+  },
+  "assets/roles/nun/runtime/atlas.webp": {
+    "sha256": "a1af842d2d941977f059f047df9f39e41df5a2b9993447ad39ed41cce8dfea4f",
+    "bytes": 1151756
+  },
+  "assets-source/roles/nun/animation/awake-cast-source.webp": {
+    "sha256": "2cbc9ca5ba1e518607d2e4befb3b971b3eb84ab343db0d23d526ef91b335f0ac",
+    "bytes": 918214
+  },
+  "assets-source/roles/nun/animation/awake-idle-source.webp": {
+    "sha256": "a6965852fd2049f5627c2e7f58755220054011a32e910f98a253477f7e451d40",
+    "bytes": 852554
+  },
+  "assets-source/roles/nun/animation/normal-cast-source.webp": {
+    "sha256": "a78c2687e7daeddb15f26122143d14da1db05b3de81cf5829bc3e98fcd04a4ea",
+    "bytes": 925058
+  },
+  "assets-source/roles/nun/animation/normal-idle-source.webp": {
+    "sha256": "3da2702da2b9561cbbb1c3213f885a626eb0e401a9522da8e12105c1b2b1915e",
+    "bytes": 844548
+  },
+  "assets-source/roles/nun/gallery/standee-awake-source.webp": {
+    "sha256": "86ba3169ac39f99ca3a43b30096c267a257056dfe4c9b995c88bf35add4e1f31",
+    "bytes": 1169174
+  },
+  "assets-source/roles/nun/gallery/standee-normal-source.webp": {
+    "sha256": "5d85f5692ac5fc0631bc1ed494ae24a6a2a87c8735b8445cfdd75d1e8923f149",
+    "bytes": 1024830
+  },
+  "assets-source/roles/portal-cube/design/model-sheet.webp": {
+    "sha256": "851b45300d27afdfa8259978894b34dc5365d8800295651926564fed4e6d06dc",
+    "bytes": 1252572
+  },
+  "assets/roles/portal-cube/runtime/atlas.webp": {
+    "sha256": "0eae18e712afe754e12315685addf31069f008fb55c93d6e41756ae4b33a8e59",
+    "bytes": 405992
+  },
+  "assets-source/roles/portal-cube/animation/atlas.webp": {
+    "sha256": "0e25cff2409a5576aba0765eea6bf41fa6ae2e8dbf63595d7f237fffec1eee6b",
+    "bytes": 384150
+  },
+  "assets-source/roles/priest/design/model-sheet.webp": {
+    "sha256": "1c24b92a0c3c4df2347bb735f14767605caddddd3eaa54cdd9aab6b3683dae1c",
+    "bytes": 1454530
+  },
+  "assets/roles/priest/runtime/atlas.webp": {
+    "sha256": "4cfb72457cecd31249a8643b5370210d68405f8484e22d99f8d0608bde588595",
+    "bytes": 905084
+  },
+  "assets-source/roles/priest/animation/awake-cast-source.webp": {
+    "sha256": "a0c649d896062cc1ed3af6996ce860d214ffb4dc8734596441d7f03b3a28e1d6",
+    "bytes": 1089414
+  },
+  "assets-source/roles/priest/animation/awake-idle-source.webp": {
+    "sha256": "d52d67a6682bc915570dce1615a1e1de2ee0aaa356a044c772fb747c1f12658e",
+    "bytes": 1121412
+  },
+  "assets-source/roles/priest/animation/normal-cast-source.webp": {
+    "sha256": "bd83c80d035dba4851ccc51f7baded88492fdd10edb6876b723f71fff57ce437",
+    "bytes": 1077144
+  },
+  "assets-source/roles/priest/animation/normal-idle-source.webp": {
+    "sha256": "7a8f9ce62a9f4431697095459388ad7949733852ea2c155a91a7fdd29f75a431",
+    "bytes": 1172572
+  },
+  "assets/roles/wizard/runtime/atlas.webp": {
+    "sha256": "a2d45ca2dcd541e061eb45066d54097f8f54155d108ee0fcfa5790b6b476a039",
+    "bytes": 488004
+  },
+  "assets/roles/wizard/runtime/normal.webp": {
+    "sha256": "e11a425ca2ecad9b974bfef2ccd27619736639a500fade0ac4879991a30c3f72",
+    "bytes": 496
+  },
+  "assets-source/roles/wizard/animation/awake-cast-source.webp": {
+    "sha256": "d553fd00898c7a5e4a1bf8284156f2fb2c655d65cf470a6ea8fa77cc8ef20f1d",
+    "bytes": 1308452
+  },
+  "assets-source/roles/wizard/animation/awake-idle-source.webp": {
+    "sha256": "479803b71b378cf5699ddcbf050e7d2d1c952c1f8dd4059bde8d5d22dff1c7bc",
+    "bytes": 1306360
+  },
+  "assets-source/roles/wizard/animation/normal-original.webp": {
+    "sha256": "b04c7e32aa9ca375ad1cfa47bbf782e84f3619076da933c47178cec1a919b362",
+    "bytes": 968
+  },
+  "assets/roles/zombie/runtime/awake.webp": {
+    "sha256": "f16f2b497cd55b68af438cbde9ff8941e7480f995e800f3695f0c016fefc9f76",
+    "bytes": 5846
+  },
+  "assets/roles/zombie/runtime/normal.webp": {
+    "sha256": "a7d6aa0e74231fd116a6e69b0a50e30c4fd995671939ae26688ff46b8918f7e1",
+    "bytes": 716
+  },
+  "assets-source/roles/zombie/animation/normal-original.webp": {
+    "sha256": "249c3962ec5d94f3f2e2e88e17ce770a95bdf338c7a225992f2d5728ce567b51",
+    "bytes": 1458
+  },
+  "assets/ui/balanced.webp": {
+    "sha256": "c6da2f92b017ad1b7b27a6ae5ea426d56c8aa60fdfa5cbfe31ec04f193ea35ad",
+    "bytes": 2826
+  },
+  "assets/ui/damage.webp": {
+    "sha256": "967498ed64301d1f2ab1b162e62775c7b02e896c72fa26864c0266121277fa91",
+    "bytes": 3520
+  },
+  "assets/ui/defeat.webp": {
+    "sha256": "a4ec5461f46e85b12ea968054f640c5509a30872cd77b86178dcf33914ac2a6a",
+    "bytes": 1658
+  },
+  "assets/ui/dm.webp": {
+    "sha256": "57a40bdf37f1e9fdf68c06cf0d78e917bd71d10872d895dad3d557481d53ce98",
+    "bytes": 1690
+  },
+  "assets/ui/hd.webp": {
+    "sha256": "d082895a04a5ca8e349c9ba4ebf22350bc58107a016d6e80d52cfdfc9dbab73d",
+    "bytes": 1692
+  },
+  "assets/ui/hero-thumbnails.webp": {
+    "sha256": "4688e1f8662c93d9812e2ba992a6e678c9ef07fa134cc2f6f351336e8a03d3b8",
+    "bytes": 7102
+  },
+  "assets/ui/hm.webp": {
+    "sha256": "9c87a2fd48eb30201ded272625287c22bd74819876fc6bc5d166a0fa9b95599e",
+    "bytes": 2940
+  },
+  "assets/ui/hp.webp": {
+    "sha256": "5f5be77ead3acb6df48b4774b0ebaef092c95679392778115aa791d65e27808e",
+    "bytes": 3076
+  },
+  "assets/ui/mp.webp": {
+    "sha256": "bd8b225d4b5446acb17c7988a0bb3a8a740ddb694ad3cfa131b0abb170816764",
+    "bytes": 2534
+  },
+  "assets-source/ui/balanced.webp": {
+    "sha256": "c6da2f92b017ad1b7b27a6ae5ea426d56c8aa60fdfa5cbfe31ec04f193ea35ad",
+    "bytes": 2826
+  },
+  "assets-source/ui/damage.webp": {
+    "sha256": "967498ed64301d1f2ab1b162e62775c7b02e896c72fa26864c0266121277fa91",
+    "bytes": 3520
+  },
+  "assets-source/ui/dm.webp": {
+    "sha256": "57a40bdf37f1e9fdf68c06cf0d78e917bd71d10872d895dad3d557481d53ce98",
+    "bytes": 1690
+  },
+  "assets-source/ui/hd.webp": {
+    "sha256": "d082895a04a5ca8e349c9ba4ebf22350bc58107a016d6e80d52cfdfc9dbab73d",
+    "bytes": 1692
+  },
+  "assets-source/ui/hm.webp": {
+    "sha256": "9c87a2fd48eb30201ded272625287c22bd74819876fc6bc5d166a0fa9b95599e",
+    "bytes": 2940
+  },
+  "assets-source/ui/hp.webp": {
+    "sha256": "5f5be77ead3acb6df48b4774b0ebaef092c95679392778115aa791d65e27808e",
+    "bytes": 3076
+  },
+  "assets-source/ui/mp.webp": {
+    "sha256": "bd8b225d4b5446acb17c7988a0bb3a8a740ddb694ad3cfa131b0abb170816764",
+    "bytes": 2534
+  },
+  "experiments/memory-comparison/assets/bgm.ogg": {
+    "sha256": "609fe494f88eabeea00988635f92fbe073fab65444d06aaa6ec3e474d148d05f",
+    "bytes": 169994
+  },
+  "experiments/memory-comparison/assets/ui.ttf": {
+    "sha256": "1f1f02699b80c86a4c4fff22c68e1dda63b1b6e3a64def4d08c0ae24f6408f67",
+    "bytes": 56684
+  }
+}

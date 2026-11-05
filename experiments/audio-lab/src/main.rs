@@ -9,7 +9,7 @@ use std::{
     thread,
     time::Duration,
 };
-const MUSIC: &[u8] = include_bytes!("../../../assets/bgm.ogg");
+const MUSIC: &[u8] = include_bytes!("../../../assets/audio/runtime/bgm.ogg");
 const CAPACITY: usize = 32768;
 struct Ring {
     slots: Box<[AtomicU32]>,

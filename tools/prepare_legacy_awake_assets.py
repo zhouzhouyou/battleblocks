@@ -19,7 +19,7 @@ FRAME, ANCHOR = 384, (192, 336)
 
 
 def source_dir(role):
-    return ROOT / 'asset-sources/art-direction/characters' / role / 'production/v1'
+    return ROOT / 'assets-source/roles' / role / 'animation'
 
 
 def source_cells(path):
@@ -39,6 +39,8 @@ def source_cells(path):
 
 def import_role(role):
     directory = source_dir(role)
+    previews = ROOT / '.local/previews' / role
+    previews.mkdir(parents=True, exist_ok=True)
     registration = json.loads((directory/'registration.json').read_text())
     colors = json.loads((directory/'palette.json').read_text())
     assert len(colors) == 192
@@ -74,17 +76,17 @@ def import_role(role):
             atlas.alpha_composite(frame, (n%6*FRAME, n//6*FRAME))
         assert len({c['sha256'] for c in checks}) == 12, 'Repeated authored pose'
         durations = [60]*12 if row == 0 else [117]*8+[116]*4
-        frames[0].save(directory/f'{clip}.webp', 'WEBP', save_all=True,
+        frames[0].save(previews/f'{clip}.webp', 'WEBP', save_all=True,
                        append_images=frames[1:], duration=durations, loop=0,
                        lossless=True, exact=True, method=6)
         if row == 0:
-            frames[0].save(directory/'awake-idle-0.webp', lossless=True, exact=True, method=6)
+            frames[0].save(previews/'awake-idle-0.webp', lossless=True, exact=True, method=6)
         report['clips'][clip] = {'indices': list(range(row*12, row*12+12)),
             'source': reg['source'], 'scale': scale, 'checks': checks,
             'duration_ms': sum(durations), 'playback': 'loop' if row == 0 else 'once',
             'preview_durations_ms': durations,
             'runtime_timing': 'src/sprites/legacy.rs (per skill)' if row else '60ms per pose'}
-    target = ROOT/'assets/roles'/f'{role}.webp'
+    target = ROOT/'assets/roles'/role/'runtime/atlas.webp'
     atlas.save(target, 'WEBP', lossless=True, exact=True, method=6)
     report['webp_bytes'] = target.stat().st_size
     (directory/'report.json').write_text(json.dumps(report, indent=2)+'\n', encoding='utf-8')

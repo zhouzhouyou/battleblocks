@@ -52,10 +52,10 @@ mod nun_visual_tests {
 }
 
 #[cfg(test)]
-pub const BOOK_BYTES: &[u8] = include_bytes!("../assets/roles/grudge-book.webp");
-pub const BOOK_COVER: &[u8] = include_bytes!("../assets/roles/book-cover.webp");
-pub const BOOK_PAGES: &[u8] = include_bytes!("../assets/roles/book-pages.webp");
-pub const BOOK_BOTTOM: &[u8] = include_bytes!("../assets/roles/book-bottom.webp");
+pub const BOOK_BYTES: &[u8] = include_bytes!("../assets/roles/dwarf/runtime/grudge-book.webp");
+pub const BOOK_COVER: &[u8] = include_bytes!("../assets/roles/dwarf/runtime/book-cover.webp");
+pub const BOOK_PAGES: &[u8] = include_bytes!("../assets/roles/dwarf/runtime/book-pages.webp");
+pub const BOOK_BOTTOM: &[u8] = include_bytes!("../assets/roles/dwarf/runtime/book-bottom.webp");
 
 /// Every registered hero has its own slot in the thumbnail atlas.
 pub fn thumbnail_index(hero: usize) -> usize {

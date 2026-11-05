@@ -4,6 +4,6 @@ import shutil
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/'dist/web/audio-lab';OUT.mkdir(parents=True,exist_ok=True)
 for name in ['index.html','worklet.js','score.json']:
- shutil.copy2(ROOT/'analysis/audio-lab'/name,OUT/name)
-shutil.copy2(ROOT/'assets/bgm.ogg',OUT/'bgm.ogg')
+ shutil.copy2(ROOT/'experiments/audio-lab'/name,OUT/name)
+shutil.copy2(ROOT/'assets/audio/runtime/bgm.ogg',OUT/'bgm.ogg')
 print('Audio lab: http://127.0.0.1:8765/audio-lab/')

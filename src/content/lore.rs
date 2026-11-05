@@ -48,7 +48,7 @@ pub fn role_lore(hero: usize) -> Option<&'static RoleLore> {
                 lines: Vec::new(),
             })
             .collect();
-        for line in include_str!("../../assets/role-lore.txt")
+        for line in include_str!("../../config/role-lore.txt")
             .lines()
             .filter(|line| !line.is_empty() && !line.starts_with('#'))
         {

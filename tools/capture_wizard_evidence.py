@@ -27,7 +27,7 @@ if not args.ffmpeg:
     sys.path.insert(0, str(ROOT / '.build-tools/media-site'))
     import imageio_ffmpeg
     args.ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
-OUT = ROOT / 'analysis/issue27-wizard-animation' / args.label
+OUT = ROOT / '.local/analysis/issue27-wizard-animation' / args.label
 OUT.mkdir(parents=True, exist_ok=True)
 clean = [[(x + 2*y) % 7 for x in range(8)] for y in range(8)]
 board_command = 'board load ' + ' '.join(str(v) for row in clean for v in row)

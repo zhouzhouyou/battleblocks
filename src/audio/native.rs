@@ -9,7 +9,7 @@ use std::{
     thread,
     time::Duration,
 };
-const MUSIC: &[u8] = include_bytes!("../../assets/bgm.ogg");
+const MUSIC: &[u8] = include_bytes!("../../assets/audio/runtime/bgm.ogg");
 const CAPACITY: usize = 32768;
 struct Ring {
     slots: Box<[AtomicU32]>,
@@ -137,7 +137,7 @@ impl Audio {
         let ring = Arc::new(Ring::new());
         // Original effect is a mono, 44.1 kHz, 16-bit PCM WAV. Decode once, outside the callback.
         let effect = if effects {
-            decode_effect(include_bytes!("../../assets/crush.wav"), rate)?
+            decode_effect(include_bytes!("../../assets/audio/runtime/crush.wav"), rate)?
         } else {
             Vec::new()
         };
@@ -353,7 +353,7 @@ mod tests {
     use super::*;
     #[test]
     fn effect_is_finite_and_has_expected_duration() {
-        let data = decode_effect(include_bytes!("../../assets/crush.wav"), 48000).unwrap();
+        let data = decode_effect(include_bytes!("../../assets/audio/runtime/crush.wav"), 48000).unwrap();
         assert!((data.len() as f64 / 48000. - 1.708).abs() < 0.002);
         assert!(data.iter().all(|v| v.is_finite() && v.abs() <= 1.));
     }

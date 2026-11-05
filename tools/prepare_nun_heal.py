@@ -3,7 +3,9 @@ from pathlib import Path
 import math,json
 from PIL import Image,ImageDraw
 ROOT=Path(__file__).resolve().parents[1]
-OUT=ROOT/'asset-sources/effects/nun-heal/v1'
+OUT=ROOT/'assets-source/effects/nun-heal'
+PREVIEWS=ROOT/'.local/previews/nun_heal'
+PREVIEWS.mkdir(parents=True,exist_ok=True)
 W,H,COUNT,COLS=160,192,40,8
 TAU=math.tau
 
@@ -61,7 +63,7 @@ def frame(i,hurt,front):
             line([(x-2,y),(x+2,y)],4,1,a);line([(x,y-2),(x,y+2)],5,1,a)
     return im
 
-role=Image.open(ROOT/'assets/roles/nun.webp').convert('RGBA')
+role=Image.open(ROOT/'assets/roles/nun/runtime/atlas.webp').convert('RGBA')
 all_previews=[]
 for hurt,name in [(False,'normal'),(True,'damage')]:
     layers=[[frame(i,hurt,front) for i in range(COUNT)] for front in [False,True]]
@@ -79,12 +81,12 @@ for hurt,name in [(False,'normal'),(True,'damage')]:
         sprite=role.crop(((index%4)*384,(index//4)*384,(index%4+1)*384,(index//4+1)*384)).resize((213,213),Image.Resampling.NEAREST)
         im.alpha_composite(sprite,(6,208-186));im.alpha_composite(layers[1][i],(32,16))
         previews.append(im.convert('RGB'))
-    previews[0].save(OUT/f'{name}-preview.webp',save_all=True,append_images=previews[1:],duration=50,loop=0,lossless=True,method=6)
+    previews[0].save(PREVIEWS/f'{name}-preview.webp',save_all=True,append_images=previews[1:],duration=50,loop=0,lossless=True,method=6)
     all_previews.append(previews)
 contact=Image.new('RGB',(224*6,248*2),'#161820');d=ImageDraw.Draw(contact)
 for row,previews in enumerate(all_previews):
     for col,i in enumerate([3,8,14,20,28,35]):
         contact.paste(previews[i],(col*224,row*248+24));d.text((col*224+8,row*248+6),f'{["HEAL","CORRUPTED"][row]} {i/20:.2f}s',fill='#fff0cf')
-contact.save(OUT/'contact.webp',lossless=True)
+contact.save(PREVIEWS/'contact.webp',lossless=True)
 (OUT/'atlas.json').write_text(json.dumps(dict(width=W,height=H,frames=COUNT,columns=COLS,layer_rows=5,layers=['back','front'],fps=20,duration=2,origin=[80,176],reference='pixelfx holy/heal; MIT; see licenses/pixelfx',character_assets_modified=False),indent=2)+'\n')
 print('Baked normal / damage lossless atlases and previews')

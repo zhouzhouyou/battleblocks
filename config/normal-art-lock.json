@@ -1,0 +1,19 @@
+{
+  "files": {
+    "assets/roles/knight-legacy/runtime/normal.webp": "017870411cfaba10f6794af037f9b23c064f17c0ecad0cf75cb4d5a99b8c20de",
+    "assets-source/roles/knight-legacy/animation/normal.json": "f260be6b78fafd6ffb99a5adb29b4816334d4d47206882d087659f00605c2a95",
+    "assets/roles/elf-legacy/runtime/normal.webp": "909c1e3f1f9e1fed80ebb935b480aa35c9a4ca60990fff92d2768cb16fbffbaf",
+    "assets-source/roles/elf-legacy/animation/normal.json": "dcf5209075eb14c37d150ff132a29a20071f1de0e2eb0fc504cbd0876f09571f",
+    "assets/roles/wizard/runtime/normal.webp": "e11a425ca2ecad9b974bfef2ccd27619736639a500fade0ac4879991a30c3f72",
+    "assets-source/roles/wizard/animation/normal.json": "70387ffdf05928524c37b57d9be85d4ef527e57cf9c211c18ffe839f6e2e36d1",
+    "assets/roles/goblin-legacy/runtime/normal.webp": "7ae05f203b699ac2a4c86564e99279c25e31e2a705ca5a2c2f94f9b04189bf59",
+    "assets-source/roles/goblin-legacy/animation/normal.json": "d17708a5e76df1a9b828e6e7977c1873d9cde6c4a47d8a8d730cd64d029e2dd1",
+    "assets/roles/imp/runtime/normal.webp": "368cc3b16dd6ef45440fc56e4ab01d0a3af921423cda96e3d5dcf797b47e1795",
+    "assets-source/roles/imp/animation/normal.json": "14574e488db4639499f1807919085294090d6f610d1dba5593baa70049bf759c",
+    "assets/roles/chort/runtime/normal.webp": "b9e8219a60a5a32e52bc176d9c9f793a3fd9abeb046cdf9311adce65ec4fd040",
+    "assets-source/roles/chort/animation/normal.json": "9dc07f28cdc7545a5c6a966bd5b3ad2c540b92107df1e7a8855cf64ab06510f0",
+    "assets/roles/zombie/runtime/normal.webp": "a7d6aa0e74231fd116a6e69b0a50e30c4fd995671939ae26688ff46b8918f7e1",
+    "assets-source/roles/zombie/animation/normal.json": "d8993f4c37d498411a814efd487f005c0b3eda6cf610a44f276ba2aafc056c47"
+  },
+  "normal_registry_sha256": "917974bea7b923b8773b191b330ae3b79244a590994f0895bc6a2eceae225a99"
+}
