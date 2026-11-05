@@ -37,6 +37,8 @@ Issue #11 第一阶段覆盖新骑士、矮人、狗头人牧师、修女、精�
 
 ## 历史角色的特效接入
 
+2026-11-05 Issue #28：用户已批准旧骑士、精灵、哥布林沿用现有觉醒身份和装备，新增细像素待机/施法各12独立姿势（共72）；普通素材、帧序/时长、缩略图和显示保持基线。当前 `*-legacy/production/v1`，旧骑士施法源表修订为 v3（修复伸剑边界、体型和脚距），其余源表 v1。介绍沿用既有游戏文案，用户原始设定来源待补。实现与取证见 [本批验收](../../analysis/issue28-awake-animation/README.md)；最终视觉待用户评审。档案：[旧骑士](characters/KNIGHT-LEGACY.md)、[精灵](characters/ELF-LEGACY.md)、[哥布林](characters/GOBLIN-LEGACY.md)。不影响 ID 7 新骑士和 ID 11 火法师；#11 保持打开。
+
 2026-11-04 老巫师（历史 ID 2）特效已修订为 v2：技能1为 Lightning Strike 式主雷柱、分叉脉冲与魔力回收；技能2单颗陨星后以扩张压力波逐层退去目标方块，放慢至约 2.8 秒，待视觉评审。不修改角色素材或公开名单。见 [老巫师记录](characters/WIZARD-LEGACY.md)。
 
 2026-11-05 Issue #27最终范围已随#11及全部子项修订：普通粗像素版原样保留，不重绘、不扩帧；仅优化觉醒细像素待机和施法各12帧。当前v3共24个觉醒姿势，普通恢复原四帧及播放配置；v1普通重绘和v2两形态粗像素均撤回。见 [当前v3验收](../../analysis/issue27-wizard-animation/README.md) 与 [角色档案](characters/WIZARD-LEGACY.md)。仍待用户最终视觉验收与角色介绍原文；Draft PR使用Closes #27、Refs #11，主Issue保留。
