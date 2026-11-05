@@ -8,7 +8,7 @@ async fn main(){
  let mode=std::env::var("BB_MODE").unwrap_or_else(|_|"empty".into());
  let font=if mode.contains("font"){Some(load_ttf_font_from_bytes(include_bytes!("../../assets/ui.ttf")).unwrap())}else{None};
  #[cfg(feature="audio")]
- let music=if mode.contains("music"){Some(load_sound_from_bytes(include_bytes!("../../assets/audio/runtime/bgm.ogg")).await.unwrap())}else{None};
+ let music=if mode.contains("music"){Some(load_sound_from_bytes(include_bytes!("../../../../assets/audio/runtime/bgm.ogg")).await.unwrap())}else{None};
  #[cfg(feature="audio")]
  if mode.contains("play"){if let Some(s)=&music{play_sound(s,PlaySoundParams{looped:true,volume:0.});}}
  if mode.contains("prewarm"){if let Some(f)=&font{let chars="方块战斗 BattleBlocks生命 700 / 700魔力 300 / 300选择两个相邻方块技能：剑刃斩击P：暂停 R：重开 M：静音".chars().collect::<Vec<_>>();f.populate_font_cache(&chars,30);}}

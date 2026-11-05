@@ -11,10 +11,6 @@
     "sha256": "b04f566ad7a40e43bdaedfd94efa37212985197729e7bd6bb58af0a585eb6013",
     "bytes": 2309998
   },
-  "assets-source/audio/crush.wav": {
-    "sha256": "bde2cc2844e65e5db3f01751cd49296830d5c1f9df41ec875a07cb9827fc4360",
-    "bytes": 150688
-  },
   "assets/effects/ember-blast.webp": {
     "sha256": "17466d9f8160bcd73a691c6b21d5a15f04970dbd55ba6a60d91346cfb8111025",
     "bytes": 616448
@@ -390,38 +386,6 @@
   "assets/ui/mp.webp": {
     "sha256": "bd8b225d4b5446acb17c7988a0bb3a8a740ddb694ad3cfa131b0abb170816764",
     "bytes": 2534
-  },
-  "assets-source/ui/balanced.webp": {
-    "sha256": "c6da2f92b017ad1b7b27a6ae5ea426d56c8aa60fdfa5cbfe31ec04f193ea35ad",
-    "bytes": 2826
-  },
-  "assets-source/ui/damage.webp": {
-    "sha256": "967498ed64301d1f2ab1b162e62775c7b02e896c72fa26864c0266121277fa91",
-    "bytes": 3520
-  },
-  "assets-source/ui/dm.webp": {
-    "sha256": "57a40bdf37f1e9fdf68c06cf0d78e917bd71d10872d895dad3d557481d53ce98",
-    "bytes": 1690
-  },
-  "assets-source/ui/hd.webp": {
-    "sha256": "d082895a04a5ca8e349c9ba4ebf22350bc58107a016d6e80d52cfdfc9dbab73d",
-    "bytes": 1692
-  },
-  "assets-source/ui/hm.webp": {
-    "sha256": "9c87a2fd48eb30201ded272625287c22bd74819876fc6bc5d166a0fa9b95599e",
-    "bytes": 2940
-  },
-  "assets-source/ui/hp.webp": {
-    "sha256": "5f5be77ead3acb6df48b4774b0ebaef092c95679392778115aa791d65e27808e",
-    "bytes": 3076
-  },
-  "assets-source/ui/mp.webp": {
-    "sha256": "bd8b225d4b5446acb17c7988a0bb3a8a740ddb694ad3cfa131b0abb170816764",
-    "bytes": 2534
-  },
-  "experiments/memory-comparison/assets/bgm.ogg": {
-    "sha256": "609fe494f88eabeea00988635f92fbe073fab65444d06aaa6ec3e474d148d05f",
-    "bytes": 169994
   },
   "experiments/memory-comparison/assets/ui.ttf": {
     "sha256": "1f1f02699b80c86a4c4fff22c68e1dda63b1b6e3a64def4d08c0ae24f6408f67",

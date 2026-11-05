@@ -21,6 +21,7 @@ def check():
     if not (ROOT / 'docs/LAYOUT.md').exists():
         errors.append('Missing authoritative docs/LAYOUT.md')
     actual = set()
+    runtime_hashes = {meta['sha256'] for name, meta in approved.items() if name.startswith('assets/')}
     for name in paths:
         path = Path(name)
         reason = output_violation(name, inputs)
@@ -34,6 +35,8 @@ def check():
             errors.append(f'Non-runtime resource in assets: {name}')
         if path.suffix.lower() in MEDIA:
             actual.add(name)
+            if name in approved and not name.startswith('assets/') and approved[name]['sha256'] in runtime_hashes:
+                errors.append(f'Duplicate of canonical assets content: {name}; reference assets directly')
             if re.search(r'preview|contact|candidate|comparison|reference', path.name, re.I):
                 errors.append(f'Review/reference media: {name}')
             if name not in approved:
