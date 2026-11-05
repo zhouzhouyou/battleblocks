@@ -177,4 +177,3 @@ test tests::headless_autoplay_finishes_and_replays_the_same_seed ... ok
 test tests::new_role_atlases_have_twelve_distinct_poses_per_action_and_shared_palettes ... ok
 
 test result: ok. 171 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 13.84s
-
