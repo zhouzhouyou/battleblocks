@@ -338,7 +338,7 @@ The sword is the associated ATTACK TILE object for all4 candidates; no need to d
 
 ---
 
-> 历史记录：这一版动画图片已按 2026-11-01 清理移出仓库，本目录只保留提示词；当前使用 production/。
+> 历史记录：这一版动画图片已按 2026-11-01 清理移出仓库，本目录只保留提示词；当前使用 当前制作源。
 
 # knight · 游戏动画
 
@@ -382,7 +382,7 @@ Use case: precise-object-edit. Edit target: transparent 4x4 knight sprite atlas.
 
 ---
 
-> 历史记录：这一版动画图片已按 2026-11-01 清理移出仓库，本目录只保留提示词；当前使用 production/。
+> 历史记录：这一版动画图片已按 2026-11-01 清理移出仓库，本目录只保留提示词；当前使用 当前制作源。
 
 # 高分辨率游戏帧
 

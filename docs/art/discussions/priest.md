@@ -117,7 +117,7 @@ Text limited to title, P-A/P-B/P-C/P-D and 普通/觉醒/酒器/圣徽, no inven
 
 ---
 
-> 历史记录：这一版动画图片已按 2026-11-01 清理移出仓库，本目录只保留提示词；当前使用 production/。
+> 历史记录：这一版动画图片已按 2026-11-01 清理移出仓库，本目录只保留提示词；当前使用 当前制作源。
 
 # priest · 游戏动画
 
@@ -147,7 +147,7 @@ Edit this transparent 4x4 female priest sprite atlas. Keep exact identity, short
 
 ---
 
-> 历史记录：这一版动画图片已按 2026-11-01 清理移出仓库，本目录只保留提示词；当前使用 production/。
+> 历史记录：这一版动画图片已按 2026-11-01 清理移出仓库，本目录只保留提示词；当前使用 当前制作源。
 
 # 高分辨率游戏帧
 

@@ -53,7 +53,7 @@ Densely crafted pixel illustration using deliberate square clusters, nuanced hue
 
 ---
 
-> 历史记录：对应旧稿已按用户要求从工作树和 Git 历史移除。当前只使用  人设图与 `animations//`，不要据本文恢复旧素材。
+> 历史记录：对应旧稿已按用户要求从工作树和 Git 历史移除。当前只使用  人设图与 当前装备制作目录，不要据本文恢复旧素材。
 
 # 矮人战士 E 版 · 生成记录
 
@@ -87,7 +87,7 @@ Keep four ordinary designs obviously distinct through helmet versus braids versu
 
 ---
 
-> 历史记录：对应旧稿已按用户要求从工作树和 Git 历史移除。当前只使用  人设图与 `animations//`，不要据本文恢复旧素材。
+> 历史记录：对应旧稿已按用户要求从工作树和 Git 历史移除。当前只使用  人设图与 当前装备制作目录，不要据本文恢复旧素材。
 
 # 矮人 E-A 按 K-A 精细度重绘 · （历史）
 
@@ -100,7 +100,7 @@ Keep four ordinary designs obviously distinct through helmet versus braids versu
 
 ---
 
-> 历史记录：对应旧稿已按用户要求从工作树和 Git 历史移除。当前只使用  人设图与 `animations//`，不要据本文恢复旧素材。
+> 历史记录：对应旧稿已按用户要求从工作树和 Git 历史移除。当前只使用  人设图与 当前装备制作目录，不要据本文恢复旧素材。
 
 # 矮人战士首轮评审：生成记录
 
@@ -129,7 +129,7 @@ All 8 figures at the exact same logical pixel scale, all full bodies and tools v
 
 ---
 
-> 历史记录：对应旧稿已按用户要求从工作树和 Git 历史移除。当前只使用  人设图与 `animations//`，不要据本文恢复旧素材。
+> 历史记录：对应旧稿已按用户要求从工作树和 Git 历史移除。当前只使用  人设图与 当前装备制作目录，不要据本文恢复旧素材。
 
 # 矮人修订图与仇恨之书动画 ·
 
@@ -242,7 +242,7 @@ Art direction E: visibly discrete squared pixel clusters, nuanced3–4stepped ma
 
 ---
 
-> 历史记录：这一版动画图片已按 2026-11-01 清理移出仓库，本目录只保留提示词；当前使用 production/。
+> 历史记录：这一版动画图片已按 2026-11-01 清理移出仓库，本目录只保留提示词；当前使用 当前制作源。
 
 # dwarf · 游戏动画
 
@@ -272,7 +272,7 @@ Edit this transparent 4x4 dwarf animation atlas. Preserve rows1,2,3 exactly. Rep
 
 ---
 
-> 历史记录：这一版动画图片已按 2026-11-01 清理移出仓库，本目录只保留提示词；当前使用 production/。
+> 历史记录：这一版动画图片已按 2026-11-01 清理移出仓库，本目录只保留提示词；当前使用 当前制作源。
 
 # 高分辨率游戏帧
 

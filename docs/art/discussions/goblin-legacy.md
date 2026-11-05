@@ -4,7 +4,7 @@
 
 ---
 
-# 哥布林 · 拾荒者 — 觉醒动画 production/
+# 哥布林 · 拾荒者 — 觉醒动画 当前制作源
 
 用户已批准 #28 推荐方案，范围仅觉醒。内置 image_gen 生成；实际提示词为 awake-idle-prompt-.md 与 awake-cast-prompt-.md，参考已有 assets/awakened/goblin-awakening.webp。源图无损保存，不打包进游戏。
 
