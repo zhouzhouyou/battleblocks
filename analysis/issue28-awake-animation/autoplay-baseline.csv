@@ -1,7 +1,0 @@
-hero,wins,games,win_percent,nukes_per_game,first_nuke_round,avg_nuke_damage
-Knight (legacy),18,48,37.5,0.00,0.0,0.0
-Elf,19,48,39.6,0.00,0.0,0.0
-Goblin,35,48,72.9,0.00,0.0,0.0
-games=72,draws=0,aborted=0,median_rounds=17,p90_rounds=19,max_rounds=23,first_side_win=50.0%
-roster=Knight (legacy),Elf,Goblin
-pairwise_win_counts=[[0, 13, 5], [11, 0, 8], [19, 16, 0]]

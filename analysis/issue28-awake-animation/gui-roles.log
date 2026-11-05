@@ -1,7 +1,0 @@
-PASS dwarf jump, reach expansion, forge, owner-turn cooldown
-PASS dwarf per-tile row damage immunity through cascades
-PASS priest entomb, mind vision, insertion, capacity, pure destruction, full rollback
-PASS knight force movement, normal elimination, strength and cooldown rollback
-PASS knight awakening third slot, random hammer and RNG restoration
-PASS priest awakening, copied native cost/end-turn rule, fixed copied-slot cooldown
-PASS: 180 real new-character events

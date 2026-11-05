@@ -2,6 +2,8 @@
 
 用户要求的单个subagent，reasoning_effort=medium，只读审查。基线c0aa438fa4077785706a26276795efbb93e886d6；审查HEAD ad4df594fb40e1fb8793e40e43f5a4f0aaa1bf3c；其运行时实现c6e5b9f81e4b62aed203152c9bc115641fabae4a。以下保留原问题，修复不覆盖原结论。
 
+2026-11-06精简补记：以下历史记录中不再位于当前树的原录像/日志/测量，可在[固定归档提交](https://github.com/zhouzhouyou/battleblocks/tree/c3478e146ad4c28485567ee627b2cf1bb4c6e9ef/analysis/issue28-awake-animation)按原路径查看；本地完整ZIP及校验见README。精选修复后录像和修复前后图继续保留。
+
 ## 原审查结果
 
 发现1项P2，非Draft阻塞项，建议本批修复；未发现其他确认缺陷。
@@ -16,7 +18,7 @@
 
 ## 修复与复验
 
-修复提交1cea8b3865a948075be47a6bfb2d15d54ac86cdd，仅src/effects.rs：旧draw以相同progress转发，保持普通效果；觉醒Guard个人护环使用完整elapsed/duration，棋盘粒子保留通知驱动进度。复验记录位于review-fix/，同一审查代理复核结果待追加。
+修复提交1cea8b3865a948075be47a6bfb2d15d54ac86cdd，仅src/effects.rs：旧draw以相同progress转发，保持普通效果；觉醒Guard个人护环使用完整elapsed/duration，棋盘粒子保留通知驱动进度。复验原记录位于归档review-fix/，同一审查代理最终复核结果见下文。
 
 主代理复验：指定Python重新运行tools/build.py，Rust176+93+93通过（1既有忽略）、Python18通过，Win/Web重新打包并核验ZIP。debug/release headless各134事件；GUI console322事件、ability events、new roles180事件均通过；普通保护及四类变异通过。新source-binding记录所有源与二进制/包哈希。
 

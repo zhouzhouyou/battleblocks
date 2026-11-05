@@ -12,7 +12,7 @@
 
 ## 已做的实测与证据
 
-[research/baseline.json](research/baseline.json) 保存基线、源文件和 assets 哈希、三人的普通配置、原始 WebP 哈希、缩略图哈希、二进制哈希、截图采样编号及技能事件时间。
+[research/baseline.json](https://github.com/zhouzhouyou/battleblocks/blob/c3478e146ad4c28485567ee627b2cf1bb4c6e9ef/analysis/issue28-awake-animation/research/baseline.json) 保存基线、源文件和 assets 哈希、三人的普通配置、原始 WebP 哈希、缩略图哈希、二进制哈希、截图采样编号及技能事件时间。
 
 [research/normal-lock.json](research/normal-lock.json) 额外保存逐角色普通播放序列的逐帧RGBA哈希、独立姿势数、缩略图槽位像素和普通注册区哈希。缺血重录确认坚守实际治疗77、换血实际治疗100，均发生在skill事件；坚守消耗发生于0.415564秒。掠夺对手觉醒延迟场景的首次清除为1.522035秒，确实跨过旧1.4秒施法寿命。
 
@@ -20,9 +20,9 @@
 
 已通过真实游戏 stdin 控制台录制四位角色觉醒选角、三人六招及掠夺延迟场景，逐项检查日志；取图使用显式 `fps=60`、`fps_mode=passthrough` 的同一采样流。初次两张菜单黑屏已识别并补录，不作为验收输入。以下图为当前基线实际窗口的原尺寸裁剪，不是新方案效果图：
 
-![当前觉醒选角并排图](research/awake-menu-lineup.webp)
+![当前觉醒选角并排图](https://github.com/zhouzhouyou/battleblocks/blob/c3478e146ad4c28485567ee627b2cf1bb4c6e9ef/analysis/issue28-awake-animation/research/awake-menu-lineup.webp)
 
-左起：旧骑士、新骑士、精灵、哥布林。[原素材放大检查](research/source-inspection.webp)。`research/*-menu.mp4` 与六招同名录像、JSONL 可直接复核。当前战斗截图仍可能带觉醒恢复浮字；正式验收会等浮字退场再录，避免遮住头部。
+左起：旧骑士、新骑士、精灵、哥布林。[原素材放大检查](https://github.com/zhouzhouyou/battleblocks/blob/c3478e146ad4c28485567ee627b2cf1bb4c6e9ef/analysis/issue28-awake-animation/research/source-inspection.webp)。`research/*-menu.mp4` 与六招同名录像、JSONL 可直接复核。当前战斗截图仍可能带觉醒恢复浮字；正式验收会等浮字退场再录，避免遮住头部。
 
 本轮只证明基线现状与方案所依据的时序，不是新素材验收。未运行全套测试或构建；这些属于批准后的实施门禁。
 
