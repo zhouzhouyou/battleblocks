@@ -94,6 +94,44 @@ fn new_role_atlases_have_twelve_distinct_poses_per_action_and_shared_palettes() 
     assert_eq!((book.width(), book.height()), (1536, 384));
 }
 #[test]
+fn wizard_preserves_original_neutral_portrait_and_coarse_pixel_grid() {
+    let atlas = image::load_from_memory(sprites::SPRITES[2].bytes)
+        .unwrap()
+        .to_rgba8();
+    let original = image::load_from_memory(include_bytes!("../assets/wizzard.webp"))
+        .unwrap()
+        .to_rgba8();
+    let mut colors = std::collections::HashSet::new();
+    for (x, y, pixel) in atlas.enumerate_pixels() {
+        assert_eq!(
+            pixel,
+            atlas.get_pixel(x / 16 * 16, y / 16 * 16),
+            "fine detail escaped coarse grid"
+        );
+        if pixel[3] != 0 {
+            colors.insert(pixel.0);
+        }
+    }
+    assert!(
+        colors.len() <= 9,
+        "original seven colors plus crystal accents"
+    );
+    for y in 0..384 {
+        for x in 0..384 {
+            let expected = if (64..304).contains(&x) && (16..336).contains(&y) {
+                *original.get_pixel((x - 64) / 16 * 20, (y - 16) / 16 * 20)
+            } else {
+                image::Rgba([0, 0, 0, 0])
+            };
+            assert_eq!(
+                *atlas.get_pixel(x, y),
+                expected,
+                "original neutral portrait changed"
+            );
+        }
+    }
+}
+#[test]
 fn global_skills_cast_directly_even_when_paid_with_health() {
     use content::Skill;
     for awake in [false, true] {
