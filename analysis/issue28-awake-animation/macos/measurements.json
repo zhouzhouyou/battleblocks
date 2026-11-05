@@ -1,0 +1,8 @@
+{
+  "macroquad": "0.4.16",
+  "native_target": "aarch64-apple-darwin",
+  "native_executable_bytes": 10301280,
+  "native_package_bytes": 10695982,
+  "native_zip_bytes": 9630498,
+  "native_zip": "macos-arm64.zip"
+}

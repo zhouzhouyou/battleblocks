@@ -1,0 +1,11 @@
+{
+  "run_url": "https://github.com/zhouzhouyou/battleblocks/actions/runs/42051086270",
+  "conclusion": "success",
+  "ci_head": "749551b1b718c60de58403289a3243582d380659",
+  "runtime_git_diff_empty": true,
+  "source_commit": "1cea8b3865a948075be47a6bfb2d15d54ac86cdd",
+  "ci_checkout": "09d08efd65936f222cfb9e42ef861824d65086b6",
+  "macos_gui_verified": false,
+  "run_id": 42051086270,
+  "artifact_id": 13426403492
+}

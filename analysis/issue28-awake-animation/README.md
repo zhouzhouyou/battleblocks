@@ -78,4 +78,10 @@
 
 用户指定的一个medium代理已完成[独立审查](INDEPENDENT-REVIEW.md)：1项PR引入的P2非Draft阻塞问题——觉醒坚守护环结束前仍约38%透明度而突消。已用新提交分离护环完整淡出与棋盘收集进度；同一代理代码复核通过，运行时复验追加于review-fix。普通旧draw传入完全相同的两份progress；棋盘粒子和其他技能参数不变。
 
-macOS由Draft PR工作流构建/测试/headless/打包，下载核验后补充。此段不代表未运行步骤已经通过。
+macOS [CI 42051086270](https://github.com/zhouzhouyou/battleblocks/actions/runs/42051086270)已通过：macos-15 / aarch64-apple-darwin，Python3.12运行tools/build.py --native-only，Rust176+93+93（1既有忽略）、Python18和headless134事件通过。PR head749551b1、实际checkout09d08efd与最终运行时1cea8b3的src/assets/Cargo/build.rs Git差异为空，见[版本绑定](macos/source-binding.json)及[原始CI日志](macos/ci.log)。
+
+下载后[核验](macos/package-check.json)：ZIP完整、arm64 Mach-O、app可执行权限0755、Info.plist入口正确、不含asset-sources；macOS GUI仍未验证。CI artifact id13426403492，保留至2026-11-19；本机dist/macos-arm64.zip已更新。
+
+修复版WASM也已实际重新启动并观察三人觉醒预览、普通→觉醒页切换，浏览器warn/error为空，见[最终网页观察](review-fix/web-observations.json)。完整网页实战矩阵仍未单独运行。
+
+最终包：Windows x64 9,564,687 bytes、Web 9,193,695 bytes、macOS arm64 9,630,498 bytes。Windows/Web哈希见review-fix/source-binding.json，macOS哈希见macos/package-check.json。三个包都存于本机dist/，本PR保持Draft供视觉评审，Closes #28、Refs #11，主#11保持打开。

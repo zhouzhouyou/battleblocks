@@ -1,0 +1,19 @@
+{
+  "not_verified": [
+    "Full web combat matrix",
+    "macOS GUI"
+  ],
+  "observed": [
+    "Final rebuilt WASM startup",
+    "Three awakened legacy previews in actual browser",
+    "Normal to awake page switch"
+  ],
+  "source_commit": "1cea8b3865a948075be47a6bfb2d15d54ac86cdd",
+  "screenshots": {
+    "web-goblin.png": "9b2e304e93ef891bd1d5fe47c61cdcb48d643340850ee1cd9754517a03ed9961",
+    "web-elf.png": "3edc20516822eaf5792765dbb846916157c8ad8f39fcb6b11331a6c63f9099c3",
+    "web-knight.png": "4dbdb7449b02f8c62edac4bfb099814ec34cf3d2add352aa9aed91547d465260"
+  },
+  "wasm_sha256": "3ade4f08f776da71c0d521f462e3c015da17b860a6204a77961645f703cc0896",
+  "warning_error_logs": []
+}

@@ -1,0 +1,14 @@
+{
+  "zip": "macos-arm64.zip",
+  "zip_sha256": "c9d16d4eed5260881d80d35743203b80e98a45dd6e46b7407d7ce76fcc68e7c2",
+  "zip_bytes": 9630498,
+  "binary_path": "BattleBlocks.app/Contents/MacOS/battleblocks",
+  "binary_sha256": "329ffa5b21f878778a21cf8f543da550e7b4353bdfd6b7d8b538d3b569401f05",
+  "binary_bytes": 10301280,
+  "architecture": "arm64",
+  "unix_mode": "0o100755",
+  "zip_integrity": true,
+  "no_asset_sources": true,
+  "plist_executable_valid": true,
+  "gui_not_verified": "No local macOS GUI; CI canonical headless tested separately."
+}
