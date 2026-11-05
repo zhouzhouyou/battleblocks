@@ -10,15 +10,23 @@ ROOT = Path(__file__).resolve().parents[1]
 MEDIA = {'.webp', '.png', '.jpg', '.jpeg', '.gif', '.mp4', '.mov', '.wav', '.ogg', '.ttf', '.woff', '.woff2', '.zip', '.gz', '.pdf'}
 
 
-def check():
+def check(staged=False):
     paths = subprocess.check_output(['git', 'ls-files', '-z'], cwd=ROOT).decode().split('\0')[:-1]
-    approved = json.loads((ROOT / 'config/asset-manifest.json').read_text())
-    inputs = json.loads((ROOT / 'config/repository-inputs.json').read_text())
+    def read(name):
+        if staged:
+            return subprocess.check_output(['git', 'show', ':' + name], cwd=ROOT)
+        return (ROOT / name).read_bytes()
+
+    def exists(name):
+        return name in paths if staged else (ROOT / name).exists()
+
+    approved = json.loads(read('config/asset-manifest.json'))
+    inputs = json.loads(read('config/repository-inputs.json'))
     errors = []
     for entry in ['README.md', 'AGENTS.md']:
-        if 'docs/LAYOUT.md' not in (ROOT / entry).read_text():
+        if not exists(entry) or 'docs/LAYOUT.md' not in read(entry).decode('utf-8'):
             errors.append(f'{entry} must link docs/LAYOUT.md')
-    if not (ROOT / 'docs/LAYOUT.md').exists():
+    if not exists('docs/LAYOUT.md'):
         errors.append('Missing authoritative docs/LAYOUT.md')
     actual = set()
     runtime_hashes = {meta['sha256'] for name, meta in approved.items() if name.startswith('assets/')}
@@ -41,16 +49,17 @@ def check():
                 errors.append(f'Review/reference media: {name}')
             if name not in approved:
                 errors.append(f'Unapproved binary: {name}')
-            elif not (ROOT / name).exists() or hashlib.sha256((ROOT / name).read_bytes()).hexdigest() != approved[name]['sha256']:
+            elif not exists(name) or hashlib.sha256(read(name)).hexdigest() != approved[name]['sha256']:
                 errors.append(f'Binary differs from inventory: {name}')
-        if name.startswith('docs/') and path.suffix == '.md' and (ROOT / name).exists():
-            if re.search(r'(?i)(?<![a-z])v\d+', name + '\n' + (ROOT / name).read_text()):
+        if name.startswith('docs/') and path.suffix == '.md' and exists(name):
+            if re.search(r'(?i)(?<![a-z])v\d+', name + '\n' + read(name).decode('utf-8')):
                 errors.append(f'Iteration identifier in documentation: {name}')
     errors.extend(f'Missing declared reproduction input: {name}' for name in sorted(set(inputs) - set(paths)))
     errors.extend(f'Missing tracked binary: {name}' for name in sorted(set(approved) - actual))
     if errors:
         raise SystemExit('\n'.join(errors))
-    print(f'PASS: {len(paths)} tracked files; {len(actual)} approved binaries; no review/reference media')
+    target = 'staged' if staged else 'tracked'
+    print(f'PASS: {len(paths)} {target} files; {len(actual)} approved binaries; no forbidden files')
 
 
 def check_history():
@@ -86,7 +95,10 @@ if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--history', action='store_true')
+    parser.add_argument('--staged', action='store_true', help='Check index contents before committing')
     args = parser.parse_args()
-    check()
+    if args.staged and args.history:
+        parser.error('--staged and --history are separate checks')
+    check(staged=args.staged)
     if args.history:
         check_history()

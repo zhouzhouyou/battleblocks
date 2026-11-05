@@ -50,6 +50,7 @@
 
 - `assets/` 仅放当前游戏加载资源，按 roles、effects、environment、ui、audio 分类；正式人设与关键制作输入放 `assets-source/`，未实现图鉴资源放 `gallery/`，游戏配置放 `config/`。
 - 提交前运行 `python3 tools/check_repository.py`；新制作资源确认采用后才更新 `config/asset-manifest.json`。本地候选和输出统一放 `.local/`。
+- 本地启用 `git config --local core.hooksPath .githooks`，提交钩子通过 `--staged` 检查实际暂存内容。GitHub 的 Repository policy 工作流对提交和 PR 检查完整历史；不得绕过检查提交禁止产物。
 
 ## 禁止入库的生成产物
 
