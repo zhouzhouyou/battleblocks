@@ -192,7 +192,7 @@
     "tools/benchmark_audio_lab.py": "193f54afa962f682919a8b769feef0772a44719e90ba269fea4617c7fc379f90",
     "tools/benchmark_balance.py": "8b84858323c2c7d4b65508f18d8c82ba35b166ef63f6ad1f6f02f1e8fecac092",
     "tools/build.py": "a93b18f6c18120fb67279b220f8937c26b0104bee127f43760a05f6acf70c5b9",
-    "tools/capture_wizard_evidence.py": "ecab3278cf88f86574765713f0a195b8b1db02187ee52100523c854b47dffaa4",
+    "tools/capture_wizard_evidence.py": "9b5f1ed4568502ab4cd688cc090a001bef1ff51f2088de1b4bf817dc8308c8c6",
     "tools/check_ability_events.py": "53ce09d49301522271fdf6673463b71e209ce76fcf5cb9ebac69091f0a0dcf8a",
     "tools/check_audio_stream_stability.py": "7bb9c1892771687e4be073f3aeefb5e6e5c8997c1e75975a30d72dea746b7179",
     "tools/check_balance.py": "45642549ac930e9cd38e4545374004a198e4aae78e4f17810a228cb830d170bb",
@@ -200,7 +200,7 @@
     "tools/check_headless.py": "77af8cc88fb4d7f3c2c462bb5abed4d00866b65ba2b597b543a62275f0a328a5",
     "tools/check_new_roles.py": "b242de947ff2acd12b66e20d9ad03ecb2b1d85239642f22c87331cf3367415d8",
     "tools/check_wizard_normal_unchanged.py": "da337cfaa2e15882867a4dde6e149851325051485f885e8c350bebf2045d2215",
-    "tools/check_wizard_recordings.py": "8a58bfc8b64fdda1b9b91d12e2561b5faa0bf353b0e5fa35c989c3d4103fd838",
+    "tools/check_wizard_recordings.py": "f72dd5b7102d58590f2afb089c9c97ab69c28286a21c087e9736280de3c474ca",
     "tools/compare_asset_rendering.py": "449019fde69548fb22568d5864917b271941eb607a549cfecee75e9e2ac173cf",
     "tools/compare_image_formats.py": "68058e2ced5c8e9adf2a466ddbdfe466db03a1017cf840f07c6b71b024332819",
     "tools/evaluate_balance.py": "fa6b58cd8c1e7030cdd54eae12df7760b1db3104b9608986046cc09a9c6e94b0",
@@ -222,8 +222,9 @@
     "tools/prepare_wizard_assets.py": "ebfc419c878c0ef80e3cd56900eada5ff600c8546d6a65fef9e0f4470ff495c6",
     "tools/prepare_wizard_spells.py": "29ec1b819163327be69aaa59db5f8e9a200cc567bdcec8b85c5923aa023c34ac",
     "tools/review_character_animations.py": "30ded2f4eb5138c57b681999155c08e96febae66d9624dfb0368f71c18c535d6",
-    "tools/review_wizard_animation.py": "dc7ae5e804cd4ec1912bc9978a351f3e8c392a7a867f0494405408f26e584a98",
-    "tools/test_balance.py": "bdd9bd29a3f12b91e6e0fbe0f6aafeb147f62d0b92d1296fecbd8e189c8ed9e1"
+    "tools/review_wizard_animation.py": "2988f1708d59236595cd03fc28d036e8d30f1b445122354d92e5424dbecb3fe0",
+    "tools/test_balance.py": "bdd9bd29a3f12b91e6e0fbe0f6aafeb147f62d0b92d1296fecbd8e189c8ed9e1",
+    "tools/wizard_recording_frames.py": "97d4956cfbd2cae485931613bb96de6c026397c83bb82e0a10820bbc6518ba17"
   },
-  "evidence_export_correction": "After 0710a36, review-only export selects exact decoded frame indices. Runtime sources, assets and capture binary remain at implementation_commit."
+  "evidence_export_correction": "Measurement and snapshots now share explicit 60 Hz sampling of VFR video. Runtime sources, assets and capture binary remain at implementation_commit."
 }

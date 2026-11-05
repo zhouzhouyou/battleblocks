@@ -9,6 +9,8 @@ import sys
 from prepare_wizard_assets import ROOT, SOURCE, CLIPS, Image, save
 from PIL import ImageDraw
 from PIL import ImageChops, ImageStat
+from contextlib import closing
+from wizard_recording_frames import frames, WIDTH, HEIGHT
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--directory', type=Path, default=ROOT / 'analysis/issue27-wizard-animation')
@@ -29,12 +31,13 @@ def extract(path, seconds):
 
 
 def extract_frame(path, index):
-    # Video timestamps need not start at zero. Select the decoded frame index
-    # used by check_wizard_recordings, rather than rounding index / fps via -ss.
-    raw = subprocess.check_output([FFMPEG, '-hide_banner', '-loglevel', 'error',
-        '-i', str(path), '-vf', f'select=eq(n\\,{index})', '-frames:v', '1',
-        '-fps_mode', 'vfr', '-f', 'image2pipe', '-vcodec', 'png', '-'])
-    return Image.open(io.BytesIO(raw)).convert('RGB')
+    # VFR encoded-frame indices differ from the 60 Hz measurement samples.
+    # Use exactly the same sampling stream as check_wizard_recordings.
+    with closing(frames(FFMPEG, path)) as samples:
+        for sample_index, raw in enumerate(samples):
+            if sample_index == index:
+                return Image.frombytes('RGB', (WIDTH, HEIGHT), raw)
+    raise IndexError(f'{path}: sample {index} not present')
 
 
 # These are actual unscaled 1280x900 window captures, not a reconstruction of the menu.
@@ -125,7 +128,7 @@ page='''<!doctype html><meta charset="utf-8"><title>老巫师动作验收 · #27
 <button id="replay">重播</button><button id="pause">暂停/继续</button><label>实际命中 <input id="hit" type="number" value="0.9" min="0.9" max="3" step="0.1">s</label><br>
 <input id="seek" type="range" min="0" max="4000" value="0"><output id="readout"></output><br><canvas id="view" width="420" height="430"></canvas>
 <p><a href="atlas-contact.webp">觉醒24帧</a> · <a href="idle-seams.webp">待机11→12→1→2及脚线</a> · <a href="normal-menu-comparison.webp">普通同尺寸前后对比</a> · <a href="awake-menu-comparison.webp">觉醒同尺寸前后对比</a></p>
-<h2>实战录像 · 真实游戏窗口</h2><p>固定棋盘通过原生控制台载入；施法、觉醒、清除和回滚均运行原游戏 Session。原始事件与录像同目录。录制为60fps、1280×900设备像素。</p>
+<h2>实战录像 · 真实游戏窗口</h2><p>固定棋盘通过原生控制台载入；施法、觉醒、清除和回滚均运行原游戏 Session。原始事件与录像同目录。录制目标60fps、1280×900设备像素，源视频为可变帧率；同步按统一60Hz采样。</p>
 VIDEOS
 <script>const meta=METADATA;const img=new Image();img.src='../../assets/roles/wizard.webp';const select=document.querySelector('#clip'),canvas=document.querySelector('#view'),ctx=canvas.getContext('2d');for(const name of Object.keys(meta.clips)){select.add(new Option(name,name))}let elapsed=0,last=performance.now(),playing=true;
 document.querySelector('#replay').onclick=()=>{elapsed=0;playing=true};document.querySelector('#pause').onclick=()=>playing=!playing;select.onchange=()=>elapsed=0;document.querySelector('#seek').oninput=e=>{elapsed=+e.target.value;playing=false};

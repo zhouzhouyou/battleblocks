@@ -20,13 +20,13 @@
 
 第 5 帧出手，第 7 帧引导等待，第 8 帧命中，随后 0.5 秒收势。人物和两技能特效共用实际命中时钟；对手觉醒延迟清除时保持引导姿势，收到真实清除通知后一起命中。终局无清除通知时按墙钟结束，回滚重置表现时钟。普通版没有新增施法 clip，不进入此同步分支。
 
-以下为重新录制的真实游戏窗口，60fps、1280×900 设备像素；通过原控制台驱动同一个 Session，同名 JSONL 为实际事件。同步由人物图集和特效命中图的录像像素匹配定位，未把控制台发送时刻当作命中时刻。
+以下为重新录制的真实游戏窗口，目标录制率60fps、1280×900设备像素；源录像为可变帧率（VFR），测量与导图共用显式60Hz采样流；通过原控制台驱动同一个 Session，同名 JSONL 为实际事件。同步由人物图集和特效命中图的录像像素匹配定位，未把控制台发送时刻当作命中时刻。
 
-| 觉醒场景 | 施法至清除事件 | 人物第8帧 / 特效命中帧（从0开始） | 差值 |
+| 觉醒场景 | 施法至清除事件 | 人物第8帧 / 特效命中采样编号（60Hz，从0开始） | 差值 |
 | --- | --- | --- | --- |
-| 落雷 | 0.915s | 114 / 114 | 0帧 |
-| 陨石 | 0.878s | 111 / 111 | 0帧 |
-| 延迟陨石 | 1.459s | 151 / 151 | 0帧 |
+| 落雷 | 0.915s | 115 / 115 | 0帧 |
+| 陨石 | 0.878s | 112 / 112 | 0帧 |
+| 延迟陨石 | 1.459s | 152 / 152 | 0帧 |
 
 [逐帧测量](recording-measurements.json)及三张 `*-synchronization.webp` 可复核。终局胜利面板遮挡特效，不计入像素同步测量；回滚脚本断言完整快照恢复。
 
@@ -37,7 +37,7 @@
 - 普通不变检查：[GREEN](validation/normal-unchanged-green.json) 全部通过；同一个检查在误改普通版的 `77d5769` 上 [RED](validation/normal-unchanged-red.json) 正确失败。WebP 与缩略图按字节比较，JSON 和 Rust 注册配置忽略 CRLF/LF 差异。
 - Rust 357 通过、1 个音频设备测试忽略；Python 18 通过。新增测试锁定普通原配置、觉醒独立姿势、细像素密度、透明度、图集和脚底边界。
 - Headless 134 事件与 2 局 autoplay 通过；控制台、角色及能力事件三组窗口回归通过。
-- 完整素材重建后 `assets/` 哈希变化为 0；Windows release、WASM、Windows 包及网页包构建通过。macOS CI 与独立审查在交付记录中补充。
+- 完整素材重建后 `assets/` 哈希变化为 0；Windows release、WASM、Windows 包及网页包构建通过。macOS CI已通过；结果与独立审查见[交付记录](independent-review.md)。
 - 日志位于 [validation](validation/)。Windows 脚本使用 `.build-tools/python-path.txt` 指定 Python，`PYTHONUTF8=1`。
 
 复现顺序：`tools/check_wizard_normal_unchanged.py`；`tools/prepare_assets.py`；`tools/build.py`；设置 `BATTLEBLOCKS_BIN=target/debug/battleblocks.exe` 后运行 headless 与三组 GUI 检查；`tools/capture_wizard_evidence.py --binary target/debug/battleblocks.exe --label current`；`tools/check_wizard_recordings.py`；`tools/review_wizard_animation.py`。录制脚本拒绝把不同二进制的录像混进同一目录；重新录制不同构建时先将旧证据归档到仓库外。

@@ -1,17 +1,47 @@
 {
-  "method": "Decoded frame indices using select=eq(n,N); frames are the same indices as recording-measurements.json",
-  "files": {
+  "method": "Both measurement and export use wizard_recording_frames.frames: explicit fps=60, fps_mode=passthrough. Indices are 60 Hz samples, not VFR encoded frame indices.",
+  "checks": {
     "awake-lightning": {
-      "guide": "e4bf0b0e9b37c79c40201d38948e93b53a476f1d54fece9df2b1599beea1d56a",
-      "impact": "3d92db077593214380fad7fcadf6776726376b02ab5aabb8fe88bc678281504d"
+      "guide": {
+        "sample_60hz": 114,
+        "atlas_pose": 18,
+        "exact_pixels_match": true,
+        "sha256": "ea1d095160abcae9c277d5734f1b43aab1ab4addb2d7bddecdcb8d9f8ab207b2"
+      },
+      "impact": {
+        "sample_60hz": 115,
+        "atlas_pose": 19,
+        "exact_pixels_match": true,
+        "sha256": "4eb41ed76b7f6814f03dacb04ffaf921eebed9a56aa3a79aa676a4e01fa9ee74"
+      }
     },
     "awake-meteor": {
-      "guide": "9c9027b2c13ac77e379fa0b4e08f8de8288abe0193ffbea260c4aac38ce89d99",
-      "impact": "0eeae6b8c724767204e0de1d243bec07a69e6466c3b910d341f0b311600ad728"
+      "guide": {
+        "sample_60hz": 111,
+        "atlas_pose": 18,
+        "exact_pixels_match": true,
+        "sha256": "46dc504ed234ee27f5251b601a54079b4d4fa45877fc4c7af3ea6f7cba4141ce"
+      },
+      "impact": {
+        "sample_60hz": 112,
+        "atlas_pose": 19,
+        "exact_pixels_match": true,
+        "sha256": "442b3b5de8e7dccfb0e8bcd137250d2244e4da8f3b28e4e547c6065efe2d3856"
+      }
     },
     "awake-delayed-meteor": {
-      "guide": "7af5e461f66c69049797eb5cde1fe3ce6e3cc6ab91a10a74a85f493ebd45808f",
-      "impact": "64572490522e6ec0575f9e083ec463e914f2d381e02a886f1c83f8a9f76cae2a"
+      "guide": {
+        "sample_60hz": 151,
+        "atlas_pose": 18,
+        "exact_pixels_match": true,
+        "sha256": "40b2cc4009b83e99f0bcf2b837a66fddff744b87d369042307eb6483c0216963"
+      },
+      "impact": {
+        "sample_60hz": 152,
+        "atlas_pose": 19,
+        "exact_pixels_match": true,
+        "sha256": "ba152592c307c0763668c738399315e424b481f619a3d4f6605abeb80dcbc730"
+      }
     }
   }
 }

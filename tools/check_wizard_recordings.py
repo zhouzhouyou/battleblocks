@@ -5,7 +5,6 @@ matches the native 125% DPI captures; it never creates game state or rewards.
 """
 import json
 import argparse
-import subprocess
 import sys
 from pathlib import Path
 from prepare_wizard_assets import ROOT, Image, save
@@ -13,6 +12,7 @@ from PIL import ImageDraw
 sys.path.insert(0, str(ROOT / '.build-tools/media-site'))
 import numpy as np
 import imageio_ffmpeg
+from wizard_recording_frames import frames, FPS
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--directory', type=Path, default=ROOT / 'analysis/issue27-wizard-animation')
@@ -53,15 +53,10 @@ for scene in ('awake-lightning','awake-meteor','awake-delayed-meteor'):
     fy=np.floor((110+points[:,0]+.5)*1.25).astype(int)
     fxpos=np.floor((256+points[:,1]+.5)*1.25).astype(int)
     colors=hit[points[:,0],points[:,1],:3].astype(float)
-    process=subprocess.Popen([FFMPEG,'-hide_banner','-loglevel','error','-i',str(OUT/'current'/f'{scene}.mp4'),
-        '-f','rawvideo','-pix_fmt','rgb24','-'],stdout=subprocess.PIPE)
     samples=[];selected=[]
     candidates=list(range(24))
     index=0
-    while True:
-        raw=process.stdout.read(1280*900*3)
-        if not raw:break
-        if len(raw)!=1280*900*3:raise AssertionError('partial decoded frame')
+    for raw in frames(FFMPEG, OUT/'current'/f'{scene}.mp4'):
         screen=np.frombuffer(raw,dtype=np.uint8).reshape(900,1280,3)
         actor=screen[205:480,:300]
         observed=actor[mask].astype(np.float32)
@@ -74,14 +69,14 @@ for scene in ('awake-lightning','awake-meteor','awake-delayed-meteor'):
         if .8<index/60<3.5:
             selected.append((index,Image.fromarray(screen.copy())))
         index+=1
-    if process.wait():raise RuntimeError('decoder failed')
     hit_frames=[s['frame'] for s in samples if s['seconds']>.8 and s['impact_match']>.7]
     actor_frames=[s['frame'] for s in samples if s['seconds']>.8 and s['atlas_pose']==19]
     if not hit_frames or not actor_frames:
         raise AssertionError(f'{scene}: impact not observable; inspect landmarks/templates')
     first_hit,first_actor=hit_frames[0],actor_frames[0]
     delta=first_actor-first_hit
-    report[scene]={'frames':index,'actor_impact_frame':first_actor,'effect_impact_frame':first_hit,
+    report[scene]={'frames':index,'sampling_fps':FPS,'source_timing':'VFR; frame indices refer to the shared 60 Hz sampling stream',
+                   'actor_impact_frame':first_actor,'effect_impact_frame':first_hit,
                    'delta_frames':delta,'delta_ms':round(delta/60*1000,3),
                    'impact_landmarks':len(points),'samples':samples}
     keys=[first_hit-1,first_hit,first_hit+1,first_hit+6]

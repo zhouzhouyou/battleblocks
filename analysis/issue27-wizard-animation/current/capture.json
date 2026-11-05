@@ -1,7 +1,6 @@
 {
   "binary_sha256": "7bdd6acce62b00a766698ceb99b018d02f2d8d74684bb6669e254908852fa92a",
   "git_head": "6961e8d170015f3760f175809e3ed2c9fe46a769",
-  "fps": 60,
   "device_pixel_crop": "1280:900",
   "scenes": {
     "normal-menu": {
@@ -91,5 +90,7 @@
       "clear_seconds_after_skill": null,
       "player_awake": true
     }
-  }
+  },
+  "target_fps": 60,
+  "frame_rate_note": "gdigrab output is VFR; frame indices in measurements and exported keys refer to the shared 60 Hz sampling stream"
 }
