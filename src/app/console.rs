@@ -163,6 +163,19 @@ impl Session {
                                 );
                             } else {
                                 self.console.checkpoint_edit(before.clone());
+                                if matches!(
+                                    command,
+                                    Command::Hero(..)
+                                        | Command::SetTile(..)
+                                        | Command::LoadBoard(..)
+                                        | Command::Shuffle
+                                        | Command::Turn(..)
+                                        | Command::Resolve
+                                ) {
+                                    if let Some(effects) = &mut self.skill_effects {
+                                        effects.cancel_actors();
+                                    }
+                                }
                                 match command {
                                     Command::Hero(side, id) => {
                                         self.awakened[side as usize] = false;

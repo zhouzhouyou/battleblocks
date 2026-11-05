@@ -2,6 +2,8 @@
 use crate::content::{self, StatusSet};
 mod animation;
 pub use animation::*;
+mod legacy;
+pub use legacy::*;
 mod registry;
 pub use registry::{AWAKENED, SPRITES};
 pub fn shadow_form(hero: usize, awake_visible: bool, statuses: StatusSet) -> bool {

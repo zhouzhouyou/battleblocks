@@ -715,6 +715,24 @@ impl Session {
         self.skill_flash.clear();
         if let Some(effects) = &mut self.skill_effects {
             effects.clear();
+            if let Some(impact) = &self.charge_damage {
+                let id = if impact.actor_enemy {
+                    self.enemy_id
+                } else {
+                    self.hero_id
+                };
+                if self.awakened[impact.actor_enemy as usize] {
+                    effects.resume_actor(
+                        sprites::AWAKENED[id].actor_cast(impact.skill),
+                        impact.skill,
+                        impact.actor_enemy,
+                        self.console.gameplay_action(),
+                        &self.pending,
+                        (presentation::CHARGE_TIME - state.charge_remaining)
+                            .clamp(0., presentation::CHARGE_TIME),
+                    );
+                }
+            }
         }
         self.last_cast = None;
         self.cast_time = 0.;
