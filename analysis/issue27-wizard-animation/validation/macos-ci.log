@@ -1,0 +1,779 @@
+macos	Set up job	﻿2026-11-05T04:57:07.1097690Z Current runner version: '2.338.2'
+macos	Set up job	2026-11-05T04:57:07.1113840Z ##[group]Runner Image Provisioner
+macos	Set up job	2026-11-05T04:57:07.1114410Z Hosted Compute Agent
+macos	Set up job	2026-11-05T04:57:07.1114800Z Version: 20261021.618
+macos	Set up job	2026-11-05T04:57:07.1115200Z Commit: 21505ad2541d5be6135ed84fc33697146cf75b8e
+macos	Set up job	2026-11-05T04:57:07.1115680Z Build Date: 2026-10-21T00:45:21Z
+macos	Set up job	2026-11-05T04:57:07.1116120Z Worker ID: {7363be28-fc83-462c-ad7a-321946cb0fdc}
+macos	Set up job	2026-11-05T04:57:07.1116580Z Region: westus
+macos	Set up job	2026-11-05T04:57:07.1116930Z Cloud: MacCloud
+macos	Set up job	2026-11-05T04:57:07.1117290Z ##[endgroup]
+macos	Set up job	2026-11-05T04:57:07.1118150Z ##[group]Operating System
+macos	Set up job	2026-11-05T04:57:07.1118550Z macOS
+macos	Set up job	2026-11-05T04:57:07.1118890Z 15.8.2
+macos	Set up job	2026-11-05T04:57:07.1119210Z 24H232
+macos	Set up job	2026-11-05T04:57:07.1119560Z ##[endgroup]
+macos	Set up job	2026-11-05T04:57:07.1119910Z ##[group]Runner Image
+macos	Set up job	2026-11-05T04:57:07.1120290Z Image: macos-15-arm64
+macos	Set up job	2026-11-05T04:57:07.1120660Z Version: 20261028.0489.1
+macos	Set up job	2026-11-05T04:57:07.1121410Z Included Software: https://github.com/actions/runner-images/blob/macos-15-arm64/20261028.0489/images/macos/macos-15-arm64-Readme.md
+macos	Set up job	2026-11-05T04:57:07.1122510Z Image Release: https://github.com/actions/runner-images/releases/tag/macos-15-arm64%2F20261028.0489
+macos	Set up job	2026-11-05T04:57:07.1123180Z ##[endgroup]
+macos	Set up job	2026-11-05T04:57:07.1123980Z ##[group]GITHUB_TOKEN Permissions
+macos	Set up job	2026-11-05T04:57:07.1125000Z Contents: read
+macos	Set up job	2026-11-05T04:57:07.1125360Z Metadata: read
+macos	Set up job	2026-11-05T04:57:07.1125700Z ##[endgroup]
+macos	Set up job	2026-11-05T04:57:07.1127080Z Secret source: Actions
+macos	Set up job	2026-11-05T04:57:07.1127660Z Cache mode: write
+macos	Set up job	2026-11-05T04:57:07.1128140Z Prepare workflow directory
+macos	Set up job	2026-11-05T04:57:07.1344420Z Prepare all required actions
+macos	Set up job	2026-11-05T04:57:07.1383400Z Getting action download info
+macos	Set up job	2026-11-05T04:57:07.5509440Z Download action repository 'actions/checkout@v7' (SHA:3d3c42e5aac5ba805825da76410c181273ba90b1)
+macos	Set up job	2026-11-05T04:57:07.7097270Z Download action repository 'actions/setup-python@v7' (SHA:6d4fd22b20465ccc0f7354476588e8df7c9ca0e0)
+macos	Set up job	2026-11-05T04:57:08.1988750Z Download action repository 'actions/upload-artifact@v6' (SHA:b7c566a772e6b6bfb58ed0dc250532a479d7789f)
+macos	Set up job	2026-11-05T04:57:08.4154410Z Complete job name: macos
+macos	Run actions/checkout@v7	﻿2026-11-05T04:57:08.4684670Z ##[group]Run actions/checkout@v7
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.4685320Z with:
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.4685690Z   repository: zhouzhouyou/battleblocks
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.4689530Z   token: ***
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.4689890Z   ssh-strict: true
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.4690240Z   ssh-user: git
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.4690590Z   persist-credentials: true
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.4690960Z   clean: true
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.4691310Z   sparse-checkout-cone-mode: true
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.4691710Z   fetch-depth: 1
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.4692040Z   fetch-tags: false
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.4692380Z   show-progress: true
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.4692720Z   lfs: false
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.4693040Z   submodules: false
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.4693450Z   set-safe-directory: true
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.4693880Z   allow-unsafe-pr-checkout: false
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.4694680Z ##[endgroup]
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8044900Z Syncing repository: zhouzhouyou/battleblocks
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8046810Z ##[group]Getting Git version info
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8047380Z Working directory is '/Users/runner/work/battleblocks/battleblocks'
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8048240Z [command]/opt/homebrew/bin/git version
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8323220Z git version 2.56.0
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8338670Z ##[endgroup]
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8344350Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/69a55bf0-8a66-4aa3-9528-8b6d9b5d8dbd/.gitconfig'
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8347320Z Temporarily overriding HOME='/Users/runner/work/_temp/69a55bf0-8a66-4aa3-9528-8b6d9b5d8dbd' before making global git config changes
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8354160Z Adding repository directory to the temporary git global config as a safe directory
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8363280Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/battleblocks/battleblocks
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8440530Z Deleting the contents of '/Users/runner/work/battleblocks/battleblocks'
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8442860Z ##[group]Determining repository object format
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8445470Z ##[endgroup]
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8446260Z ##[group]Initializing the repository
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8447570Z [command]/opt/homebrew/bin/git init /Users/runner/work/battleblocks/battleblocks
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8637740Z hint: Using 'master' as the name for the initial branch. This default branch name
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8638650Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8639360Z hint: to use in all of your new repositories, which will suppress this warning,
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8639910Z hint: call:
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8640240Z hint:
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8640690Z hint: 	git config --global init.defaultBranch <name>
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8641160Z hint:
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8641600Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8642300Z hint: 'development'. The just-created branch can be renamed via this command:
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8642830Z hint:
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8643200Z hint: 	git branch -m <name>
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8643580Z hint:
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8644050Z hint: Disable this message with "git config set advice.defaultBranchName false"
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8644820Z Initialized empty Git repository in /Users/runner/work/battleblocks/battleblocks/.git/
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8646240Z [command]/opt/homebrew/bin/git remote add origin https://github.com/zhouzhouyou/battleblocks
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8713220Z ##[endgroup]
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8714850Z ##[group]Disabling automatic garbage collection
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8715880Z [command]/opt/homebrew/bin/git config --local gc.auto 0
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8773250Z ##[endgroup]
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8773910Z ##[group]Setting up auth
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8774370Z Removing SSH command configuration
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8777130Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.8830810Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.9586130Z Removing HTTP extra header
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.9589200Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+macos	Run actions/checkout@v7	2026-11-05T04:57:08.9641740Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+macos	Run actions/checkout@v7	2026-11-05T04:57:09.0284860Z Removing includeIf entries pointing to credentials config files
+macos	Run actions/checkout@v7	2026-11-05T04:57:09.0287590Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+macos	Run actions/checkout@v7	2026-11-05T04:57:09.0341170Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+macos	Run actions/checkout@v7	2026-11-05T04:57:09.0976590Z [command]/opt/homebrew/bin/git config --file /Users/runner/work/_temp/git-credentials-1950577c-5de4-4730-9b0f-8eced3528dbb.config http.https://github.com/.extraheader AUTHORIZATION: basic ***
+macos	Run actions/checkout@v7	2026-11-05T04:57:09.1037240Z [command]/opt/homebrew/bin/git config --local includeIf.gitdir:/Users/runner/work/battleblocks/battleblocks/.git.path /Users/runner/work/_temp/git-credentials-1950577c-5de4-4730-9b0f-8eced3528dbb.config
+macos	Run actions/checkout@v7	2026-11-05T04:57:09.1110890Z [command]/opt/homebrew/bin/git config --local includeIf.gitdir:/Users/runner/work/battleblocks/battleblocks/.git/worktrees/*.path /Users/runner/work/_temp/git-credentials-1950577c-5de4-4730-9b0f-8eced3528dbb.config
+macos	Run actions/checkout@v7	2026-11-05T04:57:09.1168800Z [command]/opt/homebrew/bin/git config --local includeIf.gitdir:/github/workspace/.git.path /github/runner_temp/git-credentials-1950577c-5de4-4730-9b0f-8eced3528dbb.config
+macos	Run actions/checkout@v7	2026-11-05T04:57:09.1226140Z [command]/opt/homebrew/bin/git config --local includeIf.gitdir:/github/workspace/.git/worktrees/*.path /github/runner_temp/git-credentials-1950577c-5de4-4730-9b0f-8eced3528dbb.config
+macos	Run actions/checkout@v7	2026-11-05T04:57:09.1289740Z ##[endgroup]
+macos	Run actions/checkout@v7	2026-11-05T04:57:09.1290680Z ##[group]Fetching the repository
+macos	Run actions/checkout@v7	2026-11-05T04:57:09.1293490Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +caff6becdf02a3217c224bda026d62864172ac74:refs/remotes/origin/codex/27-wizard-animation
+macos	Run actions/checkout@v7	2026-11-05T04:57:13.5791420Z From https://github.com/zhouzhouyou/battleblocks
+macos	Run actions/checkout@v7	2026-11-05T04:57:13.5792190Z  * [new ref]         caff6becdf02a3217c224bda026d62864172ac74 -> origin/codex/27-wizard-animation
+macos	Run actions/checkout@v7	2026-11-05T04:57:13.5796800Z [command]/opt/homebrew/bin/git branch --list --remote origin/codex/27-wizard-animation
+macos	Run actions/checkout@v7	2026-11-05T04:57:13.5861220Z   origin/codex/27-wizard-animation
+macos	Run actions/checkout@v7	2026-11-05T04:57:13.5871990Z [command]/opt/homebrew/bin/git rev-parse refs/remotes/origin/codex/27-wizard-animation
+macos	Run actions/checkout@v7	2026-11-05T04:57:13.5917440Z caff6becdf02a3217c224bda026d62864172ac74
+macos	Run actions/checkout@v7	2026-11-05T04:57:13.5918930Z ##[endgroup]
+macos	Run actions/checkout@v7	2026-11-05T04:57:13.5919360Z ##[group]Determining the checkout info
+macos	Run actions/checkout@v7	2026-11-05T04:57:13.5919820Z ##[endgroup]
+macos	Run actions/checkout@v7	2026-11-05T04:57:13.5922960Z [command]/opt/homebrew/bin/git sparse-checkout disable
+macos	Run actions/checkout@v7	2026-11-05T04:57:13.5991780Z [command]/opt/homebrew/bin/git config --local --unset-all extensions.worktreeConfig
+macos	Run actions/checkout@v7	2026-11-05T04:57:13.6044160Z ##[group]Checking out the ref
+macos	Run actions/checkout@v7	2026-11-05T04:57:13.6046470Z [command]/opt/homebrew/bin/git checkout --progress --force -B codex/27-wizard-animation refs/remotes/origin/codex/27-wizard-animation
+macos	Run actions/checkout@v7	2026-11-05T04:57:13.8521670Z Switched to a new branch 'codex/27-wizard-animation'
+macos	Run actions/checkout@v7	2026-11-05T04:57:13.8526640Z branch 'codex/27-wizard-animation' set up to track 'origin/codex/27-wizard-animation'.
+macos	Run actions/checkout@v7	2026-11-05T04:57:13.8535620Z ##[endgroup]
+macos	Run actions/checkout@v7	2026-11-05T04:57:13.8653410Z [command]/opt/homebrew/bin/git log -1 --format=%H
+macos	Run actions/checkout@v7	2026-11-05T04:57:13.8697930Z caff6becdf02a3217c224bda026d62864172ac74
+macos	Run actions/setup-python@v7	﻿2026-11-05T04:57:13.8918050Z ##[group]Run actions/setup-python@v7
+macos	Run actions/setup-python@v7	2026-11-05T04:57:13.8918380Z with:
+macos	Run actions/setup-python@v7	2026-11-05T04:57:13.8918530Z   python-version: 3.12
+macos	Run actions/setup-python@v7	2026-11-05T04:57:13.8918720Z   check-latest: false
+macos	Run actions/setup-python@v7	2026-11-05T04:57:13.8920990Z   token: ***
+macos	Run actions/setup-python@v7	2026-11-05T04:57:13.8921250Z   mirror: https://raw.githubusercontent.com/actions/python-versions/main
+macos	Run actions/setup-python@v7	2026-11-05T04:57:13.8921580Z   update-environment: true
+macos	Run actions/setup-python@v7	2026-11-05T04:57:13.8921770Z   allow-prereleases: false
+macos	Run actions/setup-python@v7	2026-11-05T04:57:13.8921940Z   freethreaded: false
+macos	Run actions/setup-python@v7	2026-11-05T04:57:13.8922090Z ##[endgroup]
+macos	Run actions/setup-python@v7	2026-11-05T04:57:13.9967240Z ##[group]Installed versions
+macos	Run actions/setup-python@v7	2026-11-05T04:57:14.0020920Z Successfully set up CPython (3.12.10)
+macos	Run actions/setup-python@v7	2026-11-05T04:57:14.0021350Z ##[endgroup]
+macos	Build, test and package macOS	﻿2026-11-05T04:57:14.0089000Z ##[group]Run python tools/build.py --native-only
+macos	Build, test and package macOS	2026-11-05T04:57:14.0089390Z ^[[36;1mpython tools/build.py --native-only^[[0m
+macos	Build, test and package macOS	2026-11-05T04:57:14.0135240Z shell: /bin/bash -e {0}
+macos	Build, test and package macOS	2026-11-05T04:57:14.0135460Z env:
+macos	Build, test and package macOS	2026-11-05T04:57:14.0135710Z   pythonLocation: /Users/runner/hostedtoolcache/Python/3.12.10/arm64
+macos	Build, test and package macOS	2026-11-05T04:57:14.0136160Z   PKG_CONFIG_PATH: /Users/runner/hostedtoolcache/Python/3.12.10/arm64/lib/pkgconfig
+macos	Build, test and package macOS	2026-11-05T04:57:14.0136660Z   Python_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.12.10/arm64
+macos	Build, test and package macOS	2026-11-05T04:57:14.0137030Z   Python2_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.12.10/arm64
+macos	Build, test and package macOS	2026-11-05T04:57:14.0137400Z   Python3_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.12.10/arm64
+macos	Build, test and package macOS	2026-11-05T04:57:14.0137680Z ##[endgroup]
+macos	Build, test and package macOS	2026-11-05T04:57:14.3428240Z Downloading font source (cached, excluded from game packages)
+macos	Build, test and package macOS	2026-11-05T04:57:15.6511130Z Collecting fonttools==4.67.0
+macos	Build, test and package macOS	2026-11-05T04:57:15.7725430Z   Downloading fonttools-4.67.0-cp312-cp312-macosx_10_13_universal2.whl.metadata (137 kB)
+macos	Build, test and package macOS	2026-11-05T04:57:15.8366810Z Downloading fonttools-4.67.0-cp312-cp312-macosx_10_13_universal2.whl (3.1 MB)
+macos	Build, test and package macOS	2026-11-05T04:57:15.9136050Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.1/3.1 MB 51.6 MB/s  0:00:00
+macos	Build, test and package macOS	2026-11-05T04:57:15.9438870Z Installing collected packages: fonttools
+macos	Build, test and package macOS	2026-11-05T04:57:16.5353050Z Successfully installed fonttools-4.67.0
+macos	Build, test and package macOS	2026-11-05T04:57:16.5361910Z 
+macos	Build, test and package macOS	2026-11-05T04:57:16.5362280Z [notice] A new release of pip is available: 26.2.2 -> 26.3
+macos	Build, test and package macOS	2026-11-05T04:57:16.5364390Z [notice] To update, run: python -m pip install --upgrade pip
+macos	Build, test and package macOS	2026-11-05T04:57:16.8079840Z     Updating crates.io index
+macos	Build, test and package macOS	2026-11-05T04:57:17.0923340Z  Downloading crates ...
+macos	Build, test and package macOS	2026-11-05T04:57:17.1779510Z   Downloaded block2 v0.6.2
+macos	Build, test and package macOS	2026-11-05T04:57:17.1835560Z   Downloaded objc2-foundation v0.3.2
+macos	Build, test and package macOS	2026-11-05T04:57:17.2234120Z   Downloaded fdeflate v0.3.7
+macos	Build, test and package macOS	2026-11-05T04:57:17.2257740Z   Downloaded objc2-encode v4.1.0
+macos	Build, test and package macOS	2026-11-05T04:57:17.2281770Z   Downloaded adler2 v2.0.1
+macos	Build, test and package macOS	2026-11-05T04:57:17.2303260Z   Downloaded mach2 v0.6.0
+macos	Build, test and package macOS	2026-11-05T04:57:17.2383680Z   Downloaded cfg-if v1.0.5
+macos	Build, test and package macOS	2026-11-05T04:57:17.2409030Z   Downloaded zlib-rs v0.6.8
+macos	Build, test and package macOS	2026-11-05T04:57:17.2540060Z   Downloaded autocfg v1.5.1
+macos	Build, test and package macOS	2026-11-05T04:57:17.2653480Z   Downloaded dasp_sample v0.11.0
+macos	Build, test and package macOS	2026-11-05T04:57:17.2758890Z   Downloaded quad-rand v0.2.3
+macos	Build, test and package macOS	2026-11-05T04:57:17.2859800Z   Downloaded byteorder v1.5.0
+macos	Build, test and package macOS	2026-11-05T04:57:17.2879510Z   Downloaded foldhash v0.1.5
+macos	Build, test and package macOS	2026-11-05T04:57:17.2915060Z   Downloaded macroquad_macro v0.1.8
+macos	Build, test and package macOS	2026-11-05T04:57:17.2925810Z   Downloaded malloc_buf v0.0.6
+macos	Build, test and package macOS	2026-11-05T04:57:17.2949170Z   Downloaded ogg v0.8.0
+macos	Build, test and package macOS	2026-11-05T04:57:17.2949670Z   Downloaded color_quant v1.1.0
+macos	Build, test and package macOS	2026-11-05T04:57:17.2949990Z   Downloaded objc-rs v0.2.8
+macos	Build, test and package macOS	2026-11-05T04:57:17.2953300Z   Downloaded simd-adler32 v0.3.10
+macos	Build, test and package macOS	2026-11-05T04:57:17.2961430Z   Downloaded core_maths v0.1.1
+macos	Build, test and package macOS	2026-11-05T04:57:17.2975310Z   Downloaded equivalent v1.0.3
+macos	Build, test and package macOS	2026-11-05T04:57:17.2975700Z   Downloaded objc2-core-audio v0.3.2
+macos	Build, test and package macOS	2026-11-05T04:57:17.2989130Z   Downloaded bitflags v1.3.2
+macos	Build, test and package macOS	2026-11-05T04:57:17.3039820Z   Downloaded bitflags v2.13.2
+macos	Build, test and package macOS	2026-11-05T04:57:17.3113910Z   Downloaded num-traits v0.2.19
+macos	Build, test and package macOS	2026-11-05T04:57:17.3160820Z   Downloaded objc2-core-audio-types v0.3.2
+macos	Build, test and package macOS	2026-11-05T04:57:17.3177570Z   Downloaded tinyvec v1.13.3
+macos	Build, test and package macOS	2026-11-05T04:57:17.3233940Z   Downloaded bytemuck v1.25.2
+macos	Build, test and package macOS	2026-11-05T04:57:17.3285090Z   Downloaded coreaudio-rs v0.14.2
+macos	Build, test and package macOS	2026-11-05T04:57:17.3318510Z   Downloaded crc32fast v1.5.3
+macos	Build, test and package macOS	2026-11-05T04:57:17.3352130Z   Downloaded dispatch2 v0.3.1
+macos	Build, test and package macOS	2026-11-05T04:57:17.3387770Z   Downloaded miniz_oxide v0.8.9
+macos	Build, test and package macOS	2026-11-05T04:57:17.3430330Z   Downloaded objc2-audio-toolbox v0.3.2
+macos	Build, test and package macOS	2026-11-05T04:57:17.3512160Z   Downloaded allocator-api2 v0.2.21
+macos	Build, test and package macOS	2026-11-05T04:57:17.3553140Z   Downloaded lewton v0.10.2
+macos	Build, test and package macOS	2026-11-05T04:57:17.3589570Z   Downloaded miniz_oxide v0.9.1
+macos	Build, test and package macOS	2026-11-05T04:57:17.3625570Z   Downloaded flate2 v1.1.10
+macos	Build, test and package macOS	2026-11-05T04:57:17.3708730Z   Downloaded libm v0.2.16
+macos	Build, test and package macOS	2026-11-05T04:57:17.3897870Z   Downloaded png v0.17.16
+macos	Build, test and package macOS	2026-11-05T04:57:17.3953700Z   Downloaded fontdue v0.9.5
+macos	Build, test and package macOS	2026-11-05T04:57:17.4018670Z   Downloaded hashbrown v0.15.5
+macos	Build, test and package macOS	2026-11-05T04:57:17.4102520Z   Downloaded objc2-core-foundation v0.3.2
+macos	Build, test and package macOS	2026-11-05T04:57:17.4222700Z   Downloaded miniquad v0.4.11
+macos	Build, test and package macOS	2026-11-05T04:57:17.4349010Z   Downloaded ttf-parser v0.25.1
+macos	Build, test and package macOS	2026-11-05T04:57:17.4510760Z   Downloaded cpal v0.18.2
+macos	Build, test and package macOS	2026-11-05T04:57:17.4646950Z   Downloaded objc2 v0.6.5
+macos	Build, test and package macOS	2026-11-05T04:57:17.4806580Z   Downloaded glam v0.27.0
+macos	Build, test and package macOS	2026-11-05T04:57:17.5110410Z   Downloaded macroquad v0.4.16
+macos	Build, test and package macOS	2026-11-05T04:57:17.5346210Z   Downloaded libc v0.2.191
+macos	Build, test and package macOS	2026-11-05T04:57:17.6104600Z   Downloaded image v0.24.9
+macos	Build, test and package macOS	2026-11-05T04:57:17.8176810Z    Compiling objc2 v0.6.5
+macos	Build, test and package macOS	2026-11-05T04:57:17.8177090Z    Compiling libc v0.2.191
+macos	Build, test and package macOS	2026-11-05T04:57:17.8177290Z    Compiling objc2-encode v4.1.0
+macos	Build, test and package macOS	2026-11-05T04:57:18.3563290Z    Compiling bitflags v2.13.2
+macos	Build, test and package macOS	2026-11-05T04:57:18.5297000Z    Compiling simd-adler32 v0.3.10
+macos	Build, test and package macOS	2026-11-05T04:57:18.6983000Z    Compiling adler2 v2.0.1
+macos	Build, test and package macOS	2026-11-05T04:57:18.7767240Z    Compiling crc32fast v1.5.3
+macos	Build, test and package macOS	2026-11-05T04:57:20.3635480Z    Compiling libm v0.2.16
+macos	Build, test and package macOS	2026-11-05T04:57:20.5627040Z    Compiling autocfg v1.5.1
+macos	Build, test and package macOS	2026-11-05T04:57:20.8390340Z    Compiling cfg-if v1.0.5
+macos	Build, test and package macOS	2026-11-05T04:57:20.9284710Z    Compiling num-traits v0.2.19
+macos	Build, test and package macOS	2026-11-05T04:57:21.0322230Z    Compiling miniz_oxide v0.9.1
+macos	Build, test and package macOS	2026-11-05T04:57:21.2695460Z    Compiling block2 v0.6.2
+macos	Build, test and package macOS	2026-11-05T04:57:21.4125680Z    Compiling dispatch2 v0.3.1
+macos	Build, test and package macOS	2026-11-05T04:57:21.4545810Z    Compiling objc2-core-audio-types v0.3.2
+macos	Build, test and package macOS	2026-11-05T04:57:21.6274840Z    Compiling objc2-core-foundation v0.3.2
+macos	Build, test and package macOS	2026-11-05T04:57:21.6284880Z    Compiling objc2-foundation v0.3.2
+macos	Build, test and package macOS	2026-11-05T04:57:21.7545430Z    Compiling byteorder v1.5.0
+macos	Build, test and package macOS	2026-11-05T04:57:21.8807740Z    Compiling core_maths v0.1.1
+macos	Build, test and package macOS	2026-11-05T04:57:21.9287210Z    Compiling flate2 v1.1.10
+macos	Build, test and package macOS	2026-11-05T04:57:22.1701930Z    Compiling malloc_buf v0.0.6
+macos	Build, test and package macOS	2026-11-05T04:57:22.2199430Z    Compiling miniz_oxide v0.8.9
+macos	Build, test and package macOS	2026-11-05T04:57:22.2301950Z    Compiling fdeflate v0.3.7
+macos	Build, test and package macOS	2026-11-05T04:57:22.5106330Z    Compiling foldhash v0.1.5
+macos	Build, test and package macOS	2026-11-05T04:57:22.5936440Z    Compiling equivalent v1.0.3
+macos	Build, test and package macOS	2026-11-05T04:57:22.6325620Z    Compiling allocator-api2 v0.2.21
+macos	Build, test and package macOS	2026-11-05T04:57:22.6756910Z    Compiling bitflags v1.3.2
+macos	Build, test and package macOS	2026-11-05T04:57:22.7134240Z    Compiling miniquad v0.4.11
+macos	Build, test and package macOS	2026-11-05T04:57:22.8376990Z    Compiling objc2-core-audio v0.3.2
+macos	Build, test and package macOS	2026-11-05T04:57:22.8516020Z    Compiling hashbrown v0.15.5
+macos	Build, test and package macOS	2026-11-05T04:57:22.8557510Z    Compiling png v0.17.16
+macos	Build, test and package macOS	2026-11-05T04:57:22.9763840Z    Compiling objc2-audio-toolbox v0.3.2
+macos	Build, test and package macOS	2026-11-05T04:57:23.3544850Z    Compiling objc-rs v0.2.8
+macos	Build, test and package macOS	2026-11-05T04:57:23.5097360Z    Compiling ttf-parser v0.25.1
+macos	Build, test and package macOS	2026-11-05T04:57:23.5232870Z    Compiling color_quant v1.1.0
+macos	Build, test and package macOS	2026-11-05T04:57:23.5604140Z    Compiling bytemuck v1.25.2
+macos	Build, test and package macOS	2026-11-05T04:57:23.6219000Z    Compiling cpal v0.18.2
+macos	Build, test and package macOS	2026-11-05T04:57:23.7165140Z    Compiling image v0.24.9
+macos	Build, test and package macOS	2026-11-05T04:57:24.7803600Z    Compiling fontdue v0.9.5
+macos	Build, test and package macOS	2026-11-05T04:57:25.0979440Z    Compiling coreaudio-rs v0.14.2
+macos	Build, test and package macOS	2026-11-05T04:57:25.1311090Z    Compiling ogg v0.8.0
+macos	Build, test and package macOS	2026-11-05T04:57:25.3540660Z    Compiling quad-rand v0.2.3
+macos	Build, test and package macOS	2026-11-05T04:57:25.4297740Z    Compiling mach2 v0.6.0
+macos	Build, test and package macOS	2026-11-05T04:57:25.6498430Z    Compiling dasp_sample v0.11.0
+macos	Build, test and package macOS	2026-11-05T04:57:25.7602130Z    Compiling battleblocks v0.1.1 (/Users/runner/work/battleblocks/battleblocks)
+macos	Build, test and package macOS	2026-11-05T04:57:25.7930310Z    Compiling macroquad_macro v0.1.8
+macos	Build, test and package macOS	2026-11-05T04:57:25.8930920Z    Compiling tinyvec v1.13.3
+macos	Build, test and package macOS	2026-11-05T04:57:26.0299640Z    Compiling glam v0.27.0
+macos	Build, test and package macOS	2026-11-05T04:57:26.1148940Z    Compiling lewton v0.10.2
+macos	Build, test and package macOS	2026-11-05T04:57:27.4479510Z    Compiling macroquad v0.4.16
+macos	Build, test and package macOS	2026-11-05T04:57:37.4553880Z     Finished `test` profile [unoptimized + debuginfo] target(s) in 20.84s
+macos	Build, test and package macOS	2026-11-05T04:57:37.4700760Z      Running unittests src/bin/balance_probe.rs (target/debug/deps/balance_probe-322257614296cfc1)
+macos	Build, test and package macOS	2026-11-05T04:57:37.4734130Z 
+macos	Build, test and package macOS	2026-11-05T04:57:37.4735040Z running 93 tests
+macos	Build, test and package macOS	2026-11-05T04:57:37.4738800Z test board::gravity::fall_tests::falling_motion_tracks_survivors_and_refill ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.4839530Z test board::hint_tests::no_match_board_has_no_hints_unless_prepared ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.4940590Z test board::passive_tests::column_swap_moves_all_rows_and_rejects_without_mutation ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.5041270Z test board::passive_tests::diagonal_swap_only_for_elf_and_preserves_match_rules ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.5363170Z test board::passive_tests::all_role_options_are_legal_unique_and_match_playability ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.5464030Z test content::abilities::tests::displayed_phase_identities_drive_costs_cap_payment_and_live_status ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.5565940Z test content::abilities::tests::upgrades_replace_identity_while_new_powers_keep_inherited_passives ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.5666640Z test content::awakening_tests::awakened_buffs_costs_and_caps_use_the_actual_shared_rules ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.5788710Z test content::awakening_tests::awakened_flesh_casting_rounds_up_and_requires_survival ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.5920910Z test content::awakening_tests::awakened_flesh_preview_matches_payment_effect_targets_and_caps ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.6021680Z test content::awakening_tests::awakened_guard_heals_its_new_cap_and_preserves_tile_consumption ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.6122480Z test content::awakening_tests::every_role_triggers_exactly_at_its_line_and_survives_a_lethal_hit ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.6223400Z test content::awakening_tests::imp_strength_moves_from_blast_to_rewarded_clears_in_both_phases ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.6324130Z test content::awakening_tests::loot_boost_applies_only_to_its_first_clear_and_mana_still_caps ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.6425520Z test content::awakening_tests::payment_can_awaken_before_healing_and_boost_that_same_skill ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.6526650Z test content::awakening_tests::phase_health_changes_reach_actual_caps_without_changing_costs_or_preview_state ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.6627310Z test content::awakening_tests::previews_simulate_opponent_awakening_and_subsequent_damage_without_mutation ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.6729160Z test content::awakening_tests::reduced_reserves_cover_each_roles_largest_skill ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.6729890Z test content::awakening_tests::same_role_has_independent_flags_and_reset_is_a_plain_snapshot_restore ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.6830940Z test content::awakening_tests::tuned_enemy_caps_match_real_hits_for_every_target_and_phase ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.6932190Z test content::awakening_tests::wizard_full_mana_heals_normally_and_checks_phase_cap_before_clear ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7033560Z test content::awakening_tests::wizard_reserve_caps_skill_and_swap_rewards_in_both_phases ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7134630Z test content::cooldown_tests::cooldown_counts_only_owner_turns_and_zero_is_unlimited ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7235760Z test content::deadlock_tests::deadlock_respects_role_moves_and_preparation ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7336880Z test content::deadlock_tests::skill_escape_checks_effects_caps_and_blood_before_heal ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7361850Z test content::fire_elf_tests::copied_ember_blast_does_not_grant_the_fire_elfs_sleep_recovery ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7365690Z test content::fire_elf_tests::copied_ember_blast_does_not_hijack_the_priests_other_skill_payments ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7366410Z test content::fire_elf_tests::copied_ember_blast_uses_the_casters_cap_and_makes_the_caster_sleep ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7367130Z test content::fire_elf_tests::ember_blast_is_one_full_board_destroy_and_scales_with_mana ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7367790Z test content::fire_elf_tests::ember_blast_requires_full_mana_then_spends_everything ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7368380Z test content::fire_elf_tests::fire_elf_identity_and_loadout_replace_the_autoplay_wizard_slot ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7369020Z test content::fire_elf_tests::mana_affinity_converts_two_non_mana_tiles_without_creating_a_match ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7369660Z test content::fire_elf_tests::mana_affinity_does_not_touch_mana_tiles_or_force_a_match ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7370270Z test content::fire_elf_tests::sleep_is_inserted_after_the_cast_turn_and_consumed_after_the_skip ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7371140Z test content::fire_elf_tests::sleep_recovers_at_turn_end_and_sound_sleep_improves_it ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7371690Z test content::fire_elf_tests::sound_sleep_reduces_incoming_damage_while_asleep ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7372320Z test content::keyword_tests::keywords_are_configured_and_percentage_triggers_floor_after_aggregation ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7372920Z test board::hint_tests::hints_cover_every_legal_input_without_changing_state ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7373500Z test content::move_preview_tests::previews_use_role_exchange_rules_rewards_caps_and_bonus ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7374120Z test content::move_preview_tests::every_hint_has_pure_preview_including_prepared_swaps ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7374720Z test content::move_preview_tests::ranked_moves_sort_by_total_then_heal_damage_mana ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7375350Z test content::new_role_integration_tests::autoplay_roster_keeps_new_knight_and_unlocks_third_slots ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7376070Z test content::new_role_integration_tests::copied_skill_uses_native_cost_and_end_turn_rule_but_slot_cooldown_is_one ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7377000Z test content::new_role_integration_tests::dwarf_reach_tracks_current_health_and_jump_and_preserves_rejected_targets ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7377850Z test content::new_role_integration_tests::dwarf_swap_immunity_tracks_each_cleared_tiles_row_and_preserves_other_rewards ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7378920Z test content::new_role_integration_tests::hammer_is_normal_elimination_plus_eighty_and_preview_never_draws_randomness ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7379670Z test content::new_role_integration_tests::priest_previews_are_pure_and_obey_capacity_costs_and_resource_caps ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7380400Z test content::new_role_integration_tests::strength_and_horizontal_awakened_bonus_are_exact_and_do_not_leak_to_cascades ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7381150Z test content::nun_tests::automatic_recovery_converted_by_madness_reports_madness_as_immediate_source ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7381810Z test content::nun_tests::automatic_recovery_restores_mana_to_cap_and_converts_its_ten_healing ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7382420Z test content::nun_tests::awakening_keeps_friendship_and_reason_only_disables_madness ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7383060Z test content::nun_tests::conversion_preserves_causal_chain_but_changes_immediate_source_for_dwarf ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7383710Z test content::nun_tests::frenzy_changes_rewards_without_arming_board_or_adding_legal_moves ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7384410Z test content::nun_tests::friendship_uses_raw_healing_even_when_full_and_frenzy_changes_only_opponent_healing ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7385160Z test content::nun_tests::healing_prayer_counts_each_side_maximum_and_friendship_adds_a_second_enemy_heal ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7385790Z test content::nun_tests::ordinary_match_healing_runs_through_friendship_settlement ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7386370Z test content::nun_tests::preview_is_pure_and_matches_direct_healing_and_conversion ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7386950Z test content::nun_tests::two_nuns_do_not_retrigger_friendship_from_received_healing ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7387570Z test content::passive_status_tests::badges_follow_health_thresholds_and_real_payment_capacity ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7388210Z test content::passive_tests::blood_preview_is_pure_accounts_for_cost_caps_and_targets ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7388780Z test content::passive_tests::clear_passives_have_exact_rewards_and_thresholds ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7389350Z test content::passive_tests::passive_skill_preview_matches_manual_first_wave_with_caps ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7391150Z test content::passive_tests::payment_requires_surviving_before_any_heal ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7391790Z test content::preview_tests::charge_target_preview_is_positive_and_matches_selected_columns ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7392430Z test content::preview_tests::guard_consumes_pure_healing_only_without_additional_rewards ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7393130Z test content::preview_tests::healing_and_damage_obey_caps ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7393590Z test content::preview_tests::lightning_shows_cost_and_actual_mana ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7394060Z test content::preview_tests::target_ranges_cover_every_target ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7394620Z test content::preview_tests::transformations_count_first_matches_and_preview_is_pure ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7395350Z test content::reward_tests::cascades_are_bounded_and_first_wave_is_linear ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7396140Z test content::rework_tests::charge_destroys_two_columns_and_triggers_only_attack_and_mana ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7396880Z test content::rework_tests::every_hero_has_a_character_file_and_the_four_have_full_voice_lines ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7397510Z test content::rework_tests::fatigue_starts_after_twelve_rounds_and_shortens_grindy_games ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7398520Z test content::rework_tests::might_is_shared_and_column_swaps_carry_the_knight_identity ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7399130Z test content::rework_tests::miracle_no_longer_penalises_the_turn_and_forces_one_move ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7399720Z test content::rework_tests::no_cooldown_repeat_casts_raise_mana_cost_and_reset_each_turn ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7400330Z test content::status::tests::owner_turn_countdown_and_consumed_preparations_are_independent ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7400840Z test content::tests::all_heroes_can_pay_their_skills ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7401440Z test content::tests::clear_shapes_and_rewards_match_skill_rules ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7401880Z test content::tests::corrupt_and_nature_change_board ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7402280Z test content::tests::effects_are_unique_and_in_bounds ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7402690Z test content::tests::knight_charge_and_guard_rules ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7403090Z test content::tests::selected_targets_and_new_combos ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7403560Z test rng::tests::restore_reproduces_refill ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7406500Z test role_state::tests::conversion_mode_is_snapshot_owned_and_expires_at_turn_end ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7407070Z test role_state::tests::force_swap_obeys_caster_movement_and_is_transactional ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7407610Z test role_state::tests::new_cooldowns_share_config_and_restore_with_snapshots ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7408140Z test role_state::tests::pocket_capacity_and_selection_follow_actual_contents ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7408930Z test role_state::tests::resurrection_inserts_and_destroys_bottom_without_tile_rewards ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7409450Z test strategy::tests::ai_cannot_spend_unavailable_mana ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7409940Z test board::refresh_tests::refreshed_boards_are_match_free_and_playable_for_actor ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7410320Z test strategy::tests::ai_only_chooses_legal_moves ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7686720Z test content::move_preview_tests::ranked_moves_keep_every_hint_with_its_pure_preview ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7687180Z 
+macos	Build, test and package macOS	2026-11-05T04:57:37.7687580Z test result: ok. 93 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.30s
+macos	Build, test and package macOS	2026-11-05T04:57:37.7687970Z 
+macos	Build, test and package macOS	2026-11-05T04:57:37.7688900Z      Running unittests src/main.rs (target/debug/deps/battleblocks-628bad184c84c35f)
+macos	Build, test and package macOS	2026-11-05T04:57:37.7741040Z 
+macos	Build, test and package macOS	2026-11-05T04:57:37.7745980Z running 171 tests
+macos	Build, test and package macOS	2026-11-05T04:57:37.7755210Z test app::selection::tests::groups_cover_every_hero_once_with_complete_assets_and_descriptions ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7862550Z test app::selection::tests::explicit_cross_group_opponents_and_mirrors_survive_restart ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.7963400Z test app::selection::tests::console_edits_and_rollback_reveal_the_actual_hero_on_return ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.8064090Z test app::selection::tests::switching_groups_resets_only_that_pages_selection_and_preview ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.8171620Z test audio::native::tests::malformed_effect_is_rejected ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.8272270Z test audio::native::tests::native_output_stream_effect_pause_resume ... ignored, Requires a real audio output device
+macos	Build, test and package macOS	2026-11-05T04:57:37.8372540Z test audio::native::tests::effect_is_finite_and_has_expected_duration ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.8473140Z test audio::native::tests::ring_capacity_and_stereo_order_are_bounded ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.8573880Z test board::gravity::fall_tests::falling_motion_tracks_survivors_and_refill ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.8691910Z test app::selection::tests::random_battle_and_restart_follow_opponent_group_for_every_player ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.8803330Z test board::hint_tests::no_match_board_has_no_hints_unless_prepared ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.8876720Z test board::hint_tests::hints_cover_every_legal_input_without_changing_state ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.8877370Z test board::passive_tests::column_swap_moves_all_rows_and_rejects_without_mutation ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.8877850Z test board::passive_tests::diagonal_swap_only_for_elf_and_preserves_match_rules ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.8878310Z test board::passive_tests::all_role_options_are_legal_unique_and_match_playability ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.8879530Z test content::abilities::tests::displayed_phase_identities_drive_costs_cap_payment_and_live_status ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.8880110Z test content::abilities::tests::upgrades_replace_identity_while_new_powers_keep_inherited_passives ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.8880660Z test content::awakening_tests::awakened_buffs_costs_and_caps_use_the_actual_shared_rules ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.8983370Z test content::awakening_tests::awakened_flesh_casting_rounds_up_and_requires_survival ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.8983920Z test content::awakening_tests::awakened_flesh_preview_matches_payment_effect_targets_and_caps ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.9084680Z test content::awakening_tests::awakened_guard_heals_its_new_cap_and_preserves_tile_consumption ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.9185420Z test content::awakening_tests::every_role_triggers_exactly_at_its_line_and_survives_a_lethal_hit ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.9286140Z test content::awakening_tests::imp_strength_moves_from_blast_to_rewarded_clears_in_both_phases ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.9386840Z test content::awakening_tests::loot_boost_applies_only_to_its_first_clear_and_mana_still_caps ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.9487490Z test content::awakening_tests::payment_can_awaken_before_healing_and_boost_that_same_skill ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.9588240Z test content::awakening_tests::phase_health_changes_reach_actual_caps_without_changing_costs_or_preview_state ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.9689020Z test content::awakening_tests::previews_simulate_opponent_awakening_and_subsequent_damage_without_mutation ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.9789670Z test content::awakening_tests::reduced_reserves_cover_each_roles_largest_skill ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:37.9890390Z test content::awakening_tests::same_role_has_independent_flags_and_reset_is_a_plain_snapshot_restore ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.0024910Z test content::awakening_tests::tuned_enemy_caps_match_real_hits_for_every_target_and_phase ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.0125630Z test content::awakening_tests::wizard_full_mana_heals_normally_and_checks_phase_cap_before_clear ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.0265930Z test content::awakening_tests::wizard_reserve_caps_skill_and_swap_rewards_in_both_phases ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.0385260Z test content::cooldown_tests::cooldown_counts_only_owner_turns_and_zero_is_unlimited ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.0485980Z test content::deadlock_tests::deadlock_respects_role_moves_and_preparation ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.0594320Z test content::deadlock_tests::skill_escape_checks_effects_caps_and_blood_before_heal ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.0694990Z test content::fire_elf_tests::copied_ember_blast_does_not_grant_the_fire_elfs_sleep_recovery ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.0795640Z test content::fire_elf_tests::copied_ember_blast_does_not_hijack_the_priests_other_skill_payments ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.0896340Z test content::fire_elf_tests::copied_ember_blast_uses_the_casters_cap_and_makes_the_caster_sleep ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.0997580Z test content::fire_elf_tests::ember_blast_is_one_full_board_destroy_and_scales_with_mana ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.1099780Z test content::fire_elf_tests::ember_blast_requires_full_mana_then_spends_everything ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.1203440Z test content::fire_elf_tests::fire_elf_identity_and_loadout_replace_the_autoplay_wizard_slot ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.1307790Z test content::fire_elf_tests::mana_affinity_converts_two_non_mana_tiles_without_creating_a_match ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.1409050Z test content::fire_elf_tests::mana_affinity_does_not_touch_mana_tiles_or_force_a_match ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.1510470Z test content::fire_elf_tests::sleep_is_inserted_after_the_cast_turn_and_consumed_after_the_skip ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.1612270Z test content::fire_elf_tests::sleep_recovers_at_turn_end_and_sound_sleep_improves_it ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.1713720Z test content::fire_elf_tests::sound_sleep_reduces_incoming_damage_while_asleep ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.1815330Z test content::keyword_tests::keywords_are_configured_and_percentage_triggers_floor_after_aggregation ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.1916290Z test content::move_preview_tests::every_hint_has_pure_preview_including_prepared_swaps ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.2017220Z test content::move_preview_tests::previews_use_role_exchange_rules_rewards_caps_and_bonus ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.2118040Z test board::refresh_tests::refreshed_boards_are_match_free_and_playable_for_actor ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.2219300Z test content::move_preview_tests::ranked_moves_sort_by_total_then_heal_damage_mana ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.2320820Z test content::new_role_integration_tests::autoplay_roster_keeps_new_knight_and_unlocks_third_slots ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.2422020Z test content::new_role_integration_tests::copied_skill_uses_native_cost_and_end_turn_rule_but_slot_cooldown_is_one ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.2523140Z test content::new_role_integration_tests::dwarf_reach_tracks_current_health_and_jump_and_preserves_rejected_targets ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.2624060Z test content::new_role_integration_tests::dwarf_swap_immunity_tracks_each_cleared_tiles_row_and_preserves_other_rewards ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.2725060Z test content::new_role_integration_tests::hammer_is_normal_elimination_plus_eighty_and_preview_never_draws_randomness ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.2826130Z test content::new_role_integration_tests::priest_previews_are_pure_and_obey_capacity_costs_and_resource_caps ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.2946430Z test content::new_role_integration_tests::strength_and_horizontal_awakened_bonus_are_exact_and_do_not_leak_to_cascades ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.3051490Z test content::nun_tests::automatic_recovery_converted_by_madness_reports_madness_as_immediate_source ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.3152300Z test content::nun_tests::automatic_recovery_restores_mana_to_cap_and_converts_its_ten_healing ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.3260590Z test content::nun_tests::awakening_keeps_friendship_and_reason_only_disables_madness ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.3363010Z test content::nun_tests::conversion_preserves_causal_chain_but_changes_immediate_source_for_dwarf ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.3463970Z test content::nun_tests::frenzy_changes_rewards_without_arming_board_or_adding_legal_moves ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.3564830Z test content::nun_tests::friendship_uses_raw_healing_even_when_full_and_frenzy_changes_only_opponent_healing ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.3665780Z test content::nun_tests::healing_prayer_counts_each_side_maximum_and_friendship_adds_a_second_enemy_heal ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.3766930Z test content::nun_tests::ordinary_match_healing_runs_through_friendship_settlement ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.3867630Z test content::nun_tests::preview_is_pure_and_matches_direct_healing_and_conversion ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.4000000Z test content::nun_tests::two_nuns_do_not_retrigger_friendship_from_received_healing ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.4100920Z test content::passive_status_tests::badges_follow_health_thresholds_and_real_payment_capacity ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.4201870Z test content::passive_tests::blood_preview_is_pure_accounts_for_cost_caps_and_targets ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.4303120Z test content::passive_tests::clear_passives_have_exact_rewards_and_thresholds ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.4403890Z test content::passive_tests::passive_skill_preview_matches_manual_first_wave_with_caps ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.4504730Z test content::passive_tests::payment_requires_surviving_before_any_heal ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.4607590Z test content::preview_tests::charge_target_preview_is_positive_and_matches_selected_columns ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.4708820Z test content::preview_tests::guard_consumes_pure_healing_only_without_additional_rewards ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.4809400Z test content::preview_tests::healing_and_damage_obey_caps ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.4909910Z test content::preview_tests::lightning_shows_cost_and_actual_mana ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.5010220Z test content::preview_tests::target_ranges_cover_every_target ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.5147000Z test content::preview_tests::transformations_count_first_matches_and_preview_is_pure ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.5247830Z test content::reward_tests::cascades_are_bounded_and_first_wave_is_linear ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.5348860Z test content::rework_tests::charge_destroys_two_columns_and_triggers_only_attack_and_mana ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.5449930Z test content::rework_tests::every_hero_has_a_character_file_and_the_four_have_full_voice_lines ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.5558130Z test content::rework_tests::fatigue_starts_after_twelve_rounds_and_shortens_grindy_games ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.5659330Z test content::rework_tests::might_is_shared_and_column_swaps_carry_the_knight_identity ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.5760030Z test content::rework_tests::miracle_no_longer_penalises_the_turn_and_forces_one_move ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.5860660Z test content::rework_tests::no_cooldown_repeat_casts_raise_mana_cost_and_reset_each_turn ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.5974420Z test content::status::tests::owner_turn_countdown_and_consumed_preparations_are_independent ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.6075140Z test content::tests::all_heroes_can_pay_their_skills ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.6176220Z test content::tests::clear_shapes_and_rewards_match_skill_rules ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.6300350Z test content::tests::corrupt_and_nature_change_board ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.6400870Z test content::tests::effects_are_unique_and_in_bounds ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.6501350Z test content::tests::knight_charge_and_guard_rules ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.6601810Z test content::tests::selected_targets_and_new_combos ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.6711530Z test debug::tests::board_load_requires_64_valid_tiles ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.6812040Z test debug::tests::command_validation ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.6912760Z test debug::tests::console_language_follows_the_game_until_fixed ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.7018150Z test debug::tests::console_names_events_in_chinese_but_keeps_log_identifiers ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.7118730Z test debug::tests::every_parse_error_has_both_languages ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.7219390Z test debug::tests::help_switches_language_and_keeps_the_same_sections ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.7319940Z test debug::tests::json_escapes_control_characters ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.7421640Z test debug::tests::lang_command_and_errors_are_specific ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.7549990Z test debug::tests::undo_latest_retains_earlier_checkpoints ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.7670970Z test debug::tests::undo_player_removes_enemy_actions_and_debug_edits ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.7771570Z test debug::tests::wrapped_rows_stay_within_the_limit_and_keep_the_text ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.7872180Z test audio::native::tests::original_music_rewinds_without_changing_opening_samples ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.7972820Z test effects::ember_blast::tests::blast_waits_for_real_clear_and_can_finish_after_a_lethal_hit ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.8075080Z test content::move_preview_tests::ranked_moves_keep_every_hint_with_its_pure_preview ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.8153480Z test effects::hammer_smash::tests::every_two_by_two_landing_stays_on_board_and_uses_one_frame ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.8255640Z test effects::hammer_smash::tests::original_tile_pieces_exist_only_after_impact_and_stay_on_board ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.8356830Z test effects::heavy_landing::tests::dust_starts_only_after_feet_land_and_layers_stay_in_their_panels ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.8462830Z test effects::hammer_smash::tests::baked_atlas_matches_runtime_layout_and_ends_empty ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.8583800Z test effects::heavy_landing::tests::landing_atlas_has_two_transparent_ending_layers ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.8704630Z test effects::nun_heal::tests::heal_variants_follow_settled_conversions_caps_and_actor_side ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.8805280Z test effects::wizard_spells::tests::actor_waits_with_both_spells_and_recovers_from_the_actual_clear ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.8906150Z test effects::wizard_spells::tests::expanded_spell_atlases_hit_and_end_transparent ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.9007060Z test effects::ember_blast::tests::blast_peak_covers_every_corner_and_sleep_frames_remain_visible ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.9107840Z test effects::wizard_spells::tests::wave_clears_inner_tiles_before_outer_tiles_and_waits_before_falling ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.9208790Z test graphics::wrapping_tests::measured_wrapping_uses_width_instead_of_character_count ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.9309880Z test headless::evaluation::tests::validates_jobs_without_truncating_u64_or_clamping_levels ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.9411560Z test presentation::awakening_animation_tests::awakening_shrinks_refills_normalizes_and_blocks_resolution ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.9512430Z test presentation::awakening_animation_tests::visual_windup_and_removal_wave_delay_only_the_motion_clock ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.9613480Z test presentation::awakening_animation_tests::wizard_unlock_animation_keeps_mana_and_other_side_independent ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.9714440Z test presentation::tests::animation_covers_every_parallel_pair_and_rollback_clears_it ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.9815110Z test presentation::tests::charge_sweep_clears_only_selected_columns_in_order ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:38.9915890Z test presentation::tests::health_popups_keep_the_current_source_for_each_side ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.0016790Z test presentation::tests::motion_finishes_without_resetting_health_feedback ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.0117570Z test presentation::tests::refill_animation_accepts_horizontal_and_off_board_origins ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.0218170Z test rng::tests::restore_reproduces_refill ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.0318780Z test role_state::tests::conversion_mode_is_snapshot_owned_and_expires_at_turn_end ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.0443680Z test role_state::tests::force_swap_obeys_caster_movement_and_is_transactional ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.0544310Z test role_state::tests::new_cooldowns_share_config_and_restore_with_snapshots ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.0644990Z test role_state::tests::pocket_capacity_and_selection_follow_actual_contents ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.0745790Z test role_state::tests::resurrection_inserts_and_destroys_bottom_without_tile_rewards ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.0866340Z test sprites::animation::tests::idle_wraps_but_sleep_restarts_only_after_leaving_sleep ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.0970290Z test sprites::animation::tests::one_pose_sequence_aligns_to_different_impacts_without_stretching_recovery ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.1071070Z test sprites::animation::tests::one_shots_cover_all_poses_and_hold_the_last_at_and_after_the_end ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.1171770Z test sprites::nun_visual_tests::nun_appearance_follows_permanent_and_temporary_effects ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.1273600Z test strategy::tests::ai_cannot_spend_unavailable_mana ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.1374380Z test headless::evaluation::tests::step_limit_is_not_a_draw ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.1475040Z test tests::ability_descriptions_leave_line_breaks_to_the_layout ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.1575920Z test tests::action_metadata_preserves_legacy_fallback_and_fire_elf_sleep ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.1677110Z test tests::awakening_page_previews_the_awakened_active ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.1778840Z test tests::bent_three_do_not_match ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.1879380Z test tests::character_file_is_the_fourth_and_final_selection_page ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.1979960Z test tests::english_wrapping_keeps_words_whole_while_cjk_still_wraps_by_character ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.2080800Z test strategy::tests::ai_only_chooses_legal_moves ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.2181380Z test tests::global_skills_cast_directly_even_when_paid_with_health ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.2281880Z test tests::gravity_preserves_survivor_order ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.2385180Z test effects::nun_heal::tests::atlases_have_two_layers_and_transparent_endings ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.2486230Z test tests::help_tabs_share_the_panel_width_without_leaving_it ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.2595630Z test tests::hint_clicks_hit_rows_on_the_shown_page_and_board_badges ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.2696320Z test tests::illegal_swap_restores_board ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.2796750Z test tests::legal_swap_creates_a_line ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.2905270Z test tests::every_character_webp_decodes_with_its_original_atlas_dimensions ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.3005790Z test tests::no_initial_match ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.4410140Z test tests::nuns_shadow_lantern_keeps_its_purple_identity_after_quantization ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.4510730Z test tests::pause_difficulty_line_stays_between_the_title_and_buttons ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.4610790Z test tests::raster_sizes_stay_bounded_while_visual_size_is_preserved ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.4711590Z test tests::selecting_same_skill_cancels_and_different_skill_switches ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.4812080Z test tests::selection_scroll_keeps_rows_inside_their_viewport ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.4912480Z test tests::selection_tabs_fit_above_each_list_without_overlapping_other_controls ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.5012850Z test tests::sidebar_labels_are_short_and_localized ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.5114030Z test tests::skill_cards_adapt_to_the_wrapped_description_height ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.5216600Z test tests::skill_cards_leave_the_pocket_strip_its_own_row ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.5317540Z test tests::skill_preview_shows_the_hero_when_no_tile_changes ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.5425140Z test tests::status_strip_owns_the_row_above_the_skill_cards ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.5526080Z test tests::straight_and_cross_deduplicate ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.5627110Z test turns::tests::next_turn_keeps_the_last_turn_that_did_something ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:39.5728150Z test turns::tests::turns_describe_actions_and_only_nonzero_results ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:43.3259450Z test tests::headless_autoplay_finishes_and_replays_the_same_seed ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.8578810Z test tests::new_role_atlases_have_twelve_distinct_poses_per_action_and_shared_palettes ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.8579220Z 
+macos	Build, test and package macOS	2026-11-05T04:57:47.8579440Z test result: ok. 170 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 10.08s
+macos	Build, test and package macOS	2026-11-05T04:57:47.8579750Z 
+macos	Build, test and package macOS	2026-11-05T04:57:47.8596950Z      Running unittests src/bin/match_probe.rs (target/debug/deps/match_probe-d36f50826728c3ac)
+macos	Build, test and package macOS	2026-11-05T04:57:47.8624410Z 
+macos	Build, test and package macOS	2026-11-05T04:57:47.8625340Z running 93 tests
+macos	Build, test and package macOS	2026-11-05T04:57:47.8628960Z test board::gravity::fall_tests::falling_motion_tracks_survivors_and_refill ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.8729760Z test board::hint_tests::no_match_board_has_no_hints_unless_prepared ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.8829910Z test board::passive_tests::column_swap_moves_all_rows_and_rejects_without_mutation ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.8930620Z test board::passive_tests::diagonal_swap_only_for_elf_and_preserves_match_rules ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9235870Z test board::passive_tests::all_role_options_are_legal_unique_and_match_playability ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9336590Z test content::abilities::tests::displayed_phase_identities_drive_costs_cap_payment_and_live_status ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9441740Z test content::abilities::tests::upgrades_replace_identity_while_new_powers_keep_inherited_passives ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9542790Z test content::awakening_tests::awakened_buffs_costs_and_caps_use_the_actual_shared_rules ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9643430Z test content::awakening_tests::awakened_flesh_casting_rounds_up_and_requires_survival ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9657360Z test content::awakening_tests::awakened_flesh_preview_matches_payment_effect_targets_and_caps ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9658440Z test content::awakening_tests::awakened_guard_heals_its_new_cap_and_preserves_tile_consumption ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9659000Z test content::awakening_tests::every_role_triggers_exactly_at_its_line_and_survives_a_lethal_hit ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9659540Z test content::awakening_tests::imp_strength_moves_from_blast_to_rewarded_clears_in_both_phases ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9660060Z test content::awakening_tests::loot_boost_applies_only_to_its_first_clear_and_mana_still_caps ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9660570Z test content::awakening_tests::payment_can_awaken_before_healing_and_boost_that_same_skill ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9661140Z test content::awakening_tests::phase_health_changes_reach_actual_caps_without_changing_costs_or_preview_state ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9661750Z test content::awakening_tests::previews_simulate_opponent_awakening_and_subsequent_damage_without_mutation ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9662270Z test content::awakening_tests::reduced_reserves_cover_each_roles_largest_skill ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9663130Z test content::awakening_tests::same_role_has_independent_flags_and_reset_is_a_plain_snapshot_restore ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9663660Z test content::awakening_tests::tuned_enemy_caps_match_real_hits_for_every_target_and_phase ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9664180Z test content::awakening_tests::wizard_full_mana_heals_normally_and_checks_phase_cap_before_clear ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9664700Z test content::awakening_tests::wizard_reserve_caps_skill_and_swap_rewards_in_both_phases ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9665180Z test content::cooldown_tests::cooldown_counts_only_owner_turns_and_zero_is_unlimited ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9665640Z test content::deadlock_tests::deadlock_respects_role_moves_and_preparation ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9666080Z test content::deadlock_tests::skill_escape_checks_effects_caps_and_blood_before_heal ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9666570Z test content::fire_elf_tests::copied_ember_blast_does_not_grant_the_fire_elfs_sleep_recovery ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9667100Z test content::fire_elf_tests::copied_ember_blast_does_not_hijack_the_priests_other_skill_payments ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9667630Z test content::fire_elf_tests::copied_ember_blast_uses_the_casters_cap_and_makes_the_caster_sleep ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9668140Z test content::fire_elf_tests::ember_blast_is_one_full_board_destroy_and_scales_with_mana ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9668610Z test content::fire_elf_tests::ember_blast_requires_full_mana_then_spends_everything ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9669090Z test content::fire_elf_tests::fire_elf_identity_and_loadout_replace_the_autoplay_wizard_slot ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9669610Z test content::fire_elf_tests::mana_affinity_converts_two_non_mana_tiles_without_creating_a_match ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9670120Z test content::fire_elf_tests::mana_affinity_does_not_touch_mana_tiles_or_force_a_match ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9670610Z test content::fire_elf_tests::sleep_is_inserted_after_the_cast_turn_and_consumed_after_the_skip ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9671110Z test content::fire_elf_tests::sleep_recovers_at_turn_end_and_sound_sleep_improves_it ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9671560Z test content::fire_elf_tests::sound_sleep_reduces_incoming_damage_while_asleep ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9672060Z test content::keyword_tests::keywords_are_configured_and_percentage_triggers_floor_after_aggregation ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9672580Z test content::move_preview_tests::every_hint_has_pure_preview_including_prepared_swaps ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9673070Z test content::move_preview_tests::previews_use_role_exchange_rules_rewards_caps_and_bonus ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9673710Z test board::hint_tests::hints_cover_every_legal_input_without_changing_state ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9674150Z test content::move_preview_tests::ranked_moves_sort_by_total_then_heal_damage_mana ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9674660Z test content::new_role_integration_tests::autoplay_roster_keeps_new_knight_and_unlocks_third_slots ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9675250Z test content::new_role_integration_tests::copied_skill_uses_native_cost_and_end_turn_rule_but_slot_cooldown_is_one ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9675890Z test content::new_role_integration_tests::dwarf_reach_tracks_current_health_and_jump_and_preserves_rejected_targets ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9676530Z test content::new_role_integration_tests::dwarf_swap_immunity_tracks_each_cleared_tiles_row_and_preserves_other_rewards ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9677190Z test content::new_role_integration_tests::hammer_is_normal_elimination_plus_eighty_and_preview_never_draws_randomness ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9684540Z test content::new_role_integration_tests::priest_previews_are_pure_and_obey_capacity_costs_and_resource_caps ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9685180Z test content::new_role_integration_tests::strength_and_horizontal_awakened_bonus_are_exact_and_do_not_leak_to_cascades ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9685790Z test content::nun_tests::automatic_recovery_converted_by_madness_reports_madness_as_immediate_source ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9686330Z test content::nun_tests::automatic_recovery_restores_mana_to_cap_and_converts_its_ten_healing ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9687070Z test content::nun_tests::awakening_keeps_friendship_and_reason_only_disables_madness ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9687710Z test content::nun_tests::conversion_preserves_causal_chain_but_changes_immediate_source_for_dwarf ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9688240Z test content::nun_tests::frenzy_changes_rewards_without_arming_board_or_adding_legal_moves ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9688790Z test content::nun_tests::friendship_uses_raw_healing_even_when_full_and_frenzy_changes_only_opponent_healing ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9689390Z test content::nun_tests::healing_prayer_counts_each_side_maximum_and_friendship_adds_a_second_enemy_heal ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9689910Z test content::nun_tests::ordinary_match_healing_runs_through_friendship_settlement ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9690380Z test content::nun_tests::preview_is_pure_and_matches_direct_healing_and_conversion ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9690830Z test content::nun_tests::two_nuns_do_not_retrigger_friendship_from_received_healing ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9691330Z test content::passive_status_tests::badges_follow_health_thresholds_and_real_payment_capacity ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9691840Z test content::passive_tests::blood_preview_is_pure_accounts_for_cost_caps_and_targets ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9692300Z test content::passive_tests::clear_passives_have_exact_rewards_and_thresholds ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:47.9908810Z test content::passive_tests::passive_skill_preview_matches_manual_first_wave_with_caps ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0023730Z test content::passive_tests::payment_requires_surviving_before_any_heal ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0138720Z test content::preview_tests::charge_target_preview_is_positive_and_matches_selected_columns ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0240610Z test content::preview_tests::guard_consumes_pure_healing_only_without_additional_rewards ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0358910Z test content::preview_tests::healing_and_damage_obey_caps ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0422310Z test content::preview_tests::lightning_shows_cost_and_actual_mana ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0422890Z test content::preview_tests::target_ranges_cover_every_target ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0423450Z test content::preview_tests::transformations_count_first_matches_and_preview_is_pure ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0424030Z test content::reward_tests::cascades_are_bounded_and_first_wave_is_linear ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0424620Z test content::rework_tests::charge_destroys_two_columns_and_triggers_only_attack_and_mana ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0425990Z test content::rework_tests::every_hero_has_a_character_file_and_the_four_have_full_voice_lines ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0426660Z test content::rework_tests::fatigue_starts_after_twelve_rounds_and_shortens_grindy_games ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0427280Z test content::rework_tests::might_is_shared_and_column_swaps_carry_the_knight_identity ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0427900Z test content::rework_tests::miracle_no_longer_penalises_the_turn_and_forces_one_move ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0428520Z test content::rework_tests::no_cooldown_repeat_casts_raise_mana_cost_and_reset_each_turn ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0429160Z test content::status::tests::owner_turn_countdown_and_consumed_preparations_are_independent ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0429710Z test content::tests::all_heroes_can_pay_their_skills ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0430180Z test content::tests::clear_shapes_and_rewards_match_skill_rules ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0430650Z test content::tests::corrupt_and_nature_change_board ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0431100Z test content::tests::effects_are_unique_and_in_bounds ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0431540Z test content::tests::knight_charge_and_guard_rules ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0431960Z test content::tests::selected_targets_and_new_combos ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0432380Z test rng::tests::restore_reproduces_refill ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0432870Z test role_state::tests::conversion_mode_is_snapshot_owned_and_expires_at_turn_end ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0433700Z test role_state::tests::force_swap_obeys_caster_movement_and_is_transactional ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0434270Z test role_state::tests::new_cooldowns_share_config_and_restore_with_snapshots ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0434840Z test role_state::tests::pocket_capacity_and_selection_follow_actual_contents ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0435430Z test role_state::tests::resurrection_inserts_and_destroys_bottom_without_tile_rewards ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0435970Z test strategy::tests::ai_cannot_spend_unavailable_mana ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.0436490Z test board::refresh_tests::refreshed_boards_are_match_free_and_playable_for_actor ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.1251520Z test strategy::tests::ai_only_chooses_legal_moves ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.1558890Z test content::move_preview_tests::ranked_moves_keep_every_hint_with_its_pure_preview ... ok
+macos	Build, test and package macOS	2026-11-05T04:57:48.1559240Z 
+macos	Build, test and package macOS	2026-11-05T04:57:48.1559450Z test result: ok. 93 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.29s
+macos	Build, test and package macOS	2026-11-05T04:57:48.1559750Z 
+macos	Build, test and package macOS	2026-11-05T04:57:48.1560670Z      Running unittests src/bin/memory_probe.rs (target/debug/deps/memory_probe-ca07e9f76a281923)
+macos	Build, test and package macOS	2026-11-05T04:57:48.1602180Z 
+macos	Build, test and package macOS	2026-11-05T04:57:48.1602700Z running 0 tests
+macos	Build, test and package macOS	2026-11-05T04:57:48.1602820Z 
+macos	Build, test and package macOS	2026-11-05T04:57:48.1603040Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+macos	Build, test and package macOS	2026-11-05T04:57:48.1603320Z 
+macos	Build, test and package macOS	2026-11-05T04:57:48.4292390Z ..................
+macos	Build, test and package macOS	2026-11-05T04:57:48.4392790Z ----------------------------------------------------------------------
+macos	Build, test and package macOS	2026-11-05T04:57:48.4493430Z Ran 18 tests in 0.175s
+macos	Build, test and package macOS	2026-11-05T04:57:48.4593780Z 
+macos	Build, test and package macOS	2026-11-05T04:57:48.4694310Z OK
+macos	Build, test and package macOS	2026-11-05T04:57:48.5338780Z    Compiling objc2 v0.6.5
+macos	Build, test and package macOS	2026-11-05T04:57:48.5339140Z    Compiling libc v0.2.191
+macos	Build, test and package macOS	2026-11-05T04:57:48.5339340Z    Compiling objc2-encode v4.1.0
+macos	Build, test and package macOS	2026-11-05T04:57:48.6698740Z    Compiling bitflags v2.13.2
+macos	Build, test and package macOS	2026-11-05T04:57:48.8634550Z    Compiling simd-adler32 v0.3.10
+macos	Build, test and package macOS	2026-11-05T04:57:48.9494460Z    Compiling crc32fast v1.5.3
+macos	Build, test and package macOS	2026-11-05T04:57:49.1016200Z    Compiling libm v0.2.16
+macos	Build, test and package macOS	2026-11-05T04:57:49.2650550Z    Compiling adler2 v2.0.1
+macos	Build, test and package macOS	2026-11-05T04:57:49.3262200Z    Compiling cfg-if v1.0.5
+macos	Build, test and package macOS	2026-11-05T04:57:49.3710050Z    Compiling autocfg v1.5.1
+macos	Build, test and package macOS	2026-11-05T04:57:49.5587960Z    Compiling block2 v0.6.2
+macos	Build, test and package macOS	2026-11-05T04:57:49.6553120Z    Compiling dispatch2 v0.3.1
+macos	Build, test and package macOS	2026-11-05T04:57:49.7228290Z    Compiling num-traits v0.2.19
+macos	Build, test and package macOS	2026-11-05T04:57:49.8431730Z    Compiling objc2-foundation v0.3.2
+macos	Build, test and package macOS	2026-11-05T04:57:49.8895520Z    Compiling objc2-core-foundation v0.3.2
+macos	Build, test and package macOS	2026-11-05T04:57:50.2430120Z    Compiling objc2-core-audio-types v0.3.2
+macos	Build, test and package macOS	2026-11-05T04:57:50.3432800Z    Compiling miniz_oxide v0.9.1
+macos	Build, test and package macOS	2026-11-05T04:57:50.4335430Z    Compiling byteorder v1.5.0
+macos	Build, test and package macOS	2026-11-05T04:57:50.5566040Z    Compiling core_maths v0.1.1
+macos	Build, test and package macOS	2026-11-05T04:57:50.6090310Z    Compiling flate2 v1.1.10
+macos	Build, test and package macOS	2026-11-05T04:57:50.9718700Z    Compiling miniz_oxide v0.8.9
+macos	Build, test and package macOS	2026-11-05T04:57:51.0077930Z    Compiling malloc_buf v0.0.6
+macos	Build, test and package macOS	2026-11-05T04:57:51.0687080Z    Compiling fdeflate v0.3.7
+macos	Build, test and package macOS	2026-11-05T04:57:51.4031210Z    Compiling objc2-core-audio v0.3.2
+macos	Build, test and package macOS	2026-11-05T04:57:51.4146750Z    Compiling miniquad v0.4.11
+macos	Build, test and package macOS	2026-11-05T04:57:51.5456070Z    Compiling bitflags v1.3.2
+macos	Build, test and package macOS	2026-11-05T04:57:51.5545540Z    Compiling foldhash v0.1.5
+macos	Build, test and package macOS	2026-11-05T04:57:51.5820830Z    Compiling equivalent v1.0.3
+macos	Build, test and package macOS	2026-11-05T04:57:51.5998820Z    Compiling allocator-api2 v0.2.21
+macos	Build, test and package macOS	2026-11-05T04:57:51.6198400Z    Compiling png v0.17.16
+macos	Build, test and package macOS	2026-11-05T04:57:51.6514910Z    Compiling objc2-audio-toolbox v0.3.2
+macos	Build, test and package macOS	2026-11-05T04:57:51.7855780Z    Compiling hashbrown v0.15.5
+macos	Build, test and package macOS	2026-11-05T04:57:52.0191680Z    Compiling objc-rs v0.2.8
+macos	Build, test and package macOS	2026-11-05T04:57:52.2041810Z    Compiling ttf-parser v0.25.1
+macos	Build, test and package macOS	2026-11-05T04:57:52.4906440Z    Compiling cpal v0.18.2
+macos	Build, test and package macOS	2026-11-05T04:57:52.5614480Z    Compiling color_quant v1.1.0
+macos	Build, test and package macOS	2026-11-05T04:57:52.6340340Z    Compiling bytemuck v1.25.2
+macos	Build, test and package macOS	2026-11-05T04:57:52.7703160Z    Compiling image v0.24.9
+macos	Build, test and package macOS	2026-11-05T04:57:53.8060390Z    Compiling fontdue v0.9.5
+macos	Build, test and package macOS	2026-11-05T04:57:54.0806570Z    Compiling coreaudio-rs v0.14.2
+macos	Build, test and package macOS	2026-11-05T04:57:54.2154050Z    Compiling ogg v0.8.0
+macos	Build, test and package macOS	2026-11-05T04:57:54.4210450Z    Compiling quad-rand v0.2.3
+macos	Build, test and package macOS	2026-11-05T04:57:54.4892250Z    Compiling macroquad_macro v0.1.8
+macos	Build, test and package macOS	2026-11-05T04:57:54.6792360Z    Compiling tinyvec v1.13.3
+macos	Build, test and package macOS	2026-11-05T04:57:54.7296150Z    Compiling glam v0.27.0
+macos	Build, test and package macOS	2026-11-05T04:57:54.9108930Z    Compiling battleblocks v0.1.1 (/Users/runner/work/battleblocks/battleblocks)
+macos	Build, test and package macOS	2026-11-05T04:57:55.0751910Z    Compiling mach2 v0.6.0
+macos	Build, test and package macOS	2026-11-05T04:57:55.4283360Z    Compiling dasp_sample v0.11.0
+macos	Build, test and package macOS	2026-11-05T04:57:56.2503310Z    Compiling macroquad v0.4.16
+macos	Build, test and package macOS	2026-11-05T04:57:56.4427250Z    Compiling lewton v0.10.2
+macos	Build, test and package macOS	2026-11-05T04:58:17.3244280Z     Finished `release` profile [optimized] target(s) in 28.86s
+macos	Build, test and package macOS	2026-11-05T04:58:17.8809350Z {
+macos	Build, test and package macOS	2026-11-05T04:58:17.8813710Z   "macroquad": "0.4.16",
+macos	Build, test and package macOS	2026-11-05T04:58:17.8816970Z   "native_target": "aarch64-apple-darwin",
+macos	Build, test and package macOS	2026-11-05T04:58:17.8817280Z   "native_executable_bytes": 9591232,
+macos	Build, test and package macOS	2026-11-05T04:58:17.8817640Z   "native_package_bytes": 9985934,
+macos	Build, test and package macOS	2026-11-05T04:58:17.8817940Z   "native_zip_bytes": 8918003,
+macos	Build, test and package macOS	2026-11-05T04:58:17.8818150Z   "native_zip": "macos-arm64.zip"
+macos	Build, test and package macOS	2026-11-05T04:58:17.8818320Z }
+macos	Verify the canonical headless model	﻿2026-11-05T04:58:17.9001930Z ##[group]Run python tools/check_headless.py
+macos	Verify the canonical headless model	2026-11-05T04:58:17.9002210Z ^[[36;1mpython tools/check_headless.py^[[0m
+macos	Verify the canonical headless model	2026-11-05T04:58:17.9198800Z shell: /bin/bash -e {0}
+macos	Verify the canonical headless model	2026-11-05T04:58:17.9199020Z env:
+macos	Verify the canonical headless model	2026-11-05T04:58:17.9199270Z   pythonLocation: /Users/runner/hostedtoolcache/Python/3.12.10/arm64
+macos	Verify the canonical headless model	2026-11-05T04:58:17.9199680Z   PKG_CONFIG_PATH: /Users/runner/hostedtoolcache/Python/3.12.10/arm64/lib/pkgconfig
+macos	Verify the canonical headless model	2026-11-05T04:58:17.9200090Z   Python_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.12.10/arm64
+macos	Verify the canonical headless model	2026-11-05T04:58:17.9200530Z   Python2_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.12.10/arm64
+macos	Verify the canonical headless model	2026-11-05T04:58:17.9200930Z   Python3_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.12.10/arm64
+macos	Verify the canonical headless model	2026-11-05T04:58:17.9201240Z   BATTLEBLOCKS_BIN: target/release/battleblocks
+macos	Verify the canonical headless model	2026-11-05T04:58:17.9201490Z ##[endgroup]
+macos	Verify the canonical headless model	2026-11-05T04:58:18.4690200Z PASS: headless core generated 134 JSONL events across console edits, move, cast, rollback, AI turn and resolve; autoplay produced a four-column CSV for two matches
+macos	Run actions/upload-artifact@v6	﻿2026-11-05T04:58:18.4791640Z ##[group]Run actions/upload-artifact@v6
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:18.4791890Z with:
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:18.4792040Z   name: battleblocks-macos-review
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:18.4792290Z   path: dist/macos-*.zip
+macos	Run actions/upload-artifact@v6	dist/measurements.json
+macos	Run actions/upload-artifact@v6	
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:18.4792530Z   if-no-files-found: error
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:18.4792720Z   retention-days: 14
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:18.4792900Z   compression-level: 6
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:18.4793230Z   overwrite: false
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:18.4802070Z   include-hidden-files: false
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:18.4802280Z env:
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:18.4802560Z   pythonLocation: /Users/runner/hostedtoolcache/Python/3.12.10/arm64
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:18.4803150Z   PKG_CONFIG_PATH: /Users/runner/hostedtoolcache/Python/3.12.10/arm64/lib/pkgconfig
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:18.4803590Z   Python_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.12.10/arm64
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:18.4804150Z   Python2_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.12.10/arm64
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:18.4804530Z   Python3_ROOT_DIR: /Users/runner/hostedtoolcache/Python/3.12.10/arm64
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:18.4804890Z ##[endgroup]
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:18.6134280Z With the provided path, there will be 2 files uploaded
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:18.6136790Z Artifact name is valid!
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:18.6137090Z Root directory input is valid!
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:18.9928090Z Beginning upload of artifact content to blob storage
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:20.1920110Z Uploaded bytes 8388608
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:20.2887850Z Uploaded bytes 8841276
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:20.3648420Z Finished uploading artifact content to blob storage!
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:20.3649100Z SHA256 digest of uploaded artifact zip is 46bc3681cfa1c7520a6bce29b134ce0f6e0e1273ed7b336e3958d8891bb6cfb1
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:20.3649540Z Finalizing artifact upload
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:21.0032960Z Artifact battleblocks-macos-review.zip successfully finalized. Artifact ID 13389428787
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:21.0034180Z Artifact battleblocks-macos-review has been successfully uploaded! Final size is 8841276 bytes. Artifact ID is 13389428787
+macos	Run actions/upload-artifact@v6	2026-11-05T04:58:21.0034860Z Artifact download URL: https://github.com/zhouzhouyou/battleblocks/actions/runs/41970921353/artifacts/13389428787
+macos	Post Run actions/setup-python@v7	﻿2026-11-05T04:58:21.0105340Z Post job cleanup.
+macos	Post Run actions/checkout@v7	﻿2026-11-05T04:58:21.1178560Z Post job cleanup.
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.2006160Z [command]/opt/homebrew/bin/git version
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.2079350Z git version 2.56.0
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.2095270Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/e6f3b6a2-6111-4117-acc5-6541ca4c5f88/.gitconfig'
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.2102100Z Temporarily overriding HOME='/Users/runner/work/_temp/e6f3b6a2-6111-4117-acc5-6541ca4c5f88' before making global git config changes
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.2102940Z Adding repository directory to the temporary git global config as a safe directory
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.2105450Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/battleblocks/battleblocks
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.2157900Z Removing SSH command configuration
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.2162020Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.2221080Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.2906070Z Removing HTTP extra header
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.2909390Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.2964000Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.3673230Z Removing includeIf entries pointing to credentials config files
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.3678140Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.3725020Z includeif.gitdir:/Users/runner/work/battleblocks/battleblocks/.git.path
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.3825500Z includeif.gitdir:/Users/runner/work/battleblocks/battleblocks/.git/worktrees/*.path
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.3926380Z includeif.gitdir:/github/workspace/.git.path
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.4026780Z includeif.gitdir:/github/workspace/.git/worktrees/*.path
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.4093380Z [command]/opt/homebrew/bin/git config --local --get-all includeif.gitdir:/Users/runner/work/battleblocks/battleblocks/.git.path
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.4095190Z /Users/runner/work/_temp/git-credentials-1950577c-5de4-4730-9b0f-8eced3528dbb.config
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.4096710Z [command]/opt/homebrew/bin/git config --local --unset includeif.gitdir:/Users/runner/work/battleblocks/battleblocks/.git.path \/Users\/runner\/work\/_temp\/git\-credentials\-1950577c\-5de4\-4730\-9b0f\-8eced3528dbb\.config
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.4098260Z [command]/opt/homebrew/bin/git config --local --get-all includeif.gitdir:/Users/runner/work/battleblocks/battleblocks/.git/worktrees/*.path
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.4099010Z /Users/runner/work/_temp/git-credentials-1950577c-5de4-4730-9b0f-8eced3528dbb.config
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.4100400Z [command]/opt/homebrew/bin/git config --local --unset includeif.gitdir:/Users/runner/work/battleblocks/battleblocks/.git/worktrees/*.path \/Users\/runner\/work\/_temp\/git\-credentials\-1950577c\-5de4\-4730\-9b0f\-8eced3528dbb\.config
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.4101850Z [command]/opt/homebrew/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git.path
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.4102460Z /github/runner_temp/git-credentials-1950577c-5de4-4730-9b0f-8eced3528dbb.config
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.4103730Z [command]/opt/homebrew/bin/git config --local --unset includeif.gitdir:/github/workspace/.git.path \/github\/runner_temp\/git\-credentials\-1950577c\-5de4\-4730\-9b0f\-8eced3528dbb\.config
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.4147790Z [command]/opt/homebrew/bin/git config --local --get-all includeif.gitdir:/github/workspace/.git/worktrees/*.path
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.4198230Z /github/runner_temp/git-credentials-1950577c-5de4-4730-9b0f-8eced3528dbb.config
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.4202370Z [command]/opt/homebrew/bin/git config --local --unset includeif.gitdir:/github/workspace/.git/worktrees/*.path \/github\/runner_temp\/git\-credentials\-1950577c\-5de4\-4730\-9b0f\-8eced3528dbb\.config
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.4269510Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+macos	Post Run actions/checkout@v7	2026-11-05T04:58:21.4943150Z Removing credentials config '/Users/runner/work/_temp/git-credentials-1950577c-5de4-4730-9b0f-8eced3528dbb.config'
+macos	Complete job	﻿2026-11-05T04:58:21.5027790Z Cleaning up orphan processes

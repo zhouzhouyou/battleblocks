@@ -31,7 +31,7 @@
 
 `*-synchronization.webp` 是命中前1帧、命中帧、后1/6帧的完整游戏画面，供同时看人物与棋盘。帧匹配受60fps录制采样限制，不声称亚帧精度。终局胜利面板遮挡特效，故不作为像素同步测量；录像显示人物正常收势回待机，单位测试验证没有清除通知也不会卡住。回滚脚本断言完整快照等于施法前状态；选角首尾与脚线人工检查未见跳动。
 
-`capture.json` 中的 `git_head` 是录制时尚未提交改动的基线HEAD，不能当作新版源码提交；二进制SHA256才绑定实际录制文件：基线 `680ff9d5945784a2ef1e2af9eb811de2cb0d2f7c7e7f97f09d16cb2a79e2fdfd`，当前 `65eaecc5f8d81c839d40679ddd0645abb8e9f45254efa14bf7e9844f4a23bbea`。源码归属与交付提交见后续审查记录。
+`capture.json` 中的 `git_head` 是录制时尚未提交改动的基线HEAD，不能当作新版源码提交；二进制SHA256才绑定实际录制文件：基线 `680ff9d5945784a2ef1e2af9eb811de2cb0d2f7c7e7f97f09d16cb2a79e2fdfd`，当前 `65eaecc5f8d81c839d40679ddd0645abb8e9f45254efa14bf7e9844f4a23bbea`。实现提交为 `caff6becdf02a3217c224bda026d62864172ac74`，[source-binding.json](source-binding.json)记录源码／资产逐文件SHA256与该录制二进制哈希；后续证据文档提交不改变实现。
 
 ## 验证
 
@@ -39,4 +39,8 @@
 
 当前 `.build-tools/python-path.txt` 指定Python运行 `tools/build.py`：Rust356通过、1音频设备测试忽略；Python平衡测试18通过；Windows release、WASM、Windows zip和网页zip均生成。`tools/check_headless.py` 134事件及2局autoplay通过；`check_debug_console.py` 314事件、`check_new_roles.py` 196事件、`check_ability_events.py` 事件链和完整回滚均通过。实测网页WASM普通／觉醒选角页正常显示并播放，无浏览器warning/error。
 
-完整 `tools/prepare_assets.py` 重建通过，前后所有 assets 文件SHA256一致（变化0），其他五位角色图集未改变。macOS构建与独立审查结果在交付前补齐。待用户最终看：普通全身造型与旧半身像的差异、脸部浅色块与细密衣褶、觉醒差异是否足够明确、施法下压力度与循环节奏。角色介绍原文仍待补充，不影响已授权动画实现；主 Issue #11保留。
+完整 `tools/prepare_assets.py` 重建通过，前后所有 assets 文件SHA256一致（变化0），其他五位角色图集未改变。`cargo fmt --check` 与 `git diff --check` 通过。原始验证输出在 [validation/](validation/)。
+
+macOS arm64 在实现提交上运行 `tools/build.py --native-only` 和 `check_headless.py` 全部通过，[CI及下载产物](https://github.com/zhouzhouyou/battleblocks/actions/runs/41970921353)。已下载至本机 `dist/macos-review/macos-arm64.zip`；网页包 `dist/web.zip` 8,488,968字节，Windows包8,860,653字节，macOS包8,918,003字节。包内仅运行时资产与必要运行文件，设计源图和录像不进入包。macOS运行界面在本机Windows上未验证，已验证macOS构建及headless。
+
+独立审查结论在交付前追加。待用户最终看：普通全身造型与旧半身像的差异、脸部浅色块与细密衣褶、觉醒差异是否足够明确、施法下压力度与循环节奏。角色介绍原文仍待补充，不影响已授权动画实现；主 Issue #11保留。

@@ -1,0 +1,659 @@
+{
+  "implementation_commit": "caff6becdf02a3217c224bda026d62864172ac74",
+  "baseline_commit": "500673e2326acffb7ff0fbf971607f3c55ae2b53",
+  "capture_binary_sha256": "65eaecc5f8d81c839d40679ddd0645abb8e9f45254efa14bf7e9844f4a23bbea",
+  "source_files": [
+    {
+      "path": "Cargo.lock",
+      "sha256": "d0309a053501421abb0c8dddddd319cf3eb65b46cb7628691f612ce121b92560"
+    },
+    {
+      "path": "Cargo.toml",
+      "sha256": "ff0b73b860a69efd85844a5e029b9f581effb903e69418804750177734985406"
+    },
+    {
+      "path": "assets/FONT-LICENSE.txt",
+      "sha256": "7accca2f29220c9ab44e4950799b821f36ebf5bbe6b5fb5342724b32228a8daf"
+    },
+    {
+      "path": "assets/ability-loadouts.txt",
+      "sha256": "a6c3eb423c5b165d9df58469c26a760297c54dbded0716e1bb893e21c108ad04"
+    },
+    {
+      "path": "assets/awakened/chort-awakening.webp",
+      "sha256": "93883e90c0bdd0099118c2a20b7ee89ecd9c41394197c8a25051db61a5831d8d"
+    },
+    {
+      "path": "assets/awakened/elf-awakening.webp",
+      "sha256": "1fc525001aa67e708243204267346c42b2f124f763e848954f0f33c2832bd399"
+    },
+    {
+      "path": "assets/awakened/goblin-awakening.webp",
+      "sha256": "8c80ae5a3e884de36515ba75fe0147f5072acca9877b933cb54b90c9a2bf8122"
+    },
+    {
+      "path": "assets/awakened/imp-awakening.webp",
+      "sha256": "29f3fb604d63d88a30fa9cd09ddf4b181b62980b67ce4f374347ff62ce7459ed"
+    },
+    {
+      "path": "assets/awakened/knight-awakening.webp",
+      "sha256": "426922ccf62b7cc4b1377f2fc3dc4fac079c50c8f383cd49cb4e9424f0c23db1"
+    },
+    {
+      "path": "assets/awakened/wizard-awakening.webp",
+      "sha256": "f0bd55b6daeb189d07dc51d53f9cfa30e8e7498078e5c368bac69d53e836c9cc"
+    },
+    {
+      "path": "assets/awakened/zombie-awakening.webp",
+      "sha256": "f16f2b497cd55b68af438cbde9ff8941e7480f995e800f3695f0c016fefc9f76"
+    },
+    {
+      "path": "assets/balanced.webp",
+      "sha256": "c6da2f92b017ad1b7b27a6ae5ea426d56c8aa60fdfa5cbfe31ec04f193ea35ad"
+    },
+    {
+      "path": "assets/bgm.ogg",
+      "sha256": "609fe494f88eabeea00988635f92fbe073fab65444d06aaa6ec3e474d148d05f"
+    },
+    {
+      "path": "assets/big_demon_ro.json",
+      "sha256": "466a4045c01952132227553fda19b801441d8a12a24ff0e3c4a3229e8943456b"
+    },
+    {
+      "path": "assets/big_demon_ro.webp",
+      "sha256": "c1c3a935558d851e786679e7579f97606be7e547d55c7b3b85c81387fb74e8b6"
+    },
+    {
+      "path": "assets/big_zombie.json",
+      "sha256": "56bc517396088d9c1caffd88e59d47b794d9c9dc0b2642d7e837bc6507e0e546"
+    },
+    {
+      "path": "assets/big_zombie.webp",
+      "sha256": "a7d6aa0e74231fd116a6e69b0a50e30c4fd995671939ae26688ff46b8918f7e1"
+    },
+    {
+      "path": "assets/chort.json",
+      "sha256": "08c30fe31cb4ce5b391adca70df36879645f5898d29add618b39d5abd39e05da"
+    },
+    {
+      "path": "assets/chort.webp",
+      "sha256": "b9e8219a60a5a32e52bc176d9c9f793a3fd9abeb046cdf9311adce65ec4fd040"
+    },
+    {
+      "path": "assets/crush.wav",
+      "sha256": "bde2cc2844e65e5db3f01751cd49296830d5c1f9df41ec875a07cb9827fc4360"
+    },
+    {
+      "path": "assets/damage.webp",
+      "sha256": "967498ed64301d1f2ab1b162e62775c7b02e896c72fa26864c0266121277fa91"
+    },
+    {
+      "path": "assets/defeat.webp",
+      "sha256": "a4ec5461f46e85b12ea968054f640c5509a30872cd77b86178dcf33914ac2a6a"
+    },
+    {
+      "path": "assets/dm.webp",
+      "sha256": "57a40bdf37f1e9fdf68c06cf0d78e917bd71d10872d895dad3d557481d53ce98"
+    },
+    {
+      "path": "assets/effects/ember-blast.webp",
+      "sha256": "17466d9f8160bcd73a691c6b21d5a15f04970dbd55ba6a60d91346cfb8111025"
+    },
+    {
+      "path": "assets/effects/hammer-smash.webp",
+      "sha256": "3e85b7a816840a3729329e81799d36bea114b502073011b6774163c26c2fbb91"
+    },
+    {
+      "path": "assets/effects/heavy-landing.webp",
+      "sha256": "181c420c065ddef8868457a2425d13aea54888ce2d7637a7fc47485c5437f675"
+    },
+    {
+      "path": "assets/effects/nun-heal-damage.webp",
+      "sha256": "f1c14876c4dd3892e3a4feec157f5ac2e3adac637d63eadbe1ca1ac97efadd89"
+    },
+    {
+      "path": "assets/effects/nun-heal-normal.webp",
+      "sha256": "0c62a61a46ea283b51653f60ec2400acaa1817fa40fdef87d68c616303feab21"
+    },
+    {
+      "path": "assets/effects/sleep-zzz.webp",
+      "sha256": "d3bdce19055bdb760e62415c83f7d09bfc7919a5598d16d7f09d979d693c07c7"
+    },
+    {
+      "path": "assets/effects/wizard-lightning.webp",
+      "sha256": "134ab81b7141226bc2bd68194c7760dc16a181e7aa31272d494e92c5ce2f58cf"
+    },
+    {
+      "path": "assets/effects/wizard-meteor.webp",
+      "sha256": "c592f39453f9cf32036f0ccf29dd09bfe8299eca78f483b6bfa84fb0a370dab2"
+    },
+    {
+      "path": "assets/elf.json",
+      "sha256": "a90af706467c3f779344bdbaeed8f4f412e3875d43d3cb5d5499fc431e6c75fd"
+    },
+    {
+      "path": "assets/elf.webp",
+      "sha256": "909c1e3f1f9e1fed80ebb935b480aa35c9a4ca60990fff92d2768cb16fbffbaf"
+    },
+    {
+      "path": "assets/goblin.json",
+      "sha256": "14392eb1489785e4ed180915c6a3767cccefbcf224fdaf2cc8d6cda5a180200e"
+    },
+    {
+      "path": "assets/goblin.webp",
+      "sha256": "7ae05f203b699ac2a4c86564e99279c25e31e2a705ca5a2c2f94f9b04189bf59"
+    },
+    {
+      "path": "assets/hd.webp",
+      "sha256": "d082895a04a5ca8e349c9ba4ebf22350bc58107a016d6e80d52cfdfc9dbab73d"
+    },
+    {
+      "path": "assets/hero-thumbnails.webp",
+      "sha256": "ce3a07816ed8284d34277390cde27e175eec97a6ab4437f5886d8de909bb682b"
+    },
+    {
+      "path": "assets/heroes.txt",
+      "sha256": "a918fad5d8b875a76c594f8e5d4b7a1706314cd59d717affbb6df48fc370314e"
+    },
+    {
+      "path": "assets/hm.webp",
+      "sha256": "9c87a2fd48eb30201ded272625287c22bd74819876fc6bc5d166a0fa9b95599e"
+    },
+    {
+      "path": "assets/hp.webp",
+      "sha256": "5f5be77ead3acb6df48b4774b0ebaef092c95679392778115aa791d65e27808e"
+    },
+    {
+      "path": "assets/imp.json",
+      "sha256": "239f767f326bda8afd191bff264a2b64546e370c88d71e378d595993360a2aaa"
+    },
+    {
+      "path": "assets/imp.webp",
+      "sha256": "368cc3b16dd6ef45440fc56e4ab01d0a3af921423cda96e3d5dcf797b47e1795"
+    },
+    {
+      "path": "assets/knight.json",
+      "sha256": "44d336625e5ca8434780cc860eca9837f9b870e92340dcb2b137494126ee989e"
+    },
+    {
+      "path": "assets/knight.webp",
+      "sha256": "017870411cfaba10f6794af037f9b23c064f17c0ecad0cf75cb4d5a99b8c20de"
+    },
+    {
+      "path": "assets/localization.tsv",
+      "sha256": "4ee73fd717e3b4cee1b91b4b852536a3d6d8ac5bfee7a530bde98634e46f2a33"
+    },
+    {
+      "path": "assets/mp.webp",
+      "sha256": "bd8b225d4b5446acb17c7988a0bb3a8a740ddb694ad3cfa131b0abb170816764"
+    },
+    {
+      "path": "assets/report.json",
+      "sha256": "27580ab999e9c4d9d26d37dda6540d4cbd37e423650c7dff890f148e4a2a0f23"
+    },
+    {
+      "path": "assets/role-lore.txt",
+      "sha256": "181aeafa9b6c6d0d9cffd1be578ad4ff6ffd38b685c63adad3c6ff05b0ccab0b"
+    },
+    {
+      "path": "assets/role-text.txt",
+      "sha256": "40d460289b04de09810a963023780e1d8be48fa52f3a796640c22c1348705668"
+    },
+    {
+      "path": "assets/roles/book-bottom.webp",
+      "sha256": "727ee2743d901d876af037d0d3813d1a9d046ee79f467013d279ca1303d62b9c"
+    },
+    {
+      "path": "assets/roles/book-cover.webp",
+      "sha256": "5916b2c406dd4c1a31dccf83128c11453d406f6e3723cf4741953f9ce05fdaf5"
+    },
+    {
+      "path": "assets/roles/book-pages.webp",
+      "sha256": "b458b872c2a7e2de7633521279eace27dfdba1a18b5f6120e10743f9d67b3bc1"
+    },
+    {
+      "path": "assets/roles/dwarf.webp",
+      "sha256": "c4d45f2c74abb78e71629ae3369443a8bf20a34c1d1daae87d6eb62539a65e3c"
+    },
+    {
+      "path": "assets/roles/fire-elf.webp",
+      "sha256": "3bf4a418213c5d55cbb7ea5c7f95f8224b6d32c37724a1d3be41c56e2b05364a"
+    },
+    {
+      "path": "assets/roles/grudge-book.webp",
+      "sha256": "083128e571b77bab2856533fa3689739d88e80d2eff24db0414630d7edb1101c"
+    },
+    {
+      "path": "assets/roles/knight.webp",
+      "sha256": "b7bcd005019123aea2b5a81918060ae9fecc6f50dfded0a6df78e31002a78be2"
+    },
+    {
+      "path": "assets/roles/nun-standee-awake.webp",
+      "sha256": "e4bec9bbe47577835539f3ade96c9b52d629735ee856e5d1dd0d62027f747240"
+    },
+    {
+      "path": "assets/roles/nun-standee-normal.webp",
+      "sha256": "6bc55da219b88972986c77aaad44b47f3534edfd57ee9a5926f1bb8fe0815a7d"
+    },
+    {
+      "path": "assets/roles/nun.webp",
+      "sha256": "a1af842d2d941977f059f047df9f39e41df5a2b9993447ad39ed41cce8dfea4f"
+    },
+    {
+      "path": "assets/roles/priest.webp",
+      "sha256": "4cfb72457cecd31249a8643b5370210d68405f8484e22d99f8d0608bde588595"
+    },
+    {
+      "path": "assets/roles/report.json",
+      "sha256": "7c868ce36828a0135f629ade723f9808642f366e2f2e4ee46510842562aaa4f6"
+    },
+    {
+      "path": "assets/roles/wizard.webp",
+      "sha256": "1d944214bbf5bfcff0d8f17f23790807ae4194cdf48c2efda14299dee9d74863"
+    },
+    {
+      "path": "assets/skills.txt",
+      "sha256": "139549f1360cef0a64fd1f60ee048f0704a1cd8e3ce09a2e215f19edb7d3f7eb"
+    },
+    {
+      "path": "assets/wizzard.json",
+      "sha256": "e1f81efbf9b5868babc31a16c3541444c712852dc7f81c57698adfdb63cffa2e"
+    },
+    {
+      "path": "assets/wizzard.webp",
+      "sha256": "e11a425ca2ecad9b974bfef2ccd27619736639a500fade0ac4879991a30c3f72"
+    },
+    {
+      "path": "build.rs",
+      "sha256": "1663ff063c8b06944640d0fbde9c8ba40cbe384907e693d81871c89dd301af4a"
+    },
+    {
+      "path": "src/abilities.rs",
+      "sha256": "7d2348cf9c77230b6cdc8671296730231543996973c159ad873fc1f1b18e078d"
+    },
+    {
+      "path": "src/app/actions.rs",
+      "sha256": "abd912834021863adf4c5a7d7f2452d3c65c81e92e876811dd16e6b3ace8041f"
+    },
+    {
+      "path": "src/app/combat.rs",
+      "sha256": "78e7d55f33a12590cd15eed33c1e3f3309dcda5999eae5bda691c96cf635b947"
+    },
+    {
+      "path": "src/app/console.rs",
+      "sha256": "fc27ce6addbfb3df3bb64215764cbf2559d271235711b6eafd35eacf74d2ff85"
+    },
+    {
+      "path": "src/app/controls.rs",
+      "sha256": "75ea42d07b938cfa1a64a2dbddff2ca7b4ba6bc33f284f1e5d232199b39498e2"
+    },
+    {
+      "path": "src/app/exchange.rs",
+      "sha256": "2c6b4b6da5542389e425bd60851f9b7fdd4bbf32f76e9fa87d268e0a201a9af7"
+    },
+    {
+      "path": "src/app/headless.rs",
+      "sha256": "1022a98d5e363da3a1fa1649b6ee62dba320b7e34c1bf591b015baecab2a49e4"
+    },
+    {
+      "path": "src/app/lifecycle.rs",
+      "sha256": "2d757e8d9f143988574fa44155e656abd164942c075a92bbf97325eaf7324357"
+    },
+    {
+      "path": "src/app/mod.rs",
+      "sha256": "99b467f3062a81195a079494a55040faa3df331295e0356f4165240127d5264f"
+    },
+    {
+      "path": "src/app/resolution.rs",
+      "sha256": "cf6cc79702deafb0cdeaaa3ac055fd6cf10decd0c07b28d001c32761a291c4f8"
+    },
+    {
+      "path": "src/app/selection.rs",
+      "sha256": "333e226c52b0c5c0b819ebc279d43ab8f71540c8d0c8d187dab8d5ed5759089b"
+    },
+    {
+      "path": "src/app/selection/tests.rs",
+      "sha256": "8fed3c18b4d19895cafc3d3c037115d0cbbdb4afbd7708910756fd8e568dc06a"
+    },
+    {
+      "path": "src/app/turn.rs",
+      "sha256": "07de3d71241345fe7ffb3a8c08412e9adc05dde8ed28244c2b4b5430b60a01f9"
+    },
+    {
+      "path": "src/app/view/battlefield.rs",
+      "sha256": "fda2d595f51596adde36b0f93c3d65ea4721889803b278e1735f97856d260164"
+    },
+    {
+      "path": "src/app/view/hints.rs",
+      "sha256": "b01c8529ea716fad3703b28d0fc8239e78632370b52ea571a843cf088e0c3436"
+    },
+    {
+      "path": "src/app/view/hud.rs",
+      "sha256": "88afd4d588126911f05e505d49883981f8c9924428e01f75780dfc44af70dbbf"
+    },
+    {
+      "path": "src/app/view/mod.rs",
+      "sha256": "8fe2b3713aa05c520a4ee79d8822f211f595d79cf9796eba0e1cc351a8cebca8"
+    },
+    {
+      "path": "src/app/view/overlays.rs",
+      "sha256": "18c8c767081c93ccbfad72cd476a5b750a44558d2ff7b852c409d09f50d9b66e"
+    },
+    {
+      "path": "src/app/view/skills.rs",
+      "sha256": "055ed04b06a4a76d54a5711901e1845dda6f1ad42ceb04681202bfb0a24a3061"
+    },
+    {
+      "path": "src/audio.rs",
+      "sha256": "3ffb27e3b947724c138453e130eae6e9b508f85a779f07ed720944a089277b70"
+    },
+    {
+      "path": "src/audio/native.rs",
+      "sha256": "a94a793895c922abc4bcc8ad0666fc11418e92c0cace5b852e064d95c0fc329d"
+    },
+    {
+      "path": "src/audio/web.js",
+      "sha256": "0ae4a2ba0930439e68684d52fbe413baf4d0e69266c93bfff067e54a355c396a"
+    },
+    {
+      "path": "src/bin/balance_probe.rs",
+      "sha256": "9c55668e88c02e78433888e22e6a98a876253d32522f48063924879276b47d12"
+    },
+    {
+      "path": "src/bin/match_probe.rs",
+      "sha256": "81462a8d2178c629205da32574979f07e686d94accd2f87f03f4eb691aeefabe"
+    },
+    {
+      "path": "src/bin/memory_probe.rs",
+      "sha256": "dd95b41a7cda00297f6ad7cfafa7c4d80e735ed4288181ab1904d6c07d2082df"
+    },
+    {
+      "path": "src/board.rs",
+      "sha256": "6512353b4939c19c7fccdee78c3d9a74daf72c2413ef30ff9978d13be4274575"
+    },
+    {
+      "path": "src/board/gravity.rs",
+      "sha256": "86e58f4e2ed45a89ff25b8104c3d763c89105e3d9d40cd12ad1a25caf92bb3f4"
+    },
+    {
+      "path": "src/content.rs",
+      "sha256": "d26eaab34911519af8ef5dfb52bda0620dcc2198b89bbe3745b68139f29d1513"
+    },
+    {
+      "path": "src/content/definitions.rs",
+      "sha256": "0e65e1f5bc63bc3bfb22d538299670cf78fab0269ce053038baac2e43fc3b513"
+    },
+    {
+      "path": "src/content/effects.rs",
+      "sha256": "24e9a27b47d7161edf3e3e3e120e14fd47f7d65a2c43dd098c4d7a971443c4eb"
+    },
+    {
+      "path": "src/content/events.rs",
+      "sha256": "4ffae2848f6d66c3532a37df1e0933256c30cb1a7c9e9172c2a62fba71a40c6c"
+    },
+    {
+      "path": "src/content/handlers/active.rs",
+      "sha256": "b422dcf7549f60a11a7fe34f8fa862436c2bd42553f8a8d22502958319057b42"
+    },
+    {
+      "path": "src/content/handlers/active_ai.rs",
+      "sha256": "d32fd7af22d8fa0548eb2c207990f38fe271c96a33e6c77f2791733ef179287e"
+    },
+    {
+      "path": "src/content/handlers/dwarf.rs",
+      "sha256": "235e2e6baf3bfeca6d0189625b4a0f6ef0248d284f0962900a7ea90ed5d5db83"
+    },
+    {
+      "path": "src/content/handlers/fire_elf.rs",
+      "sha256": "1e652938b204f1ac35ce51ec4f2c91fae091124521e4a433a11b047cfecde174"
+    },
+    {
+      "path": "src/content/handlers/knight.rs",
+      "sha256": "0e4eb9760ea229f384527c60ce995db1a587cb7a43410592b99b58209d3238b5"
+    },
+    {
+      "path": "src/content/handlers/legacy.rs",
+      "sha256": "2f04f541e9ccf6e12fec6f336b9a4bd27d9975344e70aeb11efef8111de1f70b"
+    },
+    {
+      "path": "src/content/handlers/mod.rs",
+      "sha256": "983c71e1f4ed0e36d71d198b78a6dacda981e18e1ede68f698d4eab824df50dc"
+    },
+    {
+      "path": "src/content/handlers/nun.rs",
+      "sha256": "5ea78f4abac397ae858c1ed05d040583cdb72002592fcf24458d1f3a5964875b"
+    },
+    {
+      "path": "src/content/handlers/priest.rs",
+      "sha256": "0744b46eb368d8b3750bce60f4b0e0719ae6ac9c4f02b15561fd8d6509f108b8"
+    },
+    {
+      "path": "src/content/handlers/statuses.rs",
+      "sha256": "c418b31409fd9a7f454fa68e7f1b6bbcacf7e2ff177c9145799f9d9eb8ec6210"
+    },
+    {
+      "path": "src/content/health.rs",
+      "sha256": "b62ffcae964c35ea1621a3bf67e361281fd52fa2e62229db290f92ba7869f516"
+    },
+    {
+      "path": "src/content/lore.rs",
+      "sha256": "2dc2518619d22af8b95636d86c5dbea5def8bfd94aee45a86957991441aa6309"
+    },
+    {
+      "path": "src/content/movement.rs",
+      "sha256": "425668b0f12fe0a85d5ed7495dc0e78fcbdd0fcb356f1d34a4af3f1d41d97cc7"
+    },
+    {
+      "path": "src/content/previews.rs",
+      "sha256": "e1f6464115dacefd2aeb92fc9c7b2e6d785428c719e52133efe9547e367b9e11"
+    },
+    {
+      "path": "src/content/rewards.rs",
+      "sha256": "42f578192218b848d37367f52199a9f5254dc6a2381f40cc4bc0a3ceebcf5cf0"
+    },
+    {
+      "path": "src/content/roster.rs",
+      "sha256": "9dcbd89ccd47534bf6114fd5623e64344d55d875ff28b67c7b59f48716a0a281"
+    },
+    {
+      "path": "src/content/skills/dwarf.rs",
+      "sha256": "919aae95b624a4263b25032faf21ed097c641e43e62f811eb1149b3b4f2e0d23"
+    },
+    {
+      "path": "src/content/skills/fire_elf.rs",
+      "sha256": "f7918c5e2a78334ca05a6f49cac5772156ba99dda805d0fcf19d923aad82710a"
+    },
+    {
+      "path": "src/content/skills/knight.rs",
+      "sha256": "3d4958b8f8ee93c84874dbbb9bbbb73e1342b2baae4a445cf55a66f3933b5906"
+    },
+    {
+      "path": "src/content/skills/legacy.rs",
+      "sha256": "6967ea8514b189a28a06da2e078b3b75ec0609a6eccaf80c68332a59b3027724"
+    },
+    {
+      "path": "src/content/skills/nun.rs",
+      "sha256": "e516e3675fb96c8dc62185672817b9372e58cc9646bc56e0f8dc60157a9503a4"
+    },
+    {
+      "path": "src/content/skills/priest.rs",
+      "sha256": "5226ee83fbe9a506a8a3a94c5b334e0507e918fe314520ab9b1ce9f645e0810b"
+    },
+    {
+      "path": "src/content/status.rs",
+      "sha256": "c5020c1ee4ebd10231281b816f4a2ff305d04597ff0a266d294ca18e237f65cb"
+    },
+    {
+      "path": "src/content/tests/awakening_tests.rs",
+      "sha256": "8c740af72920e715b651a484ec86c6e7c10e32aef600ca84ffb1fa9a76b72044"
+    },
+    {
+      "path": "src/content/tests/cooldown_tests.rs",
+      "sha256": "83472a638b9a819728419f3863daa6722b6deba08c7d0c1972319828f51848d7"
+    },
+    {
+      "path": "src/content/tests/deadlock_tests.rs",
+      "sha256": "2fee7f8dcd15d19229bfe65752d401ea0e1651b1835debdf55b3cfcf80fb4e37"
+    },
+    {
+      "path": "src/content/tests/fire_elf_tests.rs",
+      "sha256": "6ce30df5e644424ecc63da4bb05ac711aaf8451bcd7c9d6917d997925372b032"
+    },
+    {
+      "path": "src/content/tests/keyword_tests.rs",
+      "sha256": "b72797e314269b3be72a46a8479c4d2190c751c7f38b65da500f94e69023e5f1"
+    },
+    {
+      "path": "src/content/tests/move_preview_tests.rs",
+      "sha256": "0f99b48214e7e78582af2751d933877aed24c30c10e42efbef321ddef829cc95"
+    },
+    {
+      "path": "src/content/tests/new_role_integration_tests.rs",
+      "sha256": "9113631ed8a8a704f00bd04795337a0399273028f85c9fd478c3033fdb8f27d7"
+    },
+    {
+      "path": "src/content/tests/nun_tests.rs",
+      "sha256": "e5570fa096c2ac359eea3b5974fbc09f5c0e986563be3032fd45c0cd72dd4fa5"
+    },
+    {
+      "path": "src/content/tests/passive_status_tests.rs",
+      "sha256": "cfe2ae8d581bf63ddef7823e0428507def24107145e95cb45b6f757362cb0043"
+    },
+    {
+      "path": "src/content/tests/passive_tests.rs",
+      "sha256": "b3ced0d9afbac5501b7927249ed6ae629f8108cc10925aa20d4cb18fd9228794"
+    },
+    {
+      "path": "src/content/tests/preview_tests.rs",
+      "sha256": "74be9936fc1a2a98d98c79d8f40283cace79cecef05856ae3fbb14e28a87314b"
+    },
+    {
+      "path": "src/content/tests/reward_tests.rs",
+      "sha256": "2d3b00c6e05b0922055876724a986ce65f95127bc0d0e84dfee91a4a52371944"
+    },
+    {
+      "path": "src/content/tests/rework_tests.rs",
+      "sha256": "825e100f2e19ef0060d1f2888a94a47b5922053ac742fe0bed5c5a49074db859"
+    },
+    {
+      "path": "src/content/tests/tests.rs",
+      "sha256": "a95e8f58be26db30f778094e519475ff5c9baf6ed90c6f16f934f82709cbb0df"
+    },
+    {
+      "path": "src/debug.rs",
+      "sha256": "d2cc8e125e46bd939d144e5f29712e4410b4b27950066b79c7e6eccd46f7bff1"
+    },
+    {
+      "path": "src/debug/commands.rs",
+      "sha256": "bbcd874bb8c1e3dde7fffb880c00513c1513cd3edecadd0525de7e8076fb7b41"
+    },
+    {
+      "path": "src/debug/snapshot.rs",
+      "sha256": "37e53b2255d104681791088b1b0e4f725207cad0c67a37865297a500eedfaa3f"
+    },
+    {
+      "path": "src/debug/tests.rs",
+      "sha256": "257090c7b9d5165148f7659856fba28d1a23f29427ddd473df729f9d6f15c327"
+    },
+    {
+      "path": "src/effects.rs",
+      "sha256": "4a26222151749035059adb37963c1956120c15b89c5478949895439c695cd0c3"
+    },
+    {
+      "path": "src/effects/ember_blast.rs",
+      "sha256": "0f16f4f010639f4d78458f67a03db463e6603e6d8ad21d01cd09b5ca764de3d3"
+    },
+    {
+      "path": "src/effects/hammer_smash.rs",
+      "sha256": "6f9a7ac3f8a63599c9c29d6101a9a4306cc928f4361895e3f28fb3d0d0e71c8a"
+    },
+    {
+      "path": "src/effects/heavy_landing.rs",
+      "sha256": "6279a450230215c12541ca311cce00b1f0f2e10864c57978b771e48103aad60d"
+    },
+    {
+      "path": "src/effects/impact_clock.rs",
+      "sha256": "e97c12bd575c6e244e8f1857ea32f6f07814021efe6efae29f1914c716b6abc5"
+    },
+    {
+      "path": "src/effects/landing_motion.rs",
+      "sha256": "d7fa7193201650d0895cb9c5e0d455745b2b823bc56759febccf220c5e790ec7"
+    },
+    {
+      "path": "src/effects/nun_heal.rs",
+      "sha256": "cfbbd00b014786fc294db3acca0c6c4fca04cc3b63269e828a804413f317e920"
+    },
+    {
+      "path": "src/effects/wizard_spells.rs",
+      "sha256": "b61afdf57d24c43fc38f0dba39b10e36606ef0781cef67c2d9291c95ebb8a69c"
+    },
+    {
+      "path": "src/effects/wizard_timing.rs",
+      "sha256": "f1d1b736494bf2c437fbbeb2799adad71957a29aa22c27ce0e43938dd02c5db5"
+    },
+    {
+      "path": "src/graphics.rs",
+      "sha256": "446eaf1fc011caef9a87d1064c5045595fcd4e1ec802d803a96e22f69ace46f5"
+    },
+    {
+      "path": "src/headless.rs",
+      "sha256": "47653ff62973672f2817154aaaab2c3327197611d0233697ae7b97994a96993b"
+    },
+    {
+      "path": "src/headless/evaluation.rs",
+      "sha256": "3e07aed5247a3b2ee680ce0b5975cd3e3494f2b69fb650adfd2f96fd2226e2b3"
+    },
+    {
+      "path": "src/icons.rs",
+      "sha256": "8c1cd6c9ee1706b895254a5cf725f7a018f335a3bb3141626e98722e32c9201f"
+    },
+    {
+      "path": "src/main.rs",
+      "sha256": "f152a066ba9de6271a69945c8e470be88f6bfaf240fbd036587d6d51ee7d31de"
+    },
+    {
+      "path": "src/menu.rs",
+      "sha256": "5e3e5898cb27f9ab911a274befdbeb7445be4f661b34da51f9a2f07df15c044b"
+    },
+    {
+      "path": "src/presentation.rs",
+      "sha256": "2d285e6ba12bf1cc0d7ae285625d35c02e6648b9e63c2c32f58339344ac77100"
+    },
+    {
+      "path": "src/rng.rs",
+      "sha256": "aec734f187db76e995ce8a54d52b7985369d90f0f2af63a325db4bb085b93dee"
+    },
+    {
+      "path": "src/role_state.rs",
+      "sha256": "e5e4b43b5e2281dd7aa63f2f3562d0f96efca23ac324b7c282e7217c4b6962fe"
+    },
+    {
+      "path": "src/sprites.rs",
+      "sha256": "33af2938358bcded5e4728f743335a32509026c9ba7e3f3674b814c8933844bc"
+    },
+    {
+      "path": "src/sprites/animation.rs",
+      "sha256": "b6e6fcb3e0d3bdb45e47bc93fa2815fdac541f389f3693d1c6580bf72b56541f"
+    },
+    {
+      "path": "src/sprites/registry.rs",
+      "sha256": "9176be56209426e0af4391607f190d8b8e0878b056e9823cfa5dddaa1b8b5696"
+    },
+    {
+      "path": "src/strategy.rs",
+      "sha256": "c1854995025121559a384fd5227d093083b5aad63721c4a3ba2797d9c10742f7"
+    },
+    {
+      "path": "src/tests.rs",
+      "sha256": "72b400706eb36c92644fce6fd9741a4be0121ec10432637525ecfc6a307c14b1"
+    },
+    {
+      "path": "src/turns.rs",
+      "sha256": "4b2103da7d1d6e3a5b68d1e6c24f772d8453e408f171c1deda7598c402fa9ad0"
+    },
+    {
+      "path": "src/ui.rs",
+      "sha256": "3d2c40ec767b15223ac3111203e5ac2321e24017ea8664c942c56a350d9d9b22"
+    }
+  ]
+}
