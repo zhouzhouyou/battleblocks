@@ -10,9 +10,25 @@ pub struct AnimationClip {
     pub indices: &'static [usize],
     pub durations: &'static [f64],
     pub playback: Playback,
+    /// Authored impact key in clip seconds; opt in to the spell's actual impact clock.
+    pub impact: Option<f64>,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub struct CastMoment {
+    pub elapsed: f64,
+    pub impact: f64,
 }
 
 impl AnimationClip {
+    /// Retiming changes the windup, never the authored recovery duration.
+    pub fn aligned_time(self, moment: CastMoment) -> f64 {
+        match self.impact {
+            Some(key) if moment.elapsed < moment.impact => moment.elapsed * key / moment.impact,
+            Some(key) => key + (moment.elapsed - moment.impact),
+            None => moment.elapsed,
+        }
+    }
     pub fn duration(self) -> f64 {
         self.durations.iter().sum()
     }
@@ -53,6 +69,7 @@ impl SpriteAsset {
             indices: self.indices,
             durations: self.durations,
             playback: Playback::Loop,
+            impact: None,
         }
     }
 
@@ -64,6 +81,7 @@ impl SpriteAsset {
                 indices: self.indices,
                 durations: &CAST_FRAME_TIME,
                 playback: Playback::Once,
+                impact: None,
             })
         } else {
             self.cast
@@ -76,12 +94,40 @@ pub const NORMAL_CAST: AnimationClip = AnimationClip {
     indices: &[24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35],
     durations: &CAST_FRAME_TIME,
     playback: Playback::Once,
+    impact: None,
 };
 pub const AWAKE_CAST: AnimationClip = AnimationClip {
     indices: &[36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47],
     ..NORMAL_CAST
 };
 pub const SLEEP: AnimationClip = AWAKE_CAST;
+
+// Poses 5/7/8 are release/guide/impact. Both spells currently hit at 0.9s.
+pub const WIZARD_CAST_TIME: [f64; 12] = [
+    0.06, 0.08, 0.09, 0.09, 0.12, 0.18, 0.28, 0.1, 0.1, 0.1, 0.1, 0.1,
+];
+pub const WIZARD_AWAKE_CAST: AnimationClip = AnimationClip {
+    indices: &[12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+    durations: &WIZARD_CAST_TIME,
+    impact: Some(0.9),
+    ..NORMAL_CAST
+};
+
+/// Restart idle at its entry pose after a cast or form transition, not global time.
+#[derive(Default)]
+pub struct IdleClock {
+    state: Option<(bool, bool)>,
+    started: f64,
+}
+impl IdleClock {
+    pub fn elapsed(&mut self, casting: bool, awake: bool, now: f64) -> f64 {
+        if self.state != Some((casting, awake)) {
+            self.state = Some((casting, awake));
+            self.started = now;
+        }
+        (now - self.started).max(0.)
+    }
+}
 
 /// View-only transition clock. Reset with other presentation state on rollback.
 #[derive(Default)]
@@ -104,7 +150,7 @@ mod tests {
     use super::*;
     #[test]
     fn one_shots_cover_all_poses_and_hold_the_last_at_and_after_the_end() {
-        for clip in [NORMAL_CAST, AWAKE_CAST, SLEEP] {
+        for clip in [NORMAL_CAST, AWAKE_CAST, SLEEP, WIZARD_AWAKE_CAST] {
             assert_eq!(clip.frame(-1.), clip.indices[0]);
             let mut elapsed = 0.;
             for (&frame, &duration) in clip.indices.iter().zip(clip.durations) {
@@ -122,6 +168,7 @@ mod tests {
             indices: &[0, 1, 2],
             durations: &[0.1, 0.2, 0.3],
             playback: Playback::Loop,
+            impact: None,
         };
         assert_eq!(idle.frame(0.05), 0);
         assert_eq!(idle.frame(0.15), 1);
@@ -133,5 +180,21 @@ mod tests {
         assert_eq!(SLEEP.frame(clock.elapsed(true, 44.)), 47);
         clock.elapsed(false, 45.);
         assert_eq!(clock.elapsed(true, 50.), 0.);
+    }
+
+    #[test]
+    fn one_pose_sequence_aligns_to_different_impacts_without_stretching_recovery() {
+        for impact in [0.4, 0.9, 1.8] {
+            let sample = |elapsed| WIZARD_AWAKE_CAST.aligned_time(CastMoment { elapsed, impact });
+            assert_eq!(WIZARD_AWAKE_CAST.frame(sample(impact - 0.001)), 18);
+            assert_eq!(WIZARD_AWAKE_CAST.frame(sample(impact + 0.001)), 19);
+            assert_eq!(WIZARD_AWAKE_CAST.frame(sample(impact + 0.45)), 23);
+            assert!((sample(impact + 0.5) - WIZARD_AWAKE_CAST.duration()).abs() < 1e-9);
+            let mut idle = IdleClock::default();
+            idle.elapsed(true, false, 100.);
+            assert_eq!(idle.elapsed(false, false, 105.), 0.);
+            assert_eq!(idle.elapsed(false, false, 105.2), 105.2 - 105.);
+            assert_eq!(idle.elapsed(false, true, 106.), 0.);
+        }
     }
 }

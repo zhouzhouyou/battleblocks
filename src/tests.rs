@@ -25,23 +25,35 @@ fn every_character_webp_decodes_with_its_original_atlas_dimensions() {
 fn new_role_atlases_have_twelve_distinct_poses_per_action_and_shared_palettes() {
     use std::hash::{Hash, Hasher};
     for id in [
+        2, // Only the wizard's awakened form has new animation.
         content::KNIGHT,
         content::DWARF,
         content::PRIEST,
         content::NUN,
         content::FIRE_ELF,
     ] {
-        let asset = &sprites::SPRITES[id];
+        let asset = if id == 2 {
+            &sprites::AWAKENED[id]
+        } else {
+            &sprites::SPRITES[id]
+        };
         let image = image::load_from_memory(asset.bytes).unwrap().to_rgba8();
-        assert_eq!(image.dimensions(), (384 * 6, 384 * 8));
+        assert_eq!(
+            image.dimensions(),
+            (384 * 6, 384 * if id == 2 { 4 } else { 8 })
+        );
         assert_eq!(asset.anchor, Some([192., 336.]));
         let awake = &sprites::AWAKENED[id];
-        let clips = [
-            asset.idle(),
-            awake.idle(),
-            asset.cast.unwrap(),
-            asset.sleep.unwrap_or_else(|| awake.cast.unwrap()),
-        ];
+        let clips = if id == 2 {
+            vec![asset.idle(), asset.cast.unwrap()]
+        } else {
+            vec![
+                asset.idle(),
+                awake.idle(),
+                asset.cast.unwrap(),
+                asset.sleep.unwrap_or_else(|| awake.cast.unwrap()),
+            ]
+        };
         let mut colors = std::collections::HashSet::new();
         for clip in clips {
             assert_eq!(clip.indices.len(), 12);
@@ -83,6 +95,35 @@ fn new_role_atlases_have_twelve_distinct_poses_per_action_and_shared_palettes() 
     }
     let book = image::load_from_memory(sprites::BOOK_BYTES).unwrap();
     assert_eq!((book.width(), book.height()), (1536, 384));
+}
+#[test]
+fn wizard_normal_is_unchanged_and_only_awakened_uses_fine_pixel_animation() {
+    let normal = &sprites::SPRITES[2];
+    assert_eq!(normal.bytes, include_bytes!("../assets/wizzard.webp"));
+    assert_eq!((normal.w, normal.h), (300., 400.));
+    assert_eq!(normal.indices, &[0, 1, 2, 3]);
+    assert_eq!(normal.durations, &[0.1; 4]);
+    assert!(normal.cast.is_none() && normal.sleep.is_none());
+    assert!(normal.action(true).is_none());
+    assert_eq!(normal.anchor, None);
+    let awake = &sprites::AWAKENED[2];
+    assert_ne!(normal.bytes, awake.bytes);
+    let atlas = image::load_from_memory(awake.bytes).unwrap().to_rgba8();
+    assert_eq!(atlas.dimensions(), (2304, 1536));
+    assert_eq!(awake.indices, &(0..12).collect::<Vec<_>>());
+    assert_eq!(awake.cast.unwrap().indices, &(12..24).collect::<Vec<_>>());
+    let mut colors = std::collections::HashSet::new();
+    let mut fine_detail = false;
+    for (x, y, pixel) in atlas.enumerate_pixels() {
+        fine_detail |= pixel != atlas.get_pixel(x / 16 * 16, y / 16 * 16);
+        if pixel[3] != 0 {
+            colors.insert(pixel.0);
+        }
+    }
+    assert!(
+        fine_detail && colors.len() > 9 && colors.len() <= 64,
+        "awakened form must retain fine-pixel material detail, not the coarse v2 grid"
+    );
 }
 #[test]
 fn global_skills_cast_directly_even_when_paid_with_health() {
@@ -475,9 +516,12 @@ fn skill_cards_adapt_to_the_wrapped_description_height() {
 #[test]
 fn action_metadata_preserves_legacy_fallback_and_fire_elf_sleep() {
     for id in 0..HEROES.len() {
-        for asset in [&sprites::SPRITES[id], &sprites::AWAKENED[id]] {
+        for (is_awake, asset) in [
+            (false, &sprites::SPRITES[id]),
+            (true, &sprites::AWAKENED[id]),
+        ] {
             assert_eq!(asset.indices.len(), asset.durations.len());
-            if id < content::KNIGHT {
+            if id < content::KNIGHT && !(id == 2 && is_awake) {
                 assert!(asset.cast.is_none() && asset.sleep.is_none());
                 assert!(asset.action(true).is_none());
             } else {
@@ -486,6 +530,7 @@ fn action_metadata_preserves_legacy_fallback_and_fire_elf_sleep() {
                 assert!((cast.duration() - presentation::CAST_TIME).abs() < 1e-9);
                 assert!((asset.idle().duration() - 0.72).abs() < 1e-9);
                 assert_eq!(cast.playback, sprites::Playback::Once);
+                assert_eq!(cast.impact.is_some(), id == 2);
             }
         }
     }
@@ -494,6 +539,7 @@ fn action_metadata_preserves_legacy_fallback_and_fire_elf_sleep() {
     assert_ne!(fire.cast, fire.sleep);
     assert_eq!(fire.sleep.unwrap().frame(60.), 47);
     assert!(sprites::SPRITES[content::NUN].sleep.is_none());
+    assert_ne!(sprites::SPRITES[2].bytes, sprites::AWAKENED[2].bytes);
 }
 
 #[test]
