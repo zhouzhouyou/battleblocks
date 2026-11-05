@@ -1,0 +1,21 @@
+{
+  "macos_ci": "https://github.com/zhouzhouyou/battleblocks/actions/runs/41981691109",
+  "macos_ci_head": "0710a36ac06aa4ec3235cf96bee4fa740caae977",
+  "packages": {
+    "windows-x64.zip": {
+      "bytes": 8417390,
+      "sha256": "48547f58b5c1abe366fbad5f87e20da5a21f2e746fa08b4abd42e3b6a771dd74",
+      "zip_integrity": "passed"
+    },
+    "web.zip": {
+      "bytes": 8046014,
+      "sha256": "74383acbeed7cdbdb39742a1f65c9ff27faf165cb06552ac955caa4250b9ef01",
+      "zip_integrity": "passed"
+    },
+    "macos-arm64.zip": {
+      "bytes": 8472813,
+      "sha256": "7803bb6adf4779a77e6b2d867e97bb5928ebad37c268839dee7cd2375168dd4c",
+      "zip_integrity": "passed"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "baseline_video_seconds": 1.0,
+  "current_video_seconds": 0.55,
+  "portrait_region": [
+    355,
+    190,
+    660,
+    485
+  ],
+  "mean_squared_rgb_error": 1.818171714365101,
+  "note": "Actual captures, same pose; MP4 compression can differ."
+}
