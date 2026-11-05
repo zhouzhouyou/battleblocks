@@ -361,6 +361,15 @@ impl Console {
     pub fn checkpoint_edit(&mut self, state: Snapshot) -> u64 {
         self.checkpoint_kind(state, false)
     }
+    /// View effects follow gameplay, not pause/resource editor checkpoints.
+    pub fn gameplay_action(&self) -> u64 {
+        self.history
+            .iter()
+            .rev()
+            .find(|h| h.gameplay)
+            .map(|h| h.action)
+            .unwrap_or(0)
+    }
     fn checkpoint_kind(&mut self, state: Snapshot, gameplay: bool) -> u64 {
         if self.batch {
             return 0;

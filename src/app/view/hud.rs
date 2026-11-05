@@ -141,12 +141,13 @@ impl Session {
                 &sprites::SPRITES[id]
             };
             let mut cast_elapsed = presentation::CAST_TIME - self.cast_time;
-            let cast_clip = sprite.action(self.last_cast == Some(content::Skill::Jump));
+            let mut cast_clip = sprite.action(self.last_cast == Some(content::Skill::Jump));
             let mut casting = cast_clip.is_some()
                 && self.last_cast.is_some()
                 && self.last_cast_enemy == enemy_side
                 && self.cast_time > 0.;
-            let synchronized = cast_clip.is_some_and(|clip| clip.impact.is_some());
+            let synchronized =
+                sprite.legacy_awake() || cast_clip.is_some_and(|clip| clip.impact.is_some());
             if let Some((clip, moment)) = cast_clip.filter(|clip| clip.impact.is_some()).zip(
                 self.skill_effects.as_ref().and_then(|effects| {
                     effects.actor_moment(enemy_side, self.hp <= 0 || self.enemy <= 0)
@@ -154,6 +155,20 @@ impl Session {
             ) {
                 cast_elapsed = clip.aligned_time(moment);
                 casting = cast_elapsed < clip.duration();
+            }
+            if sprite.legacy_awake() {
+                let sample = self.skill_effects.as_ref().and_then(|effects| {
+                    effects.actor_sample(
+                        enemy_side,
+                        self.console.gameplay_action(),
+                        self.hp <= 0 || self.enemy <= 0,
+                    )
+                });
+                casting = sample.is_some();
+                if let Some((clip, elapsed)) = sample {
+                    cast_clip = Some(clip);
+                    cast_elapsed = elapsed;
+                }
             }
             let idle_elapsed = if synchronized {
                 self.skill_effects

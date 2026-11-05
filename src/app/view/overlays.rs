@@ -82,6 +82,10 @@ impl Session {
     pub(in crate::app) fn draw_effects(&mut self) {
         if let Some(effects) = &self.skill_effects {
             effects.draw_board_blast(self.hp == 0 || self.enemy == 0, self.tiles());
+            effects.draw_actor_effects(
+                self.console.gameplay_action(),
+                self.hp == 0 || self.enemy == 0,
+            );
         }
         self.presentation.draw_awakening(self.zh);
         if self.presentation.charging() {
@@ -96,18 +100,40 @@ impl Session {
             } else {
                 &sprites::SPRITES[id]
             };
-            self.presentation.draw_charge(
-                if is_awake {
-                    self.awake_texture(self.last_cast_enemy)
-                } else if self.last_cast_enemy {
-                    self.enemy_texture()
-                } else {
-                    self.player_texture()
-                },
-                asset.w,
-                asset.h,
-                asset.indices,
-            );
+            let cast_frame = asset
+                .legacy_awake()
+                .then(|| {
+                    self.skill_effects
+                        .as_ref()
+                        .and_then(|effects| {
+                            effects.actor_sample(
+                                self.last_cast_enemy,
+                                self.console.gameplay_action(),
+                                false,
+                            )
+                        })
+                        .map(|(clip, time)| clip.frame(time))
+                })
+                .flatten();
+            let texture = if is_awake {
+                self.awake_texture(self.last_cast_enemy)
+            } else if self.last_cast_enemy {
+                self.enemy_texture()
+            } else {
+                self.player_texture()
+            };
+            if cast_frame.is_some() {
+                self.presentation.draw_charge_frame(
+                    texture,
+                    asset.w,
+                    asset.h,
+                    asset.indices,
+                    cast_frame,
+                );
+            } else {
+                self.presentation
+                    .draw_charge(texture, asset.w, asset.h, asset.indices);
+            }
         }
         if let Some(skill) = self.last_cast.filter(|s| {
             self.cast_time > 0.
@@ -115,13 +141,16 @@ impl Session {
         }) {
             let progress = 1. - self.cast_time as f32 / presentation::CAST_TIME as f32;
             if let Some(effects) = &self.skill_effects {
-                effects.draw(
-                    skill,
-                    &self.skill_flash,
-                    progress,
-                    self.last_cast_enemy,
-                    self.tiles(),
-                );
+                if !effects.owns_actor_effect(self.last_cast_enemy, self.console.gameplay_action())
+                {
+                    effects.draw(
+                        skill,
+                        &self.skill_flash,
+                        progress,
+                        self.last_cast_enemy,
+                        self.tiles(),
+                    );
+                }
             }
         }
     }

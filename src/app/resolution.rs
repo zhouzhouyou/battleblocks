@@ -8,7 +8,13 @@ impl Session {
             let fall_delay = self
                 .skill_effects
                 .as_mut()
-                .map(|effects| effects.board_cleared(&self.pending))
+                .map(|effects| {
+                    effects.board_cleared(
+                        &self.pending,
+                        self.enemy_turn,
+                        self.console.gameplay_action(),
+                    )
+                })
                 .unwrap_or(0.);
             if !self.muted {
                 if let Some(audio) = &self.audio {
