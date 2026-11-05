@@ -75,3 +75,7 @@ Headless `Session` 是权威游戏模型，GUI 只是同一模型的输入、帧
 改动收益或事件顺序时验证实际规则、费用、上限、目标差异、来源链、事件终止、预览纯度及回滚。运行 Rust 测试、`tools/check_debug_console.py` 、`tools/check_new_roles.py` 和 `tools/check_ability_events.py`；用 `.build-tools/python-path.txt` 指定的 Python 运行 `tools/build.py` 更新 macOS 和网页包。
 
 传送门与重力接入见 [PORTAL-MECHANICS.md](PORTAL-MECHANICS.md)。`BoardMechanics` 是共享棋盘状态，含施法者与下次自己回合开始过期语义，进入 Snapshot／JSONL；角色被动只监听 `PortalTransit`，不搬运方块。
+
+## 资源与输出的边界
+
+当前游戏使用无损 WebP 保留像素与透明度，使用简单几何绘制棋盘背景；不把复杂角色纹理逐像素改为绘图指令。原生音频使用压缩音乐和有界播放缓冲，包内编码大小与运行时内存分别评估。保留可复用实验与复现方法，单次测量数字和日志不随源码保存。资源和输入目录遵从 [LAYOUT.md](LAYOUT.md)。

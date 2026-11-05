@@ -7,6 +7,7 @@ from pathlib import Path
 import hashlib
 import json
 import sys
+from asset_paths import report_path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / '.build-tools/art-site'))
@@ -84,7 +85,7 @@ def import_wizard():
     save(atlas,path)
     save(all_frames[0],previews/'awake-idle-0.webp')
     report['webp_bytes'] = path.stat().st_size
-    (SOURCE/'report.json').write_text(json.dumps(report,indent=2)+'\n')
+    report_path('wizard').write_text(json.dumps(report,indent=2)+'\n')
     print(f'wizard: 24 fine-pixel awakened poses; normal unchanged; {path.stat().st_size} bytes')
 
 

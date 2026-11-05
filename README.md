@@ -130,13 +130,13 @@ cargo run --release -- --headless --autoplay \
 
 Macroquad 0.4.16 与依赖通过 Cargo.lock 固定；网页 JS 使用匹配的 miniquad 运行时和本项目音频插件，无 CDN。字体 Noto Sans SC 使用 OFL 许可，构建自动裁剪；完整字体仅存本地缓存。
 
-棋盘和格子背景默认用代码绘制，不加载背景图片。绘制使用按纹理分组和512顶点/768索引缓冲；文字使用有限字号与整帧预缓存。内存测量与实际限制见 [内存分析](docs/MEMORY_ANALYSIS.md)、[对照报告](experiments/memory-comparison/REPORT.md)、[字体审查](experiments/memory-comparison/AUDIT.md)。包体积由 `dist/measurements.json` 记录。
+棋盘和格子背景默认用代码绘制，不加载背景图片。绘制使用按纹理分组和512顶点/768索引缓冲；文字使用有限字号与整帧预缓存。内存测量与实际限制见 内存分析、对照报告、字体审查。包体积由 `dist/measurements.json` 记录。
 
 原素材美术与音频来源授权仍待核实；构建收集依赖和字体许可。macOS 包尚未签名、公证。
 
-素材是否适合代码绘制、无损缩小验证与实测见 [素材绘制调研](docs/ASSET_RENDERING.md)。
+素材是否适合代码绘制、无损缩小验证与实测见 素材绘制调研。
 
-音乐已采用流式原曲：原生CPAL输出、Lewton按包解码、128 KiB固定队列；短音效预解码并与音乐在同一输出中混合。网页音乐使用浏览器媒体播放，音效使用Web Audio。角色选择、暂停、胜负结束暂停音乐；M静音时仍推进播放位置。音频缓冲行为、8-bit试听与优化选项见 [音频调研](docs/AUDIO_OPTIMIZATION.md)。
+音乐已采用流式原曲：原生CPAL输出、Lewton按包解码、128 KiB固定队列；短音效预解码并与音乐在同一输出中混合。网页音乐使用浏览器媒体播放，音效使用Web Audio。角色选择、暂停、胜负结束暂停音乐；M静音时仍推进播放位置。音频缓冲行为、8-bit试听与优化选项见 音频调研。
 
 可试听的流式播放 / 实时合成实验：`python3 tools/prepare_audio_lab.py`，启动网页服务后访问 `/audio-lab/`；原生实验见 [音频实验](experiments/audio-lab/README.md)。
 

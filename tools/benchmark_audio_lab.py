@@ -24,6 +24,6 @@ for repeat in range(2):
   output=(OUT/f'{mode}-{repeat}.log').read_text();messages=[json.loads(line) for line in output.splitlines() if line.startswith('{')]
   if messages[-1]['decoder_failed'] or messages[-1]['underrun_frames']:raise RuntimeError('Audio errors or underruns observed')
   row=dict(mode=mode,repeat=repeat,samples=samples,output=messages);rows.append(row)
-  (LAB/'measurements.json').write_text(json.dumps(dict(binary_bytes=binary.stat().st_size,binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),scenario='Release macOS; shared CPAL output backend; gain zero still performs all sample generation/decoding; 16 seconds per process, reverse repeat order.',rows=rows),indent=2))
+  (OUT/'measurements.json').write_text(json.dumps(dict(binary_bytes=binary.stat().st_size,binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),scenario='Release macOS; shared CPAL output backend; gain zero still performs all sample generation/decoding; 16 seconds per process, reverse repeat order.',rows=rows),indent=2))
   print(json.dumps(row),flush=True)
 print(json.dumps({mode:{'footprint14_mib':statistics.mean(r['samples'][-1]['footprint_mib'] for r in rows if r['mode']==mode),'rss14_mib':statistics.mean(r['samples'][-1]['rss_mib'] for r in rows if r['mode']==mode),'cpu14_percent':statistics.mean(r['samples'][-1]['cpu_percent'] for r in rows if r['mode']==mode)} for mode in ['idle','buffer','stream','synth']},indent=2),flush=True)

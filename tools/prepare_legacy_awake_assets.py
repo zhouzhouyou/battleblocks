@@ -8,6 +8,7 @@ from pathlib import Path
 import hashlib
 import json
 import sys
+from asset_paths import report_path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / '.build-tools/art-site'))
@@ -89,7 +90,7 @@ def import_role(role):
     target = ROOT/'assets/roles'/role/'runtime/atlas.webp'
     atlas.save(target, 'WEBP', lossless=True, exact=True, method=6)
     report['webp_bytes'] = target.stat().st_size
-    (directory/'report.json').write_text(json.dumps(report, indent=2)+'\n', encoding='utf-8')
+    report_path(role).write_text(json.dumps(report, indent=2)+'\n', encoding='utf-8')
     print(f'{role}: 24 authored awake poses, {target.stat().st_size} bytes')
 
 

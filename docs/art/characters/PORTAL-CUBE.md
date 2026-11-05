@@ -13,7 +13,7 @@
 2026-11-06，用户要求「我只需要保留最终版本」。项目仅保留已选 A 的完善人设图与  刚体修复动画，以及当前提示词、检查记录和复现工具。未选候选、A 的早期对比稿、两轮问题动画及其源图已从工作树删除；不从生成缓存恢复。
 
 - [人设图](../../../assets-source/roles/portal-cube/design/model-sheet.webp) · 人设提示词（图片不入库）
-- 最终保留动画说明（图片不入库） · [检查记录](../../../assets-source/roles/portal-cube/animation/report.json)
+- 最终保留动画说明（图片不入库） · 检查记录
 - 普通待机（图片不入库） · 普通开门（图片不入库） · 普通重力（图片不入库）
 - 动画提示词随最终版本保存在 `docs/art/discussions/portal-cube.md`。复现工具 `tools/prepare_portal_cube_animations.py` 直接验证最终图集；`--export` 从最终图集重建预览，`--install` 安装到运行时，无旧源图依赖。
 - 稳定角色 ID 12，主动 ID 27 `PortalPair`／28 `GravityShift`，被动 `PortalYield`。机制开发已提交 `0a34212`；本轮美术尚未自动提交。

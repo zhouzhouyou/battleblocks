@@ -9,7 +9,7 @@ import hashlib
 import json
 import subprocess
 import sys
-from asset_paths import legacy_role
+from asset_paths import legacy_role, report_path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / ".build-tools/art-site"))
@@ -120,16 +120,22 @@ def import_role(role):
     save_webp(atlas, ROOT / "assets/roles" / role / "runtime/atlas.webp")
     save_webp(all_frames[0], previews / "normal-idle-0.webp")
     report["webp_bytes"] = (ROOT / "assets/roles" / role / "runtime/atlas.webp").stat().st_size
-    (directory / "report.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    report_path(role).write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     print(f"{role}: 48 distinct poses, {report['webp_bytes']} bytes")
 
 
 def registry():
-    legacy = json.loads((ROOT / "config/legacy-sprites.json").read_text())
+    from prepare_wizard_assets import import_wizard
+    from prepare_legacy_awake_assets import ROLES as LEGACY_ROLES, import_role as import_legacy
+    for role in ROLES:
+        if not report_path(role).exists(): import_role(role)
+    if not report_path('wizard').exists(): import_wizard()
+    for role in LEGACY_ROLES:
+        if not report_path(role).exists(): import_legacy(role)
     normal, awakened = [], []
     thumbs = Image.new("RGBA", ((7+len(ROLES)+1)*40, 48))
     for i, name in enumerate(("knight", "elf", "wizzard", "goblin", "imp", "chort", "big_zombie")):
-        meta = legacy[name]
+        meta = json.loads((ROOT / "assets-source/roles" / legacy_role(name) / "animation/normal.json").read_text())
         w, h = meta["frame_size"]
         normal.append(f'    SpriteAsset {{ bytes: include_bytes!("../../assets/roles/{legacy_role(name)}/runtime/normal.webp"), w: {w}., h: {h}., durations: &{meta["durations"]}, indices: &{meta["indices"]}, cast: None, sleep: None, anchor: None }},')
         frame = Image.open(ROOT / f"assets/roles/{legacy_role(name)}/runtime/normal.webp").crop((0, 0, w, h))
@@ -157,29 +163,30 @@ def registry():
     cube.thumbnail((40,48),Image.Resampling.NEAREST)
     thumbs.alpha_composite(cube.convert("RGBA"),((7+len(ROLES))*40+(40-cube.width)//2,(48-cube.height)//2))
     save_webp(thumbs, ROOT / "assets/ui/hero-thumbnails.webp")
-    report_path = ROOT / "config/role-assets.json"
-    report = json.loads(report_path.read_text(encoding="utf-8"))
+    summary_path = ROOT / '.local/production/role-assets.json'
+    summary_path.parent.mkdir(parents=True, exist_ok=True)
+    report = json.loads(summary_path.read_text()) if summary_path.exists() else {}
     for role in ROLES:
-        details = json.loads((source_dir(role) / "report.json").read_text(encoding="utf-8"))
+        details = json.loads(report_path(role).read_text(encoding="utf-8"))
         report[role] = {key: details[key] for key in ("frame_size", "atlas_size", "frames", "foot_anchor", "webp_bytes")}
-        report[role]["detail_report"] = (source_dir(role) / "report.json").relative_to(ROOT).as_posix()
+        report[role]["detail_report"] = report_path(role).relative_to(ROOT).as_posix()
         report[role]["clips"] = {name: {key: clip[key] for key in ("indices", "duration_ms", "playback")}
                                 for name, clip in details["clips"].items()}
     from prepare_wizard_assets import SOURCE
-    details = json.loads((SOURCE / 'report.json').read_text())
+    details = json.loads(report_path('wizard').read_text())
     report['wizard'] = {key: details[key] for key in ('frame_size', 'atlas_size', 'frames', 'foot_anchor', 'webp_bytes')}
-    report['wizard']['detail_report'] = (SOURCE / 'report.json').relative_to(ROOT).as_posix()
+    report['wizard']['detail_report'] = report_path('wizard').relative_to(ROOT).as_posix()
     report['wizard']['clips'] = {name: {key: clip[key] for key in ('indices', 'duration_ms', 'playback')}
                                for name, clip in details['clips'].items()}
     from prepare_legacy_awake_assets import ROLES as LEGACY_ROLES, source_dir as legacy_source
     for role in LEGACY_ROLES:
         directory = legacy_source(role)
-        details = json.loads((directory/'report.json').read_text())
+        details = json.loads(report_path(role).read_text())
         report[role] = {key: details[key] for key in ('frame_size', 'atlas_size', 'frames', 'foot_anchor', 'webp_bytes')}
-        report[role]['detail_report'] = (directory/'report.json').relative_to(ROOT).as_posix()
+        report[role]['detail_report'] = report_path(role).relative_to(ROOT).as_posix()
         report[role]['clips'] = {name: {key: clip[key] for key in ('indices', 'duration_ms', 'playback')}
                                 for name, clip in details['clips'].items()}
-    report_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    summary_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     normal.append("    PORTAL_NORMAL,")
     awakened.append("    PORTAL_AWAKE,")
     dest = ROOT / "src/sprites/registry.rs"

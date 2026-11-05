@@ -28,7 +28,7 @@
 - 批量平衡与规则验证使用无窗口 `--headless --autoplay`，不要为了跑对局启动 GUI：
   ```bash
   cargo run --release -- --headless --autoplay --samples 48 --seed 900000 --level 1 \
-    --roster 8,7,9,10,1,2 --out analysis/autoplay.csv
+    --roster 8,7,9,10,1,2 --out .local/analysis/autoplay.csv
   ```
   它逐局调用同一个 `Session` 和 `strategy`，冷却、口袋、状态、连续施法加价与终局加压都走正常结算，只跳过动画和 JSONL 回滚快照。`--level 0/1/2` 对应入门／标准／进阶。
 - 只有输入、绘制、动画、音频或窗口交互本身变更时，才运行需要窗口的 `tools/check_debug_console.py`、`tools/check_ability_events.py`、`tools/check_new_roles.py`；能力事件或状态逻辑变更应优先用 `cargo test`、`tools/check_headless.py` 和 `--autoplay` 组合验证来源链、目标被动、状态和回滚。
@@ -48,3 +48,8 @@
 
 - `assets/` 仅放当前游戏加载资源，按 roles、effects、environment、ui、audio 分类；正式人设与关键制作输入放 `assets-source/`，未实现图鉴资源放 `gallery/`，游戏配置放 `config/`。
 - 提交前运行 `python3 tools/check_repository.py`；新制作资源确认采用后才更新 `config/asset-manifest.json`。本地候选和输出统一放 `.local/`。
+
+## 禁止入库的生成产物
+
+- 必须遵从 `docs/LAYOUT.md`：战斗日志、检测数据、工具输出、自动报告、清洗记录、单次验收和一次性排查记录禁止进入当前树及 Git 历史，也不得存到 docs；输出放 `.local/` 或临时目录。
+- 只保留长期规则、设计决定及复现所必需的代码和输入。结构化制作参数与测试输入在 `config/repository-inputs.json` 声明用途；不能提交采样、状态快照或检查结果充当输入。

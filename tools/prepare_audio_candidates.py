@@ -2,7 +2,7 @@
 from pathlib import Path
 import json, shutil, subprocess
 ROOT=Path(__file__).resolve().parents[1]
-OUT=ROOT/'analysis/audio-candidates';OUT.mkdir(parents=True,exist_ok=True)
+OUT=ROOT/'.local/analysis/audio-candidates';OUT.mkdir(parents=True,exist_ok=True)
 ffmpeg=shutil.which('ffmpeg');ffprobe=shutil.which('ffprobe')
 if not ffmpeg or not ffprobe:raise SystemExit('Install ffmpeg to generate audio candidates')
 source=ROOT/'assets-source/audio/bgm.wav'

@@ -16,4 +16,4 @@ with (OUT/'stream-stability.log').open('w') as log:
   if p.returncode:raise RuntimeError('Stream process failed')
  finally:
   if p.poll() is None:p.terminate();p.wait()
-(LAB/'stability.json').write_text(json.dumps(dict(samples=rows,output=[json.loads(line) for line in (OUT/'stream-stability.log').read_text().splitlines() if line.startswith('{')]),indent=2))
+(OUT/'stability.json').write_text(json.dumps(dict(samples=rows,output=[json.loads(line) for line in (OUT/'stream-stability.log').read_text().splitlines() if line.startswith('{')]),indent=2))
