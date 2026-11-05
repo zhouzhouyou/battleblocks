@@ -1,9 +1,11 @@
 """Verify captured real Session events and artifact hashes for Issue 28."""
 from pathlib import Path
-import hashlib,json
+import argparse,hashlib,json
 
 ROOT=Path(__file__).resolve().parents[1]
-OUT=ROOT/'analysis/issue28-awake-animation/final'
+parser=argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--label',default='final')
+OUT=ROOT/'analysis/issue28-awake-animation'/parser.parse_args().label
 capture=json.loads((OUT/'capture.json').read_text(encoding='utf-8'))
 checks={}
 for name,scene in capture['scenes'].items():
