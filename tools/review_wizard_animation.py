@@ -1,5 +1,6 @@
 """Export atlas inspection and unscaled excerpts from the real game recordings."""
 from pathlib import Path
+import argparse
 import io
 import json
 import subprocess
@@ -8,7 +9,11 @@ import sys
 from prepare_wizard_assets import ROOT, SOURCE, CLIPS, Image, save
 from PIL import ImageDraw
 
-OUT = ROOT / 'analysis/issue27-wizard-animation'
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--directory', type=Path, default=ROOT / 'analysis/issue27-wizard-animation')
+OUT = parser.parse_args().directory.resolve()
+OUT.mkdir(parents=True, exist_ok=True)
+BASELINE = ROOT / 'analysis/issue27-wizard-animation/baseline'
 sys.path.insert(0, str(ROOT / '.build-tools/media-site'))
 import imageio_ffmpeg
 FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
@@ -27,8 +32,10 @@ for form in ('normal', 'awake'):
     panel = Image.new('RGB', (610, 680), '#20232d')
     draw = ImageDraw.Draw(panel)
     for col, label in enumerate(('baseline', 'current')):
-        capture = extract(OUT / label / f'{form}-menu.mp4', 1.)
-        save(capture, OUT / label / f'{form}-menu.webp')
+        source_dir = BASELINE if label == 'baseline' else OUT / label
+        capture = extract(source_dir / f'{form}-menu.mp4', 1.)
+        if label != 'baseline':
+            save(capture, OUT / label / f'{form}-menu.webp')
         panel.paste(capture.crop((355, 140, 660, 788)), (col * 305, 32))
         draw.text((col * 305 + 12, 10), f'{label} / {form} / 1:1 capture', fill='white')
     save(panel, OUT / f'{form}-menu-comparison.webp')
@@ -101,5 +108,7 @@ function draw(now){if(playing)elapsed+=now-last;last=now;const name=select.value
 videos=''
 for scene in ('normal-menu','awake-menu','normal-lightning','normal-meteor','awake-lightning','awake-meteor','delayed-meteor','terminal-meteor','rollback'):
     videos+=f'<h3>{scene}</h3><video controls preload="metadata" src="current/{scene}.mp4"></video><p><a href="current/{scene}.jsonl">事件日志</a></p>'
-(OUT/'index.html').write_text(page.replace('METADATA',json.dumps(meta)).replace('VIDEOS',videos),encoding='utf-8')
+import os
+atlas_url = os.path.relpath(ROOT/'assets/roles/wizard.webp', OUT).replace('\\','/')
+(OUT/'index.html').write_text(page.replace('../../assets/roles/wizard.webp',atlas_url).replace('METADATA',json.dumps(meta)).replace('VIDEOS',videos),encoding='utf-8')
 print(f'Review evidence: {OUT}')

@@ -4,6 +4,7 @@ Review-only dependencies: Pillow 13, numpy 2.4, imageio-ffmpeg 0.6. This probe
 matches the native 125% DPI captures; it never creates game state or rewards.
 """
 import json
+import argparse
 import subprocess
 import sys
 from pathlib import Path
@@ -13,7 +14,9 @@ sys.path.insert(0, str(ROOT / '.build-tools/media-site'))
 import numpy as np
 import imageio_ffmpeg
 
-OUT = ROOT / 'analysis/issue27-wizard-animation'
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--directory', type=Path, default=ROOT / 'analysis/issue27-wizard-animation')
+OUT = parser.parse_args().directory.resolve()
 FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
 atlas = Image.open(ROOT / 'assets/roles/wizard.webp').convert('RGBA')
 scale = 184 / 83 / 4 * 1.25
