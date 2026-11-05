@@ -9,12 +9,39 @@ pub(super) fn effect(skill: Skill, target: (usize, usize)) -> Effect {
         Effect::default()
     }
 }
-pub(super) fn insert(b: &mut Board, target: (usize, usize), tile: u8) {
-    // Insertion pushes toward the bottom even if a future turn changes gravity.
-    for y in (target.1 + 1..N).rev() {
-        b[y][target.0] = b[y - 1][target.0];
+pub(super) fn insert(
+    b: &mut Board,
+    target: (usize, usize),
+    tile: u8,
+    gravity: crate::board::Gravity,
+) {
+    // Insertion pushes toward the settling side of the current gravity;
+    // the tile squeezed out at that edge is destroyed.
+    use crate::board::Gravity;
+    let (x, y) = target;
+    match gravity {
+        Gravity::Down => {
+            for row in (y + 1..N).rev() {
+                b[row][x] = b[row - 1][x];
+            }
+        }
+        Gravity::Up => {
+            for row in 0..y {
+                b[row][x] = b[row + 1][x];
+            }
+        }
+        Gravity::Right => {
+            for column in (x + 1..N).rev() {
+                b[y][column] = b[y][column - 1];
+            }
+        }
+        Gravity::Left => {
+            for column in 0..x {
+                b[y][column] = b[y][column + 1];
+            }
+        }
     }
-    b[target.1][target.0] = tile;
+    b[y][x] = tile;
 }
 
 pub(super) fn cast(
@@ -31,7 +58,7 @@ pub(super) fn cast(
             .copied()
             .flatten()
         {
-            insert(b, target, tile);
+            insert(b, target, tile, ctx.rules.board_mechanics.gravity());
             let mut batch = RewardBatch::default();
             batch.push(
                 Resource::Damage,

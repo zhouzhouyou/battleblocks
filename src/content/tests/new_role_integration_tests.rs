@@ -472,3 +472,76 @@ fn dwarf_short_reach_and_blocked_damage_follow_gravity() {
         7
     );
 }
+
+#[test]
+fn jump_extends_reach_along_the_current_gravity_axis() {
+    use crate::board::Gravity;
+    let board = [[0; N]; N];
+    let cap = health_cap(DWARF, true);
+    for (g, a, b) in [
+        (Gravity::Down, (1, 3), (1, 4)),
+        (Gravity::Up, (1, 3), (1, 4)),
+        (Gravity::Left, (4, 4), (4, 5)),
+        (Gravity::Right, (3, 4), (3, 5)),
+    ] {
+        let base = gravity_rules(g);
+        assert!(!legal_swap_region(DWARF, cap, a, b, base), "{g:?}");
+        let mut state = crate::role_state::RoleState::default();
+        state.on_cast(Skill::Jump, &board, (0, 0));
+        let jumped = Rules {
+            statuses: state.statuses,
+            ..base
+        };
+        assert_eq!(reachable_depth(DWARF, cap, jumped), 5, "{g:?}");
+        assert!(legal_swap_region(DWARF, cap, a, b, jumped), "{g:?}");
+    }
+}
+
+#[test]
+fn resurrect_pushes_toward_current_gravity_and_destroys_the_downstream_edge() {
+    use crate::board::Gravity;
+    let cases = [
+        (Gravity::Down, (2, 2), [1, 2, 6, 3, 4, 5, 6, 1]),
+        (Gravity::Up, (2, 5), [2, 3, 4, 5, 6, 6, 1, 2]),
+        (Gravity::Left, (5, 2), [2, 3, 4, 5, 6, 6, 1, 2]),
+        (Gravity::Right, (2, 2), [1, 2, 6, 3, 4, 5, 6, 1]),
+    ];
+    for (g, target, expected) in cases {
+        let mut b = [[0; N]; N];
+        for i in 0..N {
+            let value = (i % 6 + 1) as u8;
+            match g {
+                Gravity::Down | Gravity::Up => b[i][target.0] = value,
+                Gravity::Left | Gravity::Right => b[target.1][i] = value,
+            }
+        }
+        let mut rules = gravity_rules(g);
+        rules.pockets = [Some(6), None];
+        let effect = effect_at_in(Skill::Resurrect, &mut b, target, PRIEST, 600, 100, rules);
+        assert_eq!(effect.damage, 6, "{g:?}");
+        let actual: Vec<u8> = (0..N)
+            .map(|i| match g {
+                Gravity::Down | Gravity::Up => b[i][target.0],
+                Gravity::Left | Gravity::Right => b[target.1][i],
+            })
+            .collect();
+        assert_eq!(actual, expected, "{g:?}");
+        for y in 0..N {
+            for x in 0..N {
+                let on_line = match g {
+                    Gravity::Down | Gravity::Up => x == target.0,
+                    Gravity::Left | Gravity::Right => y == target.1,
+                };
+                assert_eq!(
+                    b[y][x],
+                    if on_line {
+                        actual[if g.vertical() { y } else { x }]
+                    } else {
+                        0
+                    },
+                    "{g:?} {x} {y}"
+                );
+            }
+        }
+    }
+}
