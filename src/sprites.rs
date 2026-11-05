@@ -4,6 +4,8 @@ mod animation;
 pub use animation::*;
 mod legacy;
 pub use legacy::*;
+mod portal_cube;
+pub use portal_cube::{PORTAL_AWAKE, PORTAL_NORMAL};
 mod registry;
 pub use registry::{AWAKENED, SPRITES};
 pub fn shadow_form(hero: usize, awake_visible: bool, statuses: StatusSet) -> bool {
@@ -55,11 +57,28 @@ pub const BOOK_COVER: &[u8] = include_bytes!("../assets/roles/book-cover.webp");
 pub const BOOK_PAGES: &[u8] = include_bytes!("../assets/roles/book-pages.webp");
 pub const BOOK_BOTTOM: &[u8] = include_bytes!("../assets/roles/book-bottom.webp");
 
-/// Prototype cube shares the goblin's existing thumbnail and sprite.
+/// Every registered hero has its own slot in the thumbnail atlas.
 pub fn thumbnail_index(hero: usize) -> usize {
-    if hero == content::PORTAL_CUBE {
-        3
+    hero
+}
+
+/// The same skill-specific cast selection serves the menu and both battle sides.
+/// Registered overrides live with the artwork, not in combat rules.
+pub fn cast_clip(hero: usize, awake: bool, skill: Option<content::Skill>) -> Option<AnimationClip> {
+    let asset = if awake {
+        &AWAKENED[hero]
     } else {
-        hero
-    }
+        &SPRITES[hero]
+    };
+    skill
+        .and_then(|skill| asset.actor_cast(skill).map(|spec| spec.clip))
+        .or_else(|| {
+            skill.and_then(|skill| {
+                portal_cube::SKILL_CASTS
+                    .iter()
+                    .find(|&&(id, phase, s, _)| id == hero && phase == awake && s == skill)
+                    .map(|entry| entry.3)
+            })
+        })
+        .or_else(|| asset.action(skill == Some(content::Skill::Jump)))
 }

@@ -252,10 +252,7 @@ fn draw_skill_actor(
     // After the cast point the hero performs the skill: play its cast row (the same
     // frames the battle uses) instead of standing in the idle loop.
     let selected_skill = content::skills(hero, preview.base_dark)[preview.skill];
-    let actor_clip = asset
-        .actor_cast(selected_skill)
-        .map(|spec| spec.clip)
-        .or_else(|| asset.action(preview.hop));
+    let actor_clip = sprites::cast_clip(hero, dark, Some(selected_skill));
     match actor_clip.filter(|_| after) {
         Some(clip) => sprite_frames(
             texture,
