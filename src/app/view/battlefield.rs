@@ -100,13 +100,106 @@ impl Session {
                 );
             }
         }
-        if self.board_mechanics.gravity_effect.is_some() {
-            let (dx, dy) = self.board_mechanics.gravity().vector();
-            let end = vec2(744. + dx as f32 * 14., 86. + dy as f32 * 14.);
-            draw_line(744., 86., end.x, end.y, 3., SKYBLUE);
-            let d = vec2(dx as f32, dy as f32);
-            let n = vec2(-d.y, d.x);
-            draw_triangle(end, end - d * 8. + n * 5., end - d * 8. - n * 5., SKYBLUE);
+        self.draw_gravity_status();
+    }
+    /// Always keep the current fall direction on screen. A temporary shift gets
+    /// the caster's accent, an expiry note and a gold frame while it is cast.
+    fn draw_gravity_status(&self) {
+        let gravity = self.board_mechanics.gravity();
+        let active = self.board_mechanics.gravity_effect;
+        let changing = self.cast_time > 0. && self.last_cast == Some(content::Skill::GravityShift);
+        let accent = match active {
+            Some(effect) if effect.owner => ORANGE,
+            Some(_) => SKYBLUE,
+            None => GRAY,
+        };
+        let (x, y, w, h) = (256., 86., 512., 22.);
+        draw_rectangle(x, y, w, h, Color::from_rgba(20, 27, 38, 245));
+        outline(
+            x,
+            y,
+            w,
+            h,
+            if changing { 2. } else { 1. },
+            if changing {
+                GOLD
+            } else if active.is_some() {
+                accent
+            } else {
+                Color::new(0.3, 0.33, 0.4, 1.)
+            },
+        );
+        let d = vec2(gravity.vector().0 as f32, gravity.vector().1 as f32);
+        let center = vec2(x + 15., y + h / 2.);
+        let tail = center - d * 6.;
+        let tip = center + d * 6.;
+        draw_line(tail.x, tail.y, tip.x, tip.y, 2., accent);
+        let normal = vec2(-d.y, d.x);
+        draw_triangle(
+            tip,
+            tip - d * 5. + normal * 4.,
+            tip - d * 5. - normal * 4.,
+            accent,
+        );
+        let name = match gravity {
+            board::Gravity::Up => tr_key(self.zh, "ui.gravity.up"),
+            board::Gravity::Down => tr_key(self.zh, "ui.gravity.down"),
+            board::Gravity::Left => tr_key(self.zh, "ui.gravity.left"),
+            board::Gravity::Right => tr_key(self.zh, "ui.gravity.right"),
+        };
+        let title = format_text(self.zh, "ui.gravity.label", &[name]);
+        label(
+            &title,
+            x + 28.,
+            y + 16.,
+            15.,
+            if active.is_some() { accent } else { WHITE },
+        );
+        let state = if let Some(effect) = active {
+            tr_key(
+                self.zh,
+                if effect.owner {
+                    "ui.gravity.until_enemy"
+                } else {
+                    "ui.gravity.until_yours"
+                },
+            )
+        } else {
+            tr_key(self.zh, "ui.gravity.default")
+        };
+        label(
+            state,
+            x + w - 10. - label_width(state, 14.),
+            y + 16.,
+            14.,
+            if active.is_some() { accent } else { GRAY },
+        );
+    }
+    /// Shade the settling side the actor cannot reach; the axis follows gravity.
+    fn draw_reach_mask(&self) {
+        let depth = content::reachable_depth(self.hero_id, self.hp, self.rules(false));
+        if depth >= N || self.enemy_turn || !self.pending.is_empty() || self.action_done {
+            return;
+        }
+        let excluded = (N - depth) as f32 * 64.;
+        let grain = Color::new(0., 0., 0., 0.35);
+        match self.board_mechanics.gravity() {
+            board::Gravity::Down => {
+                draw_rectangle(256., 110., 512., excluded, grain);
+                draw_line(256., 110. + excluded, 768., 110. + excluded, 2., GOLD);
+            }
+            board::Gravity::Up => {
+                draw_rectangle(256., 622. - excluded, 512., excluded, grain);
+                draw_line(256., 622. - excluded, 768., 622. - excluded, 2., GOLD);
+            }
+            board::Gravity::Left => {
+                draw_rectangle(768. - excluded, 110., excluded, 512., grain);
+                draw_line(768. - excluded, 110., 768. - excluded, 622., 2., GOLD);
+            }
+            board::Gravity::Right => {
+                draw_rectangle(256., 110., excluded, 512., grain);
+                draw_line(256. + excluded, 110., 256. + excluded, 622., 2., GOLD);
+            }
         }
     }
 
@@ -359,31 +452,8 @@ impl Session {
         }
         self.presentation.draw_tiles(self.tiles());
         self.draw_board_mechanics(frame);
-        if content::reachable_rows(self.hero_id, self.hp, self.rules(false)) < N
-            && !self.enemy_turn
-            && self.pending.is_empty()
-            && !self.action_done
-        {
-            let excluded = N - content::reachable_rows(self.hero_id, self.hp, self.rules(false));
-            if excluded > 0 {
-                draw_rectangle(
-                    256.,
-                    110.,
-                    512.,
-                    excluded as f32 * 64.,
-                    Color::new(0., 0., 0., 0.35),
-                );
-                draw_line(
-                    256.,
-                    110. + excluded as f32 * 64.,
-                    768.,
-                    110. + excluded as f32 * 64.,
-                    2.,
-                    GOLD,
-                );
-            }
-        }
-        if content::reachable_rows(self.hero_id, self.hp, self.rules(false)) < N
+        self.draw_reach_mask();
+        if content::reachable_depth(self.hero_id, self.hp, self.rules(false)) < N
             && self.feedback_time > 0.
             && self.feedback == self.rejection_message(false)
         {

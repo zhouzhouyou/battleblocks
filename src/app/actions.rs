@@ -263,10 +263,7 @@ impl Session {
                 && self.cooldowns.remaining(self.enemy_turn as usize, skill) == 0
                 && content::payment_in(id, actor_hp, actor_mp, skill, cast_rules).is_some()
             {
-                (
-                    rng::gen_range(0, N - 1),
-                    rng::gen_range(N - content::reachable_rows(id, actor_hp, cast_rules), N - 1),
-                )
+                content::random_reachable_target(id, actor_hp, cast_rules)
             } else if self.enemy_turn {
                 strategy::choose_target_in(
                     skill,
@@ -472,7 +469,7 @@ impl Session {
                 self.console.event("skill",&format!("{:?} effective={:?} target=[{},{}] cost={} blood_cost={} direct_heal={} direct_damage={} direct_mana={} bonus={} armed={} actual_heal={} actual_damage={} actual_mana={}",skill,effective,target.0+1,target.1+1,pay.mana,pay.blood,e.hp,e.damage,e.mp,e.bonus,e.armed,actual_heal,actual_damage,actual_mana),&before,&self.snapshot());
             } else {
                 if !self.enemy_turn
-                    && content::reachable_rows(id, actor_hp, cast_rules) < N
+                    && content::reachable_depth(id, actor_hp, cast_rules) < N
                     && !content::legal_target(id, actor_hp, skill, &self.b, target, cast_rules)
                 {
                     if self.feedback_time <= 0. || self.feedback != self.rejection_message(false) {

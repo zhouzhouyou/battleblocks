@@ -261,7 +261,7 @@ pub fn preview_move_in(
     } else if !crate::board::hero_swap_in(&mut copy, a, c, hero, rules.board_mechanics) {
         return None;
     }
-    if a.1 < N - reachable_rows(hero, hp, rules) || c.1 < N - reachable_rows(hero, hp, rules) {
+    if !reachable_cell(hero, hp, a, rules) || !reachable_cell(hero, hp, c, rules) {
         return None;
     }
     let rules = Rules {

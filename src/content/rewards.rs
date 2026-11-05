@@ -259,6 +259,7 @@ pub fn settle_batch_in(
                     rules.opponent_mp,
                     Rules {
                         awake,
+                        board_mechanics: rules.board_mechanics,
                         statuses: rules.opponent_statuses,
                         opponent_statuses: rules.statuses,
                         opponent_mp: mp,

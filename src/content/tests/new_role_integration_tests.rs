@@ -55,7 +55,7 @@ fn dwarf_reach_tracks_current_health_and_jump_and_preserves_rejected_targets() {
     let original = b;
     let cap = health_cap(DWARF, true);
     assert_eq!(
-        reachable_rows(
+        reachable_depth(
             DWARF,
             cap,
             Rules {
@@ -70,9 +70,9 @@ fn dwarf_reach_tracks_current_health_and_jump_and_preserves_rejected_targets() {
             awake: true,
             ..Default::default()
         };
-        assert_eq!(reachable_rows(DWARF, cap * percent / 100, rules), rows);
+        assert_eq!(reachable_depth(DWARF, cap * percent / 100, rules), rows);
         assert_eq!(
-            reachable_rows(
+            reachable_depth(
                 DWARF,
                 cap * percent / 100,
                 Rules {
@@ -350,4 +350,125 @@ fn hammer_is_normal_elimination_plus_eighty_and_preview_never_draws_randomness()
         },
     );
     assert_eq!(crate::rng::state(), rng);
+}
+
+fn gravity_rules(g: crate::board::Gravity) -> Rules {
+    let mut mechanics = crate::board::BoardMechanics::default();
+    mechanics.set_gravity(g, false);
+    Rules {
+        board_mechanics: mechanics,
+        awake: true,
+        ..Default::default()
+    }
+}
+
+#[test]
+fn gravity_depth_measures_from_the_settling_edge() {
+    use crate::board::Gravity;
+    assert_eq!(Gravity::Down.depth((3, 0)), 7);
+    assert_eq!(Gravity::Down.depth((3, 7)), 0);
+    assert_eq!(Gravity::Up.depth((3, 0)), 0);
+    assert_eq!(Gravity::Up.depth((3, 7)), 7);
+    assert_eq!(Gravity::Left.depth((0, 3)), 0);
+    assert_eq!(Gravity::Left.depth((7, 3)), 7);
+    assert_eq!(Gravity::Right.depth((0, 3)), 7);
+    assert_eq!(Gravity::Right.depth((7, 3)), 0);
+    for g in [Gravity::Up, Gravity::Down, Gravity::Left, Gravity::Right] {
+        for y in 0..N {
+            for x in 0..N {
+                assert_eq!(g.upstream((x, y)), g.depth((x, y)) >= N / 2);
+            }
+        }
+    }
+}
+
+#[test]
+fn dwarf_short_reach_and_blocked_damage_follow_gravity() {
+    use crate::board::Gravity;
+    let b = [[0; N]; N];
+    let cap = 700;
+    let settle = |cells: &[(usize, usize)], g| {
+        let rules = Rules {
+            opponent: Some((DWARF, false)),
+            swap_clear: true,
+            ..gravity_rules(g)
+        };
+        settle_batch_in(
+            KNIGHT,
+            cap,
+            0,
+            cap,
+            clear_batch_in(KNIGHT, cap, 0, &b, cells, 1, 0, rules),
+            rules,
+        )
+        .damage
+    };
+    let top = [(0, 0), (1, 0), (2, 0)];
+    let bottom = [(0, 5), (1, 5), (2, 5)];
+    assert_eq!(
+        (settle(&top, Gravity::Down), settle(&bottom, Gravity::Down)),
+        (0, 18)
+    );
+    assert_eq!(
+        (settle(&top, Gravity::Up), settle(&bottom, Gravity::Up)),
+        (18, 0)
+    );
+    let left = [(0, 0), (0, 1), (0, 2)];
+    let right = [(5, 0), (6, 0), (7, 0)];
+    assert_eq!(
+        (
+            settle(&left, Gravity::Right),
+            settle(&right, Gravity::Right)
+        ),
+        (0, 18)
+    );
+    assert_eq!(
+        (settle(&left, Gravity::Left), settle(&right, Gravity::Left)),
+        (18, 0)
+    );
+
+    for (g, allowed, refused) in [
+        (Gravity::Down, ((1, 4), (1, 5)), ((1, 3), (1, 4))),
+        (Gravity::Up, ((1, 2), (1, 3)), ((1, 4), (1, 5))),
+        (Gravity::Left, ((1, 4), (1, 5)), ((5, 4), (5, 5))),
+        (Gravity::Right, ((5, 4), (5, 5)), ((1, 4), (1, 5))),
+    ] {
+        let rules = gravity_rules(g);
+        assert!(
+            legal_swap_region(DWARF, cap, allowed.0, allowed.1, rules),
+            "{g:?} should allow the settling side"
+        );
+        assert!(
+            !legal_swap_region(DWARF, cap, refused.0, refused.1, rules),
+            "{g:?} should refuse the upstream side"
+        );
+    }
+    assert!(!legal_target(
+        DWARF,
+        cap,
+        Skill::Forge,
+        &b,
+        (4, 1),
+        gravity_rules(Gravity::Left)
+    ));
+    assert!(legal_target(
+        DWARF,
+        cap,
+        Skill::Forge,
+        &b,
+        (2, 1),
+        gravity_rules(Gravity::Left)
+    ));
+    for _ in 0..32 {
+        let target = random_reachable_target(DWARF, cap, gravity_rules(Gravity::Right));
+        assert!(target.0 >= N - 4, "{target:?}");
+    }
+    assert_eq!(
+        reachable_depth(
+            DWARF,
+            health_cap(DWARF, true) * 40 / 100,
+            gravity_rules(Gravity::Up)
+        ),
+        7
+    );
 }

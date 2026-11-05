@@ -22,15 +22,21 @@ pub fn handle(
         (AbilityId::Passive(Passive::Short), RuleEvent::Incoming { reward })
             if reward.resource == Resource::Damage && reward.amount > 0 =>
         {
-            if matches!(reward.current_source(),EventSource::Tile{position:(_,y),from_swap:true,..} if y<N/2)
+            if let EventSource::Tile {
+                position,
+                from_swap: true,
+                ..
+            } = reward.current_source()
             {
-                reward.amount = 0;
-                trigger(out, ctx.owner, id, Some("Dwarf.evade"));
+                if ctx.rules.board_mechanics.gravity().upstream(position) {
+                    reward.amount = 0;
+                    trigger(out, ctx.owner, id, Some("Dwarf.evade"));
+                }
             }
         }
-        (AbilityId::Passive(Passive::Short), RuleEvent::Reach { rows }) => **rows = 4,
-        (AbilityId::Passive(Passive::Grudge), RuleEvent::Reach { rows }) => {
-            **rows += [80, 60, 40]
+        (AbilityId::Passive(Passive::Short), RuleEvent::Reach { depth }) => **depth = 4,
+        (AbilityId::Passive(Passive::Grudge), RuleEvent::Reach { depth }) => {
+            **depth += [80, 60, 40]
                 .iter()
                 .filter(|&&p| ctx.hp * 100 <= health_cap(ctx.hero, true) * p)
                 .count()

@@ -320,7 +320,7 @@ pub enum RuleEvent<'a> {
         allowed: &'a mut bool,
     },
     Reach {
-        rows: &'a mut usize,
+        depth: &'a mut usize,
     },
     Movement {
         profile: &'a mut MovementProfile,
