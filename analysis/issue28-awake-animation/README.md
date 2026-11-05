@@ -5,7 +5,7 @@
 ## 版本与复现入口
 
 - 开工基线：`c0aa438fa4077785706a26276795efbb93e886d6`，当时最新 origin/main，包含已合并 #31。
-- 实现：`c6e5b9f81e4b62aed203152c9bc115641fabae4a`；本目录后续证据/工具提交不改变该运行时。精确源文件、debug/release/WASM 和 ZIP 哈希见 [source-binding.json](source-binding.json)。
+- 主实现：`c6e5b9f81e4b62aed203152c9bc115641fabae4a`；其41场录像对应的精确源文件、debug/release/WASM和ZIP哈希见[source-binding.json](source-binding.json)。独立审查后修复提交`1cea8b3865a948075be47a6bfb2d15d54ac86cdd`仅修觉醒坚守护环淡出，最终重建与复验独立保存于[review-fix/source-binding.json](review-fix/source-binding.json)，[运行时差异](review-fix/runtime-diff.patch)明确适用范围，不改写原版录像标签。
 - 正式 Windows 录像：[final/capture.json](final/capture.json)，逐场指令、视频/日志哈希、60Hz截图像素哈希俱全。`research/` 为开工觉醒基线，`baseline/` 为普通版回归基线。两者二进制均为已核实的 PR31 原二进制。
 - 测量与截图统一使用 `tools/wizard_recording_frames.py::frames` 的 `fps=60` 采样流，编号 n 对应 n/60 秒；不混用原编码帧号。检查器逐像素复核导出截图确实来自同一采样流。
 - 指定 Python：`.build-tools/python-path.txt`；图像依赖 `.build-tools/art-site`，录像依赖 `.build-tools/media-site`。`PYTHONUTF8=1`。正式场景由 `tools/capture_legacy_evidence.py` 驱动真实 Session 控制台，不重写战斗规则。
@@ -76,4 +76,6 @@
 
 ## 独立审查与macOS
 
-自查完成后执行用户指定的一个medium独立审查，记录精确base/head、问题归因与修复复验；结果追加于本目录。macOS由Draft PR工作流构建/测试/headless/打包，下载核验后补充。此段不代表未运行步骤已经通过。
+用户指定的一个medium代理已完成[独立审查](INDEPENDENT-REVIEW.md)：1项PR引入的P2非Draft阻塞问题——觉醒坚守护环结束前仍约38%透明度而突消。已用新提交分离护环完整淡出与棋盘收集进度；同一代理代码复核通过，运行时复验追加于review-fix。普通旧draw传入完全相同的两份progress；棋盘粒子和其他技能参数不变。
+
+macOS由Draft PR工作流构建/测试/headless/打包，下载核验后补充。此段不代表未运行步骤已经通过。

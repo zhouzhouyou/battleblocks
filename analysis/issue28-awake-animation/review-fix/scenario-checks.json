@@ -1,0 +1,24 @@
+{
+  "source_commit": "1cea8b3865a948075be47a6bfb2d15d54ac86cdd",
+  "binary_sha256": "8f315d12dcb8a804150e60a32f42f5043ae8f77b16811f111e384d6eddba0789",
+  "verified_scene_count": 5,
+  "checks": {
+    "knight-awake-guard": [
+      "video/log hashes and trigger verified"
+    ],
+    "knight-awake-guard-no-target": [
+      "video/log hashes and trigger verified",
+      "no own clear resolution"
+    ],
+    "knight-awake-ai-enemy": [
+      "video/log hashes and trigger verified",
+      "actual awakened AI cast"
+    ],
+    "knight-normal-guard": [
+      "video/log hashes and trigger verified"
+    ],
+    "goblin-awake-greedy": [
+      "video/log hashes and trigger verified"
+    ]
+  }
+}
