@@ -25,6 +25,7 @@ fn every_character_webp_decodes_with_its_original_atlas_dimensions() {
 fn new_role_atlases_have_twelve_distinct_poses_per_action_and_shared_palettes() {
     use std::hash::{Hash, Hasher};
     for id in [
+        2, // Legacy wizard now uses the same production atlas contract.
         content::KNIGHT,
         content::DWARF,
         content::PRIEST,
@@ -76,7 +77,15 @@ fn new_role_atlases_have_twelve_distinct_poses_per_action_and_shared_palettes() 
             }
             assert_eq!(hashes.len(), 12, "duplicate poses in role {id}");
             if clip.playback == sprites::Playback::Loop {
-                assert_eq!(max_height, 320, "uniform idle display height {id}");
+                if id == 2 {
+                    // Both forms use ONE scale; do not independently stretch the shorter pose.
+                    assert!(
+                        (316..=320).contains(&max_height),
+                        "wizard idle height {max_height}"
+                    );
+                } else {
+                    assert_eq!(max_height, 320, "uniform idle display height {id}");
+                }
             }
         }
         assert!(colors.len() <= 64, "one palette across every pose and form");
@@ -477,7 +486,7 @@ fn action_metadata_preserves_legacy_fallback_and_fire_elf_sleep() {
     for id in 0..HEROES.len() {
         for asset in [&sprites::SPRITES[id], &sprites::AWAKENED[id]] {
             assert_eq!(asset.indices.len(), asset.durations.len());
-            if id < content::KNIGHT {
+            if id < content::KNIGHT && id != 2 {
                 assert!(asset.cast.is_none() && asset.sleep.is_none());
                 assert!(asset.action(true).is_none());
             } else {
@@ -486,6 +495,7 @@ fn action_metadata_preserves_legacy_fallback_and_fire_elf_sleep() {
                 assert!((cast.duration() - presentation::CAST_TIME).abs() < 1e-9);
                 assert!((asset.idle().duration() - 0.72).abs() < 1e-9);
                 assert_eq!(cast.playback, sprites::Playback::Once);
+                assert_eq!(cast.impact.is_some(), id == 2);
             }
         }
     }
@@ -494,6 +504,7 @@ fn action_metadata_preserves_legacy_fallback_and_fire_elf_sleep() {
     assert_ne!(fire.cast, fire.sleep);
     assert_eq!(fire.sleep.unwrap().frame(60.), 47);
     assert!(sprites::SPRITES[content::NUN].sleep.is_none());
+    assert_eq!(sprites::SPRITES[2].bytes, sprites::AWAKENED[2].bytes);
 }
 
 #[test]
