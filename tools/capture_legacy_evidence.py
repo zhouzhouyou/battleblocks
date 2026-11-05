@@ -44,9 +44,9 @@ skills={'knight':['charge','guard'],'elf':['strike','nature'],'goblin':['greedy'
 for scene in args.scenes.split(','):
     role,form,kind,*case=scene.split('-');case='-'.join(case)
     hero={'knight':0,'elf':1,'goblin':3,'newknight':7}[role]
-    menu=kind=='menu';slot=None if menu else skills[role].index(kind)+1
+    menu=kind=='menu';slot=None if menu or case in ('enemy','transition') else skills[role].index(kind)+1
     log=OUT/f'{scene}.jsonl';log.write_text('',encoding='utf-8')
-    commands=[] if menu else ['pause on',f'hero player {hero}','hero enemy 0','seed 280011',board(clean),'mp player 200']
+    commands=[] if menu else ['pause on',f'hero player {1 if case=="enemy" else hero}',f'hero enemy {hero if case=="enemy" else 0}','seed 280011',board(clean),'mp player 200']
     env=dict(os.environ,BATTLEBLOCKS_MEMORY_FLAGS='no_music,no_sound',BATTLEBLOCKS_LANG='zh')
     if menu: env.update(BATTLEBLOCKS_MENU_HERO=str(hero),BATTLEBLOCKS_MENU_PAGE='2' if form=='awake' else '0')
     command=[str(BIN),'--log',str(log)]
@@ -74,7 +74,14 @@ for scene in args.scenes.split(','):
         return wait(lambda r:any(e['seq']>seq and e['event']=='turn_start' and not e['after']['enemy_turn'] for e in r))
     try:
         wait(lambda r:bool(r) if menu else any(e['event']=='debug_edit' and e['detail']==commands[-1] for e in r))
-        if not menu and form=='awake':
+        if case=='enemy':
+            edit('hp enemy 1');edit('mp enemy 200')
+            seq=rows()[-1]['seq'];send('pause off');send('cast 2 2 2');playerturn(seq)
+            assert rows()[-1]['after']['awakened'][1]
+            edit('pause on');edit(board(clean));edit('seed 280011');edit('hp player 600')
+            edit('hp enemy 100');edit('mp enemy 35' if role=='elf' else 'mp enemy 80')
+            edit('buff enemy bonus 0')
+        elif not menu and form=='awake':
             edit('hp player 1');edit('mp enemy 200');edit('turn enemy')
             seq=rows()[-1]['seq'];send('pause off');playerturn(seq)
             assert rows()[-1]['after']['awakened'][0]
@@ -83,12 +90,22 @@ for scene in args.scenes.split(','):
             if kind in ('guard','blood') and case!='full':edit('hp player 100' if form=='awake' else 'hp player 300')
             if case=='delayed':edit('hp enemy 221')
             if case=='no-target':edit(board([[v if v!=1 else 0 for v in row] for row in clean]))
+            if case=='no-chain':edit(board([[1+(x+2*y)%6 for x in range(8)] for y in range(8)]))
             if case=='terminal':
                 edit('hp enemy 1');seq=rows()[-1]['seq'];send('pause off');send(f'cast {slot} 2 2');playerturn(seq)
                 assert rows()[-1]['after']['awakened'][1]
                 edit('pause on');edit(board(clean));edit('mp player 200');edit('hp enemy 1')
-            # Retire setup popups and awakening presentation before evidence starts.
-            time.sleep(3.)
+                if kind=='charge':
+                    # The first real Charge leaves one cooldown turn. Advance it
+                    # through a legal targetless Guard and the real AI turn.
+                    edit('hp player 9999');edit('hp enemy 9999')
+                    edit(board([[v if v!=1 else 0 for v in row] for row in clean]))
+                    seq=rows()[-1]['seq'];send('pause off');send('cast 2');playerturn(seq)
+                    edit('pause on');edit(board(clean));edit('mp player 200');edit('hp enemy 1')
+            if case=='transition':edit('hp player 1');edit('mp enemy 200')
+            # Presentation timers stop while paused. Warm up in the idle player
+            # turn so setup healing popups really retire before recording.
+            send('pause off');time.sleep(3.)
         else:time.sleep(3.)
         send('status');time.sleep(.15)
         video=OUT/f'{scene}.mp4';recerr=(OUT/f'{scene}-ffmpeg.log').open('w',encoding='utf-8')
@@ -97,9 +114,12 @@ for scene in args.scenes.split(','):
             stdout=subprocess.DEVNULL,stderr=recerr,creationflags=subprocess.CREATE_NO_WINDOW)
         skill=None;rollback=None
         if not menu:
-            time.sleep(.8);seq=rows()[-1]['seq'];send('pause off');send(f'cast {slot} 2 2')
-            data=wait(lambda r:any(e['seq']>seq and e['event']=='skill' for e in r))
-            skill=next(e for e in data if e['seq']>seq and e['event']=='skill')
+            time.sleep(.8);seq=rows()[-1]['seq'];send('pause off')
+            if case in ('enemy','transition'):send('turn enemy')
+            else:send(f'cast {slot} 2 2')
+            trigger='awakening' if case=='transition' else 'skill'
+            data=wait(lambda r:any(e['seq']>seq and e['event']==trigger for e in r))
+            skill=next(e for e in data if e['seq']>seq and e['event']==trigger)
             if case=='rollback':
                 time.sleep(.2);send('undo player')
                 data=wait(lambda r:any(e['seq']>skill['seq'] and e['event']=='rollback' for e in r))
@@ -117,24 +137,26 @@ for scene in args.scenes.split(','):
             if case=='switch':
                 time.sleep(.25);edit(f'hero player {hero}')
         rec.wait(timeout=18);assert rec.returncode==0;recerr.close()
-        wanted=[30,60,90,120,150,180,210,240,270,300]
+        wanted=[30,90,150,210]
         sampled={}
         for n,raw in enumerate(frames(FF,video)):
             if n in wanted:
                 shot=Image.frombytes('RGB',(1280,900),raw)
                 assert max(b-a for a,b in shot.getextrema())>100, 'Black capture'
-                name=f'{scene}-{n:03}.webp';shot.save(OUT/name,lossless=True,method=6)
+                name=f'{scene}-{n:03}.webp';shot.save(OUT/name,lossless=True,method=0)
                 sampled[str(n)]={'path':name,'rgba_sha256':hashlib.sha256(shot.convert('RGBA').tobytes()).hexdigest()}
         entry={'video':video.name,'video_sha256':sha(video),'log':log.name,'log_sha256':sha(log),
             'commands':commands+sent,'samples_60hz':sampled}
         if skill:
-            entry.update(skill_seq=skill['seq'],skill_time=skill['time'],skill_detail=skill['detail'],awake=skill['before']['awakened'][0],
-                events_after_skill=[{'event':e['event'],'delta':round(e['time']-skill['time'],6),'detail':e['detail'],'seq':e['seq']} for e in rows() if e['seq']>=skill['seq'] and e['event'] in ['skill','skill_hit','resolution','awakening','battle_end','rollback']])
+            entry.update(trigger_event=skill['event'],skill_seq=skill['seq'],skill_time=skill['time'],skill_detail=skill['detail'],awake=skill['before']['awakened'][int(case=='enemy')],
+                events_after_skill=[{'event':e['event'],'delta':round(e['time']-skill['time'],6),'detail':e['detail'],'seq':e['seq'],'enemy_turn':e['before']['enemy_turn'],'action':e['action']} for e in rows() if e['seq']>=skill['seq'] and e['event'] in ['skill','skill_hit','resolution','awakening','battle_end','rollback']])
             if case=='delayed' and kind=='greedy':
                 assert any(e['event']=='resolution' and e['delta']>1.4 for e in entry['events_after_skill'])
             if case=='pending-rollback':
-                hits=[e for e in entry['events_after_skill'] if e['event']=='skill_hit']
+                hits=[e for e in entry['events_after_skill'] if e['event']=='skill_hit' and not e['enemy_turn']]
                 assert len(hits)==1, hits
+            if case=='transition':
+                assert any(e['event']=='awakening' and 'side=player' in e['detail'] for e in entry['events_after_skill'])
             if rollback:entry['rollback_full_snapshot_equal']=True
         binding['scenes'][scene]=entry
         (OUT/'capture.json').write_text(json.dumps(binding,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')

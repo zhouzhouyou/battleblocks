@@ -1,0 +1,24 @@
+{
+  "source_commit": "c6e5b9f81e4b62aed203152c9bc115641fabae4a",
+  "wasm_sha256": "3d10b54241913ce54d990e219c0c969f7c0cdeb1d233cc37ff115441c3adcc94",
+  "url": "http://127.0.0.1:8765",
+  "observed": [
+    "WebAssembly startup and canvas render",
+    "normal and awake legacy knight selection",
+    "three awake role previews",
+    "960x675 viewport, canvas960x675, DPR1; default1280x720 letterboxed viewport",
+    "browser warning/error logs empty"
+  ],
+  "not_verified": [
+    "macOS GUI",
+    "web full combat matrix; native canonical model and Windows runtime tested separately"
+  ],
+  "screenshots": {
+    "elf-960x675.png": "ab7b4a409a08b620b4c5c447b3c22f4ad9d51e8c7d3981ed6ca7c07ac3698903",
+    "elf-awake.png": "471c1f188afff0901ab922a4a9c9c29ecdf5275562c06d354149813dae9d6c7e",
+    "goblin-960x675.png": "45189dfe59b3acdf2389ec0ee1a628a1b4b0459e091b4b6a87b2cfbb2a0425fa",
+    "goblin-awake.png": "9468f02bb753192c32b3f04d2bb93e599eb465d671212839ff7cbf2a2dee9b16",
+    "knight-960x675.png": "79087997d2593aa3dcc7ce17af7ba2a337d93d388a45b6d4031cb09a03966768",
+    "knight-awake.png": "b09ebab2f3c3b8f0e657823ba579cdc7ab99255726491e46c9f818aba7459fba"
+  }
+}

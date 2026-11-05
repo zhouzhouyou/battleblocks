@@ -1,0 +1,2948 @@
+{
+  "source_commit": "c6e5b9f81e4b62aed203152c9bc115641fabae4a",
+  "binary": "C:\\Users\\dongs\\Desktop\\battleblocks\\target\\debug\\battleblocks.exe",
+  "binary_sha256": "ee70200eaf63d9185d9e8f15e409967290196af0fc17cd5b895e6e24f971d94b",
+  "sampling": "All video export and pixel measurement use wizard_recording_frames.frames: fps=60, sample n at n/60 seconds.",
+  "device_pixels": [
+    1280,
+    900
+  ],
+  "recorder_sha256": "a03f622d58c1da5ff545cb4b2d25201c55420d684fa0a4fb958bd1f454832986",
+  "scenes": {
+    "knight-awake-menu": {
+      "video": "knight-awake-menu.mp4",
+      "video_sha256": "76aa63c7a7ccd5389ee631382c4bdc13eb8a26258072280b122daac2f77b7801",
+      "log": "knight-awake-menu.jsonl",
+      "log_sha256": "25c8b31ad3efc0fba3e1dd91cf5b540acdb061ebdf09f968666074952c3c636b",
+      "commands": [
+        "status"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "knight-awake-menu-030.webp",
+          "rgba_sha256": "05c0517732ac9e08d99ca87055875a6256263642889c4679cbc0cbbed2b77150"
+        },
+        "90": {
+          "path": "knight-awake-menu-090.webp",
+          "rgba_sha256": "b4616e63c767dd27be0f1914dda6ffbf61145e0813d7d193dd227afd87abbc01"
+        },
+        "150": {
+          "path": "knight-awake-menu-150.webp",
+          "rgba_sha256": "be3deee62f15e9f1657fd92d5d59871bbd31755a95be311d56d715fe797c858b"
+        },
+        "210": {
+          "path": "knight-awake-menu-210.webp",
+          "rgba_sha256": "096a924bd2aef9d100790b5c5d6546411859aca790668fbd57c0b135136f1233"
+        }
+      }
+    },
+    "elf-awake-menu": {
+      "video": "elf-awake-menu.mp4",
+      "video_sha256": "7ae251bb99c2f5deaa0bcd32b1ff680a59636cde77f3a31cadfcfa8c8d165554",
+      "log": "elf-awake-menu.jsonl",
+      "log_sha256": "7ebbf76bb25cce2d098281ebe42e55084e3d29934cc6cf939e4e4a0ca29a2338",
+      "commands": [
+        "status"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "elf-awake-menu-030.webp",
+          "rgba_sha256": "eb008fd93c246607c76f98d3051f0b087a5b1c7e9afa994a825ce08ac612a116"
+        },
+        "90": {
+          "path": "elf-awake-menu-090.webp",
+          "rgba_sha256": "641c62e0a9d290f84526d63a9f1e796b3e5d90cad1f5ef815625016c6043ce4f"
+        },
+        "150": {
+          "path": "elf-awake-menu-150.webp",
+          "rgba_sha256": "e8e30d00369e18d83feae0a81981171636f5915df5aaa6dbaf22474f2bb4f44a"
+        },
+        "210": {
+          "path": "elf-awake-menu-210.webp",
+          "rgba_sha256": "122b23d5ddd7df0bfdb415282e80e9a660caeb3b0ff8f8681deddd7ba6dba39d"
+        }
+      }
+    },
+    "goblin-awake-menu": {
+      "video": "goblin-awake-menu.mp4",
+      "video_sha256": "0279ae4bf136cad442b33ef1bc33f90674010cb55829389dc60defd2eb77c47b",
+      "log": "goblin-awake-menu.jsonl",
+      "log_sha256": "88cccc1a71a0737e584ffbfc413831b513374313cdc2f7ff4651dc0e0b4bdb1f",
+      "commands": [
+        "status"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "goblin-awake-menu-030.webp",
+          "rgba_sha256": "837ec585b885b0fa6404fc46ee8ea777c622351053a2470a91fccdd5b1055957"
+        },
+        "90": {
+          "path": "goblin-awake-menu-090.webp",
+          "rgba_sha256": "47f941c2f4a56199f9237d69238a40ef6eb505fa63bf32a9a78bcfabc33a9161"
+        },
+        "150": {
+          "path": "goblin-awake-menu-150.webp",
+          "rgba_sha256": "0839d0e3ab5f6f417fba0e198d76aa8399751cbb5dbfd2f52ea5f9cecea33476"
+        },
+        "210": {
+          "path": "goblin-awake-menu-210.webp",
+          "rgba_sha256": "4b8e5156f7a2eedb48e340cd62221a37f2df2a5878b3c7791e44c93200a6845f"
+        }
+      }
+    },
+    "newknight-awake-menu": {
+      "video": "newknight-awake-menu.mp4",
+      "video_sha256": "55caf2af36d49836b653721b78eabf81b0512606590384df1f9d20b7e6eb4bb0",
+      "log": "newknight-awake-menu.jsonl",
+      "log_sha256": "a7085e4d7c9a7d202d1952e800bb602d1bd38d233487e1ab19ac91e5b36a0331",
+      "commands": [
+        "status"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "newknight-awake-menu-030.webp",
+          "rgba_sha256": "94f0675893939556bcd86aaaec9027ac1dd97daae92e6b572f8ba87903c6e0b8"
+        },
+        "90": {
+          "path": "newknight-awake-menu-090.webp",
+          "rgba_sha256": "c10df364c37c49c00220846b95b43fe5e7dd65d324c7a22dc025961b0033a2cd"
+        },
+        "150": {
+          "path": "newknight-awake-menu-150.webp",
+          "rgba_sha256": "cc22757b529b510fd1687f3d69f05a91404c07a775d50603327a5da6b2beb9cc"
+        },
+        "210": {
+          "path": "newknight-awake-menu-210.webp",
+          "rgba_sha256": "65954b00bde0b7c6596b3c4256b120e5bf5f965018d2fde40ac5bed9e5caa70f"
+        }
+      }
+    },
+    "knight-awake-charge": {
+      "video": "knight-awake-charge.mp4",
+      "video_sha256": "da502383e2653a5f4afaed3972ccfbff45b074523aad288e1ad8599a3ca37b51",
+      "log": "knight-awake-charge.jsonl",
+      "log_sha256": "d4a4db357d930913ef9ece436058f270f588607f59c43f9e08dc766495fde63f",
+      "commands": [
+        "pause on",
+        "hero player 0",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "turn enemy",
+        "pause off",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 700",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 1 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "knight-awake-charge-030.webp",
+          "rgba_sha256": "88013b13fa50d9f22beaa98c055e4fe834147a3b2d32ebc39d051c59cb5867e6"
+        },
+        "90": {
+          "path": "knight-awake-charge-090.webp",
+          "rgba_sha256": "ca67c93bc440288f2efc676cdfa26c101a6c8763b4b771790de961ba34aa0026"
+        },
+        "150": {
+          "path": "knight-awake-charge-150.webp",
+          "rgba_sha256": "2e065aa22412badb5aa20e0075fa19f071194f135f35d406264a7950ebbdb937"
+        },
+        "210": {
+          "path": "knight-awake-charge-210.webp",
+          "rgba_sha256": "f8d8830e29a5269f5e5467def7a27df9d514560ec7eda9725379201582d0a4d4"
+        }
+      },
+      "skill_seq": 51,
+      "skill_time": 10.311797142028809,
+      "skill_detail": "Charge effective=Charge target=[2,2] cost=100 blood_cost=0 direct_heal=0 direct_damage=165 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Charge effective=Charge target=[2,2] cost=100 blood_cost=0 direct_heal=0 direct_damage=165 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 51,
+          "enemy_turn": false,
+          "action": 18
+        },
+        {
+          "event": "skill_hit",
+          "delta": 0.959408,
+          "detail": "Charge expected_damage=165 actual_damage=165",
+          "seq": 63,
+          "enemy_turn": false,
+          "action": 18
+        },
+        {
+          "event": "resolution",
+          "delta": 0.959973,
+          "detail": "cells=[(2, 1), (3, 1), (2, 2), (3, 2), (2, 3), (3, 3), (2, 4), (3, 4), (2, 5), (3, 5), (2, 6), (3, 6), (2, 7), (3, 7), (2, 8), (3, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=1 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 64,
+          "enemy_turn": false,
+          "action": 18
+        },
+        {
+          "event": "skill",
+          "delta": 3.336604,
+          "detail": "Charge effective=Charge target=[2,8] cost=100 blood_cost=0 direct_heal=0 direct_damage=138 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 66,
+          "enemy_turn": true,
+          "action": 19
+        },
+        {
+          "event": "skill_hit",
+          "delta": 4.248259,
+          "detail": "Charge expected_damage=138 actual_damage=138",
+          "seq": 79,
+          "enemy_turn": true,
+          "action": 19
+        },
+        {
+          "event": "resolution",
+          "delta": 4.248552,
+          "detail": "cells=[(2, 1), (3, 1), (2, 2), (3, 2), (2, 3), (3, 3), (2, 4), (3, 4), (2, 5), (3, 5), (2, 6), (3, 6), (2, 7), (3, 7), (2, 8), (3, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=1 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 80,
+          "enemy_turn": true,
+          "action": 19
+        }
+      ]
+    },
+    "knight-awake-guard": {
+      "video": "knight-awake-guard.mp4",
+      "video_sha256": "c268b99beb47dce6c24dc4faadcc7c50bc70df00fd9ffe52ba019358d9b0b6be",
+      "log": "knight-awake-guard.jsonl",
+      "log_sha256": "79f09887068ed3832e5e25e52d42322bedec47959f701ffb03f485587c6146ac",
+      "commands": [
+        "pause on",
+        "hero player 0",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "turn enemy",
+        "pause off",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 700",
+        "hp player 100",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 2 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "knight-awake-guard-030.webp",
+          "rgba_sha256": "c5ae281defba1da5d0429af4fd249689d2e71669f1615a089a8aeb2c7b786b61"
+        },
+        "90": {
+          "path": "knight-awake-guard-090.webp",
+          "rgba_sha256": "1b3c24f89f87c4ddda0d79b9e4dd1762c44a3b7a8d4c7bc5a96ad95fcd947438"
+        },
+        "150": {
+          "path": "knight-awake-guard-150.webp",
+          "rgba_sha256": "3ba4df2f1b4583cef02140bcf315c3c63351de4eabd2555c888012d07e6c17b0"
+        },
+        "210": {
+          "path": "knight-awake-guard-210.webp",
+          "rgba_sha256": "bcd5206a14c05417d15f3652cc8d2d51b5955b2b11240e6edc6b7b190229d31e"
+        }
+      },
+      "skill_seq": 54,
+      "skill_time": 10.413559675216675,
+      "skill_detail": "Guard effective=Guard target=[2,2] cost=80 blood_cost=0 direct_heal=77 direct_damage=0 direct_mana=0 bonus=0 armed=false actual_heal=77 actual_damage=0 actual_mana=0",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Guard effective=Guard target=[2,2] cost=80 blood_cost=0 direct_heal=77 direct_damage=0 direct_mana=0 bonus=0 armed=false actual_heal=77 actual_damage=0 actual_mana=0",
+          "seq": 54,
+          "enemy_turn": false,
+          "action": 19
+        },
+        {
+          "event": "resolution",
+          "delta": 0.372958,
+          "detail": "cells=[(2, 1), (7, 2), (5, 3), (3, 4), (1, 5), (8, 5), (6, 6), (4, 7), (2, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=1 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 55,
+          "enemy_turn": false,
+          "action": 19
+        },
+        {
+          "event": "skill",
+          "delta": 2.843281,
+          "detail": "Charge effective=Charge target=[2,8] cost=100 blood_cost=0 direct_heal=0 direct_damage=160 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 57,
+          "enemy_turn": true,
+          "action": 20
+        },
+        {
+          "event": "skill_hit",
+          "delta": 3.722776,
+          "detail": "Charge expected_damage=160 actual_damage=160",
+          "seq": 71,
+          "enemy_turn": true,
+          "action": 20
+        },
+        {
+          "event": "resolution",
+          "delta": 3.723123,
+          "detail": "cells=[(2, 1), (3, 1), (2, 2), (3, 2), (2, 3), (3, 3), (2, 4), (3, 4), (2, 5), (3, 5), (2, 6), (3, 6), (2, 7), (3, 7), (2, 8), (3, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=2 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 72,
+          "enemy_turn": true,
+          "action": 20
+        },
+        {
+          "event": "resolution",
+          "delta": 4.542956,
+          "detail": "cells=[(2, 1), (3, 1), (4, 1)] reward=true multiplier_percent=110 heal=6 damage=13 mana=13 chain=2 refreshed=false actual_heal=0 actual_damage=13 actual_mana=13",
+          "seq": 83,
+          "enemy_turn": true,
+          "action": 20
+        }
+      ]
+    },
+    "elf-awake-strike": {
+      "video": "elf-awake-strike.mp4",
+      "video_sha256": "3e05aa56c2823b5ea548880bf4c6f1eebf0f21392fb99ee613db317cf62ed71d",
+      "log": "elf-awake-strike.jsonl",
+      "log_sha256": "f4bb6c207c7bd02edc9922208276a55143c986cc4867c5924a736761bb804a1c",
+      "commands": [
+        "pause on",
+        "hero player 1",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "turn enemy",
+        "pause off",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 700",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 1 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "elf-awake-strike-030.webp",
+          "rgba_sha256": "49d42127965c47597b78f341307ef740b41293ed34f40693cadabebc38935171"
+        },
+        "90": {
+          "path": "elf-awake-strike-090.webp",
+          "rgba_sha256": "098622d86e09d91a516de7a5c7e6fa73a5db207bedaa11f62b222e0f8c6e7fa1"
+        },
+        "150": {
+          "path": "elf-awake-strike-150.webp",
+          "rgba_sha256": "3be44495f0e93397dfbf9e2c5135b24e5d644c670ed2a3480385fc1171cb8e05"
+        },
+        "210": {
+          "path": "elf-awake-strike-210.webp",
+          "rgba_sha256": "0e28c9eb04581434254aa7fd11c6e4222d3cf1dbd6013b2acf4d5869fcff90fa"
+        }
+      },
+      "skill_seq": 51,
+      "skill_time": 10.655343055725098,
+      "skill_detail": "Strike effective=Strike target=[2,2] cost=35 blood_cost=0 direct_heal=0 direct_damage=0 direct_mana=0 bonus=1 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Strike effective=Strike target=[2,2] cost=35 blood_cost=0 direct_heal=0 direct_damage=0 direct_mana=0 bonus=1 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 51,
+          "enemy_turn": false,
+          "action": 18
+        }
+      ]
+    },
+    "elf-awake-nature": {
+      "video": "elf-awake-nature.mp4",
+      "video_sha256": "8c686d539097f0eddfc58f6866458763010defab164355c72e49e1306d8aeaa6",
+      "log": "elf-awake-nature.jsonl",
+      "log_sha256": "10f7ad60b0b7b24b266e5493d3ab6d48604fe4d49fe454ed449aa194996f4034",
+      "commands": [
+        "pause on",
+        "hero player 1",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "turn enemy",
+        "pause off",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 700",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 2 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "elf-awake-nature-030.webp",
+          "rgba_sha256": "5b285d658a6afc262790b6871ef0f461edd18b7afb0f54871c86c8d2ca1e1f70"
+        },
+        "90": {
+          "path": "elf-awake-nature-090.webp",
+          "rgba_sha256": "a4bc2aca1b5263a694aca4bedb8c104a191939c19006fedbc5a2fea05472d1c6"
+        },
+        "150": {
+          "path": "elf-awake-nature-150.webp",
+          "rgba_sha256": "8d45c2490140f7f1933eea76c9c1078fec5deacf6b9c6abc66e4d23d9cfa3a4c"
+        },
+        "210": {
+          "path": "elf-awake-nature-210.webp",
+          "rgba_sha256": "ccca3b27c185501044f6baf45c1abc8ffd7ca122ce5a60007f74913fa33a45a0"
+        }
+      },
+      "skill_seq": 53,
+      "skill_time": 10.02915334701538,
+      "skill_detail": "Nature effective=Nature target=[2,2] cost=60 blood_cost=0 direct_heal=10 direct_damage=25 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=25 actual_mana=0",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Nature effective=Nature target=[2,2] cost=60 blood_cost=0 direct_heal=10 direct_damage=25 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=25 actual_mana=0",
+          "seq": 53,
+          "enemy_turn": false,
+          "action": 18
+        },
+        {
+          "event": "resolution",
+          "delta": 0.381148,
+          "detail": "cells=[(2, 2), (2, 3), (3, 3), (4, 3), (2, 4)] reward=true multiplier_percent=100 heal=9 damage=23 mana=18 chain=2 refreshed=false actual_heal=0 actual_damage=23 actual_mana=18",
+          "seq": 70,
+          "enemy_turn": false,
+          "action": 18
+        },
+        {
+          "event": "resolution",
+          "delta": 1.185086,
+          "detail": "cells=[(1, 2), (2, 2), (3, 2)] reward=true multiplier_percent=110 heal=0 damage=44 mana=0 chain=2 refreshed=false actual_heal=0 actual_damage=44 actual_mana=0",
+          "seq": 75,
+          "enemy_turn": false,
+          "action": 18
+        },
+        {
+          "event": "skill",
+          "delta": 3.58426,
+          "detail": "Charge effective=Charge target=[8,8] cost=100 blood_cost=0 direct_heal=0 direct_damage=131 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 77,
+          "enemy_turn": true,
+          "action": 19
+        },
+        {
+          "event": "skill_hit",
+          "delta": 4.491441,
+          "detail": "Charge expected_damage=131 actual_damage=131",
+          "seq": 89,
+          "enemy_turn": true,
+          "action": 19
+        },
+        {
+          "event": "resolution",
+          "delta": 4.491714,
+          "detail": "cells=[(7, 1), (8, 1), (7, 2), (8, 2), (7, 3), (8, 3), (7, 4), (8, 4), (7, 5), (8, 5), (7, 6), (8, 6), (7, 7), (8, 7), (7, 8), (8, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=2 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 90,
+          "enemy_turn": true,
+          "action": 19
+        },
+        {
+          "event": "resolution",
+          "delta": 5.2887,
+          "detail": "cells=[(6, 2), (7, 2), (8, 2)] reward=true multiplier_percent=110 heal=6 damage=13 mana=13 chain=2 refreshed=false actual_heal=6 actual_damage=13 actual_mana=13",
+          "seq": 101,
+          "enemy_turn": true,
+          "action": 19
+        }
+      ]
+    },
+    "goblin-awake-greedy": {
+      "video": "goblin-awake-greedy.mp4",
+      "video_sha256": "3506e73c7a3e6be4932ccc356fb48a0388a87242783c4e2b687ff819edc3375c",
+      "log": "goblin-awake-greedy.jsonl",
+      "log_sha256": "334cedf4edc4520c5f2fad3dc5ead772b25277a1ead5b3df83582eb274060ce5",
+      "commands": [
+        "pause on",
+        "hero player 3",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "turn enemy",
+        "pause off",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 700",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 1 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "goblin-awake-greedy-030.webp",
+          "rgba_sha256": "f8632b78f6c9c6e4ccaa3fe77c7057e93ea8e6f0e8f478fe0af3ab7542fbd3da"
+        },
+        "90": {
+          "path": "goblin-awake-greedy-090.webp",
+          "rgba_sha256": "18d03ad01cd001a512be412fdd3e87839eb0e9f681de53e3719fc6f432c26f8f"
+        },
+        "150": {
+          "path": "goblin-awake-greedy-150.webp",
+          "rgba_sha256": "841eefa18201562808a80867bee6b79133111f77dfb0a778d748ff4d2a8a6d27"
+        },
+        "210": {
+          "path": "goblin-awake-greedy-210.webp",
+          "rgba_sha256": "7231193cb3906f7a5f8ab20d123bae46321767a614f137669564aff0d051b89f"
+        }
+      },
+      "skill_seq": 59,
+      "skill_time": 10.241584300994873,
+      "skill_detail": "Greedy effective=Greedy target=[2,2] cost=25 blood_cost=0 direct_heal=3 direct_damage=9 direct_mana=13 bonus=0 armed=false actual_heal=0 actual_damage=9 actual_mana=13",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Greedy effective=Greedy target=[2,2] cost=25 blood_cost=0 direct_heal=3 direct_damage=9 direct_mana=13 bonus=0 armed=false actual_heal=0 actual_damage=9 actual_mana=13",
+          "seq": 59,
+          "enemy_turn": false,
+          "action": 18
+        },
+        {
+          "event": "resolution",
+          "delta": 0.3927,
+          "detail": "cells=[(2, 2), (3, 2), (2, 3), (3, 3)] reward=true multiplier_percent=100 heal=6 damage=18 mana=29 chain=2 refreshed=false actual_heal=0 actual_damage=18 actual_mana=12",
+          "seq": 71,
+          "enemy_turn": false,
+          "action": 18
+        },
+        {
+          "event": "resolution",
+          "delta": 1.180571,
+          "detail": "cells=[(1, 2), (2, 2), (3, 2)] reward=true multiplier_percent=110 heal=0 damage=39 mana=0 chain=2 refreshed=false actual_heal=0 actual_damage=39 actual_mana=0",
+          "seq": 75,
+          "enemy_turn": false,
+          "action": 18
+        },
+        {
+          "event": "skill",
+          "delta": 3.54485,
+          "detail": "Charge effective=Charge target=[8,8] cost=100 blood_cost=0 direct_heal=0 direct_damage=131 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 77,
+          "enemy_turn": true,
+          "action": 19
+        },
+        {
+          "event": "skill_hit",
+          "delta": 4.47647,
+          "detail": "Charge expected_damage=131 actual_damage=131",
+          "seq": 89,
+          "enemy_turn": true,
+          "action": 19
+        },
+        {
+          "event": "resolution",
+          "delta": 4.47675,
+          "detail": "cells=[(7, 1), (8, 1), (7, 2), (8, 2), (7, 3), (8, 3), (7, 4), (8, 4), (7, 5), (8, 5), (7, 6), (8, 6), (7, 7), (8, 7), (7, 8), (8, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=1 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 90,
+          "enemy_turn": true,
+          "action": 19
+        }
+      ]
+    },
+    "goblin-awake-blood": {
+      "video": "goblin-awake-blood.mp4",
+      "video_sha256": "427641b03f6ffc7bdff8fe0316c1ce8616344827465337e3230acd159b585d1e",
+      "log": "goblin-awake-blood.jsonl",
+      "log_sha256": "8fa184a14323736a29855fc01f4c611668c78ef8e377e2df63854c80df7cda0c",
+      "commands": [
+        "pause on",
+        "hero player 3",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "turn enemy",
+        "pause off",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 700",
+        "hp player 100",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 2 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "goblin-awake-blood-030.webp",
+          "rgba_sha256": "8787b4200e5e2acb4d5f2898203ac665dcb986d72568328f5439d8448cec32ac"
+        },
+        "90": {
+          "path": "goblin-awake-blood-090.webp",
+          "rgba_sha256": "ab561a6389aa264e08de5cb2cfa516e35abc76ca30affba4ad8f27ec553c4210"
+        },
+        "150": {
+          "path": "goblin-awake-blood-150.webp",
+          "rgba_sha256": "d1d7a64e30272bbcea88c7c7a4fe6a20bd096683c48b2f5f071c4ca611adda0b"
+        },
+        "210": {
+          "path": "goblin-awake-blood-210.webp",
+          "rgba_sha256": "4dccdc5a3df525fe289d4e636613b7203701deb4ba78b7f90626cd3666967795"
+        }
+      },
+      "skill_seq": 54,
+      "skill_time": 10.294785499572754,
+      "skill_detail": "Blood effective=Blood target=[2,2] cost=80 blood_cost=0 direct_heal=100 direct_damage=0 direct_mana=0 bonus=0 armed=false actual_heal=100 actual_damage=0 actual_mana=0",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Blood effective=Blood target=[2,2] cost=80 blood_cost=0 direct_heal=100 direct_damage=0 direct_mana=0 bonus=0 armed=false actual_heal=100 actual_damage=0 actual_mana=0",
+          "seq": 54,
+          "enemy_turn": false,
+          "action": 19
+        },
+        {
+          "event": "skill",
+          "delta": 2.002402,
+          "detail": "Charge effective=Charge target=[3,8] cost=100 blood_cost=0 direct_heal=0 direct_damage=132 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 56,
+          "enemy_turn": true,
+          "action": 20
+        },
+        {
+          "event": "skill_hit",
+          "delta": 2.920509,
+          "detail": "Charge expected_damage=132 actual_damage=132",
+          "seq": 67,
+          "enemy_turn": true,
+          "action": 20
+        },
+        {
+          "event": "resolution",
+          "delta": 2.92088,
+          "detail": "cells=[(3, 1), (4, 1), (3, 2), (4, 2), (3, 3), (4, 3), (3, 4), (4, 4), (3, 5), (4, 5), (3, 6), (4, 6), (3, 7), (4, 7), (3, 8), (4, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=1 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 68,
+          "enemy_turn": true,
+          "action": 20
+        }
+      ]
+    },
+    "goblin-awake-greedy-delayed": {
+      "video": "goblin-awake-greedy-delayed.mp4",
+      "video_sha256": "e8017d2ac01170ede122b9e9023c369fa1b2b6992cbd824463a3351ee2ef0b6a",
+      "log": "goblin-awake-greedy-delayed.jsonl",
+      "log_sha256": "d16f75ae3063679cee129969d53e682bdd6e9efbdcc9b459075760b706f939bd",
+      "commands": [
+        "pause on",
+        "hero player 3",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "turn enemy",
+        "pause off",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 700",
+        "hp enemy 221",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 1 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "goblin-awake-greedy-delayed-030.webp",
+          "rgba_sha256": "1c0decda9b4cc31ffd2527d988f325aabab8b4e589432c0a58d14a8f8f919fed"
+        },
+        "90": {
+          "path": "goblin-awake-greedy-delayed-090.webp",
+          "rgba_sha256": "54098739e1685850f5230af3be0e87e27c8ceb3a87c5e160e3762f0480fe92d0"
+        },
+        "150": {
+          "path": "goblin-awake-greedy-delayed-150.webp",
+          "rgba_sha256": "85bf7df92af531e8ccfed3f87c06a29113d3236adcb6d7f385399657e20839f8"
+        },
+        "210": {
+          "path": "goblin-awake-greedy-delayed-210.webp",
+          "rgba_sha256": "cc82698b4138b872be9e13fab1e404d4d0305ab7d708fb492a0c81382e775c5f"
+        }
+      },
+      "skill_seq": 62,
+      "skill_time": 10.091509819030762,
+      "skill_detail": "Greedy effective=Greedy target=[2,2] cost=25 blood_cost=0 direct_heal=3 direct_damage=9 direct_mana=13 bonus=0 armed=false actual_heal=0 actual_damage=9 actual_mana=13",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Greedy effective=Greedy target=[2,2] cost=25 blood_cost=0 direct_heal=3 direct_damage=9 direct_mana=13 bonus=0 armed=false actual_heal=0 actual_damage=9 actual_mana=13",
+          "seq": 62,
+          "enemy_turn": false,
+          "action": 19
+        },
+        {
+          "event": "resolution",
+          "delta": 1.549735,
+          "detail": "cells=[(2, 2), (3, 2), (2, 3), (3, 3)] reward=true multiplier_percent=100 heal=6 damage=18 mana=29 chain=2 refreshed=false actual_heal=0 actual_damage=18 actual_mana=12",
+          "seq": 74,
+          "enemy_turn": false,
+          "action": 19
+        },
+        {
+          "event": "resolution",
+          "delta": 2.324946,
+          "detail": "cells=[(1, 2), (2, 2), (3, 2)] reward=true multiplier_percent=110 heal=0 damage=39 mana=0 chain=2 refreshed=false actual_heal=0 actual_damage=39 actual_mana=0",
+          "seq": 78,
+          "enemy_turn": false,
+          "action": 19
+        },
+        {
+          "event": "skill",
+          "delta": 4.71538,
+          "detail": "Charge effective=Charge target=[8,8] cost=100 blood_cost=0 direct_heal=0 direct_damage=163 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 80,
+          "enemy_turn": true,
+          "action": 20
+        },
+        {
+          "event": "skill_hit",
+          "delta": 5.640748,
+          "detail": "Charge expected_damage=163 actual_damage=163",
+          "seq": 93,
+          "enemy_turn": true,
+          "action": 20
+        },
+        {
+          "event": "resolution",
+          "delta": 5.640938,
+          "detail": "cells=[(7, 1), (8, 1), (7, 2), (8, 2), (7, 3), (8, 3), (7, 4), (8, 4), (7, 5), (8, 5), (7, 6), (8, 6), (7, 7), (8, 7), (7, 8), (8, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=1 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 94,
+          "enemy_turn": true,
+          "action": 20
+        }
+      ]
+    },
+    "knight-awake-charge-delayed": {
+      "video": "knight-awake-charge-delayed.mp4",
+      "video_sha256": "27bcf9b2956e4c015d5fb4ba16603beea911482e5a42acf458a50891d101942a",
+      "log": "knight-awake-charge-delayed.jsonl",
+      "log_sha256": "f3a2ffff4308ad67fc45039850c12da2ad76f6161eeb26c37692bba2d0d7b4a3",
+      "commands": [
+        "pause on",
+        "hero player 0",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "turn enemy",
+        "pause off",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 700",
+        "hp enemy 221",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 1 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "knight-awake-charge-delayed-030.webp",
+          "rgba_sha256": "cb1e45fe261bf1333dc44124e35098d66661c1a566cd3ef9a019b7e97802b8c2"
+        },
+        "90": {
+          "path": "knight-awake-charge-delayed-090.webp",
+          "rgba_sha256": "bb300d4c23863ce6f1fb25718fb15dc817b923df9fee87b341dd33af0981ce3d"
+        },
+        "150": {
+          "path": "knight-awake-charge-delayed-150.webp",
+          "rgba_sha256": "494a1e4045d7854237bd87ce2fe23433c79c8ceb17b63828726dbef422221014"
+        },
+        "210": {
+          "path": "knight-awake-charge-delayed-210.webp",
+          "rgba_sha256": "bec2290a555f4f1869a27410d4f9aedb7ee04f58a86f92d9a62c72c3fb882e27"
+        }
+      },
+      "skill_seq": 53,
+      "skill_time": 10.361061334609985,
+      "skill_detail": "Charge effective=Charge target=[2,2] cost=100 blood_cost=0 direct_heal=0 direct_damage=165 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Charge effective=Charge target=[2,2] cost=100 blood_cost=0 direct_heal=0 direct_damage=165 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 53,
+          "enemy_turn": false,
+          "action": 19
+        },
+        {
+          "event": "awakening",
+          "delta": 1.032486,
+          "detail": "side=enemy hero=0 damage=165 restored=329 cap=385 cause=damage",
+          "seq": 55,
+          "enemy_turn": false,
+          "action": 19
+        },
+        {
+          "event": "skill_hit",
+          "delta": 1.050947,
+          "detail": "Charge expected_damage=165 actual_damage=165",
+          "seq": 66,
+          "enemy_turn": false,
+          "action": 19
+        },
+        {
+          "event": "resolution",
+          "delta": 2.149163,
+          "detail": "cells=[(2, 1), (3, 1), (2, 2), (3, 2), (2, 3), (3, 3), (2, 4), (3, 4), (2, 5), (3, 5), (2, 6), (3, 6), (2, 7), (3, 7), (2, 8), (3, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=1 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 67,
+          "enemy_turn": false,
+          "action": 19
+        },
+        {
+          "event": "skill",
+          "delta": 4.527338,
+          "detail": "Charge effective=Charge target=[2,8] cost=100 blood_cost=0 direct_heal=0 direct_damage=172 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 69,
+          "enemy_turn": true,
+          "action": 20
+        },
+        {
+          "event": "skill_hit",
+          "delta": 5.495216,
+          "detail": "Charge expected_damage=172 actual_damage=172",
+          "seq": 83,
+          "enemy_turn": true,
+          "action": 20
+        },
+        {
+          "event": "resolution",
+          "delta": 5.495587,
+          "detail": "cells=[(2, 1), (3, 1), (2, 2), (3, 2), (2, 3), (3, 3), (2, 4), (3, 4), (2, 5), (3, 5), (2, 6), (3, 6), (2, 7), (3, 7), (2, 8), (3, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=1 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 84,
+          "enemy_turn": true,
+          "action": 20
+        }
+      ]
+    },
+    "knight-awake-charge-pause": {
+      "video": "knight-awake-charge-pause.mp4",
+      "video_sha256": "e422ed29361c2254ad00e984b3387a19641cc359e6775b13bed35ccd05ce4cf4",
+      "log": "knight-awake-charge-pause.jsonl",
+      "log_sha256": "43a1333d6f2c80e5291d83ee3aa73554082c9e3d652ae2209f501a4a3e48a961",
+      "commands": [
+        "pause on",
+        "hero player 0",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "turn enemy",
+        "pause off",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 700",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 1 2 2",
+        "pause on",
+        "pause off"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "knight-awake-charge-pause-030.webp",
+          "rgba_sha256": "a72ac47e0da9738f80bdb42efa25f9cde7473d9389f279f521598bf91c3d0bd0"
+        },
+        "90": {
+          "path": "knight-awake-charge-pause-090.webp",
+          "rgba_sha256": "2136a1714504a9fc467e5b409d94d7162f87108a32924775865683281e40b369"
+        },
+        "150": {
+          "path": "knight-awake-charge-pause-150.webp",
+          "rgba_sha256": "12d2f50813f57cece3049c9c7fd8f6037b84d0933924fe719dea169295dcf015"
+        },
+        "210": {
+          "path": "knight-awake-charge-pause-210.webp",
+          "rgba_sha256": "bfd601edacb0b044f13be21a74f58f400a5923bcfcf4ddc11f2fd57d90a4a703"
+        }
+      },
+      "skill_seq": 51,
+      "skill_time": 10.218574047088623,
+      "skill_detail": "Charge effective=Charge target=[2,2] cost=100 blood_cost=0 direct_heal=0 direct_damage=165 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Charge effective=Charge target=[2,2] cost=100 blood_cost=0 direct_heal=0 direct_damage=165 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 51,
+          "enemy_turn": false,
+          "action": 18
+        },
+        {
+          "event": "skill_hit",
+          "delta": 2.763529,
+          "detail": "Charge expected_damage=165 actual_damage=165",
+          "seq": 67,
+          "enemy_turn": false,
+          "action": 20
+        },
+        {
+          "event": "resolution",
+          "delta": 2.763994,
+          "detail": "cells=[(2, 1), (3, 1), (2, 2), (3, 2), (2, 3), (3, 3), (2, 4), (3, 4), (2, 5), (3, 5), (2, 6), (3, 6), (2, 7), (3, 7), (2, 8), (3, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=1 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 68,
+          "enemy_turn": false,
+          "action": 20
+        },
+        {
+          "event": "skill",
+          "delta": 5.158871,
+          "detail": "Charge effective=Charge target=[2,8] cost=100 blood_cost=0 direct_heal=0 direct_damage=138 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 70,
+          "enemy_turn": true,
+          "action": 21
+        },
+        {
+          "event": "skill_hit",
+          "delta": 6.015181,
+          "detail": "Charge expected_damage=138 actual_damage=138",
+          "seq": 83,
+          "enemy_turn": true,
+          "action": 21
+        },
+        {
+          "event": "resolution",
+          "delta": 6.015349,
+          "detail": "cells=[(2, 1), (3, 1), (2, 2), (3, 2), (2, 3), (3, 3), (2, 4), (3, 4), (2, 5), (3, 5), (2, 6), (3, 6), (2, 7), (3, 7), (2, 8), (3, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=1 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 84,
+          "enemy_turn": true,
+          "action": 21
+        }
+      ]
+    },
+    "knight-awake-charge-pending-rollback": {
+      "video": "knight-awake-charge-pending-rollback.mp4",
+      "video_sha256": "3e62568c5eaf42ee8e1828f8a03b7728afa5f8d481d0728f7bb87c4fe50e90a9",
+      "log": "knight-awake-charge-pending-rollback.jsonl",
+      "log_sha256": "540ea168b64fe62958be36e2c4b585b147878f4bb60ede92861037901cb0c214",
+      "commands": [
+        "pause on",
+        "hero player 0",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "turn enemy",
+        "pause off",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 700",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 1 2 2",
+        "pause on",
+        "mp player 100",
+        "undo",
+        "pause off"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "knight-awake-charge-pending-rollback-030.webp",
+          "rgba_sha256": "063580f0d3b66e2e7285bfe257f91dd94debdc0bf5f086e3c4cc898001b84d4b"
+        },
+        "90": {
+          "path": "knight-awake-charge-pending-rollback-090.webp",
+          "rgba_sha256": "bd8119e6ccacceb9f3e5d274be50859f525b1f163442aa62d07485985f541729"
+        },
+        "150": {
+          "path": "knight-awake-charge-pending-rollback-150.webp",
+          "rgba_sha256": "fdc4c9b962d8a1edd47bdb3c220b2f51966b32820606fc213a1a75fc37921db5"
+        },
+        "210": {
+          "path": "knight-awake-charge-pending-rollback-210.webp",
+          "rgba_sha256": "22189dbef733f175cd81d6935f1cf3acc8c1494cb68c7864bb07884d34fca9a5"
+        }
+      },
+      "skill_seq": 51,
+      "skill_time": 10.203208208084106,
+      "skill_detail": "Charge effective=Charge target=[2,2] cost=100 blood_cost=0 direct_heal=0 direct_damage=165 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Charge effective=Charge target=[2,2] cost=100 blood_cost=0 direct_heal=0 direct_damage=165 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 51,
+          "enemy_turn": false,
+          "action": 18
+        },
+        {
+          "event": "rollback",
+          "delta": 0.594865,
+          "detail": "Restored before action 20; command: undo",
+          "seq": 57,
+          "enemy_turn": false,
+          "action": 19
+        },
+        {
+          "event": "skill_hit",
+          "delta": 1.558036,
+          "detail": "Charge expected_damage=165 actual_damage=165",
+          "seq": 71,
+          "enemy_turn": false,
+          "action": 21
+        },
+        {
+          "event": "resolution",
+          "delta": 1.558399,
+          "detail": "cells=[(2, 1), (3, 1), (2, 2), (3, 2), (2, 3), (3, 3), (2, 4), (3, 4), (2, 5), (3, 5), (2, 6), (3, 6), (2, 7), (3, 7), (2, 8), (3, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=1 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 72,
+          "enemy_turn": false,
+          "action": 21
+        },
+        {
+          "event": "skill",
+          "delta": 3.954221,
+          "detail": "Charge effective=Charge target=[2,8] cost=100 blood_cost=0 direct_heal=0 direct_damage=138 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 74,
+          "enemy_turn": true,
+          "action": 22
+        },
+        {
+          "event": "skill_hit",
+          "delta": 4.866306,
+          "detail": "Charge expected_damage=138 actual_damage=138",
+          "seq": 87,
+          "enemy_turn": true,
+          "action": 22
+        },
+        {
+          "event": "resolution",
+          "delta": 4.8666,
+          "detail": "cells=[(2, 1), (3, 1), (2, 2), (3, 2), (2, 3), (3, 3), (2, 4), (3, 4), (2, 5), (3, 5), (2, 6), (3, 6), (2, 7), (3, 7), (2, 8), (3, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=1 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 88,
+          "enemy_turn": true,
+          "action": 22
+        }
+      ]
+    },
+    "knight-awake-charge-rollback": {
+      "video": "knight-awake-charge-rollback.mp4",
+      "video_sha256": "d293c397d3a5fb99d7ad276e49a326d6210063fdd6203c823048140629aff7fd",
+      "log": "knight-awake-charge-rollback.jsonl",
+      "log_sha256": "3df1b85751fc171f412995e68ae84ad3372d2940ec6fc8946b39ad22cc398e66",
+      "commands": [
+        "pause on",
+        "hero player 0",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "turn enemy",
+        "pause off",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 700",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 1 2 2",
+        "undo player",
+        "pause on"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "knight-awake-charge-rollback-030.webp",
+          "rgba_sha256": "a2ef8eb4fba405c02e9ebdf17ca540debc6507787972f49dbfaa43d58628a7c5"
+        },
+        "90": {
+          "path": "knight-awake-charge-rollback-090.webp",
+          "rgba_sha256": "05eee1e53c55ec5763e299481e3fa9aa5627580703261604088cdf8cef6d1c1b"
+        },
+        "150": {
+          "path": "knight-awake-charge-rollback-150.webp",
+          "rgba_sha256": "f52fa19592a1d8c6c92b5889d59a1522b9bad9d8b7cbd94c8c705271eb516a60"
+        },
+        "210": {
+          "path": "knight-awake-charge-rollback-210.webp",
+          "rgba_sha256": "b39795fea8101286666af2ff9d3911ba48b07bd93c91e198e4f923bc17f0b0e8"
+        }
+      },
+      "skill_seq": 51,
+      "skill_time": 9.998491048812866,
+      "skill_detail": "Charge effective=Charge target=[2,2] cost=100 blood_cost=0 direct_heal=0 direct_damage=165 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Charge effective=Charge target=[2,2] cost=100 blood_cost=0 direct_heal=0 direct_damage=165 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 51,
+          "enemy_turn": false,
+          "action": 18
+        },
+        {
+          "event": "rollback",
+          "delta": 0.454615,
+          "detail": "Restored before action 18; command: undo player",
+          "seq": 53,
+          "enemy_turn": false,
+          "action": 17
+        }
+      ],
+      "rollback_full_snapshot_equal": true
+    },
+    "elf-awake-strike-rollback": {
+      "video": "elf-awake-strike-rollback.mp4",
+      "video_sha256": "ce6d8050ae89085af18afffb3a08dd2cad95c13e00d73ad04a9fa816496e5378",
+      "log": "elf-awake-strike-rollback.jsonl",
+      "log_sha256": "bd7f3373359bce184d976c167eef1169b4f138018b6c23a91e3f049562fda1ce",
+      "commands": [
+        "pause on",
+        "hero player 1",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "turn enemy",
+        "pause off",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 700",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 1 2 2",
+        "undo player",
+        "pause on"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "elf-awake-strike-rollback-030.webp",
+          "rgba_sha256": "797a37325a6f1474ebeb505723484e8dd911435598dcf309d09b7e13eae3faef"
+        },
+        "90": {
+          "path": "elf-awake-strike-rollback-090.webp",
+          "rgba_sha256": "a140f5cb74fa3b94a6d5111a1fe0aa4988527ef58b202be968738d43516e296b"
+        },
+        "150": {
+          "path": "elf-awake-strike-rollback-150.webp",
+          "rgba_sha256": "aa3befe9fa456e5cc9d18a221e6aa3f3d8c28fcfccbb4cf16fe173e5e51989b9"
+        },
+        "210": {
+          "path": "elf-awake-strike-rollback-210.webp",
+          "rgba_sha256": "8f80f07a68fcbe64f78fe498e771fcc721827b7537675f67f733dbbe2e444fad"
+        }
+      },
+      "skill_seq": 51,
+      "skill_time": 10.193939685821533,
+      "skill_detail": "Strike effective=Strike target=[2,2] cost=35 blood_cost=0 direct_heal=0 direct_damage=0 direct_mana=0 bonus=1 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Strike effective=Strike target=[2,2] cost=35 blood_cost=0 direct_heal=0 direct_damage=0 direct_mana=0 bonus=1 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 51,
+          "enemy_turn": false,
+          "action": 18
+        },
+        {
+          "event": "rollback",
+          "delta": 0.82293,
+          "detail": "Restored before action 18; command: undo player",
+          "seq": 53,
+          "enemy_turn": false,
+          "action": 17
+        }
+      ],
+      "rollback_full_snapshot_equal": true
+    },
+    "goblin-awake-greedy-rollback": {
+      "video": "goblin-awake-greedy-rollback.mp4",
+      "video_sha256": "ef6105c20f821cd7461b93f217dbcc6468102ec9d87c4f3ea67bb927b91b5c04",
+      "log": "goblin-awake-greedy-rollback.jsonl",
+      "log_sha256": "167bb8480660c61cc4d0bb7cba32d6fd19aabe46c9aa5250b93e775c1dbdf708",
+      "commands": [
+        "pause on",
+        "hero player 3",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "turn enemy",
+        "pause off",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 700",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 1 2 2",
+        "undo player",
+        "pause on"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "goblin-awake-greedy-rollback-030.webp",
+          "rgba_sha256": "3d1032dbdcfcc0888ebbc898cce402cfcae2ba94b6b7d5f2a82d409babbca09f"
+        },
+        "90": {
+          "path": "goblin-awake-greedy-rollback-090.webp",
+          "rgba_sha256": "31a43aca37980ab5cadc9e6753242e38c196931060d9ef43dddf27a1825ea207"
+        },
+        "150": {
+          "path": "goblin-awake-greedy-rollback-150.webp",
+          "rgba_sha256": "eeefba168536279a53353cc81b7563694d1a728b601a582c1143a415e785100a"
+        },
+        "210": {
+          "path": "goblin-awake-greedy-rollback-210.webp",
+          "rgba_sha256": "7887843688de0394cadbf1af31889d4ce4943c2f231cc19f907889572d1ca7c2"
+        }
+      },
+      "skill_seq": 59,
+      "skill_time": 10.18422818183899,
+      "skill_detail": "Greedy effective=Greedy target=[2,2] cost=25 blood_cost=0 direct_heal=3 direct_damage=9 direct_mana=13 bonus=0 armed=false actual_heal=0 actual_damage=9 actual_mana=13",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Greedy effective=Greedy target=[2,2] cost=25 blood_cost=0 direct_heal=3 direct_damage=9 direct_mana=13 bonus=0 armed=false actual_heal=0 actual_damage=9 actual_mana=13",
+          "seq": 59,
+          "enemy_turn": false,
+          "action": 18
+        },
+        {
+          "event": "rollback",
+          "delta": 0.764121,
+          "detail": "Restored before action 18; command: undo player",
+          "seq": 61,
+          "enemy_turn": false,
+          "action": 17
+        }
+      ],
+      "rollback_full_snapshot_equal": true
+    },
+    "knight-awake-charge-terminal": {
+      "video": "knight-awake-charge-terminal.mp4",
+      "video_sha256": "c465b738083ee26f68b1007c8ab5703583bfc8a0b81cb50ecc7758ae7b1ce8a4",
+      "log": "knight-awake-charge-terminal.jsonl",
+      "log_sha256": "4b5dd0cf28d1ae7b7c1bbbfe01c65e24dd809a68c432ac6b6af95c29c1175930",
+      "commands": [
+        "pause on",
+        "hero player 0",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "turn enemy",
+        "pause off",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 700",
+        "hp enemy 1",
+        "pause off",
+        "cast 1 2 2",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 1",
+        "hp player 9999",
+        "hp enemy 9999",
+        "board load 0 0 2 3 4 5 6 0 2 3 4 5 6 0 0 2 4 5 6 0 0 2 3 4 6 0 0 2 3 4 5 6 0 2 3 4 5 6 0 0 3 4 5 6 0 0 2 3 5 6 0 0 2 3 4 5 0 0 2 3 4 5 6 0",
+        "pause off",
+        "cast 2",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 1",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 1 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "knight-awake-charge-terminal-030.webp",
+          "rgba_sha256": "7324cdf54ff574aec7f6916bb88697cad7a4050c5e9ed13a9735757b0704a959"
+        },
+        "90": {
+          "path": "knight-awake-charge-terminal-090.webp",
+          "rgba_sha256": "d966a86d1bd56405f7e9719713e80aec113476ac6d72e24a61b7bcec54f1529a"
+        },
+        "150": {
+          "path": "knight-awake-charge-terminal-150.webp",
+          "rgba_sha256": "d9e2149914380f20d82823827a789de70b9541d3158fee32d612ff0f2ad17e9a"
+        },
+        "210": {
+          "path": "knight-awake-charge-terminal-210.webp",
+          "rgba_sha256": "53487c22c13514cba888ade0732d0e9ebc3b8d82b725b73b32a23c061b689ed2"
+        }
+      },
+      "skill_seq": 130,
+      "skill_time": 24.625126123428345,
+      "skill_detail": "Charge effective=Charge target=[2,2] cost=100 blood_cost=0 direct_heal=0 direct_damage=165 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Charge effective=Charge target=[2,2] cost=100 blood_cost=0 direct_heal=0 direct_damage=165 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 130,
+          "enemy_turn": false,
+          "action": 36
+        },
+        {
+          "event": "skill_hit",
+          "delta": 1.125972,
+          "detail": "Charge expected_damage=165 actual_damage=1",
+          "seq": 142,
+          "enemy_turn": false,
+          "action": 36
+        },
+        {
+          "event": "resolution",
+          "delta": 1.126295,
+          "detail": "cells=[(2, 1), (3, 1), (2, 2), (3, 2), (2, 3), (3, 3), (2, 4), (3, 4), (2, 5), (3, 5), (2, 6), (3, 6), (2, 7), (3, 7), (2, 8), (3, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=2 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 143,
+          "enemy_turn": false,
+          "action": 36
+        },
+        {
+          "event": "battle_end",
+          "delta": 1.126532,
+          "detail": "Player victory",
+          "seq": 144,
+          "enemy_turn": false,
+          "action": 36
+        }
+      ]
+    },
+    "elf-awake-nature-terminal": {
+      "video": "elf-awake-nature-terminal.mp4",
+      "video_sha256": "0a9f0aa5d5e7fb3496d94a2be23197c6e42c96a2defe8335f35669f1c9a5ae44",
+      "log": "elf-awake-nature-terminal.jsonl",
+      "log_sha256": "e403175b8100c97a244e8431e632e4676bcd72e65238345b4870ee95a8eaca7f",
+      "commands": [
+        "pause on",
+        "hero player 1",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "turn enemy",
+        "pause off",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 700",
+        "hp enemy 1",
+        "pause off",
+        "cast 2 2 2",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 1",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 2 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "elf-awake-nature-terminal-030.webp",
+          "rgba_sha256": "a3f4269a2ebbabd39412fe973ee8c9bdcecb35772447539c67d754ac8b68d4ac"
+        },
+        "90": {
+          "path": "elf-awake-nature-terminal-090.webp",
+          "rgba_sha256": "593818f6d14eea6e4b80145e2e7e0e4aa7da806a234d552d8ad5eb5125f8ee8c"
+        },
+        "150": {
+          "path": "elf-awake-nature-terminal-150.webp",
+          "rgba_sha256": "14697a96966cdd55e062725566771812496a690096b0671e3801ac8d3ea85411"
+        },
+        "210": {
+          "path": "elf-awake-nature-terminal-210.webp",
+          "rgba_sha256": "5124206c20ed4b08ed1c122efce54337c3abfca6476213c3644134ffcbf10e5b"
+        }
+      },
+      "skill_seq": 120,
+      "skill_time": 18.357791900634766,
+      "skill_detail": "Nature effective=Nature target=[2,2] cost=60 blood_cost=0 direct_heal=10 direct_damage=25 direct_mana=0 bonus=0 armed=false actual_heal=10 actual_damage=1 actual_mana=0",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Nature effective=Nature target=[2,2] cost=60 blood_cost=0 direct_heal=10 direct_damage=25 direct_mana=0 bonus=0 armed=false actual_heal=10 actual_damage=1 actual_mana=0",
+          "seq": 120,
+          "enemy_turn": false,
+          "action": 26
+        },
+        {
+          "event": "battle_end",
+          "delta": 0.003445,
+          "detail": "Player victory",
+          "seq": 121,
+          "enemy_turn": false,
+          "action": 26
+        }
+      ]
+    },
+    "goblin-awake-greedy-terminal": {
+      "video": "goblin-awake-greedy-terminal.mp4",
+      "video_sha256": "159eaedf36dd55a4c64f1d2e7a5779d14a93c6377066e454a1a42692871bc809",
+      "log": "goblin-awake-greedy-terminal.jsonl",
+      "log_sha256": "73d80388ed15830a85316102bd36f9f58bd7c0fa4f96d40df3cf9a1699db7151",
+      "commands": [
+        "pause on",
+        "hero player 3",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "turn enemy",
+        "pause off",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 700",
+        "hp enemy 1",
+        "pause off",
+        "cast 1 2 2",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 1",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 1 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "goblin-awake-greedy-terminal-030.webp",
+          "rgba_sha256": "e38d15f02256d8cc50e7673bedb610a5890c149b599605ef6f428f56e52dca23"
+        },
+        "90": {
+          "path": "goblin-awake-greedy-terminal-090.webp",
+          "rgba_sha256": "9e78ab6ba055a34a95179896a559b5f145a1a5d67d303580aec5e014b981a213"
+        },
+        "150": {
+          "path": "goblin-awake-greedy-terminal-150.webp",
+          "rgba_sha256": "c905c8148b1d34519f06123eccc0320d4fec9f66b9a3de8d7c139f02c20d2d5f"
+        },
+        "210": {
+          "path": "goblin-awake-greedy-terminal-210.webp",
+          "rgba_sha256": "be2f43be290fab74cac2068bea5fabe6cc542d27f3f55cbd1e375cb2b5d3a9fd"
+        }
+      },
+      "skill_seq": 115,
+      "skill_time": 18.15010714530945,
+      "skill_detail": "Greedy effective=Greedy target=[2,2] cost=25 blood_cost=0 direct_heal=3 direct_damage=9 direct_mana=13 bonus=0 armed=false actual_heal=3 actual_damage=1 actual_mana=13",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Greedy effective=Greedy target=[2,2] cost=25 blood_cost=0 direct_heal=3 direct_damage=9 direct_mana=13 bonus=0 armed=false actual_heal=3 actual_damage=1 actual_mana=13",
+          "seq": 115,
+          "enemy_turn": false,
+          "action": 26
+        },
+        {
+          "event": "battle_end",
+          "delta": 0.000207,
+          "detail": "Player victory",
+          "seq": 116,
+          "enemy_turn": false,
+          "action": 26
+        }
+      ]
+    },
+    "knight-awake-guard-no-target": {
+      "video": "knight-awake-guard-no-target.mp4",
+      "video_sha256": "e1348318654b561557524d772569224d5ab39eae6f26a12ff84d1b88e08a86c6",
+      "log": "knight-awake-guard-no-target.jsonl",
+      "log_sha256": "ff41b8c8f7aa1deee2ce18867e974464da75a88639f5093de7b818ad82fd1bb1",
+      "commands": [
+        "pause on",
+        "hero player 0",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "turn enemy",
+        "pause off",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 700",
+        "hp player 100",
+        "board load 0 0 2 3 4 5 6 0 2 3 4 5 6 0 0 2 4 5 6 0 0 2 3 4 6 0 0 2 3 4 5 6 0 2 3 4 5 6 0 0 3 4 5 6 0 0 2 3 5 6 0 0 2 3 4 5 0 0 2 3 4 5 6 0",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 2 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "knight-awake-guard-no-target-030.webp",
+          "rgba_sha256": "9054aec1c142ae417c6fef29d0acdca276a62689aebeab682f4ff0190fc3d7d5"
+        },
+        "90": {
+          "path": "knight-awake-guard-no-target-090.webp",
+          "rgba_sha256": "c763cdd29bef2fa7189f26d3c4cb91881f6f887513487a9f3d2b025085435f9c"
+        },
+        "150": {
+          "path": "knight-awake-guard-no-target-150.webp",
+          "rgba_sha256": "690f73e26c3571e68067589e84529e3d45057c13f6bb97ec04e3e29fe8ebf0ea"
+        },
+        "210": {
+          "path": "knight-awake-guard-no-target-210.webp",
+          "rgba_sha256": "0e6859d466de4660fc62e846c6934e5f5068421188123553a5248216de843fe9"
+        }
+      },
+      "skill_seq": 56,
+      "skill_time": 10.361964702606201,
+      "skill_detail": "Guard effective=Guard target=[2,2] cost=80 blood_cost=0 direct_heal=77 direct_damage=0 direct_mana=0 bonus=0 armed=false actual_heal=77 actual_damage=0 actual_mana=0",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Guard effective=Guard target=[2,2] cost=80 blood_cost=0 direct_heal=77 direct_damage=0 direct_mana=0 bonus=0 armed=false actual_heal=77 actual_damage=0 actual_mana=0",
+          "seq": 56,
+          "enemy_turn": false,
+          "action": 20
+        },
+        {
+          "event": "skill",
+          "delta": 2.030528,
+          "detail": "Charge effective=Charge target=[2,8] cost=100 blood_cost=0 direct_heal=0 direct_damage=144 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 58,
+          "enemy_turn": true,
+          "action": 21
+        },
+        {
+          "event": "skill_hit",
+          "delta": 2.937338,
+          "detail": "Charge expected_damage=144 actual_damage=144",
+          "seq": 72,
+          "enemy_turn": true,
+          "action": 21
+        },
+        {
+          "event": "resolution",
+          "delta": 2.937574,
+          "detail": "cells=[(2, 1), (3, 1), (2, 2), (3, 2), (2, 3), (3, 3), (2, 4), (3, 4), (2, 5), (3, 5), (2, 6), (3, 6), (2, 7), (3, 7), (2, 8), (3, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=1 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 73,
+          "enemy_turn": true,
+          "action": 21
+        }
+      ]
+    },
+    "goblin-awake-blood-full": {
+      "video": "goblin-awake-blood-full.mp4",
+      "video_sha256": "2494ae220337cbb081f5e17dc1128860d93228117a785a819035e7cb6759a1ca",
+      "log": "goblin-awake-blood-full.jsonl",
+      "log_sha256": "8abadcef280932438b9677d4b658826c6e0145dc98f1697975abf9d912eb33cf",
+      "commands": [
+        "pause on",
+        "hero player 3",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "turn enemy",
+        "pause off",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 700",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 2 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "goblin-awake-blood-full-030.webp",
+          "rgba_sha256": "126064170b038ee3656379d7019da20a5c624968ebbfe18d74ba38f6ce5eb3e6"
+        },
+        "90": {
+          "path": "goblin-awake-blood-full-090.webp",
+          "rgba_sha256": "1c92f0c6c7d21bf433704a96edd807ef165ce66fea221265c1318040c8b51d1c"
+        },
+        "150": {
+          "path": "goblin-awake-blood-full-150.webp",
+          "rgba_sha256": "5e98e8baba576dc1795cd03c475c324c206fbe36fa2cf172a360e9739934d0af"
+        },
+        "210": {
+          "path": "goblin-awake-blood-full-210.webp",
+          "rgba_sha256": "b7eba614e4c8dae1c7406400a5395fb3cab88ceffbd2579e25c076102269681f"
+        }
+      },
+      "skill_seq": 52,
+      "skill_time": 10.233863592147827,
+      "skill_detail": "Blood effective=Blood target=[2,2] cost=80 blood_cost=0 direct_heal=100 direct_damage=0 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Blood effective=Blood target=[2,2] cost=80 blood_cost=0 direct_heal=100 direct_damage=0 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 52,
+          "enemy_turn": false,
+          "action": 18
+        },
+        {
+          "event": "skill",
+          "delta": 2.001264,
+          "detail": "Charge effective=Charge target=[3,8] cost=100 blood_cost=0 direct_heal=0 direct_damage=132 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 54,
+          "enemy_turn": true,
+          "action": 19
+        },
+        {
+          "event": "skill_hit",
+          "delta": 2.924349,
+          "detail": "Charge expected_damage=132 actual_damage=132",
+          "seq": 65,
+          "enemy_turn": true,
+          "action": 19
+        },
+        {
+          "event": "resolution",
+          "delta": 2.924639,
+          "detail": "cells=[(3, 1), (4, 1), (3, 2), (4, 2), (3, 3), (4, 3), (3, 4), (4, 4), (3, 5), (4, 5), (3, 6), (4, 6), (3, 7), (4, 7), (3, 8), (4, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=1 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 66,
+          "enemy_turn": true,
+          "action": 19
+        }
+      ]
+    },
+    "elf-awake-strike-followup": {
+      "video": "elf-awake-strike-followup.mp4",
+      "video_sha256": "65e821af232bff54b9d9dd3d5b2bfce3225a82fdd272547863be24cb12733c6f",
+      "log": "elf-awake-strike-followup.jsonl",
+      "log_sha256": "403885d2b0482027da2668575142b7d1f3182397daaa403dfcc801151d136b80",
+      "commands": [
+        "pause on",
+        "hero player 1",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "turn enemy",
+        "pause off",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 700",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 1 2 2",
+        "cast 2 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "elf-awake-strike-followup-030.webp",
+          "rgba_sha256": "016cbb1b37ba29199ef5285b5a6a34b21a8c9fa93a356a79610e6d85b86510bb"
+        },
+        "90": {
+          "path": "elf-awake-strike-followup-090.webp",
+          "rgba_sha256": "0647e67f8623784c32a5e520692e0bfad76de3ccc2e2034207c5342f4f17bfe4"
+        },
+        "150": {
+          "path": "elf-awake-strike-followup-150.webp",
+          "rgba_sha256": "7a33a8d7c1dd725223b4570414e7b9e046f8c6a087516ba940c969c4e73837db"
+        },
+        "210": {
+          "path": "elf-awake-strike-followup-210.webp",
+          "rgba_sha256": "b6f2fbc55491d9ab1578727c676e5a4b5a7f7be2c7dd96c095eb35a8a7b4be83"
+        }
+      },
+      "skill_seq": 51,
+      "skill_time": 10.238037347793579,
+      "skill_detail": "Strike effective=Strike target=[2,2] cost=35 blood_cost=0 direct_heal=0 direct_damage=0 direct_mana=0 bonus=1 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Strike effective=Strike target=[2,2] cost=35 blood_cost=0 direct_heal=0 direct_damage=0 direct_mana=0 bonus=1 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 51,
+          "enemy_turn": false,
+          "action": 18
+        },
+        {
+          "event": "skill",
+          "delta": 0.242916,
+          "detail": "Nature effective=Nature target=[2,2] cost=60 blood_cost=0 direct_heal=10 direct_damage=25 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=25 actual_mana=0",
+          "seq": 55,
+          "enemy_turn": false,
+          "action": 19
+        },
+        {
+          "event": "resolution",
+          "delta": 0.628778,
+          "detail": "cells=[(2, 2), (2, 3), (3, 3), (4, 3), (2, 4)] reward=true multiplier_percent=200 heal=18 damage=41 mana=37 chain=2 refreshed=false actual_heal=0 actual_damage=41 actual_mana=37",
+          "seq": 72,
+          "enemy_turn": false,
+          "action": 19
+        },
+        {
+          "event": "resolution",
+          "delta": 1.42873,
+          "detail": "cells=[(1, 2), (2, 2), (3, 2)] reward=true multiplier_percent=110 heal=0 damage=44 mana=0 chain=2 refreshed=false actual_heal=0 actual_damage=44 actual_mana=0",
+          "seq": 77,
+          "enemy_turn": false,
+          "action": 19
+        },
+        {
+          "event": "skill",
+          "delta": 3.839942,
+          "detail": "Charge effective=Charge target=[8,8] cost=100 blood_cost=0 direct_heal=0 direct_damage=131 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 79,
+          "enemy_turn": true,
+          "action": 20
+        },
+        {
+          "event": "skill_hit",
+          "delta": 4.73519,
+          "detail": "Charge expected_damage=131 actual_damage=131",
+          "seq": 91,
+          "enemy_turn": true,
+          "action": 20
+        },
+        {
+          "event": "resolution",
+          "delta": 4.735405,
+          "detail": "cells=[(7, 1), (8, 1), (7, 2), (8, 2), (7, 3), (8, 3), (7, 4), (8, 4), (7, 5), (8, 5), (7, 6), (8, 6), (7, 7), (8, 7), (7, 8), (8, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=2 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 92,
+          "enemy_turn": true,
+          "action": 20
+        },
+        {
+          "event": "resolution",
+          "delta": 5.531501,
+          "detail": "cells=[(6, 2), (7, 2), (8, 2)] reward=true multiplier_percent=110 heal=6 damage=13 mana=13 chain=2 refreshed=false actual_heal=6 actual_damage=13 actual_mana=13",
+          "seq": 103,
+          "enemy_turn": true,
+          "action": 20
+        }
+      ]
+    },
+    "elf-awake-strike-switch": {
+      "video": "elf-awake-strike-switch.mp4",
+      "video_sha256": "3dd45e50ec38963f3d8723bdc2bc2d6af0b3af2f12f89832a825842e296cd708",
+      "log": "elf-awake-strike-switch.jsonl",
+      "log_sha256": "e97111ebccfb36d5a8c7ecdaba50770c00ed7744f21225c973566c551a4cfc91",
+      "commands": [
+        "pause on",
+        "hero player 1",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "turn enemy",
+        "pause off",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 700",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 1 2 2",
+        "hero player 1"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "elf-awake-strike-switch-030.webp",
+          "rgba_sha256": "1c56af8844a92d0f2227ca14cf825f7333fc5219a9d20171d97f2c24fdfd595f"
+        },
+        "90": {
+          "path": "elf-awake-strike-switch-090.webp",
+          "rgba_sha256": "98be6a2531f0f735f93d4499b3cc67372c72c2475954699bef2fc1110ca8905c"
+        }
+      },
+      "skill_seq": 51,
+      "skill_time": 10.98762845993042,
+      "skill_detail": "Strike effective=Strike target=[2,2] cost=35 blood_cost=0 direct_heal=0 direct_damage=0 direct_mana=0 bonus=1 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Strike effective=Strike target=[2,2] cost=35 blood_cost=0 direct_heal=0 direct_damage=0 direct_mana=0 bonus=1 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 51,
+          "enemy_turn": false,
+          "action": 18
+        }
+      ]
+    },
+    "knight-normal-form-transition": {
+      "video": "knight-normal-form-transition.mp4",
+      "video_sha256": "e15cd6ca984dbf5fe666045f8576239b1fbbb01341843bcbad9f30336d7cc212",
+      "log": "knight-normal-form-transition.jsonl",
+      "log_sha256": "7c20c8816ee668cbe926e90c5edda5f4f9143883b6f9e952c4dc522837fcc11f",
+      "commands": [
+        "pause on",
+        "hero player 0",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "pause off",
+        "status",
+        "pause off",
+        "turn enemy"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "knight-normal-form-transition-030.webp",
+          "rgba_sha256": "a26a8e8ff568533e41efa56dba2270640957876ac7e78540338160bb6dfc8256"
+        },
+        "90": {
+          "path": "knight-normal-form-transition-090.webp",
+          "rgba_sha256": "3972febbc16012ebcea348487cba3c9f4dca34cf0f064957e46eb867c34d2e4a"
+        },
+        "150": {
+          "path": "knight-normal-form-transition-150.webp",
+          "rgba_sha256": "ef07e4648e513fbefad8142a8992ab56cdf986f4386578844cd90fd8c2310c3e"
+        },
+        "210": {
+          "path": "knight-normal-form-transition-210.webp",
+          "rgba_sha256": "6be094c7e95a0a42006dabddca82949cb98cb1dc8e2f0a942f153d4b28707862"
+        }
+      },
+      "trigger_event": "awakening",
+      "skill_seq": 28,
+      "skill_time": 7.917145490646362,
+      "skill_detail": "side=player hero=0 damage=1 restored=385 cap=385 cause=damage",
+      "awake": false,
+      "events_after_skill": [
+        {
+          "event": "awakening",
+          "delta": 0.0,
+          "detail": "side=player hero=0 damage=1 restored=385 cap=385 cause=damage",
+          "seq": 28,
+          "enemy_turn": true,
+          "action": 12
+        },
+        {
+          "event": "resolution",
+          "delta": 0.001435,
+          "detail": "cells=[(3, 7), (4, 7), (5, 7)] reward=true multiplier_percent=100 heal=6 damage=12 mana=12 chain=1 refreshed=false actual_heal=0 actual_damage=1 actual_mana=0",
+          "seq": 38,
+          "enemy_turn": true,
+          "action": 12
+        }
+      ]
+    },
+    "elf-normal-form-transition": {
+      "video": "elf-normal-form-transition.mp4",
+      "video_sha256": "86d3eb21e01150435543ac3dbe4dfa58cb290866c4b09bffb16226f29490fa26",
+      "log": "elf-normal-form-transition.jsonl",
+      "log_sha256": "5ebe07a2b0dcb5ff2328e6acacfce993ed6d0897327dfec16099a4b53229197c",
+      "commands": [
+        "pause on",
+        "hero player 1",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "pause off",
+        "status",
+        "pause off",
+        "turn enemy"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "elf-normal-form-transition-030.webp",
+          "rgba_sha256": "1f987bf60d2c76639325cfd39ac5245b69838ac8c217f7529ecc1c1b06f7f612"
+        },
+        "90": {
+          "path": "elf-normal-form-transition-090.webp",
+          "rgba_sha256": "776c94e051b53537b550b07d84ed091689591b232aa77d481aecefcd9860741b"
+        },
+        "150": {
+          "path": "elf-normal-form-transition-150.webp",
+          "rgba_sha256": "f9e22558d4f927d241d0d3a31410dd9df6d8ad794a929da1641d89ee93abbf8a"
+        },
+        "210": {
+          "path": "elf-normal-form-transition-210.webp",
+          "rgba_sha256": "2326bc124e5cfd9ebcdc5ccd120174cd3aa7b2a165a5586ece5a816104133aca"
+        }
+      },
+      "trigger_event": "awakening",
+      "skill_seq": 28,
+      "skill_time": 7.958304166793823,
+      "skill_detail": "side=player hero=1 damage=1 restored=270 cap=270 cause=damage",
+      "awake": false,
+      "events_after_skill": [
+        {
+          "event": "awakening",
+          "delta": 0.0,
+          "detail": "side=player hero=1 damage=1 restored=270 cap=270 cause=damage",
+          "seq": 28,
+          "enemy_turn": true,
+          "action": 12
+        },
+        {
+          "event": "resolution",
+          "delta": 0.00179,
+          "detail": "cells=[(3, 7), (4, 7), (5, 7)] reward=true multiplier_percent=100 heal=6 damage=12 mana=12 chain=1 refreshed=false actual_heal=0 actual_damage=1 actual_mana=0",
+          "seq": 38,
+          "enemy_turn": true,
+          "action": 12
+        }
+      ]
+    },
+    "goblin-normal-form-transition": {
+      "video": "goblin-normal-form-transition.mp4",
+      "video_sha256": "d67dbd72225e7352a2613457728e3487cc4a34bc5df85bf847561da724ec7081",
+      "log": "goblin-normal-form-transition.jsonl",
+      "log_sha256": "af7336506d1e98e92c4f9720af7dc5ae8361d453c07cad40338cfcaba1ccb823",
+      "commands": [
+        "pause on",
+        "hero player 3",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "pause off",
+        "status",
+        "pause off",
+        "turn enemy"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "goblin-normal-form-transition-030.webp",
+          "rgba_sha256": "7a98a22c042900aabeefc5816c0eef52c4424a4c7664d80d53892c9c9ec207a6"
+        },
+        "90": {
+          "path": "goblin-normal-form-transition-090.webp",
+          "rgba_sha256": "9d124e12a0f01ae14150f5e6c8bc66b6e2b41a309ebf76fe973a7ceae08df92a"
+        },
+        "150": {
+          "path": "goblin-normal-form-transition-150.webp",
+          "rgba_sha256": "eda759209e5c6b505b5a420c9eaac5e97000867a3d2c17748cf0072166dc4d25"
+        },
+        "210": {
+          "path": "goblin-normal-form-transition-210.webp",
+          "rgba_sha256": "a9a4e661b715742c34ddf45f8786804207cc361e1d4a96dd540b3ae6715ec092"
+        }
+      },
+      "trigger_event": "awakening",
+      "skill_seq": 28,
+      "skill_time": 8.026805639266968,
+      "skill_detail": "side=player hero=3 damage=1 restored=398 cap=398 cause=damage",
+      "awake": false,
+      "events_after_skill": [
+        {
+          "event": "awakening",
+          "delta": 0.0,
+          "detail": "side=player hero=3 damage=1 restored=398 cap=398 cause=damage",
+          "seq": 28,
+          "enemy_turn": true,
+          "action": 12
+        },
+        {
+          "event": "resolution",
+          "delta": 0.001693,
+          "detail": "cells=[(3, 7), (4, 7), (5, 7)] reward=true multiplier_percent=100 heal=6 damage=12 mana=12 chain=1 refreshed=false actual_heal=0 actual_damage=1 actual_mana=0",
+          "seq": 38,
+          "enemy_turn": true,
+          "action": 12
+        }
+      ]
+    },
+    "knight-awake-ai-enemy": {
+      "video": "knight-awake-ai-enemy.mp4",
+      "video_sha256": "3e4b0f27c53c55212ae6b6430190a4c321792a963b2904db463f301c2f2dd97d",
+      "log": "knight-awake-ai-enemy.jsonl",
+      "log_sha256": "eea00f3ab6d0e328ac1b9b8da1052493a45b227b39e9cd4be709afa4a758ce78",
+      "commands": [
+        "pause on",
+        "hero player 1",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 1",
+        "mp enemy 200",
+        "pause off",
+        "cast 2 2 2",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "seed 280011",
+        "hp player 600",
+        "hp enemy 100",
+        "mp enemy 80",
+        "buff enemy bonus 0",
+        "pause off",
+        "status",
+        "pause off",
+        "turn enemy"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "knight-awake-ai-enemy-030.webp",
+          "rgba_sha256": "c3c84b9cc540e6286c46f8d9451996ed5f19f2ebd9f1e8efdd1af4de382c603c"
+        },
+        "90": {
+          "path": "knight-awake-ai-enemy-090.webp",
+          "rgba_sha256": "4c1bc4a8bb034b2dbda25695ae2f7322577ffe594d87ffb634925334d5acfc4b"
+        },
+        "150": {
+          "path": "knight-awake-ai-enemy-150.webp",
+          "rgba_sha256": "5f61375f69a46145282c570bbbdb6fdd489414eee9bee746cf29fb47a427eec7"
+        },
+        "210": {
+          "path": "knight-awake-ai-enemy-210.webp",
+          "rgba_sha256": "d3f3ee3085aac92dad3b9e1a882825b66795a98c659a11d6a5627844cf4bcea3"
+        }
+      },
+      "trigger_event": "skill",
+      "skill_seq": 90,
+      "skill_time": 13.392716646194458,
+      "skill_detail": "Guard effective=Guard target=[8,8] cost=80 blood_cost=0 direct_heal=77 direct_damage=0 direct_mana=0 bonus=0 armed=false actual_heal=77 actual_damage=0 actual_mana=0",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Guard effective=Guard target=[8,8] cost=80 blood_cost=0 direct_heal=77 direct_damage=0 direct_mana=0 bonus=0 armed=false actual_heal=77 actual_damage=0 actual_mana=0",
+          "seq": 90,
+          "enemy_turn": true,
+          "action": 22
+        },
+        {
+          "event": "resolution",
+          "delta": 0.338511,
+          "detail": "cells=[(2, 1), (7, 2), (5, 3), (3, 4), (1, 5), (8, 5), (6, 6), (4, 7), (2, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=1 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 91,
+          "enemy_turn": true,
+          "action": 22
+        }
+      ]
+    },
+    "elf-awake-ai-enemy": {
+      "video": "elf-awake-ai-enemy.mp4",
+      "video_sha256": "a816901fb11a45470ff1dde0956d738ba5e96809240187f355bb09f2e96f21cd",
+      "log": "elf-awake-ai-enemy.jsonl",
+      "log_sha256": "9dc23c7e028ca900992f5c1fd4629191699ba624ed0175916cf0dfe9469cf374",
+      "commands": [
+        "pause on",
+        "hero player 1",
+        "hero enemy 1",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 1",
+        "mp enemy 200",
+        "pause off",
+        "cast 2 2 2",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "seed 280011",
+        "hp player 600",
+        "hp enemy 100",
+        "mp enemy 35",
+        "buff enemy bonus 0",
+        "pause off",
+        "status",
+        "pause off",
+        "turn enemy"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "elf-awake-ai-enemy-030.webp",
+          "rgba_sha256": "40f7c4024c02af776009e8569ea447b1ba9cd350785353b67d372f092d5630f4"
+        },
+        "90": {
+          "path": "elf-awake-ai-enemy-090.webp",
+          "rgba_sha256": "0e5083aa33b13021ec62efa70404e35d83afa3e7ff17f9e6bd850b99a20a6de6"
+        },
+        "150": {
+          "path": "elf-awake-ai-enemy-150.webp",
+          "rgba_sha256": "c1ddc38ed2a5f5b94260a487b5c9a2bd8181fb3d20ed278c1f913d8df346a30d"
+        },
+        "210": {
+          "path": "elf-awake-ai-enemy-210.webp",
+          "rgba_sha256": "24558d0cc91def5ecf451f0fb6351e416e49b00ffab59656cd8c5634fbac02be"
+        }
+      },
+      "trigger_event": "skill",
+      "skill_seq": 103,
+      "skill_time": 12.836575746536255,
+      "skill_detail": "Strike effective=Strike target=[8,8] cost=35 blood_cost=0 direct_heal=0 direct_damage=0 direct_mana=0 bonus=1 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Strike effective=Strike target=[8,8] cost=35 blood_cost=0 direct_heal=0 direct_damage=0 direct_mana=0 bonus=1 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 103,
+          "enemy_turn": true,
+          "action": 22
+        },
+        {
+          "event": "resolution",
+          "delta": 1.822932,
+          "detail": "cells=[(3, 5), (3, 6), (3, 7), (4, 7), (5, 7)] reward=true multiplier_percent=200 heal=18 damage=41 mana=37 chain=2 refreshed=false actual_heal=18 actual_damage=41 actual_mana=37",
+          "seq": 121,
+          "enemy_turn": true,
+          "action": 23
+        },
+        {
+          "event": "resolution",
+          "delta": 2.634094,
+          "detail": "cells=[(3, 3), (3, 4), (3, 5), (1, 6), (2, 6), (3, 6), (4, 6)] reward=true multiplier_percent=110 heal=8 damage=34 mana=49 chain=2 refreshed=false actual_heal=8 actual_damage=34 actual_mana=49",
+          "seq": 137,
+          "enemy_turn": true,
+          "action": 23
+        }
+      ]
+    },
+    "goblin-awake-ai-enemy": {
+      "video": "goblin-awake-ai-enemy.mp4",
+      "video_sha256": "c1d63fe862b743acfba9a32e795043843b9ca23444cd8e4f01e496d7cd36354f",
+      "log": "goblin-awake-ai-enemy.jsonl",
+      "log_sha256": "c9e50459fe8bd07bf35519f792d94186c6c3bf1922efeae8f51304123d885cae",
+      "commands": [
+        "pause on",
+        "hero player 1",
+        "hero enemy 3",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 1",
+        "mp enemy 200",
+        "pause off",
+        "cast 2 2 2",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "seed 280011",
+        "hp player 600",
+        "hp enemy 100",
+        "mp enemy 80",
+        "buff enemy bonus 0",
+        "pause off",
+        "status",
+        "pause off",
+        "turn enemy"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "goblin-awake-ai-enemy-030.webp",
+          "rgba_sha256": "69a9dd3e8973ed286d225dfc2ac4052dcc9b0bfb1d9611932b8b8fc831056e32"
+        },
+        "90": {
+          "path": "goblin-awake-ai-enemy-090.webp",
+          "rgba_sha256": "0e388f7a6695c34499c7decffebc4d7ee54e58b9e03c21c758bc6599694a74e2"
+        },
+        "150": {
+          "path": "goblin-awake-ai-enemy-150.webp",
+          "rgba_sha256": "6d74df75df015f6e8221942ba500dd1b9e4aaa22c636dc9412353258f9d601df"
+        },
+        "210": {
+          "path": "goblin-awake-ai-enemy-210.webp",
+          "rgba_sha256": "c02a5147cfebe0774960b437d8d3cc61962247b77e8d559883c8da17ed6ed6df"
+        }
+      },
+      "trigger_event": "skill",
+      "skill_seq": 108,
+      "skill_time": 13.85896897315979,
+      "skill_detail": "Greedy effective=Greedy target=[2,8] cost=25 blood_cost=0 direct_heal=4 direct_damage=14 direct_mana=5 bonus=0 armed=false actual_heal=4 actual_damage=14 actual_mana=5",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Greedy effective=Greedy target=[2,8] cost=25 blood_cost=0 direct_heal=4 direct_damage=14 direct_mana=5 bonus=0 armed=false actual_heal=4 actual_damage=14 actual_mana=5",
+          "seq": 108,
+          "enemy_turn": true,
+          "action": 22
+        },
+        {
+          "event": "resolution",
+          "delta": 0.329116,
+          "detail": "cells=[(2, 7), (3, 7), (2, 8), (3, 8)] reward=true multiplier_percent=100 heal=8 damage=29 mana=11 chain=1 refreshed=false actual_heal=8 actual_damage=29 actual_mana=11",
+          "seq": 117,
+          "enemy_turn": true,
+          "action": 22
+        }
+      ]
+    },
+    "knight-normal-menu": {
+      "video": "knight-normal-menu.mp4",
+      "video_sha256": "59d662ee835eecf0c13b34c8761104b9944e7bfab0d9df7a23dd64a2d9ca8748",
+      "log": "knight-normal-menu.jsonl",
+      "log_sha256": "af9f3f0e6d88012977e540e5c0780508dc6501721ec8a490e43487d6e50253a0",
+      "commands": [
+        "status"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "knight-normal-menu-030.webp",
+          "rgba_sha256": "c027a4228132bc4adf1265d556b2a94e65a9d3f6b124a1d2962b3d3c5911f050"
+        },
+        "90": {
+          "path": "knight-normal-menu-090.webp",
+          "rgba_sha256": "5a5f530b5b95e86043acc0c6c20bee70db2673e28ce7c0404036215f5eb0fbc9"
+        },
+        "150": {
+          "path": "knight-normal-menu-150.webp",
+          "rgba_sha256": "c70843879fd26c9427cd04d509e1c8db4f9207f497cf0f4f03a5e5e5492daeff"
+        },
+        "210": {
+          "path": "knight-normal-menu-210.webp",
+          "rgba_sha256": "c6616330fcb8b6ed6325e62fbc0e1562bbbfd1038e309326123511a68e98e847"
+        }
+      }
+    },
+    "elf-normal-menu": {
+      "video": "elf-normal-menu.mp4",
+      "video_sha256": "b0ac1b07ac5b60d14c6ce38bec0f76e8207541a805a65ced77f3a3c71d6a0a58",
+      "log": "elf-normal-menu.jsonl",
+      "log_sha256": "ce3b379e09ebf7eff0e961881664294442791bcda4b6558a70b6ea1b73d2d769",
+      "commands": [
+        "status"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "elf-normal-menu-030.webp",
+          "rgba_sha256": "0d6830d07db1f262ec87e9df714165f6a9835a02931975e68f9c66df388256cd"
+        },
+        "90": {
+          "path": "elf-normal-menu-090.webp",
+          "rgba_sha256": "29937a50ca6755a9a2870de54f80b3456ca0c48c6d37acb4ba71cd1bb79696e8"
+        },
+        "150": {
+          "path": "elf-normal-menu-150.webp",
+          "rgba_sha256": "1adfee714a7deb3a100365f811e111e57834daa33afc7ffea14b54048742bcac"
+        },
+        "210": {
+          "path": "elf-normal-menu-210.webp",
+          "rgba_sha256": "bbb8e9406a4247d7e802f69d56421035be4ce5ca32bc868df5c1fbef6db5f6c4"
+        }
+      }
+    },
+    "goblin-normal-menu": {
+      "video": "goblin-normal-menu.mp4",
+      "video_sha256": "dc4d366cf4144d053d7cbc264b3a71f048f94777f60cbac1d607af97e8eb9470",
+      "log": "goblin-normal-menu.jsonl",
+      "log_sha256": "9939efc9c5f064b068cbc6a73dd817f1b5c97cf10093ec638a3b5fe5cda0ed9c",
+      "commands": [
+        "status"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "goblin-normal-menu-030.webp",
+          "rgba_sha256": "ba1636887770267fe99d65fefbbc0b0bf0231c10dd19ef75b43d58b4a792f7e3"
+        },
+        "90": {
+          "path": "goblin-normal-menu-090.webp",
+          "rgba_sha256": "8c5f830d18c42d1e4d20cedd12527971c9d4156ee028c387557ca032bcb69f6c"
+        },
+        "150": {
+          "path": "goblin-normal-menu-150.webp",
+          "rgba_sha256": "9212529a71c9c3e8b79f46fdec8a55f7668c71cb2bea97f0968fbca6659664c7"
+        },
+        "210": {
+          "path": "goblin-normal-menu-210.webp",
+          "rgba_sha256": "f20e96ed453c7155419a90ccd69e060aba7a33ef84fdd864fb07da6417c101a6"
+        }
+      }
+    },
+    "knight-normal-charge": {
+      "video": "knight-normal-charge.mp4",
+      "video_sha256": "545e738745f9f59e6c6eb4effd4b94949e356d3054d61f1778244f11341d60e1",
+      "log": "knight-normal-charge.jsonl",
+      "log_sha256": "5083abd4f1e3361a364a44ad4d1fb351e5ff37c1289d96935715f2f1b47be604",
+      "commands": [
+        "pause on",
+        "hero player 0",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 1 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "knight-normal-charge-030.webp",
+          "rgba_sha256": "1e8e9dc9f89c27aeaf4f8d46704bbaf934765d9c0551a1608943884f2795d1ab"
+        },
+        "90": {
+          "path": "knight-normal-charge-090.webp",
+          "rgba_sha256": "a832b9619066ef49e3687e2cdaa03eeaadda31ac5bba6f8ecc97636cfd1ab7b7"
+        },
+        "150": {
+          "path": "knight-normal-charge-150.webp",
+          "rgba_sha256": "53945f23f196338d6cfeea42f237a8c6f676af6d772a135b4d2bda1181635652"
+        },
+        "210": {
+          "path": "knight-normal-charge-210.webp",
+          "rgba_sha256": "da1f047e20e4cdbdd29eaa447c20a3288d4897c60b6932ea3a1680748f8752e1"
+        }
+      },
+      "trigger_event": "skill",
+      "skill_seq": 20,
+      "skill_time": 4.968088865280151,
+      "skill_detail": "Charge effective=Charge target=[2,2] cost=100 blood_cost=0 direct_heal=0 direct_damage=132 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+      "awake": false,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Charge effective=Charge target=[2,2] cost=100 blood_cost=0 direct_heal=0 direct_damage=132 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 20,
+          "enemy_turn": false,
+          "action": 9
+        },
+        {
+          "event": "skill_hit",
+          "delta": 0.9723,
+          "detail": "Charge expected_damage=132 actual_damage=132",
+          "seq": 31,
+          "enemy_turn": false,
+          "action": 9
+        },
+        {
+          "event": "resolution",
+          "delta": 0.972717,
+          "detail": "cells=[(2, 1), (3, 1), (2, 2), (3, 2), (2, 3), (3, 3), (2, 4), (3, 4), (2, 5), (3, 5), (2, 6), (3, 6), (2, 7), (3, 7), (2, 8), (3, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=2 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 32,
+          "enemy_turn": false,
+          "action": 9
+        },
+        {
+          "event": "resolution",
+          "delta": 1.782789,
+          "detail": "cells=[(2, 1), (2, 2), (2, 3)] reward=true multiplier_percent=110 heal=9 damage=24 mana=0 chain=2 refreshed=false actual_heal=0 actual_damage=24 actual_mana=0",
+          "seq": 40,
+          "enemy_turn": false,
+          "action": 9
+        },
+        {
+          "event": "resolution",
+          "delta": 4.883185,
+          "detail": "cells=[(6, 3), (7, 3), (8, 3), (6, 6), (7, 6), (8, 6)] reward=true multiplier_percent=100 heal=0 damage=44 mana=44 chain=1 refreshed=false actual_heal=0 actual_damage=44 actual_mana=44",
+          "seq": 57,
+          "enemy_turn": true,
+          "action": 10
+        }
+      ]
+    },
+    "knight-normal-guard": {
+      "video": "knight-normal-guard.mp4",
+      "video_sha256": "280e89870cf5e3d3efe7626914f46380c850b3305c80826eedc807e7321efccd",
+      "log": "knight-normal-guard.jsonl",
+      "log_sha256": "e94edf625b80738b2d8aad32ab14137083d4ce95ef4d9a70abcd0271e046181f",
+      "commands": [
+        "pause on",
+        "hero player 0",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 300",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 2 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "knight-normal-guard-030.webp",
+          "rgba_sha256": "a32ba722b585fc362f6ea06be05aa80d1b094f22a009b8d1b2f60f2fc3fa2efb"
+        },
+        "90": {
+          "path": "knight-normal-guard-090.webp",
+          "rgba_sha256": "1e43515a2f88d27f659bfc0b993aec19d06a1ddacde7e4e46838c3ba904873f6"
+        },
+        "150": {
+          "path": "knight-normal-guard-150.webp",
+          "rgba_sha256": "4bd6dd14471cdf95b7e19dfdebeaa4bb065f43f49a229c49a96b9fc2aad28f98"
+        },
+        "210": {
+          "path": "knight-normal-guard-210.webp",
+          "rgba_sha256": "51df90a7c608abddf90fbb13a6d8b8d6a67ba5e86e51f3d0d484d8049a4da5c5"
+        }
+      },
+      "trigger_event": "skill",
+      "skill_seq": 23,
+      "skill_time": 5.018648386001587,
+      "skill_detail": "Guard effective=Guard target=[2,2] cost=150 blood_cost=0 direct_heal=140 direct_damage=0 direct_mana=0 bonus=0 armed=false actual_heal=140 actual_damage=0 actual_mana=0",
+      "awake": false,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Guard effective=Guard target=[2,2] cost=150 blood_cost=0 direct_heal=140 direct_damage=0 direct_mana=0 bonus=0 armed=false actual_heal=140 actual_damage=0 actual_mana=0",
+          "seq": 23,
+          "enemy_turn": false,
+          "action": 10
+        },
+        {
+          "event": "resolution",
+          "delta": 0.375385,
+          "detail": "cells=[(2, 1), (7, 2), (5, 3), (3, 4), (1, 5), (8, 5), (6, 6), (4, 7), (2, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=1 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 24,
+          "enemy_turn": false,
+          "action": 10
+        },
+        {
+          "event": "resolution",
+          "delta": 3.47228,
+          "detail": "cells=[(1, 8), (2, 8), (3, 8)] reward=true multiplier_percent=100 heal=0 damage=22 mana=22 chain=2 refreshed=false actual_heal=0 actual_damage=22 actual_mana=22",
+          "seq": 35,
+          "enemy_turn": true,
+          "action": 11
+        },
+        {
+          "event": "resolution",
+          "delta": 4.274076,
+          "detail": "cells=[(3, 6), (4, 6), (5, 6)] reward=true multiplier_percent=110 heal=6 damage=13 mana=13 chain=2 refreshed=false actual_heal=0 actual_damage=13 actual_mana=13",
+          "seq": 46,
+          "enemy_turn": true,
+          "action": 11
+        }
+      ]
+    },
+    "elf-normal-strike": {
+      "video": "elf-normal-strike.mp4",
+      "video_sha256": "795d2ad9cb0588e07c1e639002b94e81144a806757cc5e7936db8b03166c0c11",
+      "log": "elf-normal-strike.jsonl",
+      "log_sha256": "1bf56bc47f3d1b0c0bfd3bd69218718e4f1fabd386c65967ac40b905baba48f3",
+      "commands": [
+        "pause on",
+        "hero player 1",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 1 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "elf-normal-strike-030.webp",
+          "rgba_sha256": "5a7868dd5101a3ea574cfcbe60a4008845c62589b33b26b9298fcc861a94e3a2"
+        },
+        "90": {
+          "path": "elf-normal-strike-090.webp",
+          "rgba_sha256": "a6b5f499d1e63d529648b0948b7acc60659e7016a7b048210366b2fc77eaf31f"
+        },
+        "150": {
+          "path": "elf-normal-strike-150.webp",
+          "rgba_sha256": "ba43e12eb8484fe00ccc63d2e3dafd2c2c822986dae616fcdeaf63ec3c2cf062"
+        },
+        "210": {
+          "path": "elf-normal-strike-210.webp",
+          "rgba_sha256": "4b59b18e88aa879be67d9ca5e3fa0936b75a32fbfa30e1d7db0951b058063c38"
+        }
+      },
+      "trigger_event": "skill",
+      "skill_seq": 20,
+      "skill_time": 5.428781032562256,
+      "skill_detail": "Strike effective=Strike target=[2,2] cost=35 blood_cost=0 direct_heal=0 direct_damage=0 direct_mana=0 bonus=1 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+      "awake": false,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Strike effective=Strike target=[2,2] cost=35 blood_cost=0 direct_heal=0 direct_damage=0 direct_mana=0 bonus=1 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 20,
+          "enemy_turn": false,
+          "action": 9
+        }
+      ]
+    },
+    "elf-normal-nature": {
+      "video": "elf-normal-nature.mp4",
+      "video_sha256": "f454ea7c2770fbd1158d45027c7559842b4bf0bb642e0bbab41fbd40271182ea",
+      "log": "elf-normal-nature.jsonl",
+      "log_sha256": "fc8b8896d798367c13da86617c9d6182b26d929fb535aae63f487d16dc3cf9d2",
+      "commands": [
+        "pause on",
+        "hero player 1",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 2 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "elf-normal-nature-030.webp",
+          "rgba_sha256": "c83576b11b90c896b15ff0c290f1ee037b33e06d348ea6aa75a32db70047a31b"
+        },
+        "90": {
+          "path": "elf-normal-nature-090.webp",
+          "rgba_sha256": "31498fda489090a3718603c75a5dc8b57a028d56ed010e15e0545b4559d476a7"
+        },
+        "150": {
+          "path": "elf-normal-nature-150.webp",
+          "rgba_sha256": "c63b97089975708f87f171edc0a105c461f2ce88a15dfc88ff83f7b49b9c00f7"
+        },
+        "210": {
+          "path": "elf-normal-nature-210.webp",
+          "rgba_sha256": "981c848cd1f9c76638d542551a51164a8a34165fbf5100cdc5293932a10062b1"
+        }
+      },
+      "trigger_event": "skill",
+      "skill_seq": 22,
+      "skill_time": 5.086495876312256,
+      "skill_detail": "Nature effective=Nature target=[2,2] cost=60 blood_cost=0 direct_heal=10 direct_damage=25 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=25 actual_mana=0",
+      "awake": false,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Nature effective=Nature target=[2,2] cost=60 blood_cost=0 direct_heal=10 direct_damage=25 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=25 actual_mana=0",
+          "seq": 22,
+          "enemy_turn": false,
+          "action": 9
+        },
+        {
+          "event": "resolution",
+          "delta": 0.395666,
+          "detail": "cells=[(2, 2), (2, 3), (3, 3), (4, 3), (2, 4)] reward=true multiplier_percent=100 heal=9 damage=18 mana=18 chain=2 refreshed=false actual_heal=0 actual_damage=18 actual_mana=18",
+          "seq": 39,
+          "enemy_turn": false,
+          "action": 9
+        },
+        {
+          "event": "resolution",
+          "delta": 1.192096,
+          "detail": "cells=[(2, 1), (2, 2), (2, 3)] reward=true multiplier_percent=110 heal=8 damage=21 mana=0 chain=2 refreshed=false actual_heal=0 actual_damage=21 actual_mana=0",
+          "seq": 47,
+          "enemy_turn": false,
+          "action": 9
+        },
+        {
+          "event": "resolution",
+          "delta": 4.271451,
+          "detail": "cells=[(1, 4), (2, 4), (3, 4)] reward=true multiplier_percent=100 heal=19 damage=0 mana=0 chain=1 refreshed=false actual_heal=19 actual_damage=0 actual_mana=0",
+          "seq": 54,
+          "enemy_turn": true,
+          "action": 10
+        }
+      ]
+    },
+    "goblin-normal-greedy": {
+      "video": "goblin-normal-greedy.mp4",
+      "video_sha256": "c53b30d460abc9ba1419a8fa0cc3fbacbcda85a316920fbabedaea3f5e9f3e67",
+      "log": "goblin-normal-greedy.jsonl",
+      "log_sha256": "d66c8bb0dab1bdabb228e438ad269e758afad7b2e38f5af91a592d35585daf91",
+      "commands": [
+        "pause on",
+        "hero player 3",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 1 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "goblin-normal-greedy-030.webp",
+          "rgba_sha256": "4e055802b26bf3904f0f50baa8806a34130d523a814defa5ff6809aa0a946334"
+        },
+        "90": {
+          "path": "goblin-normal-greedy-090.webp",
+          "rgba_sha256": "0a96faead8b1bed1caaa3d02a4a2446303108864a5d9402b89708198c3653441"
+        },
+        "150": {
+          "path": "goblin-normal-greedy-150.webp",
+          "rgba_sha256": "c8abbcbaeb9ab78cf911b25ec500b45ec58792cd5653732e06ef5f89540b26aa"
+        },
+        "210": {
+          "path": "goblin-normal-greedy-210.webp",
+          "rgba_sha256": "4dfcde67fe3cbf0e72af71bc8ff43a537b934980d9891fac73ff1185dabdf112"
+        }
+      },
+      "trigger_event": "skill",
+      "skill_seq": 27,
+      "skill_time": 5.4974658489227295,
+      "skill_detail": "Greedy effective=Greedy target=[2,2] cost=25 blood_cost=0 direct_heal=3 direct_damage=7 direct_mana=13 bonus=0 armed=false actual_heal=0 actual_damage=7 actual_mana=13",
+      "awake": false,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Greedy effective=Greedy target=[2,2] cost=25 blood_cost=0 direct_heal=3 direct_damage=7 direct_mana=13 bonus=0 armed=false actual_heal=0 actual_damage=7 actual_mana=13",
+          "seq": 27,
+          "enemy_turn": false,
+          "action": 9
+        },
+        {
+          "event": "resolution",
+          "delta": 0.387084,
+          "detail": "cells=[(2, 2), (3, 2), (2, 3), (3, 3)] reward=true multiplier_percent=100 heal=6 damage=14 mana=29 chain=1 refreshed=false actual_heal=0 actual_damage=14 actual_mana=12",
+          "seq": 38,
+          "enemy_turn": false,
+          "action": 9
+        },
+        {
+          "event": "resolution",
+          "delta": 3.483757,
+          "detail": "cells=[(2, 1), (3, 1), (4, 1)] reward=true multiplier_percent=100 heal=9 damage=22 mana=0 chain=1 refreshed=false actual_heal=9 actual_damage=22 actual_mana=0",
+          "seq": 48,
+          "enemy_turn": true,
+          "action": 10
+        }
+      ]
+    },
+    "goblin-normal-blood": {
+      "video": "goblin-normal-blood.mp4",
+      "video_sha256": "2fd979a467f1393bd385596b42141855ad49197a10a3ad966915a321b06561de",
+      "log": "goblin-normal-blood.jsonl",
+      "log_sha256": "26f93b934fdc34144d796b4a7f96e2433babaf017d69c4d46a38bca548a9fb2b",
+      "commands": [
+        "pause on",
+        "hero player 3",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 300",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 2 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "goblin-normal-blood-030.webp",
+          "rgba_sha256": "a02e290a0370f5453b40b85804235c9c0369c682c9f08d5ff03f09f895bea893"
+        },
+        "90": {
+          "path": "goblin-normal-blood-090.webp",
+          "rgba_sha256": "aeea888bc249a1b2653e1641e27e9cc0616c42ec29de9a565eb5cecec3d83179"
+        },
+        "150": {
+          "path": "goblin-normal-blood-150.webp",
+          "rgba_sha256": "1c100c51a91c8f5cbc317e96858d9b44efc559826bdffd33b662921c8293f14d"
+        },
+        "210": {
+          "path": "goblin-normal-blood-210.webp",
+          "rgba_sha256": "70dedfdfa17033552125ad8c77f53d10125c7de068749a8b0d79a489d988a5c1"
+        }
+      },
+      "trigger_event": "skill",
+      "skill_seq": 23,
+      "skill_time": 5.19233775138855,
+      "skill_detail": "Blood effective=Blood target=[2,2] cost=80 blood_cost=0 direct_heal=100 direct_damage=0 direct_mana=0 bonus=0 armed=false actual_heal=100 actual_damage=0 actual_mana=0",
+      "awake": false,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Blood effective=Blood target=[2,2] cost=80 blood_cost=0 direct_heal=100 direct_damage=0 direct_mana=0 bonus=0 armed=false actual_heal=100 actual_damage=0 actual_mana=0",
+          "seq": 23,
+          "enemy_turn": false,
+          "action": 10
+        },
+        {
+          "event": "resolution",
+          "delta": 2.740561,
+          "detail": "cells=[(7, 6), (7, 7), (7, 8)] reward=true multiplier_percent=100 heal=0 damage=22 mana=22 chain=1 refreshed=false actual_heal=0 actual_damage=22 actual_mana=22",
+          "seq": 34,
+          "enemy_turn": true,
+          "action": 11
+        }
+      ]
+    },
+    "elf-awake-nature-no-chain": {
+      "video": "elf-awake-nature-no-chain.mp4",
+      "video_sha256": "92bbdbd12e7ab5366bcf6751cf786f7506783062d2f6599a196de4add1634536",
+      "log": "elf-awake-nature-no-chain.jsonl",
+      "log_sha256": "279a6252c0a2d5e7ade9d40c32d2f58b7fa65fdbcac5bfcbe7b9ac4db2497bbf",
+      "commands": [
+        "pause on",
+        "hero player 1",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "turn enemy",
+        "pause off",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 700",
+        "board load 1 2 3 4 5 6 1 2 3 4 5 6 1 2 3 4 5 6 1 2 3 4 5 6 1 2 3 4 5 6 1 2 3 4 5 6 1 2 3 4 5 6 1 2 3 4 5 6 1 2 3 4 5 6 1 2 3 4 5 6 1 2 3 4",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 2 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "elf-awake-nature-no-chain-030.webp",
+          "rgba_sha256": "3d70965df31148507dc97c03ba00c09769c22c1603615ae9f1e70e1615892469"
+        },
+        "90": {
+          "path": "elf-awake-nature-no-chain-090.webp",
+          "rgba_sha256": "6b3d54eb2fe2a30c1b7112999d6df8229c37b6f6d77379464df4fd287e133003"
+        },
+        "150": {
+          "path": "elf-awake-nature-no-chain-150.webp",
+          "rgba_sha256": "0369ffcbdb64b9ebf34b131eede7b53eab0ddb399a660d02cde12e442fbde1b2"
+        },
+        "210": {
+          "path": "elf-awake-nature-no-chain-210.webp",
+          "rgba_sha256": "a9a41d19eaf45abb1077062f861eed0051e86862d228ec565d193e09841d4664"
+        }
+      },
+      "trigger_event": "skill",
+      "skill_seq": 55,
+      "skill_time": 10.308042287826538,
+      "skill_detail": "Nature effective=Nature target=[2,2] cost=60 blood_cost=0 direct_heal=10 direct_damage=25 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=25 actual_mana=0",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Nature effective=Nature target=[2,2] cost=60 blood_cost=0 direct_heal=10 direct_damage=25 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=25 actual_mana=0",
+          "seq": 55,
+          "enemy_turn": false,
+          "action": 19
+        },
+        {
+          "event": "skill",
+          "delta": 2.020305,
+          "detail": "Charge effective=Charge target=[3,8] cost=100 blood_cost=0 direct_heal=0 direct_damage=134 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 57,
+          "enemy_turn": true,
+          "action": 20
+        },
+        {
+          "event": "skill_hit",
+          "delta": 2.922813,
+          "detail": "Charge expected_damage=134 actual_damage=134",
+          "seq": 69,
+          "enemy_turn": true,
+          "action": 20
+        },
+        {
+          "event": "resolution",
+          "delta": 2.923109,
+          "detail": "cells=[(3, 1), (4, 1), (3, 2), (4, 2), (3, 3), (4, 3), (3, 4), (4, 4), (3, 5), (4, 5), (3, 6), (4, 6), (3, 7), (4, 7), (3, 8), (4, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=1 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 70,
+          "enemy_turn": true,
+          "action": 20
+        }
+      ]
+    },
+    "elf-awake-nature-delayed": {
+      "video": "elf-awake-nature-delayed.mp4",
+      "video_sha256": "bf27de67d00743ef63433c6843bdc83ee61ca45bc88e0fafb9def58ab0a2b777",
+      "log": "elf-awake-nature-delayed.jsonl",
+      "log_sha256": "1d8b1035dda91162b9fa49dec483e6a9c782a51f060b7908172b3ef8f8d1a863",
+      "commands": [
+        "pause on",
+        "hero player 1",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 1",
+        "mp enemy 200",
+        "turn enemy",
+        "pause off",
+        "pause on",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp enemy 700",
+        "hp enemy 221",
+        "pause off",
+        "status",
+        "pause off",
+        "cast 2 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "elf-awake-nature-delayed-030.webp",
+          "rgba_sha256": "df60c78ff5399a75558ddcff709eef2b04bdd6637f5f9c5d9b28378f8b448974"
+        },
+        "90": {
+          "path": "elf-awake-nature-delayed-090.webp",
+          "rgba_sha256": "9bc5d1b1c9bcbffa0fa6367a0cb5330de5656ed4a3d61727637c3aef7fbaaf83"
+        },
+        "150": {
+          "path": "elf-awake-nature-delayed-150.webp",
+          "rgba_sha256": "0ad67384e94e4d39edf7f49c6fb4113cea2711138e137be95684b35211c12958"
+        },
+        "210": {
+          "path": "elf-awake-nature-delayed-210.webp",
+          "rgba_sha256": "95907f8cd964bcd9f48ae0f59f56406598ac5c330f7b48312a2fc1d2d57e3343"
+        }
+      },
+      "trigger_event": "skill",
+      "skill_seq": 56,
+      "skill_time": 10.317681789398193,
+      "skill_detail": "Nature effective=Nature target=[2,2] cost=60 blood_cost=0 direct_heal=10 direct_damage=25 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=25 actual_mana=0",
+      "awake": true,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Nature effective=Nature target=[2,2] cost=60 blood_cost=0 direct_heal=10 direct_damage=25 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=25 actual_mana=0",
+          "seq": 56,
+          "enemy_turn": false,
+          "action": 19
+        },
+        {
+          "event": "resolution",
+          "delta": 1.515694,
+          "detail": "cells=[(2, 2), (2, 3), (3, 3), (4, 3), (2, 4)] reward=true multiplier_percent=100 heal=9 damage=23 mana=18 chain=2 refreshed=false actual_heal=0 actual_damage=23 actual_mana=18",
+          "seq": 73,
+          "enemy_turn": false,
+          "action": 19
+        },
+        {
+          "event": "resolution",
+          "delta": 2.309476,
+          "detail": "cells=[(1, 2), (2, 2), (3, 2)] reward=true multiplier_percent=110 heal=0 damage=44 mana=0 chain=2 refreshed=false actual_heal=0 actual_damage=44 actual_mana=0",
+          "seq": 78,
+          "enemy_turn": false,
+          "action": 19
+        },
+        {
+          "event": "skill",
+          "delta": 4.698849,
+          "detail": "Charge effective=Charge target=[8,8] cost=100 blood_cost=0 direct_heal=0 direct_damage=163 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 80,
+          "enemy_turn": true,
+          "action": 20
+        },
+        {
+          "event": "skill_hit",
+          "delta": 5.59771,
+          "detail": "Charge expected_damage=163 actual_damage=163",
+          "seq": 93,
+          "enemy_turn": true,
+          "action": 20
+        },
+        {
+          "event": "resolution",
+          "delta": 5.597891,
+          "detail": "cells=[(7, 1), (8, 1), (7, 2), (8, 2), (7, 3), (8, 3), (7, 4), (8, 4), (7, 5), (8, 5), (7, 6), (8, 6), (7, 7), (8, 7), (7, 8), (8, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=2 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 94,
+          "enemy_turn": true,
+          "action": 20
+        },
+        {
+          "event": "resolution",
+          "delta": 6.397746,
+          "detail": "cells=[(6, 2), (7, 2), (8, 2)] reward=true multiplier_percent=110 heal=6 damage=13 mana=13 chain=2 refreshed=false actual_heal=6 actual_damage=13 actual_mana=13",
+          "seq": 105,
+          "enemy_turn": true,
+          "action": 20
+        }
+      ]
+    }
+  }
+}

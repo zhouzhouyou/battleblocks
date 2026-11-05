@@ -1,0 +1,129 @@
+{
+  "source_commit": "c6e5b9f81e4b62aed203152c9bc115641fabae4a",
+  "binary_sha256": "ee70200eaf63d9185d9e8f15e409967290196af0fc17cd5b895e6e24f971d94b",
+  "verified_scene_count": 41,
+  "checks": {
+    "knight-awake-charge": [
+      "video/log hashes and trigger verified"
+    ],
+    "knight-awake-guard": [
+      "video/log hashes and trigger verified"
+    ],
+    "elf-awake-strike": [
+      "video/log hashes and trigger verified"
+    ],
+    "elf-awake-nature": [
+      "video/log hashes and trigger verified"
+    ],
+    "goblin-awake-greedy": [
+      "video/log hashes and trigger verified"
+    ],
+    "goblin-awake-blood": [
+      "video/log hashes and trigger verified"
+    ],
+    "goblin-awake-greedy-delayed": [
+      "video/log hashes and trigger verified",
+      "actual clear delayed beyond original cast duration"
+    ],
+    "knight-awake-charge-delayed": [
+      "video/log hashes and trigger verified",
+      "actual clear delayed beyond original cast duration"
+    ],
+    "knight-awake-charge-pause": [
+      "video/log hashes and trigger verified"
+    ],
+    "knight-awake-charge-pending-rollback": [
+      "video/log hashes and trigger verified",
+      "exactly one player damage hit after pending rollback"
+    ],
+    "knight-awake-charge-rollback": [
+      "video/log hashes and trigger verified",
+      "full rollback snapshot identical"
+    ],
+    "elf-awake-strike-rollback": [
+      "video/log hashes and trigger verified",
+      "full rollback snapshot identical"
+    ],
+    "goblin-awake-greedy-rollback": [
+      "video/log hashes and trigger verified",
+      "full rollback snapshot identical"
+    ],
+    "knight-awake-charge-terminal": [
+      "video/log hashes and trigger verified",
+      "real terminal event"
+    ],
+    "elf-awake-nature-terminal": [
+      "video/log hashes and trigger verified",
+      "real terminal event"
+    ],
+    "goblin-awake-greedy-terminal": [
+      "video/log hashes and trigger verified",
+      "real terminal event"
+    ],
+    "knight-awake-guard-no-target": [
+      "video/log hashes and trigger verified",
+      "no own clear resolution"
+    ],
+    "goblin-awake-blood-full": [
+      "video/log hashes and trigger verified",
+      "capped zero healing"
+    ],
+    "elf-awake-strike-followup": [
+      "video/log hashes and trigger verified",
+      "next action consumes Strike bonus"
+    ],
+    "elf-awake-strike-switch": [
+      "video/log hashes and trigger verified"
+    ],
+    "knight-normal-form-transition": [
+      "video/log hashes and trigger verified",
+      "real normal to awake transition"
+    ],
+    "elf-normal-form-transition": [
+      "video/log hashes and trigger verified",
+      "real normal to awake transition"
+    ],
+    "goblin-normal-form-transition": [
+      "video/log hashes and trigger verified",
+      "real normal to awake transition"
+    ],
+    "knight-awake-ai-enemy": [
+      "video/log hashes and trigger verified",
+      "actual awakened AI cast"
+    ],
+    "elf-awake-ai-enemy": [
+      "video/log hashes and trigger verified",
+      "actual awakened AI cast"
+    ],
+    "goblin-awake-ai-enemy": [
+      "video/log hashes and trigger verified",
+      "actual awakened AI cast"
+    ],
+    "knight-normal-charge": [
+      "video/log hashes and trigger verified"
+    ],
+    "knight-normal-guard": [
+      "video/log hashes and trigger verified"
+    ],
+    "elf-normal-strike": [
+      "video/log hashes and trigger verified"
+    ],
+    "elf-normal-nature": [
+      "video/log hashes and trigger verified"
+    ],
+    "goblin-normal-greedy": [
+      "video/log hashes and trigger verified"
+    ],
+    "goblin-normal-blood": [
+      "video/log hashes and trigger verified"
+    ],
+    "elf-awake-nature-no-chain": [
+      "video/log hashes and trigger verified",
+      "no own clear resolution"
+    ],
+    "elf-awake-nature-delayed": [
+      "video/log hashes and trigger verified",
+      "actual clear delayed beyond original cast duration"
+    ]
+  }
+}

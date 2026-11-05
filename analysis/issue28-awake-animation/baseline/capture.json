@@ -1,0 +1,636 @@
+{
+  "source_commit": "c0aa438fa4077785706a26276795efbb93e886d6",
+  "binary": "C:\\Users\\dongs\\Desktop\\battleblocks\\.build-tools\\issue28-baseline.exe",
+  "binary_sha256": "7bdd6acce62b00a766698ceb99b018d02f2d8d74684bb6669e254908852fa92a",
+  "sampling": "All video export and pixel measurement use wizard_recording_frames.frames: fps=60, sample n at n/60 seconds.",
+  "device_pixels": [
+    1280,
+    900
+  ],
+  "recorder_sha256": "f05bd43efff1f347be92d38b91cbcf487a793a5311e8f40474c0649352674b7e",
+  "scenes": {
+    "knight-normal-menu": {
+      "video": "knight-normal-menu.mp4",
+      "video_sha256": "7d8b31016239da4639b401dd4aa2e3d6f932542050664ecc6010a64f2a34e5aa",
+      "log": "knight-normal-menu.jsonl",
+      "log_sha256": "94855e0a90e1a92011d87b5e0018d2b4dc9e9aa1d36cc14176b3fd9e51d79dc0",
+      "commands": [
+        "status"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "knight-normal-menu-030.webp",
+          "rgba_sha256": "0e099c78d21a2b77f5c52eeb0d4fd318f5fb94520e125079a453d77e4d8dddcf"
+        },
+        "60": {
+          "path": "knight-normal-menu-060.webp",
+          "rgba_sha256": "6ff93a95dc9d013c3a517ab33dc16847ff207fd399cd01fef656d0742a8e9e47"
+        },
+        "90": {
+          "path": "knight-normal-menu-090.webp",
+          "rgba_sha256": "b2704cbea568c4916d0be91cb844c78af4427ef0e033831d4e366c74e5e37638"
+        },
+        "120": {
+          "path": "knight-normal-menu-120.webp",
+          "rgba_sha256": "155bb5ceb11f247f34e403dee0c9ade70e73d53089e397c68873a26ddafb9712"
+        },
+        "150": {
+          "path": "knight-normal-menu-150.webp",
+          "rgba_sha256": "7eeadf7e7718f774ee9e90a78eae1449998c1e03c1429a7fd9c145875f44460a"
+        },
+        "180": {
+          "path": "knight-normal-menu-180.webp",
+          "rgba_sha256": "e1896bd470d482695b4b7d1fa01439a3c8d14497d0327d2b7631d35e8209b289"
+        },
+        "210": {
+          "path": "knight-normal-menu-210.webp",
+          "rgba_sha256": "9cec8a59b141bf7afa74bbb711d8b21bc94518ab438e98f21f1ce1b33492df91"
+        }
+      }
+    },
+    "elf-normal-menu": {
+      "video": "elf-normal-menu.mp4",
+      "video_sha256": "55da34aaee374ba8f2b9e87639b154125005e1c79ee32cf441047fb7fec93fe1",
+      "log": "elf-normal-menu.jsonl",
+      "log_sha256": "2745aa65faab468720daf780e3112d34b9365fea3d804f0e2876428ac90d9560",
+      "commands": [
+        "status"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "elf-normal-menu-030.webp",
+          "rgba_sha256": "2f0c8c7ea032a65d6909e882b6bb8f430cddb5ee2b13275235910c0ea3778244"
+        },
+        "60": {
+          "path": "elf-normal-menu-060.webp",
+          "rgba_sha256": "7e7a34652f0a39647660161d17fb1ff3ba94265b02912c44149ae7c203e1d40a"
+        },
+        "90": {
+          "path": "elf-normal-menu-090.webp",
+          "rgba_sha256": "ca4fdf8d1bff9b0d9f1cddb798e50d30514fad5b26e361bd87a193f44bbd493a"
+        },
+        "120": {
+          "path": "elf-normal-menu-120.webp",
+          "rgba_sha256": "84be5c3b1ae507d919541b4ebe18c9c0175181068e6996f92ad6362a26f91d7e"
+        },
+        "150": {
+          "path": "elf-normal-menu-150.webp",
+          "rgba_sha256": "f2881af295a3885eb72bffecb519d2ce0709ac0f6871774a70c91180d475aaea"
+        },
+        "180": {
+          "path": "elf-normal-menu-180.webp",
+          "rgba_sha256": "dcd3b826d0c35dbd2345b41653315d74d924d3630992b226555af53cbbedb772"
+        },
+        "210": {
+          "path": "elf-normal-menu-210.webp",
+          "rgba_sha256": "4f7d90b76ff64d28ee59b7197acc943b25e0a610f2912f2760e6a04787c22267"
+        }
+      }
+    },
+    "goblin-normal-menu": {
+      "video": "goblin-normal-menu.mp4",
+      "video_sha256": "ed9a113e5f61dc0eb8f149023685a81ac8e56c2c2ba9b307ea41e1ba517ebd1d",
+      "log": "goblin-normal-menu.jsonl",
+      "log_sha256": "5e4f439639f5c8b768c89e645305933441fefb7cac82a9a6f077b42936a49c7c",
+      "commands": [
+        "status"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "goblin-normal-menu-030.webp",
+          "rgba_sha256": "8019cb6e6067485844727de2623f6a2f8f64071071a6028f67d7bb0afe7a379a"
+        },
+        "60": {
+          "path": "goblin-normal-menu-060.webp",
+          "rgba_sha256": "2fcf73414a6393abaafdaad05bff276db7d2dedd8239ae4f5fe33deaa1f5102b"
+        },
+        "90": {
+          "path": "goblin-normal-menu-090.webp",
+          "rgba_sha256": "ba0ff101960cfcfff0e46f4b765083a801d2a9cdc5b9548fe95459a34a5fd757"
+        },
+        "120": {
+          "path": "goblin-normal-menu-120.webp",
+          "rgba_sha256": "20ca62be305904626ec2a47f76dad7f0b500232810723bf6790b4baea6520d42"
+        },
+        "150": {
+          "path": "goblin-normal-menu-150.webp",
+          "rgba_sha256": "11e55cf481d921d6a1d3f78e03cf2ede2fde0e62cce72b98bbd2c21dbb76d0f6"
+        },
+        "180": {
+          "path": "goblin-normal-menu-180.webp",
+          "rgba_sha256": "f9f73b4a7f833249caf0530114844a57c4f04d6699e4bffd75cef4b329ace62b"
+        },
+        "210": {
+          "path": "goblin-normal-menu-210.webp",
+          "rgba_sha256": "aa23eb47105e0fa0386e020de06f73ce33d873c111b99024bc8bb725faa8ee64"
+        }
+      }
+    },
+    "knight-normal-charge": {
+      "video": "knight-normal-charge.mp4",
+      "video_sha256": "1d32fb6e19c733571d2b60091efae9224098593a84a6cfac51095b1e7a34bf6a",
+      "log": "knight-normal-charge.jsonl",
+      "log_sha256": "03187e3d7a553bc204f438e03b2647bbbf62ea21a7ae2ae987ddefc9f682ef01",
+      "commands": [
+        "pause on",
+        "hero player 0",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "status",
+        "pause off",
+        "cast 1 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "knight-normal-charge-030.webp",
+          "rgba_sha256": "b8026ce035742653d65bdfe77b14f542c40fe5a439c9f1ca4754b6c90261ca8a"
+        },
+        "60": {
+          "path": "knight-normal-charge-060.webp",
+          "rgba_sha256": "eb3b335d04979146f1c355b0809a35b48c268a8c844363c8b58f53cc36479758"
+        },
+        "90": {
+          "path": "knight-normal-charge-090.webp",
+          "rgba_sha256": "1dd9d2544295dcb3c79d216b7f88571931213f7130016cc41e8c8ff97348593e"
+        },
+        "120": {
+          "path": "knight-normal-charge-120.webp",
+          "rgba_sha256": "eece3811ba54c22f02dd66152d90fd8b1810e6336ce5d2605a93a984f21d1230"
+        },
+        "150": {
+          "path": "knight-normal-charge-150.webp",
+          "rgba_sha256": "dd8cff0ddbf10587c20fa54e1c0fc00374c9a57523a4c601da069eff251a826a"
+        },
+        "180": {
+          "path": "knight-normal-charge-180.webp",
+          "rgba_sha256": "09a5ad97c13510995a2b06bfa16d43ee54af75173835aafa00db86002fe2b901"
+        },
+        "210": {
+          "path": "knight-normal-charge-210.webp",
+          "rgba_sha256": "eec390903c8b553cd5a7637139dae8717a75be1618cc4c75978a126b7d5b34bc"
+        },
+        "240": {
+          "path": "knight-normal-charge-240.webp",
+          "rgba_sha256": "50a829cc680cfe6c5f2e5eaaa70261dfef999acf4a2d34ed81baa0a07645f6fa"
+        },
+        "270": {
+          "path": "knight-normal-charge-270.webp",
+          "rgba_sha256": "3a74c2f91fb2650bfdc41e9d8a382f2e0f00677748cd397535b92b2a0de85ddc"
+        },
+        "300": {
+          "path": "knight-normal-charge-300.webp",
+          "rgba_sha256": "40cde6903d93f2b5f3bc40644becce42d4c850032add9219fe4e16e072d9c937"
+        }
+      },
+      "skill_seq": 18,
+      "skill_time": 4.55934476852417,
+      "skill_detail": "Charge effective=Charge target=[2,2] cost=100 blood_cost=0 direct_heal=0 direct_damage=132 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+      "awake": false,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Charge effective=Charge target=[2,2] cost=100 blood_cost=0 direct_heal=0 direct_damage=132 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 18
+        },
+        {
+          "event": "skill_hit",
+          "delta": 1.023363,
+          "detail": "Charge expected_damage=132 actual_damage=132",
+          "seq": 29
+        },
+        {
+          "event": "resolution",
+          "delta": 1.023591,
+          "detail": "cells=[(2, 1), (3, 1), (2, 2), (3, 2), (2, 3), (3, 3), (2, 4), (3, 4), (2, 5), (3, 5), (2, 6), (3, 6), (2, 7), (3, 7), (2, 8), (3, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=2 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 30
+        },
+        {
+          "event": "resolution",
+          "delta": 1.761004,
+          "detail": "cells=[(2, 1), (2, 2), (2, 3)] reward=true multiplier_percent=110 heal=9 damage=24 mana=0 chain=2 refreshed=false actual_heal=0 actual_damage=24 actual_mana=0",
+          "seq": 38
+        },
+        {
+          "event": "resolution",
+          "delta": 4.937729,
+          "detail": "cells=[(6, 3), (7, 3), (8, 3), (6, 6), (7, 6), (8, 6)] reward=true multiplier_percent=100 heal=0 damage=44 mana=44 chain=1 refreshed=false actual_heal=0 actual_damage=44 actual_mana=44",
+          "seq": 55
+        }
+      ]
+    },
+    "knight-normal-guard": {
+      "video": "knight-normal-guard.mp4",
+      "video_sha256": "4ea9af236e9fb0c992b0f21353ff3d4f05e4d2043671381590f5f33603b12473",
+      "log": "knight-normal-guard.jsonl",
+      "log_sha256": "4300dfd625ac3ff2aa13633f48914a81d8b95c603db7258f38a3c26cf31c9be1",
+      "commands": [
+        "pause on",
+        "hero player 0",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 300",
+        "status",
+        "pause off",
+        "cast 2 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "knight-normal-guard-030.webp",
+          "rgba_sha256": "e732462eb4a5891b07e99dbdf7450de1abf17223432f011497cc0d65ae646c2d"
+        },
+        "60": {
+          "path": "knight-normal-guard-060.webp",
+          "rgba_sha256": "5f5fb5929f2fb1ee37c4eaf63a0f4c2fe5dcea85fa1c7d7d255e02028de7cb96"
+        },
+        "90": {
+          "path": "knight-normal-guard-090.webp",
+          "rgba_sha256": "4070071aee16efab645c38c020886945570680ea4aadc2148f3db60e0b3895fb"
+        },
+        "120": {
+          "path": "knight-normal-guard-120.webp",
+          "rgba_sha256": "5bb09accb7095ba3bce28a05464b683288ab61e7a2f12e3f6cb93a775a53abc7"
+        },
+        "150": {
+          "path": "knight-normal-guard-150.webp",
+          "rgba_sha256": "ca61b0c6e02c3c309325b104583f0f9018762bf4ac1184d30a0a088f34eacb21"
+        },
+        "180": {
+          "path": "knight-normal-guard-180.webp",
+          "rgba_sha256": "865754fbf49f33001c89f7e18b643d94f2a704a7ec997a5d59b593c708e4a65a"
+        },
+        "210": {
+          "path": "knight-normal-guard-210.webp",
+          "rgba_sha256": "077f981d01d857e41f44c16692445d023fb5e1a9a26896b7d2fff072f7f76f3b"
+        },
+        "240": {
+          "path": "knight-normal-guard-240.webp",
+          "rgba_sha256": "206e26f86d87731c4e6cc961037e89fe49209c40afe3405db55fc8ed2a9ac9c0"
+        },
+        "270": {
+          "path": "knight-normal-guard-270.webp",
+          "rgba_sha256": "95706d7e34d437c70f14fe08009c891981cbb90048edb13a394366ec1d9e70b3"
+        },
+        "300": {
+          "path": "knight-normal-guard-300.webp",
+          "rgba_sha256": "c8cf85035a4fab311c71244d8c843aae69a75981e590ff6ec8a1b145d12b8949"
+        }
+      },
+      "skill_seq": 21,
+      "skill_time": 4.641505241394043,
+      "skill_detail": "Guard effective=Guard target=[2,2] cost=150 blood_cost=0 direct_heal=140 direct_damage=0 direct_mana=0 bonus=0 armed=false actual_heal=140 actual_damage=0 actual_mana=0",
+      "awake": false,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Guard effective=Guard target=[2,2] cost=150 blood_cost=0 direct_heal=140 direct_damage=0 direct_mana=0 bonus=0 armed=false actual_heal=140 actual_damage=0 actual_mana=0",
+          "seq": 21
+        },
+        {
+          "event": "resolution",
+          "delta": 0.439967,
+          "detail": "cells=[(2, 1), (7, 2), (5, 3), (3, 4), (1, 5), (8, 5), (6, 6), (4, 7), (2, 8)] reward=false multiplier_percent=100 heal=0 damage=0 mana=0 chain=1 refreshed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 22
+        },
+        {
+          "event": "resolution",
+          "delta": 3.529468,
+          "detail": "cells=[(1, 8), (2, 8), (3, 8)] reward=true multiplier_percent=100 heal=0 damage=22 mana=22 chain=2 refreshed=false actual_heal=0 actual_damage=22 actual_mana=22",
+          "seq": 33
+        },
+        {
+          "event": "resolution",
+          "delta": 4.289969,
+          "detail": "cells=[(3, 6), (4, 6), (5, 6)] reward=true multiplier_percent=110 heal=6 damage=13 mana=13 chain=2 refreshed=false actual_heal=0 actual_damage=13 actual_mana=13",
+          "seq": 44
+        }
+      ]
+    },
+    "elf-normal-strike": {
+      "video": "elf-normal-strike.mp4",
+      "video_sha256": "d008529c65f8d30cb3bc6d37366141abd11871466d235015e0ba5f23753ddd8a",
+      "log": "elf-normal-strike.jsonl",
+      "log_sha256": "9c133b133d41c3caa5983e64d07d5b5d30de0827eda650f0723ef8cba638d62f",
+      "commands": [
+        "pause on",
+        "hero player 1",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "status",
+        "pause off",
+        "cast 1 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "elf-normal-strike-030.webp",
+          "rgba_sha256": "923afef7f105f0f87c1f7924c7c56f8c1b58e1ccd3e8d3245026ef67a175a0e5"
+        },
+        "60": {
+          "path": "elf-normal-strike-060.webp",
+          "rgba_sha256": "043b0eea10a0a8a24db21eeb4851581db646bb0afea1b0626c7671a3a776afa0"
+        },
+        "90": {
+          "path": "elf-normal-strike-090.webp",
+          "rgba_sha256": "808bd70e7a9f6cc7365b9fcc701c7e7afb16dfd7951d5648dfb5a9e3e1bf5cb0"
+        },
+        "120": {
+          "path": "elf-normal-strike-120.webp",
+          "rgba_sha256": "c8e0f7323ad66e32e361c429721dd5bf81b7986b0f2e3006a1516a1d20914d2f"
+        },
+        "150": {
+          "path": "elf-normal-strike-150.webp",
+          "rgba_sha256": "82c8b16b278691a898c62f7a377bba4c5dd712091f97ffeb242bbe11911284c4"
+        },
+        "180": {
+          "path": "elf-normal-strike-180.webp",
+          "rgba_sha256": "31d187872d15739e29744c1dcc8748fbc0a0b9a9d1450d6485cb727c421e9d5e"
+        },
+        "210": {
+          "path": "elf-normal-strike-210.webp",
+          "rgba_sha256": "bf635c9d3ce9f04cc165145b7b9acdf1b1d6ff5c74be625df1b72f17da2b08b3"
+        },
+        "240": {
+          "path": "elf-normal-strike-240.webp",
+          "rgba_sha256": "6cd67d64cad95a996dadc090106f363d229a5d157f7b54e91cb965c761cb811b"
+        },
+        "270": {
+          "path": "elf-normal-strike-270.webp",
+          "rgba_sha256": "0c9343de281c6a877ec1b9663476300ef1f4db88ab9cc10aaa27f74e577b379d"
+        },
+        "300": {
+          "path": "elf-normal-strike-300.webp",
+          "rgba_sha256": "ecd73b01a2b43155ee77f43a99c2cfadc19febeb0b5e11e6b483ae0ad3bd8384"
+        }
+      },
+      "skill_seq": 18,
+      "skill_time": 4.53111457824707,
+      "skill_detail": "Strike effective=Strike target=[2,2] cost=35 blood_cost=0 direct_heal=0 direct_damage=0 direct_mana=0 bonus=1 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+      "awake": false,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Strike effective=Strike target=[2,2] cost=35 blood_cost=0 direct_heal=0 direct_damage=0 direct_mana=0 bonus=1 armed=false actual_heal=0 actual_damage=0 actual_mana=0",
+          "seq": 18
+        }
+      ]
+    },
+    "elf-normal-nature": {
+      "video": "elf-normal-nature.mp4",
+      "video_sha256": "3810de86c91a2df6c93246fe54bc4cc802e8b0579906701b35d61ededceb052e",
+      "log": "elf-normal-nature.jsonl",
+      "log_sha256": "0367f815fac44cea62d599bc2a7bce093309785ed61e8de09c5877d11db9964b",
+      "commands": [
+        "pause on",
+        "hero player 1",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "status",
+        "pause off",
+        "cast 2 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "elf-normal-nature-030.webp",
+          "rgba_sha256": "0698b8fdbb505c1c265aa685f2aa086c0a11611e57afb8ba101983e4af8e3551"
+        },
+        "60": {
+          "path": "elf-normal-nature-060.webp",
+          "rgba_sha256": "e01902ce7b6ead68c3296cbb6ff49c7ebf3529a9c4fa36e84461df586ee2c2b6"
+        },
+        "90": {
+          "path": "elf-normal-nature-090.webp",
+          "rgba_sha256": "96784b418de9499dadd9bd33f88ab7ee79ad83a7f3017c13aae01bfa13801f4a"
+        },
+        "120": {
+          "path": "elf-normal-nature-120.webp",
+          "rgba_sha256": "8d052e89185387f09d52be6b4c23d285b747bf95cfca76e186afda3884fe0f08"
+        },
+        "150": {
+          "path": "elf-normal-nature-150.webp",
+          "rgba_sha256": "19df470abcff5630f123513bc094ab60e802a6aa583f3dc98f42d4a8758012f6"
+        },
+        "180": {
+          "path": "elf-normal-nature-180.webp",
+          "rgba_sha256": "caf51149a3661f850b83a5c485c82ac3e28ef4b70709d88655f3d8f770103280"
+        },
+        "210": {
+          "path": "elf-normal-nature-210.webp",
+          "rgba_sha256": "4bdf10778cbc3208a2562b565b040bc202b0b1fc85e103afe4d1e8afa1305a5a"
+        },
+        "240": {
+          "path": "elf-normal-nature-240.webp",
+          "rgba_sha256": "d338462ff4f39120ba9ef4bec4ab57dd409bc75a5e4a2ad3d28e56995041e3be"
+        },
+        "270": {
+          "path": "elf-normal-nature-270.webp",
+          "rgba_sha256": "3e68646b3d298efe4067cc3f7612e35adadbbfda6580110ee576be3634560e13"
+        },
+        "300": {
+          "path": "elf-normal-nature-300.webp",
+          "rgba_sha256": "4aabc91e40145a5d0dc744a2759654dda85706dba076ef1d07ea0c13f26af4e7"
+        }
+      },
+      "skill_seq": 20,
+      "skill_time": 4.557937860488892,
+      "skill_detail": "Nature effective=Nature target=[2,2] cost=60 blood_cost=0 direct_heal=10 direct_damage=25 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=25 actual_mana=0",
+      "awake": false,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Nature effective=Nature target=[2,2] cost=60 blood_cost=0 direct_heal=10 direct_damage=25 direct_mana=0 bonus=0 armed=false actual_heal=0 actual_damage=25 actual_mana=0",
+          "seq": 20
+        },
+        {
+          "event": "resolution",
+          "delta": 0.450665,
+          "detail": "cells=[(2, 2), (2, 3), (3, 3), (4, 3), (2, 4)] reward=true multiplier_percent=100 heal=9 damage=18 mana=18 chain=2 refreshed=false actual_heal=0 actual_damage=18 actual_mana=18",
+          "seq": 37
+        },
+        {
+          "event": "resolution",
+          "delta": 1.185113,
+          "detail": "cells=[(2, 1), (2, 2), (2, 3)] reward=true multiplier_percent=110 heal=8 damage=21 mana=0 chain=2 refreshed=false actual_heal=0 actual_damage=21 actual_mana=0",
+          "seq": 45
+        },
+        {
+          "event": "resolution",
+          "delta": 4.22337,
+          "detail": "cells=[(1, 4), (2, 4), (3, 4)] reward=true multiplier_percent=100 heal=19 damage=0 mana=0 chain=1 refreshed=false actual_heal=19 actual_damage=0 actual_mana=0",
+          "seq": 52
+        }
+      ]
+    },
+    "goblin-normal-greedy": {
+      "video": "goblin-normal-greedy.mp4",
+      "video_sha256": "eed7e302e408261837a97a27553af851ce01839522b76a36ecee4518894b2fd0",
+      "log": "goblin-normal-greedy.jsonl",
+      "log_sha256": "364acaf84d800c14e8847ddbaac51abd366d93d0778d139c1a2cdfc52dde48b0",
+      "commands": [
+        "pause on",
+        "hero player 3",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "status",
+        "pause off",
+        "cast 1 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "goblin-normal-greedy-030.webp",
+          "rgba_sha256": "36c61ec78937802ff533a68db387f32b1190063a921e43ac2dc804434aea6413"
+        },
+        "60": {
+          "path": "goblin-normal-greedy-060.webp",
+          "rgba_sha256": "7636f99701caf7b774e29fb09506e468b8c7302431accb4fc814e5a8791cebd7"
+        },
+        "90": {
+          "path": "goblin-normal-greedy-090.webp",
+          "rgba_sha256": "e9290c4e75a064e0dd29079eef74c2905d36cc3d49df6b3f31a0f8a1d8ba610d"
+        },
+        "120": {
+          "path": "goblin-normal-greedy-120.webp",
+          "rgba_sha256": "46164e2278a8d9bc15541525142d2066c5f4f9d7f37e19fde17b0bdc19d6b189"
+        },
+        "150": {
+          "path": "goblin-normal-greedy-150.webp",
+          "rgba_sha256": "706524d729b47bf97182f0921be9da3511f0fab8b58af0ce89bd38ba431ee9a3"
+        },
+        "180": {
+          "path": "goblin-normal-greedy-180.webp",
+          "rgba_sha256": "b5ab2a1357b95ef8fff804e0f737f84032346d4c697650877d1855bc0f9fbc0e"
+        },
+        "210": {
+          "path": "goblin-normal-greedy-210.webp",
+          "rgba_sha256": "d96db3ce920c77f2ffa510bf799801a204bb7ff24ccc4093edfa40da9cda0e85"
+        },
+        "240": {
+          "path": "goblin-normal-greedy-240.webp",
+          "rgba_sha256": "360f147e90092495b31b07176f0efe6bea1a76eb37951f9429e846447c10ae28"
+        },
+        "270": {
+          "path": "goblin-normal-greedy-270.webp",
+          "rgba_sha256": "f0bf0032dc0907a747aa4c831090c7f0d2b2785bbd1f1e395ad2d9fe7c5a94e8"
+        },
+        "300": {
+          "path": "goblin-normal-greedy-300.webp",
+          "rgba_sha256": "90beea4532a6c4daf4a928a61e9e67dff7859ab242b118844882962a74f4b958"
+        }
+      },
+      "skill_seq": 25,
+      "skill_time": 4.530894041061401,
+      "skill_detail": "Greedy effective=Greedy target=[2,2] cost=25 blood_cost=0 direct_heal=3 direct_damage=7 direct_mana=13 bonus=0 armed=false actual_heal=0 actual_damage=7 actual_mana=13",
+      "awake": false,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Greedy effective=Greedy target=[2,2] cost=25 blood_cost=0 direct_heal=3 direct_damage=7 direct_mana=13 bonus=0 armed=false actual_heal=0 actual_damage=7 actual_mana=13",
+          "seq": 25
+        },
+        {
+          "event": "resolution",
+          "delta": 0.390949,
+          "detail": "cells=[(2, 2), (3, 2), (2, 3), (3, 3)] reward=true multiplier_percent=100 heal=6 damage=14 mana=29 chain=1 refreshed=false actual_heal=0 actual_damage=14 actual_mana=12",
+          "seq": 36
+        },
+        {
+          "event": "resolution",
+          "delta": 3.423717,
+          "detail": "cells=[(2, 1), (3, 1), (4, 1)] reward=true multiplier_percent=100 heal=9 damage=22 mana=0 chain=1 refreshed=false actual_heal=9 actual_damage=22 actual_mana=0",
+          "seq": 46
+        }
+      ]
+    },
+    "goblin-normal-blood": {
+      "video": "goblin-normal-blood.mp4",
+      "video_sha256": "9eb9c2d46cd1c33cff0264fe71fab4c62af0ad63e5797ebd855936ab4017226b",
+      "log": "goblin-normal-blood.jsonl",
+      "log_sha256": "902198459145437287a9e29f473e8941ad45f61ea340a7e18def6f817c094f79",
+      "commands": [
+        "pause on",
+        "hero player 3",
+        "hero enemy 0",
+        "seed 280011",
+        "board load 0 1 2 3 4 5 6 0 2 3 4 5 6 0 1 2 4 5 6 0 1 2 3 4 6 0 1 2 3 4 5 6 1 2 3 4 5 6 0 1 3 4 5 6 0 1 2 3 5 6 0 1 2 3 4 5 0 1 2 3 4 5 6 0",
+        "mp player 200",
+        "hp player 300",
+        "status",
+        "pause off",
+        "cast 2 2 2"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "goblin-normal-blood-030.webp",
+          "rgba_sha256": "31ebeb622863ea273348081ed1bd2713bf4f91068033014b25ec9010383c4188"
+        },
+        "60": {
+          "path": "goblin-normal-blood-060.webp",
+          "rgba_sha256": "f81cf10809c2216980f401a081a086d4627892ffb53174342972099168d90126"
+        },
+        "90": {
+          "path": "goblin-normal-blood-090.webp",
+          "rgba_sha256": "349249c7d563771f12724438cffdc613184c2325a02800a57f5f7410aeb5c239"
+        },
+        "120": {
+          "path": "goblin-normal-blood-120.webp",
+          "rgba_sha256": "0697f0f060b8e9211d716a75edaca7642749e43611b37f7b4e6e2192d32a64d9"
+        },
+        "150": {
+          "path": "goblin-normal-blood-150.webp",
+          "rgba_sha256": "3a89c7a7683308de6e72b12aeed80bf0cdd6a233b03b467865b8eebb25325236"
+        },
+        "180": {
+          "path": "goblin-normal-blood-180.webp",
+          "rgba_sha256": "51f6128f6785d17d53a5cdc36fecfabd23e283cf38157fbdff7fc27a4cb45234"
+        },
+        "210": {
+          "path": "goblin-normal-blood-210.webp",
+          "rgba_sha256": "03ac6d8aebd8b6d83104d8c3dfef2c35e5d4c0df2d6b3792d04ecc5e35e24bea"
+        },
+        "240": {
+          "path": "goblin-normal-blood-240.webp",
+          "rgba_sha256": "5a9756bf6bf92c5a38c90c6d4da0cbdc5327a0cdae7913aa92045b0ab326b223"
+        },
+        "270": {
+          "path": "goblin-normal-blood-270.webp",
+          "rgba_sha256": "8e3e968905aca9389a7e0f15edae118ee066ead986c5219f51e04285b8a0c4d8"
+        },
+        "300": {
+          "path": "goblin-normal-blood-300.webp",
+          "rgba_sha256": "657d95e013ad0e5f18eab7b06d703a8f51d5e314ae90d6f9b5bbda388409e10c"
+        }
+      },
+      "skill_seq": 21,
+      "skill_time": 4.795348167419434,
+      "skill_detail": "Blood effective=Blood target=[2,2] cost=80 blood_cost=0 direct_heal=100 direct_damage=0 direct_mana=0 bonus=0 armed=false actual_heal=100 actual_damage=0 actual_mana=0",
+      "awake": false,
+      "events_after_skill": [
+        {
+          "event": "skill",
+          "delta": 0.0,
+          "detail": "Blood effective=Blood target=[2,2] cost=80 blood_cost=0 direct_heal=100 direct_damage=0 direct_mana=0 bonus=0 armed=false actual_heal=100 actual_damage=0 actual_mana=0",
+          "seq": 21
+        },
+        {
+          "event": "resolution",
+          "delta": 2.650484,
+          "detail": "cells=[(7, 6), (7, 7), (7, 8)] reward=true multiplier_percent=100 heal=0 damage=22 mana=22 chain=1 refreshed=false actual_heal=0 actual_damage=22 actual_mana=22",
+          "seq": 32
+        }
+      ]
+    }
+  }
+}

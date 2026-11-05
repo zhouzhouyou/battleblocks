@@ -1,0 +1,4 @@
+# Captured logs and CSVs are byte-hashed evidence; preserve their line endings.
+*.jsonl -text
+*.csv -text
+*.log -text -whitespace

@@ -1,0 +1,94 @@
+{
+  "source_commit": "c6e5b9f81e4b62aed203152c9bc115641fabae4a",
+  "binary": "C:\\Users\\dongs\\Desktop\\battleblocks\\dist\\battleblocks-windows-x64\\battleblocks.exe",
+  "binary_sha256": "6154b77d26701112b517c081a05601b7517f8694268ab479ba92f30befd13652",
+  "sampling": "All video export and pixel measurement use wizard_recording_frames.frames: fps=60, sample n at n/60 seconds.",
+  "device_pixels": [
+    1280,
+    900
+  ],
+  "recorder_sha256": "a03f622d58c1da5ff545cb4b2d25201c55420d684fa0a4fb958bd1f454832986",
+  "scenes": {
+    "knight-awake-menu": {
+      "video": "knight-awake-menu.mp4",
+      "video_sha256": "3555bfecfe0f35539c23a2471e9f49f278fd4b0a20f222d395a60641b3d5444a",
+      "log": "knight-awake-menu.jsonl",
+      "log_sha256": "3d68caac626e1b77e2aac1867b0174704bfd9d47a988a4eabdfd5ee16bc0eda2",
+      "commands": [
+        "status"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "knight-awake-menu-030.webp",
+          "rgba_sha256": "b43f580bd318ff7d0f81a035ba6e609c1b7d2ce061fbb189bbd7a169f8285f9f"
+        },
+        "90": {
+          "path": "knight-awake-menu-090.webp",
+          "rgba_sha256": "0ba69ba9f4a66e17e7b40f5ee4cf44e0f5315d1baf1b354c50b7fd24b68f3099"
+        },
+        "150": {
+          "path": "knight-awake-menu-150.webp",
+          "rgba_sha256": "79cb58f8ee2a4131357c6269caf2b76bea0ad09eee2b611b26c21d10cfeef508"
+        },
+        "210": {
+          "path": "knight-awake-menu-210.webp",
+          "rgba_sha256": "dc216e5be7dbfdec1a157234fa179215d9d7f742853b0504bebb81274357db8f"
+        }
+      }
+    },
+    "elf-awake-menu": {
+      "video": "elf-awake-menu.mp4",
+      "video_sha256": "7b2ae52807fd78051a0f31792cf10ba87d188a3b3989baa4ef0afebdf6719d73",
+      "log": "elf-awake-menu.jsonl",
+      "log_sha256": "4f8a0b9d9add686bb2657588f467b770cef8f396cdf6001156edbda0ee1f06e7",
+      "commands": [
+        "status"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "elf-awake-menu-030.webp",
+          "rgba_sha256": "461c5880054d6a90c8daa01bf518bcfcf746069687f2b7741bf4f024d84a8b7e"
+        },
+        "90": {
+          "path": "elf-awake-menu-090.webp",
+          "rgba_sha256": "e6d7de8bf6bca78e9c25bc034592974542e18268e75e7c28386212b9d843e68e"
+        },
+        "150": {
+          "path": "elf-awake-menu-150.webp",
+          "rgba_sha256": "6f68dd78d188ebd1cfc2ba4a32d08663503035481f38e70feca559f2ed84e875"
+        },
+        "210": {
+          "path": "elf-awake-menu-210.webp",
+          "rgba_sha256": "9ac42c68d6750aa75d2baf5dd2b1eeb2d20f2584e8d60847d836bc9af8e21eb7"
+        }
+      }
+    },
+    "goblin-awake-menu": {
+      "video": "goblin-awake-menu.mp4",
+      "video_sha256": "77e5f97606fb0713d51e4e2e162e00ace105c4bb87948cb46e5da22ec379fe7c",
+      "log": "goblin-awake-menu.jsonl",
+      "log_sha256": "f50b97abe157249e1c4910ac2f4649052165529129a56245307ea58ae66a5013",
+      "commands": [
+        "status"
+      ],
+      "samples_60hz": {
+        "30": {
+          "path": "goblin-awake-menu-030.webp",
+          "rgba_sha256": "2d46129c27a6c1444a5cae6391b5971195fed6540a49812cc2d45eb3154a6137"
+        },
+        "90": {
+          "path": "goblin-awake-menu-090.webp",
+          "rgba_sha256": "2b7f70007909d0ef83d572843a1c93f04435b37922d3ba5eb191afa778527160"
+        },
+        "150": {
+          "path": "goblin-awake-menu-150.webp",
+          "rgba_sha256": "e27e84c916bcb5b8df98cdb0f6a5b4106072fa793183c4a3c5b22c69fd67bb9d"
+        },
+        "210": {
+          "path": "goblin-awake-menu-210.webp",
+          "rgba_sha256": "35699f58b732c318391f599dff915452faf1949dbfc1f3529612dcc44c6bff40"
+        }
+      }
+    }
+  }
+}

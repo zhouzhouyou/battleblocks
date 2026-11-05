@@ -1,0 +1,154 @@
+{
+  "baseline": "c0aa438fa4077785706a26276795efbb93e886d6",
+  "normal_registry_lf_sha256": "88bc7b98b607d3cf66402f22b433ab6b06997a3499f11314dedfc77625963e49",
+  "thumbnail_bytes_sha256": "e0a14f25435123d080f3a9ebf694b07e40b163c1a11ed241f7bd8029923b2d99",
+  "roles": {
+    "knight": {
+      "metadata": {
+        "original_size": [
+          320,
+          560
+        ],
+        "bounds": [
+          0,
+          160,
+          300,
+          560
+        ],
+        "frame_size": [
+          300,
+          400
+        ],
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "durations": [
+          0.1,
+          0.1,
+          0.1,
+          0.13
+        ],
+        "normal_source_sha256": "6cc8bb89abc2bd7fc7003a89c879fbd641e0c9477f00c83991b1d04108c46ad2",
+        "normal_atlas_sha256": "017870411cfaba10f6794af037f9b23c064f17c0ecad0cf75cb4d5a99b8c20de",
+        "awake_size": [
+          75,
+          96
+        ],
+        "awake_sha256": "426922ccf62b7cc4b1377f2fc3dc4fac079c50c8f383cd49cb4e9424f0c23db1"
+      },
+      "unique_frames": 4,
+      "cast": null,
+      "sleep": null,
+      "anchor": null,
+      "thumbnail_slot": 0,
+      "thumbnail_rgba_sha256": "c99377e6cb571d5a45471d73f15a38b9f0f73a2e7ff502b5dd8c10a61c3607cd",
+      "ordered_frame_rgba_sha256": [
+        "bf6a441037dadea929c43dd536971fb48c1d14f2505d6b18f450b01dba99e9cf",
+        "3540146f642ca8ca2fac0932bafdba22d26bf344854b9ba9dd3061b4b8ab1271",
+        "8c3cf663e020f72cef96b4368910d80c1b36213cce5f68a95c771024278cf97d",
+        "2e0937473ffdc68b1cb0ccbe8eebc796e4404ec6c20af8ebc02abdbacfcbdfb9"
+      ]
+    },
+    "elf": {
+      "metadata": {
+        "original_size": [
+          320,
+          560
+        ],
+        "bounds": [
+          0,
+          240,
+          320,
+          560
+        ],
+        "frame_size": [
+          320,
+          320
+        ],
+        "indices": [
+          0,
+          1,
+          2,
+          3
+        ],
+        "durations": [
+          0.1,
+          0.1,
+          0.1,
+          0.1
+        ],
+        "normal_source_sha256": "df66d687ebb0be9bc0e5521a4d600c11e1029b52942d9ba79ad585674f4c97dc",
+        "normal_atlas_sha256": "909c1e3f1f9e1fed80ebb935b480aa35c9a4ca60990fff92d2768cb16fbffbaf",
+        "awake_size": [
+          78,
+          96
+        ],
+        "awake_sha256": "1fc525001aa67e708243204267346c42b2f124f763e848954f0f33c2832bd399"
+      },
+      "unique_frames": 4,
+      "cast": null,
+      "sleep": null,
+      "anchor": null,
+      "thumbnail_slot": 1,
+      "thumbnail_rgba_sha256": "a5caf72224e78690986c827da8882fa03dae22d731a53ce2fb620e8b818cbe08",
+      "ordered_frame_rgba_sha256": [
+        "e943849e7eba3c175db31ffba0f8b3b28edcefe48169a1d2b1d0e9b0ee537bdc",
+        "9de58e3252408d665a04a20833b78e31fee851f1f462d25a1b1fc9fb05c2da69",
+        "3236ed4ece88140f8fb9c0f65d6c917223e653ed49686f72485684f2687ab473",
+        "22dba14ea5a9d3d3acd02ca122cbdd42cae363a0611fe16f06c7b93d0c41f6c2"
+      ]
+    },
+    "goblin": {
+      "metadata": {
+        "original_size": [
+          320,
+          560
+        ],
+        "bounds": [
+          80,
+          360,
+          280,
+          560
+        ],
+        "frame_size": [
+          200,
+          200
+        ],
+        "indices": [
+          0,
+          1,
+          2,
+          1
+        ],
+        "durations": [
+          0.13,
+          0.13,
+          0.13,
+          0.13
+        ],
+        "normal_source_sha256": "8c5c09f31c5007a86afe6fb775c00d0c1d5df54a2a3db6b917cd6f4ae786b02e",
+        "normal_atlas_sha256": "7ae05f203b699ac2a4c86564e99279c25e31e2a705ca5a2c2f94f9b04189bf59",
+        "awake_size": [
+          81,
+          96
+        ],
+        "awake_sha256": "8c80ae5a3e884de36515ba75fe0147f5072acca9877b933cb54b90c9a2bf8122"
+      },
+      "unique_frames": 3,
+      "cast": null,
+      "sleep": null,
+      "anchor": null,
+      "thumbnail_slot": 3,
+      "thumbnail_rgba_sha256": "e24b9b593b2a0819f80c69728068d80caabe9b3cf31f9f692cb186c49124e65b",
+      "ordered_frame_rgba_sha256": [
+        "7aba5656591a31a6f27cfd878b468aa8d63ef133fd3a967e00ddeab01c073916",
+        "faa8b3c347c541c2f393fcf693ac5c9c099ec7a6bb33497bd582a4830cb05434",
+        "2a8385f4fe773cae9c26b5748cdc075a48f84bd005d46cffdea19c4ea376b2f2",
+        "faa8b3c347c541c2f393fcf693ac5c9c099ec7a6bb33497bd582a4830cb05434"
+      ]
+    }
+  }
+}

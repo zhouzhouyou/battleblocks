@@ -1,0 +1,25 @@
+knight-awake-charge [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] True
+knight-awake-guard [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] True
+elf-awake-strike [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] True
+elf-awake-nature [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] True
+goblin-awake-greedy [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] True
+goblin-awake-blood [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] True
+goblin-awake-greedy-delayed [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] True
+knight-awake-charge-delayed [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] True
+knight-awake-charge-pause [12, 13, 14, 16, 17, 18, 20, 21, 22, 23] True
+knight-awake-charge-pending-rollback [12, 13, 14, 16, 17, 18, 19, 20, 21, 22, 23] True
+knight-awake-charge-rollback [12, 13, 14] True
+elf-awake-strike-rollback [12, 13, 14] True
+goblin-awake-greedy-rollback [12, 13, 14, 15] True
+knight-awake-charge-terminal [12, 14, 15, 16, 17, 18] True
+elf-awake-nature-terminal [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] True
+goblin-awake-greedy-terminal [12, 15, 16, 17, 18, 19, 20, 21, 22, 23] True
+knight-awake-guard-no-target [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] True
+goblin-awake-blood-full [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] True
+elf-awake-strike-followup [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] True
+elf-awake-strike-switch [12, 14] True
+knight-awake-ai-enemy [12, 13, 14, 15, 16, 18, 19, 20, 21, 22, 23] True
+elf-awake-ai-enemy [12, 13, 14, 15, 16, 17, 18, 19, 20, 21] True
+goblin-awake-ai-enemy [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] True
+elf-awake-nature-no-chain [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] True
+elf-awake-nature-delayed [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] True

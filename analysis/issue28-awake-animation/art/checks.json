@@ -1,0 +1,1151 @@
+{
+  "knight-legacy": {
+    "unique_poses": 24,
+    "not_whole_image_translations": true,
+    "binary_alpha": true,
+    "palette_colors": 64,
+    "idle_adjacent_changed_pixels": [
+      45291,
+      40111,
+      38131,
+      41121,
+      40468,
+      41090,
+      36278,
+      37640,
+      37558,
+      34723,
+      34790,
+      43693
+    ],
+    "frames": [
+      {
+        "bounds": [
+          68,
+          28,
+          329,
+          336
+        ],
+        "foot_span_bottom8": [
+          121,
+          0,
+          262,
+          8
+        ],
+        "sha256": "2d238aee7533b68403b10ab8415b68a963a3f7a88aed9412ef62e9ee0355dc86"
+      },
+      {
+        "bounds": [
+          65,
+          19,
+          326,
+          336
+        ],
+        "foot_span_bottom8": [
+          122,
+          0,
+          261,
+          8
+        ],
+        "sha256": "ca6626ffaf8a9243784e6129e260e7a0bbaaf50501ac96d3378f9d502ddc635a"
+      },
+      {
+        "bounds": [
+          64,
+          22,
+          328,
+          336
+        ],
+        "foot_span_bottom8": [
+          123,
+          0,
+          261,
+          8
+        ],
+        "sha256": "60ac981d224fa38d289482e0ac25f25d9a46ce0530af2adef5e1d96129832f62"
+      },
+      {
+        "bounds": [
+          63,
+          18,
+          330,
+          336
+        ],
+        "foot_span_bottom8": [
+          123,
+          0,
+          262,
+          8
+        ],
+        "sha256": "2e93546b39f5630090b613f1d250041ff92e6c2699e73a2a050b1d32246b5183"
+      },
+      {
+        "bounds": [
+          62,
+          19,
+          332,
+          336
+        ],
+        "foot_span_bottom8": [
+          121,
+          0,
+          262,
+          8
+        ],
+        "sha256": "bb70e55ca435e35ed84d74cbd8c34c6fa560543578b7b11e2c6ceb2b0c6294a9"
+      },
+      {
+        "bounds": [
+          53,
+          18,
+          330,
+          336
+        ],
+        "foot_span_bottom8": [
+          122,
+          0,
+          262,
+          8
+        ],
+        "sha256": "65c26850b6803d5f75398521a93dfbe6ce240d889c92834ef71bbe7e3d1c0344"
+      },
+      {
+        "bounds": [
+          61,
+          19,
+          329,
+          336
+        ],
+        "foot_span_bottom8": [
+          122,
+          0,
+          262,
+          8
+        ],
+        "sha256": "6c53fafb101327a44452dd7364d6cd073948ff2e8b8676ea9fb6853a3b8fb504"
+      },
+      {
+        "bounds": [
+          62,
+          22,
+          328,
+          336
+        ],
+        "foot_span_bottom8": [
+          122,
+          0,
+          262,
+          8
+        ],
+        "sha256": "4971274d285f905de81b574f42385d169813797dc968782ecc5457e8cadf51e8"
+      },
+      {
+        "bounds": [
+          61,
+          22,
+          326,
+          336
+        ],
+        "foot_span_bottom8": [
+          122,
+          0,
+          262,
+          8
+        ],
+        "sha256": "085f642858fbe0177c4e9028698aa76b21d8b09432d52f8e98bb48be4a0d4d7e"
+      },
+      {
+        "bounds": [
+          60,
+          19,
+          327,
+          336
+        ],
+        "foot_span_bottom8": [
+          122,
+          0,
+          261,
+          8
+        ],
+        "sha256": "43c93e11ff36f9df2ed899b3ce8c3c02514d25234a73a86fa85eb324891dc2f1"
+      },
+      {
+        "bounds": [
+          63,
+          19,
+          327,
+          336
+        ],
+        "foot_span_bottom8": [
+          122,
+          0,
+          262,
+          8
+        ],
+        "sha256": "f9b2aa295155c29b03eb264e87c86c23e6b76ccf1b17d2cf1d542df1b706bd7a"
+      },
+      {
+        "bounds": [
+          65,
+          23,
+          327,
+          336
+        ],
+        "foot_span_bottom8": [
+          122,
+          0,
+          262,
+          8
+        ],
+        "sha256": "77e690f86f33a9202fbd29f5b3589fcba18c251977ff48ac13c27c46563bd612"
+      },
+      {
+        "bounds": [
+          59,
+          18,
+          307,
+          336
+        ],
+        "foot_span_bottom8": [
+          119,
+          0,
+          265,
+          8
+        ],
+        "sha256": "0dd782e4b41757e753bd518b84735f618bd18fe17689dfbcb1640a89a69c0897"
+      },
+      {
+        "bounds": [
+          59,
+          18,
+          320,
+          336
+        ],
+        "foot_span_bottom8": [
+          118,
+          0,
+          265,
+          8
+        ],
+        "sha256": "09a9577d117f8044cc2c8fe46f8ddff434ae661b735683385113b24a2c0db781"
+      },
+      {
+        "bounds": [
+          58,
+          23,
+          324,
+          336
+        ],
+        "foot_span_bottom8": [
+          117,
+          0,
+          266,
+          8
+        ],
+        "sha256": "e4ed89dca6adcff3ebb7f7833199756a325a9e5fbf67a6a570463dd7cb6d016f"
+      },
+      {
+        "bounds": [
+          57,
+          22,
+          339,
+          336
+        ],
+        "foot_span_bottom8": [
+          118,
+          0,
+          266,
+          8
+        ],
+        "sha256": "f1eb42c94df9612b7f2d74ac0a66d74958d78c79b245ffc20742573f3379df92"
+      },
+      {
+        "bounds": [
+          60,
+          31,
+          343,
+          336
+        ],
+        "foot_span_bottom8": [
+          118,
+          0,
+          265,
+          8
+        ],
+        "sha256": "2cac87658bc0ca84d6ab55359fcff5e4f219a399fa9b4a1c6c1d1e3f65b20916"
+      },
+      {
+        "bounds": [
+          59,
+          31,
+          356,
+          336
+        ],
+        "foot_span_bottom8": [
+          118,
+          0,
+          265,
+          8
+        ],
+        "sha256": "4b6d53f747d2ae36d0f8454aac072f8f72b99c1bb7da63ee3ccc5c954895f0fd"
+      },
+      {
+        "bounds": [
+          59,
+          31,
+          366,
+          336
+        ],
+        "foot_span_bottom8": [
+          117,
+          0,
+          266,
+          8
+        ],
+        "sha256": "20bcbd2f859d70101798648c2c782824b60635d485f23074cc62320d29da08ba"
+      },
+      {
+        "bounds": [
+          61,
+          34,
+          343,
+          336
+        ],
+        "foot_span_bottom8": [
+          118,
+          0,
+          266,
+          8
+        ],
+        "sha256": "fcd96d0b5ef61d565296ad3c411f2eb50138fbd54823300f863fdd5b7ccddcfc"
+      },
+      {
+        "bounds": [
+          60,
+          30,
+          327,
+          336
+        ],
+        "foot_span_bottom8": [
+          118,
+          0,
+          265,
+          8
+        ],
+        "sha256": "42037710bcc8bb656cac4e738bdcc66863aeae2f118aa7ca9b399100cd11c23a"
+      },
+      {
+        "bounds": [
+          59,
+          30,
+          309,
+          336
+        ],
+        "foot_span_bottom8": [
+          118,
+          0,
+          265,
+          8
+        ],
+        "sha256": "ddfd6367c7ea06e343f8f466107dcab14ce2ed1aae544a8826d0b74bb5176ace"
+      },
+      {
+        "bounds": [
+          58,
+          30,
+          301,
+          336
+        ],
+        "foot_span_bottom8": [
+          119,
+          0,
+          265,
+          8
+        ],
+        "sha256": "854d38dbf8c85e30b62f64e109375de5f37ae66de8057661d3a3188c097d6d3f"
+      },
+      {
+        "bounds": [
+          59,
+          30,
+          302,
+          336
+        ],
+        "foot_span_bottom8": [
+          118,
+          0,
+          266,
+          8
+        ],
+        "sha256": "8f360a1b27b5f1e1848b45039e830d711eeee0afe4a70b9cf6f077a22f5d30a5"
+      }
+    ],
+    "visual_status": "Requires actual pose, equipment, seam and foot-span review; hashes alone are insufficient."
+  },
+  "elf-legacy": {
+    "unique_poses": 24,
+    "not_whole_image_translations": true,
+    "binary_alpha": true,
+    "palette_colors": 64,
+    "idle_adjacent_changed_pixels": [
+      29457,
+      33134,
+      29041,
+      31187,
+      33876,
+      35735,
+      29642,
+      30043,
+      27571,
+      24603,
+      25020,
+      27988
+    ],
+    "frames": [
+      {
+        "bounds": [
+          90,
+          49,
+          320,
+          336
+        ],
+        "foot_span_bottom8": [
+          124,
+          0,
+          261,
+          8
+        ],
+        "sha256": "c48ca5d69e9b1bba8002d05c2bcad1b1695505a587c33ba75ab74b6ed1db8743"
+      },
+      {
+        "bounds": [
+          88,
+          47,
+          319,
+          336
+        ],
+        "foot_span_bottom8": [
+          123,
+          0,
+          260,
+          8
+        ],
+        "sha256": "6c029a1a3e3495d63d49963eaec73ffb2792df2a874ddfb607adf87a9754572d"
+      },
+      {
+        "bounds": [
+          85,
+          47,
+          316,
+          336
+        ],
+        "foot_span_bottom8": [
+          124,
+          0,
+          260,
+          8
+        ],
+        "sha256": "c0cce6880c0f438bf72fe3fc45de292367505b77d978952cb0ba0b1515c35e86"
+      },
+      {
+        "bounds": [
+          78,
+          44,
+          317,
+          336
+        ],
+        "foot_span_bottom8": [
+          123,
+          0,
+          260,
+          8
+        ],
+        "sha256": "78c70e3988666e8734f0b07155308b5662cc8c1c54b3ee32b0a693c877d9c822"
+      },
+      {
+        "bounds": [
+          81,
+          43,
+          319,
+          336
+        ],
+        "foot_span_bottom8": [
+          123,
+          0,
+          260,
+          8
+        ],
+        "sha256": "45dce494fdb63c342577d391950e384971c1a79fb169e188c4e519c456c6de37"
+      },
+      {
+        "bounds": [
+          43,
+          45,
+          319,
+          336
+        ],
+        "foot_span_bottom8": [
+          124,
+          0,
+          260,
+          8
+        ],
+        "sha256": "360986e71cdd10b51ed3e5ba30943ae3a717d3023f984ff28b316e1a44c1f678"
+      },
+      {
+        "bounds": [
+          59,
+          47,
+          320,
+          336
+        ],
+        "foot_span_bottom8": [
+          124,
+          0,
+          260,
+          8
+        ],
+        "sha256": "34a9c1fcf4255a954f4d0a603ccc6895a412ccb73efa129834854fc1422bba88"
+      },
+      {
+        "bounds": [
+          88,
+          47,
+          320,
+          336
+        ],
+        "foot_span_bottom8": [
+          124,
+          0,
+          260,
+          8
+        ],
+        "sha256": "fe12a75730d7aec4928ba1c57afa49a91b073407fbaef70e66b551fdd04a1d58"
+      },
+      {
+        "bounds": [
+          84,
+          48,
+          319,
+          336
+        ],
+        "foot_span_bottom8": [
+          123,
+          0,
+          260,
+          8
+        ],
+        "sha256": "0588a3fe4353e32263a78d69d75b5aafe5c2a23657ed3ef4cb45bd253ba7e094"
+      },
+      {
+        "bounds": [
+          85,
+          48,
+          320,
+          336
+        ],
+        "foot_span_bottom8": [
+          124,
+          0,
+          260,
+          8
+        ],
+        "sha256": "32a1234870cb1f1980e18ba2bb69bfb9404ee70af4391fc246ea61bcbd9d39f2"
+      },
+      {
+        "bounds": [
+          93,
+          49,
+          320,
+          336
+        ],
+        "foot_span_bottom8": [
+          124,
+          0,
+          260,
+          8
+        ],
+        "sha256": "250e2791eb35dce778ed84facde92bb561b8ec056c51e029546f67b110f6a613"
+      },
+      {
+        "bounds": [
+          90,
+          48,
+          320,
+          336
+        ],
+        "foot_span_bottom8": [
+          124,
+          0,
+          260,
+          8
+        ],
+        "sha256": "8a559390d84f7c95c883096b552480bd6772c8bf0deeb221edf591294224ba09"
+      },
+      {
+        "bounds": [
+          82,
+          42,
+          321,
+          336
+        ],
+        "foot_span_bottom8": [
+          120,
+          0,
+          264,
+          8
+        ],
+        "sha256": "4eacc70eb70427780ba5b60efb5493d0d486b129572993277956fe5fa2839628"
+      },
+      {
+        "bounds": [
+          76,
+          43,
+          322,
+          336
+        ],
+        "foot_span_bottom8": [
+          120,
+          0,
+          265,
+          8
+        ],
+        "sha256": "7c7231fda7c4fe915648fe27be5f2a943c88d787b5acda8868ae0f311a947368"
+      },
+      {
+        "bounds": [
+          73,
+          43,
+          322,
+          336
+        ],
+        "foot_span_bottom8": [
+          120,
+          0,
+          264,
+          8
+        ],
+        "sha256": "57670e478091d029f630e8c6b96dadcd936c4043c262c8481ea9159e73057913"
+      },
+      {
+        "bounds": [
+          76,
+          44,
+          325,
+          336
+        ],
+        "foot_span_bottom8": [
+          120,
+          0,
+          265,
+          8
+        ],
+        "sha256": "1e08e7478db2994a1431f3168f2f37e2134efeadab317cc9a79e3f103769edf1"
+      },
+      {
+        "bounds": [
+          69,
+          43,
+          331,
+          336
+        ],
+        "foot_span_bottom8": [
+          120,
+          0,
+          264,
+          8
+        ],
+        "sha256": "804f55fd2b175acde97ee055a396cf5439aca0daca0564148bfb26ba08168d6b"
+      },
+      {
+        "bounds": [
+          61,
+          43,
+          336,
+          336
+        ],
+        "foot_span_bottom8": [
+          120,
+          0,
+          264,
+          8
+        ],
+        "sha256": "9380124e405b669528df64080edd0e247cbb3b884c41787c723a8d9d91bc2452"
+      },
+      {
+        "bounds": [
+          37,
+          39,
+          340,
+          336
+        ],
+        "foot_span_bottom8": [
+          120,
+          0,
+          264,
+          8
+        ],
+        "sha256": "672c62c6379dfc57946882766c9bbeb8f0a38e5f6152d790be62d23ef787f376"
+      },
+      {
+        "bounds": [
+          56,
+          44,
+          336,
+          336
+        ],
+        "foot_span_bottom8": [
+          121,
+          0,
+          264,
+          8
+        ],
+        "sha256": "fb4b5ad6bd49f723e169edd2b4a48bbdaf56292536bdc1150ddc62b6a180c7ae"
+      },
+      {
+        "bounds": [
+          83,
+          43,
+          329,
+          336
+        ],
+        "foot_span_bottom8": [
+          121,
+          0,
+          263,
+          8
+        ],
+        "sha256": "8f846ee7c8518c4ef3bc2db8e890f26fc2ab442ca61dbdb28fdcbaf0f3ed16c9"
+      },
+      {
+        "bounds": [
+          82,
+          43,
+          323,
+          336
+        ],
+        "foot_span_bottom8": [
+          120,
+          0,
+          264,
+          8
+        ],
+        "sha256": "05bd30bc12242d0bd61ea8ae11150c2fc2c0bf793c7f6d34f782f22a51457ace"
+      },
+      {
+        "bounds": [
+          85,
+          41,
+          324,
+          336
+        ],
+        "foot_span_bottom8": [
+          121,
+          0,
+          265,
+          8
+        ],
+        "sha256": "a2a6c4a1347e3f8f6bf387c8b8125ef479cb3cca30ffc83eb147caeb0366d352"
+      },
+      {
+        "bounds": [
+          83,
+          43,
+          323,
+          336
+        ],
+        "foot_span_bottom8": [
+          120,
+          0,
+          264,
+          8
+        ],
+        "sha256": "751f91a30be5b899b6c25daf64567e71f91a02fd3f7d39c823cc9b9d591ec910"
+      }
+    ],
+    "visual_status": "Requires actual pose, equipment, seam and foot-span review; hashes alone are insufficient."
+  },
+  "goblin-legacy": {
+    "unique_poses": 24,
+    "not_whole_image_translations": true,
+    "binary_alpha": true,
+    "palette_colors": 64,
+    "idle_adjacent_changed_pixels": [
+      35208,
+      34470,
+      32995,
+      34291,
+      34792,
+      35901,
+      33634,
+      30580,
+      26749,
+      29432,
+      26106,
+      33621
+    ],
+    "frames": [
+      {
+        "bounds": [
+          87,
+          69,
+          313,
+          336
+        ],
+        "foot_span_bottom8": [
+          111,
+          0,
+          274,
+          8
+        ],
+        "sha256": "f0af112704717d85af102e4a1ba1dd5fe540774a9b62707a90571aa0ccd446ce"
+      },
+      {
+        "bounds": [
+          94,
+          67,
+          311,
+          336
+        ],
+        "foot_span_bottom8": [
+          111,
+          0,
+          274,
+          8
+        ],
+        "sha256": "8d592c6826639d7acae99353dcf4d3afe2b0c84bf583ce15d5404133765f9bb7"
+      },
+      {
+        "bounds": [
+          83,
+          70,
+          311,
+          336
+        ],
+        "foot_span_bottom8": [
+          110,
+          0,
+          274,
+          8
+        ],
+        "sha256": "07aabaa1ea739cadcfa6a6d74d6e367b4ff7d28e4234e2800775c43cd0c988e1"
+      },
+      {
+        "bounds": [
+          82,
+          64,
+          310,
+          336
+        ],
+        "foot_span_bottom8": [
+          111,
+          0,
+          274,
+          8
+        ],
+        "sha256": "59c67cbe7672c73cefa224d8ebb525c562911486054adc88eb749469bf3d9f76"
+      },
+      {
+        "bounds": [
+          77,
+          68,
+          324,
+          336
+        ],
+        "foot_span_bottom8": [
+          111,
+          0,
+          274,
+          8
+        ],
+        "sha256": "4476fe86123cae8997115cbdcae95ea22a0687048b7c0973c96e32f51b0024bd"
+      },
+      {
+        "bounds": [
+          82,
+          64,
+          326,
+          336
+        ],
+        "foot_span_bottom8": [
+          111,
+          0,
+          274,
+          8
+        ],
+        "sha256": "450aac10fd87b6c2b033e69a81269bb278dc7cfd69b5eac454ff9eab41b8ba05"
+      },
+      {
+        "bounds": [
+          82,
+          69,
+          316,
+          336
+        ],
+        "foot_span_bottom8": [
+          110,
+          0,
+          274,
+          8
+        ],
+        "sha256": "c1d1ab74ca3a272ce89f72f4043c14149679f24a77228f0cbb1b09711a2e6c5c"
+      },
+      {
+        "bounds": [
+          84,
+          75,
+          309,
+          336
+        ],
+        "foot_span_bottom8": [
+          111,
+          0,
+          274,
+          8
+        ],
+        "sha256": "27141d3ba90e798f0951b7e42963dea22e20d45c315b0e6a2de7cc319f92e47d"
+      },
+      {
+        "bounds": [
+          87,
+          72,
+          313,
+          336
+        ],
+        "foot_span_bottom8": [
+          111,
+          0,
+          274,
+          8
+        ],
+        "sha256": "81f3fd4d65eb776dc5fb4e3f3e9afef35ecc7e8c0753308cf93b2ddd0ceb814f"
+      },
+      {
+        "bounds": [
+          88,
+          72,
+          312,
+          336
+        ],
+        "foot_span_bottom8": [
+          111,
+          0,
+          274,
+          8
+        ],
+        "sha256": "cb90ac9ad51375bb439379f741a974ad316f0da38872b48459b2bc382405d536"
+      },
+      {
+        "bounds": [
+          88,
+          73,
+          313,
+          336
+        ],
+        "foot_span_bottom8": [
+          110,
+          0,
+          274,
+          8
+        ],
+        "sha256": "b01e672941984de088a773fc70dd7f92b2f0de82eb32b6f687ed3633c9909e21"
+      },
+      {
+        "bounds": [
+          90,
+          75,
+          314,
+          336
+        ],
+        "foot_span_bottom8": [
+          111,
+          0,
+          274,
+          8
+        ],
+        "sha256": "cb41a4b403e078d556ae6c566f67281c56ae325d175373aaf1f0f2eee9967292"
+      },
+      {
+        "bounds": [
+          97,
+          63,
+          315,
+          336
+        ],
+        "foot_span_bottom8": [
+          113,
+          0,
+          271,
+          8
+        ],
+        "sha256": "4914e86e41b56335af6d3aeb512e22fb7bbf1fc0285a5f06b239507d55179def"
+      },
+      {
+        "bounds": [
+          97,
+          74,
+          315,
+          336
+        ],
+        "foot_span_bottom8": [
+          113,
+          0,
+          271,
+          8
+        ],
+        "sha256": "202035af7d6423571d2837a960423bb8e7de6dc83819f8711deb5578d936cd0c"
+      },
+      {
+        "bounds": [
+          91,
+          79,
+          315,
+          336
+        ],
+        "foot_span_bottom8": [
+          113,
+          0,
+          272,
+          8
+        ],
+        "sha256": "a16bf8dc8b66f341b05f3f0bdb06a6959a1ab88bd0d0f0d3dc9dbe6bcb77df60"
+      },
+      {
+        "bounds": [
+          66,
+          73,
+          316,
+          336
+        ],
+        "foot_span_bottom8": [
+          112,
+          0,
+          272,
+          8
+        ],
+        "sha256": "5fd1994c860ef56135c553550a34b44f5e14be6c9a90b8a983261b2e429827ed"
+      },
+      {
+        "bounds": [
+          42,
+          69,
+          316,
+          336
+        ],
+        "foot_span_bottom8": [
+          113,
+          0,
+          272,
+          8
+        ],
+        "sha256": "c8c0b4afd5d57d6c62ddd8ad9098f6923060f649bc0d2ca17edeceb2765ddbd3"
+      },
+      {
+        "bounds": [
+          63,
+          65,
+          316,
+          336
+        ],
+        "foot_span_bottom8": [
+          113,
+          0,
+          272,
+          8
+        ],
+        "sha256": "fb97a9fa3f7f8223db4bf53a0799ba65d47449f9a25d61a8491c24109e420064"
+      },
+      {
+        "bounds": [
+          87,
+          63,
+          317,
+          336
+        ],
+        "foot_span_bottom8": [
+          113,
+          0,
+          272,
+          8
+        ],
+        "sha256": "4e9fbf74882e17c249a32ff70f83eba8e1539bf75d62fdc8728fcf78cf38eb9d"
+      },
+      {
+        "bounds": [
+          92,
+          60,
+          317,
+          336
+        ],
+        "foot_span_bottom8": [
+          112,
+          0,
+          272,
+          8
+        ],
+        "sha256": "c07dda7d31e8c1e5d83c3fbacaf2351b1d650721af5a6bf6318fbb2e99b79e94"
+      },
+      {
+        "bounds": [
+          91,
+          64,
+          317,
+          336
+        ],
+        "foot_span_bottom8": [
+          113,
+          0,
+          272,
+          8
+        ],
+        "sha256": "3dfb92228dd162c567597e57848ae9f8039cc2a258afb2c73dedce0fdc0d32a0"
+      },
+      {
+        "bounds": [
+          89,
+          60,
+          316,
+          336
+        ],
+        "foot_span_bottom8": [
+          113,
+          0,
+          272,
+          8
+        ],
+        "sha256": "7ade66f907c7c1898a97875ac266e4e05485eceb39335ac1d65842d628ab2007"
+      },
+      {
+        "bounds": [
+          93,
+          59,
+          315,
+          336
+        ],
+        "foot_span_bottom8": [
+          112,
+          0,
+          272,
+          8
+        ],
+        "sha256": "3c5a37e22fb2e742b5fd27cbf5980bf90f5de2f01e6f8186a87f63570254c9e8"
+      },
+      {
+        "bounds": [
+          94,
+          59,
+          313,
+          336
+        ],
+        "foot_span_bottom8": [
+          113,
+          0,
+          272,
+          8
+        ],
+        "sha256": "7bdcf60fa0eb3da3671a80acfe66ffdc9ca086414cdee0e0451650c58236c719"
+      }
+    ],
+    "visual_status": "Requires actual pose, equipment, seam and foot-span review; hashes alone are insufficient."
+  }
+}
