@@ -115,6 +115,16 @@ impl Presentation {
         Some(((head - y as f32) * 2.).clamp(0., 1.))
     }
     pub fn draw_charge(&self, texture: &Texture2D, w: f32, h: f32, indices: &[usize]) {
+        self.draw_charge_frame(texture, w, h, indices, None);
+    }
+    pub fn draw_charge_frame(
+        &self,
+        texture: &Texture2D,
+        w: f32,
+        h: f32,
+        indices: &[usize],
+        cast_frame: Option<usize>,
+    ) {
         let Some(column) = self.charge_column else {
             return;
         };
@@ -133,7 +143,7 @@ impl Presentation {
                 Color::new(1., 0.8, 0.2, 0.35),
             );
         }
-        let index = indices[((t * 12.) as usize) % indices.len()];
+        let index = cast_frame.unwrap_or_else(|| indices[((t * 12.) as usize) % indices.len()]);
         let top = (110. - (y - 50.)).max(0.);
         let bottom = (y + 22. - 622.).max(0.);
         let visible = 72. - top - bottom;

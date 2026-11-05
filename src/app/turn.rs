@@ -9,6 +9,14 @@ impl Session {
                 .total(content::Resource::Damage, content::EventSide::Opponent);
             debug_assert_eq!(impact.actor_enemy, self.enemy_turn);
             let applied = self.apply_batch_rewards(impact.rewards);
+            if let Some(effects) = &mut self.skill_effects {
+                effects.actor_signal(
+                    sprites::ActorSignal::DamageApplied,
+                    impact.actor_enemy,
+                    self.console.gameplay_action(),
+                    &[],
+                );
+            }
             let actual = applied.hit.damage;
             self.turn_log.current.add(0, actual, 0);
             let actor_source = applied

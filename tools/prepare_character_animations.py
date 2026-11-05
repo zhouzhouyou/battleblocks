@@ -141,6 +141,9 @@ def registry():
         frame.thumbnail((40, 48), Image.Resampling.NEAREST)
         thumbs.alpha_composite(frame.convert("RGBA"), (i * 40 + (40 - frame.width) // 2, 48 - frame.height))
     for name in ("knight", "elf", "wizard", "goblin", "imp", "chort", "zombie"):
+        if name in ('knight', 'elf', 'goblin'):
+            awakened.append(f'    SpriteAsset {{ bytes: include_bytes!("../../assets/roles/{name}-legacy.webp"), w: 384., h: 384., durations: &[0.06; 12], indices: &{list(range(12))}, cast: Some(LEGACY_AWAKE_CAST), sleep: None, anchor: Some([192., 336.]) }},')
+            continue
         if name == 'wizard':
             awakened.append(f'    SpriteAsset {{ bytes: include_bytes!("../../assets/roles/wizard.webp"), w: 384., h: 384., durations: &[0.06; 12], indices: &{list(range(12))}, cast: Some(WIZARD_AWAKE_CAST), sleep: None, anchor: Some([192., 336.]) }},')
             continue
@@ -170,6 +173,14 @@ def registry():
     report['wizard']['detail_report'] = (SOURCE / 'report.json').relative_to(ROOT).as_posix()
     report['wizard']['clips'] = {name: {key: clip[key] for key in ('indices', 'duration_ms', 'playback')}
                                for name, clip in details['clips'].items()}
+    from prepare_legacy_awake_assets import ROLES as LEGACY_ROLES, source_dir as legacy_source
+    for role in LEGACY_ROLES:
+        directory = legacy_source(role)
+        details = json.loads((directory/'report.json').read_text())
+        report[role] = {key: details[key] for key in ('frame_size', 'atlas_size', 'frames', 'foot_anchor', 'webp_bytes')}
+        report[role]['detail_report'] = (directory/'report.json').relative_to(ROOT).as_posix()
+        report[role]['clips'] = {name: {key: clip[key] for key in ('indices', 'duration_ms', 'playback')}
+                                for name, clip in details['clips'].items()}
     report_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     dest = ROOT / "src/sprites/registry.rs"
     dest.parent.mkdir(exist_ok=True)
@@ -179,15 +190,19 @@ def registry():
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--role", choices=(*ROLES, 'wizard'), help="Import one role without rebuilding the shared registry")
+    from prepare_legacy_awake_assets import ROLES as LEGACY_ROLES, import_role as import_legacy
+    parser.add_argument("--role", choices=(*ROLES, 'wizard', *LEGACY_ROLES), help="Import one role without rebuilding the shared registry")
     parser.add_argument("--registry-only", action="store_true")
     args = parser.parse_args()
     if not args.registry_only:
+        for role in LEGACY_ROLES:
+            if not args.role or args.role == role:
+                import_legacy(role)
         if not args.role or args.role == 'wizard':
             from prepare_wizard_assets import import_wizard
             import_wizard()
         for role in ([args.role] if args.role else ROLES):
-            if role != 'wizard':
+            if role != 'wizard' and role not in LEGACY_ROLES:
                 import_role(role)
     if not args.role:
         registry()
