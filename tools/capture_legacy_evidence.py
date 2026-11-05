@@ -6,7 +6,7 @@ Cases: delayed, terminal, rollback, pending-rollback, no-target, full, followup,
 pause, switch. This drives the existing console, never simulates game rules.
 """
 from pathlib import Path
-import argparse, hashlib, json, os, subprocess, sys, time
+import argparse, ctypes, hashlib, json, os, subprocess, sys, time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT/'.build-tools/art-site'), str(ROOT/'.build-tools/media-site')]
@@ -107,6 +107,9 @@ for scene in args.scenes.split(','):
             # turn so setup healing popups really retire before recording.
             send('pause off');time.sleep(3.)
         else:time.sleep(3.)
+        # Park outside interactive HUD targets so hover tooltips cannot cover
+        # the actor. This changes only the capture fixture, not game input.
+        ctypes.windll.user32.SetCursorPos(0, 0)
         send('status');time.sleep(.15)
         video=OUT/f'{scene}.mp4';recerr=(OUT/f'{scene}-ffmpeg.log').open('w',encoding='utf-8')
         rec=subprocess.Popen([FF,'-hide_banner','-loglevel','warning','-y','-f','gdigrab','-framerate','60','-draw_mouse','0','-i','title=BattleBlocks',
