@@ -405,6 +405,20 @@ impl Session {
                 self.chain = 1;
                 self.selected = None;
                 self.note = "note.skill_cast";
+                if let Some(effects) = &mut self.skill_effects {
+                    let sprite = if cast_rules.awake {
+                        &sprites::AWAKENED[id]
+                    } else {
+                        &sprites::SPRITES[id]
+                    };
+                    effects.begin_actor(
+                        sprite.actor_cast(effective),
+                        effective,
+                        self.enemy_turn,
+                        self.console.gameplay_action(),
+                        &self.skill_flash,
+                    );
+                }
                 self.console.event("skill",&format!("{:?} effective={:?} target=[{},{}] cost={} blood_cost={} direct_heal={} direct_damage={} direct_mana={} bonus={} armed={} actual_heal={} actual_damage={} actual_mana={}",skill,effective,target.0+1,target.1+1,pay.mana,pay.blood,e.hp,e.damage,e.mp,e.bonus,e.armed,actual_heal,actual_damage,actual_mana),&before,&self.snapshot());
             } else {
                 if !self.enemy_turn

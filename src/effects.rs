@@ -7,6 +7,7 @@ mod hammer_smash;
 mod heavy_landing;
 mod impact_clock;
 mod landing_motion;
+mod legacy_actors;
 mod nun_heal;
 mod wizard_spells;
 mod wizard_timing;
@@ -25,6 +26,7 @@ pub struct Textures {
     idle_clocks: [crate::sprites::IdleClock; 2],
     wizard: wizard_spells::Effects,
     heal: nun_heal::Effects,
+    actors: [Option<legacy_actors::Cast>; 2],
 }
 impl Textures {
     pub fn load() -> Self {
@@ -46,6 +48,7 @@ impl Textures {
             idle_clocks: Default::default(),
             wizard: wizard_spells::Effects::load(),
             heal: nun_heal::Effects::load(),
+            actors: [None, None],
         }
     }
     /// Capture presentation-only artwork before the model removes or replaces the tiles.
@@ -78,6 +81,90 @@ impl Textures {
         self.blast = None;
         self.wizard.clear();
         self.heal.clear();
+        self.actors = [None, None];
+    }
+    pub fn begin_actor(
+        &mut self,
+        spec: Option<crate::sprites::ActorCast>,
+        skill: Skill,
+        enemy: bool,
+        action: u64,
+        cells: &[(usize, usize)],
+    ) {
+        self.actors[enemy as usize] = spec
+            .map(|spec| legacy_actors::Cast::new(skill, enemy, action, cells, spec, get_time()));
+    }
+    pub fn actor_signal(
+        &mut self,
+        signal: crate::sprites::ActorSignal,
+        enemy: bool,
+        action: u64,
+        cells: &[(usize, usize)],
+    ) {
+        if let Some(cast) = &mut self.actors[enemy as usize] {
+            cast.notify(signal, enemy, action, cells, get_time());
+        }
+    }
+    pub fn cancel_actors(&mut self) {
+        self.actors = [None, None];
+    }
+    pub fn resume_actor(
+        &mut self,
+        spec: Option<crate::sprites::ActorCast>,
+        skill: Skill,
+        enemy: bool,
+        action: u64,
+        cells: &[(usize, usize)],
+        elapsed: f64,
+    ) {
+        self.actors[enemy as usize] = spec.map(|spec| {
+            legacy_actors::Cast::new(skill, enemy, action, cells, spec, get_time() - elapsed)
+        });
+    }
+    pub fn actor_sample(
+        &self,
+        enemy: bool,
+        action: u64,
+        over: bool,
+    ) -> Option<(crate::sprites::AnimationClip, f64)> {
+        self.actors[enemy as usize]
+            .as_ref()?
+            .sample(action, get_time(), over)
+    }
+    pub fn owns_actor_effect(&self, enemy: bool, action: u64) -> bool {
+        self.actors[enemy as usize]
+            .as_ref()
+            .is_some_and(|cast| cast.action == action)
+    }
+    pub fn draw_actor_effects(&self, action: u64, over: bool) {
+        for cast in self.actors.iter().flatten() {
+            let Some((clip, elapsed)) = cast.sample(action, get_time(), over) else {
+                continue;
+            };
+            if cast.skill == Skill::Charge {
+                continue;
+            }
+            let progress = if let Some(key) = clip.impact {
+                // Collecting particles wait with the actor, then complete their
+                // trip on the same real clear notification. Normal effects never
+                // enter this opt-in branch.
+                let q = if elapsed < key {
+                    0.5 * elapsed / key
+                } else {
+                    0.5 + 0.5 * (elapsed - key) / (clip.duration() - key)
+                };
+                (q * 0.62) as f32
+            } else {
+                (elapsed / clip.duration()) as f32
+            };
+            draw_with_actor_progress(
+                cast.skill,
+                &cast.cells,
+                progress,
+                (elapsed / clip.duration()) as f32,
+                cast.enemy,
+            );
+        }
     }
     pub fn healing_rewards(&mut self, events: &[crate::content::RewardEvent], enemy: bool) {
         self.heal.rewards(events, enemy);
@@ -97,7 +184,13 @@ impl Textures {
     pub fn draw_heal(&self, foot: Vec2, front: bool, enemy: bool) {
         self.heal.draw(foot, front, enemy);
     }
-    pub fn board_cleared(&mut self, cells: &[(usize, usize)]) -> f64 {
+    pub fn board_cleared(&mut self, cells: &[(usize, usize)], enemy: bool, action: u64) -> f64 {
+        self.actor_signal(
+            crate::sprites::ActorSignal::InitialTargetsCleared,
+            enemy,
+            action,
+            cells,
+        );
         let delay = self.wizard.cleared(cells);
         if cells.len() == crate::N * crate::N {
             if let Some(blast) = &mut self.blast {
@@ -176,6 +269,16 @@ fn cross(center: Vec2, size: f32, color: Color) {
     draw_rectangle(center.x - 2., center.y - size, 4., size * 2., color);
 }
 fn draw(skill: Skill, cells: &[(usize, usize)], progress: f32, enemy: bool) {
+    // Preserve the original clock for every non-opted-in effect.
+    draw_with_actor_progress(skill, cells, progress, progress, enemy);
+}
+fn draw_with_actor_progress(
+    skill: Skill,
+    cells: &[(usize, usize)],
+    progress: f32,
+    actor_progress: f32,
+    enemy: bool,
+) {
     let skill = match skill {
         Skill::Rush => Skill::Charge,
         Skill::Miracle | Skill::Copy => Skill::Strike,
@@ -189,6 +292,10 @@ fn draw(skill: Skill, cells: &[(usize, usize)], progress: f32, enemy: bool) {
     let actor = vec2(if enemy { 890. } else { 110. }, 300.);
     match skill {
         Skill::Guard => {
+            // Board consumption has its own wait/collection clock. The personal
+            // aura must fade completely across the full recovery instead.
+            let p = actor_progress.clamp(0., 1.);
+            let alpha = 1. - p;
             draw_poly_lines(
                 actor.x,
                 actor.y,

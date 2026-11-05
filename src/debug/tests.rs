@@ -32,6 +32,20 @@ fn state(enemy_turn: bool, hp: i32) -> Snapshot {
         turns: crate::turns::Log::new(),
     }
 }
+#[test]
+#[cfg(not(target_arch = "wasm32"))]
+fn visual_action_survives_editor_checkpoints_but_changes_on_gameplay_and_undo() {
+    let mut c = console();
+    let first = c.checkpoint(state(false, 200));
+    c.checkpoint_edit(state(false, 150));
+    assert_eq!(c.gameplay_action(), first);
+    let second = c.checkpoint(state(true, 150));
+    assert_eq!(c.gameplay_action(), second);
+    c.undo(false).unwrap();
+    assert_eq!(c.gameplay_action(), first);
+    c.reset_history();
+    assert_eq!(c.gameplay_action(), 0);
+}
 #[cfg(not(target_arch = "wasm32"))]
 fn console() -> Console {
     let (_, receiver) = std::sync::mpsc::channel();

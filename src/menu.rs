@@ -251,13 +251,23 @@ fn draw_skill_actor(
     let area = Rect::new(area.x, area.y - lift, area.w, area.h);
     // After the cast point the hero performs the skill: play its cast row (the same
     // frames the battle uses) instead of standing in the idle loop.
-    match asset.action(preview.hop).filter(|_| after) {
+    let selected_skill = content::skills(hero, preview.base_dark)[preview.skill];
+    let actor_clip = asset
+        .actor_cast(selected_skill)
+        .map(|spec| spec.clip)
+        .or_else(|| asset.action(preview.hop));
+    match actor_clip.filter(|_| after) {
         Some(clip) => sprite_frames(
             texture,
             asset,
             area,
             // One cast gesture, then hold its last key for the rest of the phase.
-            t as f64 * 1.65,
+            t as f64
+                * if asset.legacy_awake() {
+                    clip.duration()
+                } else {
+                    1.65
+                },
             clip,
         ),
         None => sprite(texture, asset, area),
@@ -388,15 +398,39 @@ pub fn draw(
         0.,
         Color::from_rgba(20, 23, 31, 255),
     );
-    sprite(
-        if page == 2 { awakened_texture } else { texture },
-        if page == 2 {
-            &sprites::AWAKENED[hero]
+    let portrait_asset = if page == 2 {
+        &sprites::AWAKENED[hero]
+    } else {
+        &sprites::SPRITES[hero]
+    };
+    let portrait_texture = if page == 2 { awakened_texture } else { texture };
+    let portrait_area = Rect::new(291., 198., 230., portrait_height);
+    if portrait_asset.legacy_awake() {
+        let cycle = (get_time() - preview.since).max(0.) % 3.;
+        let skill = content::skills(hero, true)[preview.skill];
+        let cast = portrait_asset.actor_cast(skill).unwrap().clip;
+        let (clip, elapsed) = if (1.35..2.75).contains(&cycle) {
+            (cast, cycle - 1.35)
         } else {
-            &sprites::SPRITES[hero]
-        },
-        Rect::new(291., 198., 230., portrait_height),
-    );
+            (
+                portrait_asset.idle(),
+                if cycle >= 2.75 {
+                    cycle - 2.75
+                } else {
+                    cycle + 0.25
+                },
+            )
+        };
+        sprite_frames(
+            portrait_texture,
+            portrait_asset,
+            portrait_area,
+            elapsed,
+            clip,
+        );
+    } else {
+        sprite(portrait_texture, portrait_asset, portrait_area);
+    }
     if page == 0 {
         label(
             tr_key(zh, "ui.menu.draw.max_health"),
