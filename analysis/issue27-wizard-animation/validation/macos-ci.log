@@ -144,7 +144,7 @@ macos	Build, test and package macOS	2026-11-05T06:38:04.9436990Z Downloading fon
 macos	Build, test and package macOS	2026-11-05T06:38:05.0180040Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.1/3.1 MB 42.3 MB/s  0:00:00
 macos	Build, test and package macOS	2026-11-05T06:38:05.0773690Z Installing collected packages: fonttools
 macos	Build, test and package macOS	2026-11-05T06:38:06.0942440Z Successfully installed fonttools-4.67.0
-macos	Build, test and package macOS	2026-11-05T06:38:06.0968670Z 
+macos	Build, test and package macOS	2026-11-05T06:38:06.0968670Z
 macos	Build, test and package macOS	2026-11-05T06:38:06.0969610Z [notice] A new release of pip is available: 26.2.2 -> 26.3
 macos	Build, test and package macOS	2026-11-05T06:38:06.0970850Z [notice] To update, run: python -m pip install --upgrade pip
 macos	Build, test and package macOS	2026-11-05T06:38:06.4812870Z     Updating crates.io index
@@ -251,7 +251,7 @@ macos	Build, test and package macOS	2026-11-05T06:38:21.0856730Z    Compiling le
 macos	Build, test and package macOS	2026-11-05T06:38:24.4167790Z    Compiling macroquad v0.4.16
 macos	Build, test and package macOS	2026-11-05T06:38:41.1812820Z     Finished `test` profile [unoptimized + debuginfo] target(s) in 34.92s
 macos	Build, test and package macOS	2026-11-05T06:38:41.2684780Z      Running unittests src/bin/balance_probe.rs (target/debug/deps/balance_probe-322257614296cfc1)
-macos	Build, test and package macOS	2026-11-05T06:38:41.2745340Z 
+macos	Build, test and package macOS	2026-11-05T06:38:41.2745340Z
 macos	Build, test and package macOS	2026-11-05T06:38:41.2749170Z running 93 tests
 macos	Build, test and package macOS	2026-11-05T06:38:41.2858510Z test board::gravity::fall_tests::falling_motion_tracks_survivors_and_refill ... ok
 macos	Build, test and package macOS	2026-11-05T06:38:41.2971100Z test board::hint_tests::no_match_board_has_no_hints_unless_prepared ... ok
@@ -347,10 +347,10 @@ macos	Build, test and package macOS	2026-11-05T06:38:42.2604620Z test strategy::
 macos	Build, test and package macOS	2026-11-05T06:38:42.2721560Z test board::refresh_tests::refreshed_boards_are_match_free_and_playable_for_actor ... ok
 macos	Build, test and package macOS	2026-11-05T06:38:42.2826670Z test strategy::tests::ai_only_chooses_legal_moves ... ok
 macos	Build, test and package macOS	2026-11-05T06:38:42.2943280Z test content::move_preview_tests::ranked_moves_keep_every_hint_with_its_pure_preview ... ok
-macos	Build, test and package macOS	2026-11-05T06:38:42.3044830Z 
+macos	Build, test and package macOS	2026-11-05T06:38:42.3044830Z
 macos	Build, test and package macOS	2026-11-05T06:38:42.3146140Z test result: ok. 93 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.47s
-macos	Build, test and package macOS	2026-11-05T06:38:42.3247590Z 
-macos	Build, test and package macOS	2026-11-05T06:38:42.3348690Z 
+macos	Build, test and package macOS	2026-11-05T06:38:42.3247590Z
+macos	Build, test and package macOS	2026-11-05T06:38:42.3348690Z
 macos	Build, test and package macOS	2026-11-05T06:38:42.3450070Z running 172 tests
 macos	Build, test and package macOS	2026-11-05T06:38:42.3552350Z test app::selection::tests::groups_cover_every_hero_once_with_complete_assets_and_descriptions ... ok
 macos	Build, test and package macOS	2026-11-05T06:38:42.3655030Z test app::selection::tests::console_edits_and_rollback_reveal_the_actual_hero_on_return ... ok
@@ -524,11 +524,11 @@ macos	Build, test and package macOS	2026-11-05T06:38:44.9503360Z test turns::tes
 macos	Build, test and package macOS	2026-11-05T06:38:44.9603110Z test turns::tests::turns_describe_actions_and_only_nonzero_results ... ok
 macos	Build, test and package macOS	2026-11-05T06:38:50.1823520Z test tests::headless_autoplay_finishes_and_replays_the_same_seed ... ok
 macos	Build, test and package macOS	2026-11-05T06:38:55.1473160Z test tests::new_role_atlases_have_twelve_distinct_poses_per_action_and_shared_palettes ... ok
-macos	Build, test and package macOS	2026-11-05T06:38:55.1477570Z 
+macos	Build, test and package macOS	2026-11-05T06:38:55.1477570Z
 macos	Build, test and package macOS	2026-11-05T06:38:55.1477870Z test result: ok. 171 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 13.39s
-macos	Build, test and package macOS	2026-11-05T06:38:55.1478210Z 
+macos	Build, test and package macOS	2026-11-05T06:38:55.1478210Z
 macos	Build, test and package macOS	2026-11-05T06:38:55.1540930Z      Running unittests src/bin/match_probe.rs (target/debug/deps/match_probe-d36f50826728c3ac)
-macos	Build, test and package macOS	2026-11-05T06:38:55.1998110Z 
+macos	Build, test and package macOS	2026-11-05T06:38:55.1998110Z
 macos	Build, test and package macOS	2026-11-05T06:38:55.1999420Z running 93 tests
 macos	Build, test and package macOS	2026-11-05T06:38:55.2087030Z test board::gravity::fall_tests::falling_motion_tracks_survivors_and_refill ... ok
 macos	Build, test and package macOS	2026-11-05T06:38:55.2193400Z test board::hint_tests::no_match_board_has_no_hints_unless_prepared ... ok
@@ -624,18 +624,18 @@ macos	Build, test and package macOS	2026-11-05T06:38:55.5191390Z test board::ref
 macos	Build, test and package macOS	2026-11-05T06:38:55.6987360Z test content::move_preview_tests::ranked_moves_keep_every_hint_with_its_pure_preview ... ok
 macos	Build, test and package macOS	2026-11-05T06:38:55.7058600Z      Running unittests src/bin/memory_probe.rs (target/debug/deps/memory_probe-ca07e9f76a281923)
 macos	Build, test and package macOS	2026-11-05T06:38:55.7061020Z test strategy::tests::ai_only_chooses_legal_moves ... ok
-macos	Build, test and package macOS	2026-11-05T06:38:55.7062650Z 
+macos	Build, test and package macOS	2026-11-05T06:38:55.7062650Z
 macos	Build, test and package macOS	2026-11-05T06:38:55.7065990Z test result: ok. 93 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.51s
-macos	Build, test and package macOS	2026-11-05T06:38:55.7066420Z 
-macos	Build, test and package macOS	2026-11-05T06:38:55.7494320Z 
+macos	Build, test and package macOS	2026-11-05T06:38:55.7066420Z
+macos	Build, test and package macOS	2026-11-05T06:38:55.7494320Z
 macos	Build, test and package macOS	2026-11-05T06:38:55.7495080Z running 0 tests
-macos	Build, test and package macOS	2026-11-05T06:38:55.7495390Z 
+macos	Build, test and package macOS	2026-11-05T06:38:55.7495390Z
 macos	Build, test and package macOS	2026-11-05T06:38:55.7496340Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
-macos	Build, test and package macOS	2026-11-05T06:38:55.7497260Z 
+macos	Build, test and package macOS	2026-11-05T06:38:55.7497260Z
 macos	Build, test and package macOS	2026-11-05T06:38:56.3643430Z ..................
 macos	Build, test and package macOS	2026-11-05T06:38:56.3644530Z ----------------------------------------------------------------------
 macos	Build, test and package macOS	2026-11-05T06:38:56.3647160Z Ran 18 tests in 0.284s
-macos	Build, test and package macOS	2026-11-05T06:38:56.3647660Z 
+macos	Build, test and package macOS	2026-11-05T06:38:56.3647660Z
 macos	Build, test and package macOS	2026-11-05T06:38:56.3648780Z OK
 macos	Build, test and package macOS	2026-11-05T06:38:56.6349120Z    Compiling libc v0.2.191
 macos	Build, test and package macOS	2026-11-05T06:38:56.6367550Z    Compiling objc2 v0.6.5
@@ -713,7 +713,7 @@ macos	Run actions/upload-artifact@v6	2026-11-05T06:39:40.4750100Z with:
 macos	Run actions/upload-artifact@v6	2026-11-05T06:39:40.4750750Z   name: battleblocks-macos-review
 macos	Run actions/upload-artifact@v6	2026-11-05T06:39:40.4751580Z   path: dist/macos-*.zip
 macos	Run actions/upload-artifact@v6	dist/measurements.json
-macos	Run actions/upload-artifact@v6	
+macos	Run actions/upload-artifact@v6
 macos	Run actions/upload-artifact@v6	2026-11-05T06:39:40.4752450Z   if-no-files-found: error
 macos	Run actions/upload-artifact@v6	2026-11-05T06:39:40.4753010Z   retention-days: 14
 macos	Run actions/upload-artifact@v6	2026-11-05T06:39:40.4753660Z   compression-level: 6
