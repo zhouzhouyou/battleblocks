@@ -140,12 +140,29 @@ impl Session {
             } else {
                 &sprites::SPRITES[id]
             };
-            let cast_elapsed = presentation::CAST_TIME - self.cast_time;
+            let mut cast_elapsed = presentation::CAST_TIME - self.cast_time;
             let cast_clip = sprite.action(self.last_cast == Some(content::Skill::Jump));
-            let casting = cast_clip.is_some()
+            let mut casting = cast_clip.is_some()
                 && self.last_cast.is_some()
                 && self.last_cast_enemy == enemy_side
                 && self.cast_time > 0.;
+            let synchronized = cast_clip.is_some_and(|clip| clip.impact.is_some());
+            if let Some((clip, moment)) = cast_clip.filter(|clip| clip.impact.is_some()).zip(
+                self.skill_effects.as_ref().and_then(|effects| {
+                    effects.actor_moment(enemy_side, self.hp <= 0 || self.enemy <= 0)
+                }),
+            ) {
+                cast_elapsed = clip.aligned_time(moment);
+                casting = cast_elapsed < clip.duration();
+            }
+            let idle_elapsed = if synchronized {
+                self.skill_effects
+                    .as_mut()
+                    .map(|effects| effects.idle_elapsed(enemy_side, casting, show_shadow))
+                    .unwrap_or(0.)
+            } else {
+                get_time()
+            };
             let role_state = &self.new_role_states[enemy_side as usize];
             let sleeping = effects::sleeping(
                 role_state.statuses.contains(content::StatusId::Sleep),
@@ -167,7 +184,7 @@ impl Session {
             } else if let Some(clip) = sleep_clip {
                 (clip, sleep_elapsed)
             } else {
-                (sprite.idle(), get_time())
+                (sprite.idle(), idle_elapsed)
             };
             let mut area = sprite_rect(enemy_side);
             if content::ability_capabilities(id, self.rules(enemy_side)).reach_visual {
