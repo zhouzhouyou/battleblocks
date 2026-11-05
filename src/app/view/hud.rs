@@ -141,7 +141,7 @@ impl Session {
                 &sprites::SPRITES[id]
             };
             let mut cast_elapsed = presentation::CAST_TIME - self.cast_time;
-            let mut cast_clip = sprite.action(self.last_cast == Some(content::Skill::Jump));
+            let mut cast_clip = sprites::cast_clip(id, show_shadow, self.last_cast);
             let mut casting = cast_clip.is_some()
                 && self.last_cast.is_some()
                 && self.last_cast_enemy == enemy_side

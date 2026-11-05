@@ -100,7 +100,19 @@
 11|line|The forest is fine. The forest is just... very far away now.|森林没事。森林只是……现在离得有点远。
 11|line|I did not miss. I removed the concept of missing.|我没有打偏。我只是把“打偏”这个概念一起炸掉了。
 11|line|Ten out of ten. Would nap again.|十分。下次还睡。
-12|title|Portal Cube|友谊方块
-12|intro|A companion cube holding a portal gun, inspired by Portal. Prototype art reuses an existing sprite while board mechanics are developed.|一个握着传送枪的友谊方块，参考《传送门》系列。本阶段先开发棋盘机制，暂时复用现有外观。
-12|trait|Changes gravity paths; both players share the portals.|改变重力补位路径，双方共用传送门。
-12|line|Character introduction and voice lines await the user's additions.|完整角色介绍与台词待用户补充。
+12|title|The Visitor from Elsewhere|异界访客
+12|intro|A mysterious visitor who crossed over from another world. Clearly a robot, yet somehow capable of spatial magic???|从异世界穿越而来的神秘访客，明明是机器人，却会使用空间魔法？？？
+12|trait|A robot. A spatial mage. The manual has no explanation.|是机器人，也是空间法师；使用说明并未解释。
+12|trait|Perfectly polite. Disturbingly experimental.|十分礼貌，也十分具有实验精神。
+12|line|Arrival · Hello. No spatial incidents detected in this area. Correcting.|登场 · 您好。检测到此处尚未发生空间事故。正在修正。
+12|line|Portal · The exit is ready. It accepts no responsibility for the destination.|布门 · 出口已就绪。它不对目的地负责。
+12|line|Shared portals · Please use the portals. Your trajectory will improve my research.|共享门 · 请放心使用。您的轨迹将改善我的研究。
+12|line|Gravity · Gravity calibration complete. Please locate your new floor.|重力 · 重力校准完成。请自行寻找新的地板。
+12|line|Transit · Recovery complete. Thank you for passing through voluntarily.|穿门 · 回收完成。感谢您主动经过。
+12|line|Identity · I am a robot. Spatial magic is not covered in my instruction manual.|身份 · 我是机器人。空间魔法不在我的使用说明里。
+12|line|Low power · Insufficient power. Believing in science is recommended for now.|缺魔 · 能源不足。建议先相信科学。
+12|line|Awakening · Safety limits removed. We can finally begin safely.|觉醒 · 安全限制已解除。我们终于可以安全地开始了。
+12|line|Victory · Experiment successful. Unfortunately, you were the material.|胜利 · 实验成功。很遗憾，您属于实验材料。
+12|line|Defeat · This is not a malfunction. It is an operating result without a name yet.|失败 · 这不是故障。是尚未命名的运行结果。
+12|line|Friendship · Friendship protocol enabled. Please do not attempt to disable it.|友谊 · 友谊协议已启用。请勿尝试关闭。
+12|line|Lost · If you are lost, stay where you are. I will move where you are.|迷路 · 如果您迷路了，请留在原地。我会移动原地。

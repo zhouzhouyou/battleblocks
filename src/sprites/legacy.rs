@@ -70,6 +70,11 @@ mod tests {
             if asset.legacy_awake() {
                 for &skill in crate::content::skills(id, true) {
                     let spec = asset.actor_cast(skill).unwrap();
+                    assert_eq!(
+                        super::super::cast_clip(id, true, Some(skill)),
+                        Some(spec.clip),
+                        "shared menu/HUD selection must preserve the authored skill timing"
+                    );
                     assert!((spec.clip.duration() - 1.4).abs() < 1e-9);
                     let mut t = 0.;
                     for (i, &d) in spec.clip.durations.iter().enumerate() {

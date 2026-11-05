@@ -521,14 +521,15 @@ fn action_metadata_preserves_legacy_fallback_and_fire_elf_sleep() {
             (true, &sprites::AWAKENED[id]),
         ] {
             assert_eq!(asset.indices.len(), asset.durations.len());
-            if (id < content::KNIGHT && !(id <= 3 && is_awake))
-                || id == content::PORTAL_CUBE
-            {
+            if id < content::KNIGHT && !(id <= 3 && is_awake) {
                 assert!(asset.cast.is_none() && asset.sleep.is_none());
                 assert!(asset.action(true).is_none());
             } else {
                 let cast = asset.cast.unwrap();
-                assert_eq!(cast.indices.len(), 12);
+                assert_eq!(
+                    cast.indices.len(),
+                    if id == content::PORTAL_CUBE { 16 } else { 12 }
+                );
                 assert!((cast.duration() - presentation::CAST_TIME).abs() < 1e-9);
                 assert!((asset.idle().duration() - 0.72).abs() < 1e-9);
                 assert_eq!(cast.playback, sprites::Playback::Once);

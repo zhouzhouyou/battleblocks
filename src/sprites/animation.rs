@@ -79,7 +79,11 @@ impl SpriteAsset {
         if jumping {
             self.cast.map(|_| AnimationClip {
                 indices: self.indices,
-                durations: &CAST_FRAME_TIME,
+                durations: if self.indices.len() == 16 {
+                    &super::portal_cube::PORTAL_CAST_TIME
+                } else {
+                    &CAST_FRAME_TIME
+                },
                 playback: Playback::Once,
                 impact: None,
             })
