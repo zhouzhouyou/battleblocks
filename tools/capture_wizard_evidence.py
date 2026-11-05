@@ -34,7 +34,8 @@ board_command = 'board load ' + ' '.join(str(v) for row in clean for v in row)
 binary = args.binary.resolve()
 summary = {'binary_sha256': hashlib.sha256(binary.read_bytes()).hexdigest(),
            'git_head': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
-           'fps': 60, 'device_pixel_crop': args.size, 'scenes': {}}
+           'target_fps': 60, 'frame_rate_note': 'gdigrab output may be VFR; measure via the shared 60 Hz sampling stream',
+           'device_pixel_crop': args.size, 'scenes': {}}
 summary_path = OUT / 'capture.json'
 if summary_path.exists():
     previous = json.loads(summary_path.read_text())
