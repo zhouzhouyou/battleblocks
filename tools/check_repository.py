@@ -44,5 +44,36 @@ def check():
     print(f'PASS: {len(paths)} tracked files; {len(actual)} approved binaries; no review/reference media')
 
 
+def check_history():
+    approved = json.loads((ROOT / 'config/asset-manifest.json').read_text())
+    ids = {}
+    for name in approved:
+        contents = (ROOT / name).read_bytes()
+        ids[name] = hashlib.sha1(b'blob ' + str(len(contents)).encode() + b'\0' + contents).hexdigest()
+    commits = subprocess.check_output(['git', 'rev-list', 'HEAD'], cwd=ROOT, text=True).splitlines()
+    seen = set()
+    for commit in commits:
+        tree = subprocess.check_output(['git', 'ls-tree', '-r', '-z', commit], cwd=ROOT).split(b'\0')
+        for entry in tree:
+            if not entry:
+                continue
+            metadata, name = entry.split(b'\t', 1)
+            name = name.decode()
+            oid = metadata.split()[2].decode()
+            if name.startswith(('asset-sources/', 'assets/awakened/', '.local/')) or '/references/' in name or name == 'docs/art/ART-DIRECTION-F-ARCHIVE.md':
+                raise SystemExit(f'Forbidden path in history: {commit} {name}')
+            if Path(name).suffix.lower() in MEDIA:
+                if ids.get(name) != oid:
+                    raise SystemExit(f'Unapproved binary revision in history: {commit} {name}')
+                seen.add((name, oid))
+    print(f'PASS: all {len(commits)} historical trees; {len(seen)} final binary paths; zero rejected resource revisions')
+
+
 if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--history', action='store_true')
+    args = parser.parse_args()
     check()
+    if args.history:
+        check_history()

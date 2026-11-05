@@ -4,7 +4,7 @@
 
 ---
 
-# 旧骑士 · 旧誓骑士 — 觉醒动画 production/
+# 旧骑士 · 旧誓骑士 — 觉醒动画 当前制作源
 
 用户已批准 #28 推荐方案，范围仅觉醒。内置 image_gen 生成；实际提示词为 awake-idle-prompt-.md 与 awake-cast-prompt-.md，参考已有 assets/awakened/knight-awakening.webp。源图无损保存，不打包进游戏。施法  因横向伸剑安全边界与体型偏差被替换，进一步修复脚距，为当前源图；仅保留过程记录。
 

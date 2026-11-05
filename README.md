@@ -161,6 +161,6 @@ Windows x64 Release 由 `.github/workflows/windows-release.yml` 在 GitHub Windo
 
 在 macOS 本地交叉编译 Windows x64：安装 `mingw-w64`，执行 `rustup target add x86_64-pc-windows-gnu`，用 `CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER=x86_64-w64-mingw32-gcc cargo build --release --locked --bin battleblocks --target x86_64-pc-windows-gnu` 编译，然后使用构建工具的 Python 执行 `tools/package.py --native-only --target x86_64-pc-windows-gnu` 打包为 `dist/windows-x64.zip`。本地 Mac 只能检查产物，实际窗口和音频需要 Windows 验证。
 
-技能默认结束回合；不结束回合的技能明确标注。冷却期间整个技能卡变暗，圆圈显示剩余自己的回合数。技能卡只显示编号、名称、消耗/冷却和「不结束回合」标记；完整说明在悬停技能卡或选中施法时，显示在另一侧栏的说明面板里并按面板宽度换行，避免长说明挤出卡片。牧师可点击口袋选择复生方块。术语及冷却规则见 [技能规则](docs/SKILL-RULES.md)。运行时配置为 `config/heroes.txt`、`config/skills.txt` 和 `config/role-text.txt`。三位新角色动画使用 `production//` 的高密度原图，通过 `tools/prepare_role_assets.py` 导入；三人统一显示尺寸，矮人不缩为一半。
+技能默认结束回合；不结束回合的技能明确标注。冷却期间整个技能卡变暗，圆圈显示剩余自己的回合数。技能卡只显示编号、名称、消耗/冷却和「不结束回合」标记；完整说明在悬停技能卡或选中施法时，显示在另一侧栏的说明面板里并按面板宽度换行，避免长说明挤出卡片。牧师可点击口袋选择复生方块。术语及冷却规则见 [技能规则](docs/SKILL-RULES.md)。运行时配置为 `config/heroes.txt`、`config/skills.txt` 和 `config/role-text.txt`。三位新角色动画使用 `当前制作源` 的高密度原图，通过 `tools/prepare_role_assets.py` 导入；三人统一显示尺寸，矮人不缩为一半。
 
 源码职责与未来角色扩展见 [代码结构](docs/ARCHITECTURE.md)。`main.rs` 只做启动与调度，角色技能、共用结算、战斗操作和绘制分开维护。
