@@ -106,14 +106,11 @@ pub const SLEEP: AnimationClip = AWAKE_CAST;
 pub const WIZARD_CAST_TIME: [f64; 12] = [
     0.06, 0.08, 0.09, 0.09, 0.12, 0.18, 0.28, 0.1, 0.1, 0.1, 0.1, 0.1,
 ];
-pub const WIZARD_CAST: AnimationClip = AnimationClip {
+pub const WIZARD_AWAKE_CAST: AnimationClip = AnimationClip {
+    indices: &[12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
     durations: &WIZARD_CAST_TIME,
     impact: Some(0.9),
     ..NORMAL_CAST
-};
-pub const WIZARD_AWAKE_CAST: AnimationClip = AnimationClip {
-    indices: AWAKE_CAST.indices,
-    ..WIZARD_CAST
 };
 
 /// Restart idle at its entry pose after a cast or form transition, not global time.
@@ -153,13 +150,7 @@ mod tests {
     use super::*;
     #[test]
     fn one_shots_cover_all_poses_and_hold_the_last_at_and_after_the_end() {
-        for clip in [
-            NORMAL_CAST,
-            AWAKE_CAST,
-            SLEEP,
-            WIZARD_CAST,
-            WIZARD_AWAKE_CAST,
-        ] {
+        for clip in [NORMAL_CAST, AWAKE_CAST, SLEEP, WIZARD_AWAKE_CAST] {
             assert_eq!(clip.frame(-1.), clip.indices[0]);
             let mut elapsed = 0.;
             for (&frame, &duration) in clip.indices.iter().zip(clip.durations) {
@@ -194,11 +185,11 @@ mod tests {
     #[test]
     fn one_pose_sequence_aligns_to_different_impacts_without_stretching_recovery() {
         for impact in [0.4, 0.9, 1.8] {
-            let sample = |elapsed| WIZARD_CAST.aligned_time(CastMoment { elapsed, impact });
-            assert_eq!(WIZARD_CAST.frame(sample(impact - 0.001)), 30);
-            assert_eq!(WIZARD_CAST.frame(sample(impact + 0.001)), 31);
-            assert_eq!(WIZARD_CAST.frame(sample(impact + 0.45)), 35);
-            assert!((sample(impact + 0.5) - WIZARD_CAST.duration()).abs() < 1e-9);
+            let sample = |elapsed| WIZARD_AWAKE_CAST.aligned_time(CastMoment { elapsed, impact });
+            assert_eq!(WIZARD_AWAKE_CAST.frame(sample(impact - 0.001)), 18);
+            assert_eq!(WIZARD_AWAKE_CAST.frame(sample(impact + 0.001)), 19);
+            assert_eq!(WIZARD_AWAKE_CAST.frame(sample(impact + 0.45)), 23);
+            assert!((sample(impact + 0.5) - WIZARD_AWAKE_CAST.duration()).abs() < 1e-9);
             let mut idle = IdleClock::default();
             idle.elapsed(true, false, 100.);
             assert_eq!(idle.elapsed(false, false, 105.), 0.);

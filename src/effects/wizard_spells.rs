@@ -191,17 +191,17 @@ mod tests {
                 clock: ImpactClock::new(10.),
                 actor_active: true,
             };
-            let clip = crate::sprites::WIZARD_CAST;
+            let clip = crate::sprites::WIZARD_AWAKE_CAST;
             let frame = |cast: &Cast, now, over| {
                 clip.frame(clip.aligned_time(cast.actor_moment(false, over, now).unwrap()))
             };
-            assert_eq!(frame(&cast, 10., false), 24);
-            assert_eq!(frame(&cast, 10.35, false), 28);
-            assert_eq!(frame(&cast, 12., false), 30); // beyond the old 1.4s lifetime
+            assert_eq!(frame(&cast, 10., false), 12);
+            assert_eq!(frame(&cast, 10.35, false), 16);
+            assert_eq!(frame(&cast, 12., false), 18); // beyond the old 1.4s lifetime
             assert!(cast.actor_moment(true, false, 12.).is_none());
             cast.clock.cleared(12.);
-            assert_eq!(frame(&cast, 12., false), 31);
-            assert_eq!(frame(&cast, 12.45, false), 35);
+            assert_eq!(frame(&cast, 12., false), 19);
+            assert_eq!(frame(&cast, 12.45, false), 23);
             assert!(
                 clip.aligned_time(cast.actor_moment(false, false, 12.51).unwrap())
                     > clip.duration()
@@ -213,7 +213,7 @@ mod tests {
                 actor_active: true,
                 ..cast
             };
-            assert_eq!(frame(&terminal, 20.95, true), 31); // no clear after victory
+            assert_eq!(frame(&terminal, 20.95, true), 19); // no clear after victory
             assert!(
                 clip.aligned_time(terminal.actor_moment(false, true, 22.).unwrap())
                     > clip.duration()
