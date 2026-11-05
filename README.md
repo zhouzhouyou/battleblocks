@@ -4,6 +4,8 @@ Rust + Macroquad 的单机三消战斗游戏，保留原有像素素材。传统
 
 工程目录、资源入库边界及 `gallery/` 等特殊目录见 [目录约定](docs/LAYOUT.md)。
 
+首次克隆后执行 `git config --local core.hooksPath .githooks`，启用提交前的目录与资源检查。GitHub 同时检查新提交及 PR 的完整历史。
+
 
 ## 安装、运行与打包
 
