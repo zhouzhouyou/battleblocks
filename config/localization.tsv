@@ -20,6 +20,14 @@ ui.hud.draw_turns.battle_blocks	BATTLE BLOCKS	方块战斗
 ui.hud.draw_turns.battle_over	Battle over	战斗结束
 ui.menu.draw.before_casting	Before casting	释放前
 ui.shared.beginner	Beginner	入门
+ui.gravity.default	Default	默认
+ui.gravity.down	Down	向下
+ui.gravity.label	Gravity: {0}	重力：{0}
+ui.gravity.left	Left	向左
+ui.gravity.right	Right	向右
+ui.gravity.until_enemy	Until the enemy's next turn	至敌方下回合
+ui.gravity.until_yours	Until your next turn	至你的下回合
+ui.gravity.up	Up	向上
 ui.hints.draw_hints.blue_tiles_gold_columns_hold_h_cli	Blue: tiles · Gold: columns · hold H + click a number	蓝色：两格交换 / 金色：整列交换 · 按住 H 点编号即可执行
 ui.hints.draw_hints.blue_tiles_gold_whole_columns	Blue: tiles / Gold: whole columns	蓝色：两格交换 / 金色：整列交换
 ui.turns.actions_text.board_reroll	Board reroll	重排棋盘

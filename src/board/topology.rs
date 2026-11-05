@@ -21,6 +21,22 @@ impl Gravity {
     pub fn vertical(self) -> bool {
         matches!(self, Self::Up | Self::Down)
     }
+    /// Distance from the downstream board edge, along the gravity axis.
+    ///
+    /// Reach and "short" rules count from where tiles settle, so they flip with
+    /// gravity instead of staying tied to the top-left origin's bottom rows.
+    pub fn depth(self, (x, y): Cell) -> usize {
+        match self {
+            Self::Up => y,
+            Self::Down => N - 1 - y,
+            Self::Left => x,
+            Self::Right => N - 1 - x,
+        }
+    }
+    /// Whether a cell lies in the upstream half, away from where tiles settle.
+    pub fn upstream(self, cell: Cell) -> bool {
+        self.depth(cell) >= N / 2
+    }
     pub fn name(self) -> &'static str {
         match self {
             Self::Up => "Up",

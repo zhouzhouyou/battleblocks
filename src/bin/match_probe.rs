@@ -210,13 +210,7 @@ fn cast_skill(
     let effective = content::effective_skill(skill, cast_rules);
     let profile = content::skill_profile(effective, cast_rules);
     let target = if profile.random_target {
-        (
-            rng::gen_range(0, N - 1),
-            rng::gen_range(
-                N - content::reachable_rows(id, sides[side].hp, cast_rules),
-                N - 1,
-            ),
-        )
+        content::random_reachable_target(id, sides[side].hp, cast_rules)
     } else {
         strategy::choose_target_in(
             skill,
