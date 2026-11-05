@@ -1,5 +1,5 @@
 //! One board impact at the center of Hammer's four cells, independent of caster side.
-//! Offline Rust artwork: asset-sources/effects/hammer-smash/v1; MIT notices: licenses/pixelfx.
+//! Offline Rust artwork: assets-source/effects/hammer-smash; MIT notices: licenses/pixelfx.
 use macroquad::prelude::*;
 
 const WIDTH: f32 = 192.;

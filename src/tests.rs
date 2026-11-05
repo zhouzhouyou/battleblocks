@@ -99,7 +99,7 @@ fn new_role_atlases_have_twelve_distinct_poses_per_action_and_shared_palettes() 
 #[test]
 fn wizard_normal_is_unchanged_and_only_awakened_uses_fine_pixel_animation() {
     let normal = &sprites::SPRITES[2];
-    assert_eq!(normal.bytes, include_bytes!("../assets/wizzard.webp"));
+    assert_eq!(normal.bytes, include_bytes!("../assets/roles/wizard/runtime/normal.webp"));
     assert_eq!((normal.w, normal.h), (300., 400.));
     assert_eq!(normal.indices, &[0, 1, 2, 3]);
     assert_eq!(normal.durations, &[0.1; 4]);

@@ -1,7 +1,7 @@
 """Compare actual audio output modes on macOS with a shared CPAL backend."""
 from pathlib import Path
 import hashlib,json,os,re,statistics,subprocess,time
-ROOT=Path(__file__).resolve().parents[1];LAB=ROOT/'analysis/audio-lab';OUT=LAB/'results';OUT.mkdir(exist_ok=True)
+ROOT=Path(__file__).resolve().parents[1];LAB=ROOT/'experiments/audio-lab';OUT=LAB/'results';OUT.mkdir(exist_ok=True)
 binary=LAB/'target/release/battleblocks-audio-lab';rows=[]
 for repeat in range(2):
  for mode in (['idle','buffer','stream','synth'] if repeat==0 else ['synth','stream','buffer','idle']):

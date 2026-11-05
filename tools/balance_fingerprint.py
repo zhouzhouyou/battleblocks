@@ -14,13 +14,13 @@ def manifest(root, target):
     # definitions. Only hero/loadout rows are proven local to the two combatants.
     paths = sorted((root / "src").rglob("*.rs"))
     paths += [root / p for p in ("Cargo.toml", "Cargo.lock", "build.rs",
-                                "tools/balance_fingerprint.py", "assets/skills.txt")]
+                                "tools/balance_fingerprint.py", "config/skills.txt")]
     shared = hashlib.sha256(target.encode())
     for path in paths:
         shared.update(path.relative_to(root).as_posix().encode() + b"\0")
         shared.update(path.read_bytes().replace(b"\r\n", b"\n") + b"\0")
     def rows(name):
-        return [line.strip() for line in (root / "assets" / name).read_text(encoding="utf-8").splitlines()
+        return [line.strip() for line in (root / "config" / name).read_text(encoding="utf-8").splitlines()
                 if line.strip() and not line.startswith("#")]
     loadouts = {int(line.split("|", 1)[0]): line for line in rows("ability-loadouts.txt")}
     heroes = []

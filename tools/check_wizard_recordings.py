@@ -15,10 +15,10 @@ import imageio_ffmpeg
 from wizard_recording_frames import frames, FPS
 
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--directory', type=Path, default=ROOT / 'analysis/issue27-wizard-animation')
+parser.add_argument('--directory', type=Path, default=ROOT / '.local/analysis/issue27-wizard-animation')
 OUT = parser.parse_args().directory.resolve()
 FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
-atlas = Image.open(ROOT / 'assets/roles/wizard.webp').convert('RGBA')
+atlas = Image.open(ROOT / 'assets/roles/wizard/runtime/atlas.webp').convert('RGBA')
 scale = 184 / 83 / 4 * 1.25
 left, top = (124 - 192 * (184 / 83 / 4)) * 1.25, (372 - 336 * (184 / 83 / 4)) * 1.25
 # Pixel-centre nearest-neighbour projection of the same runtime atlas rectangle.

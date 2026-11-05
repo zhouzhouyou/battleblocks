@@ -9,6 +9,7 @@ import hashlib
 import json
 import subprocess
 import sys
+from asset_paths import legacy_role
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / ".build-tools/art-site"))
@@ -17,18 +18,11 @@ FRAME = 384
 ANCHOR = (192, 336)
 COLUMNS = 6
 CLIPS = ("normal-idle", "awake-idle", "normal-cast", "awake-cast")
-ROLES = {
-    "knight": ("knight", "v4"),
-    "dwarf": ("dwarf", "v4"),
-    "priest": ("priest", "v5"),
-    "nun": ("nun", "v2"),
-    "fire-elf": ("forest-fire-elf", "v2"),
-}
+ROLES = ('knight', 'dwarf', 'priest', 'nun', 'fire-elf')
 
 
 def source_dir(role):
-    name, version = ROLES[role]
-    return ROOT / "asset-sources/art-direction/characters" / name / "production" / version
+    return ROOT / "assets-source/roles" / role / "animation"
 
 
 def clips_for(role):
@@ -59,8 +53,9 @@ def load_cells(path):
 
 def import_role(role):
     directory = source_dir(role)
-    sources = {clip: directory / f"{clip}-source-v{2 if role == 'knight' and 'cast' in clip else 1}.webp"
-               for clip in clips_for(role)}
+    previews = ROOT / '.local/previews' / role
+    previews.mkdir(parents=True, exist_ok=True)
+    sources = {clip: directory / f"{clip}-source.webp" for clip in clips_for(role)}
     clips = {clip: load_cells(path) for clip, path in sources.items()}
     # One deterministic palette per character, shared by every form and action.
     samples = Image.new("RGB", (384 * 12, 384 * 4), (22, 24, 32))
@@ -113,7 +108,7 @@ def import_role(role):
         if len({c["sha256"] for c in checks}) != 12:
             raise ValueError(f"{role}/{clip}: repeated poses; redraw the source")
         duration = 60 if "idle" in clip else [117] * 8 + [116] * 4
-        sequence[0].save(directory / f"{clip}.webp", "WEBP", save_all=True, append_images=sequence[1:],
+        sequence[0].save(previews / f"{clip}.webp", "WEBP", save_all=True, append_images=sequence[1:],
                          duration=duration, loop=0, lossless=True, exact=True, method=6)
         start = len(all_frames)
         report["clips"][clip] = {"indices": list(range(start, start + 12)),
@@ -122,47 +117,47 @@ def import_role(role):
         all_frames.extend(sequence)
     for i, frame in enumerate(all_frames):
         atlas.alpha_composite(frame, (i % COLUMNS * FRAME, i // COLUMNS * FRAME))
-    save_webp(atlas, ROOT / "assets/roles" / f"{role}.webp")
-    save_webp(all_frames[0], directory / "normal-idle-0.webp")
-    report["webp_bytes"] = (ROOT / "assets/roles" / f"{role}.webp").stat().st_size
+    save_webp(atlas, ROOT / "assets/roles" / role / "runtime/atlas.webp")
+    save_webp(all_frames[0], previews / "normal-idle-0.webp")
+    report["webp_bytes"] = (ROOT / "assets/roles" / role / "runtime/atlas.webp").stat().st_size
     (directory / "report.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     print(f"{role}: 48 distinct poses, {report['webp_bytes']} bytes")
 
 
 def registry():
-    legacy = json.loads((ROOT / "assets/report.json").read_text())
+    legacy = json.loads((ROOT / "config/legacy-sprites.json").read_text())
     normal, awakened = [], []
     thumbs = Image.new("RGBA", ((7+len(ROLES)+1)*40, 48))
     for i, name in enumerate(("knight", "elf", "wizzard", "goblin", "imp", "chort", "big_zombie")):
         meta = legacy[name]
         w, h = meta["frame_size"]
-        normal.append(f'    SpriteAsset {{ bytes: include_bytes!("../../assets/{name}.webp"), w: {w}., h: {h}., durations: &{meta["durations"]}, indices: &{meta["indices"]}, cast: None, sleep: None, anchor: None }},')
-        frame = Image.open(ROOT / f"assets/{name}.webp").crop((0, 0, w, h))
+        normal.append(f'    SpriteAsset {{ bytes: include_bytes!("../../assets/roles/{legacy_role(name)}/runtime/normal.webp"), w: {w}., h: {h}., durations: &{meta["durations"]}, indices: &{meta["indices"]}, cast: None, sleep: None, anchor: None }},')
+        frame = Image.open(ROOT / f"assets/roles/{legacy_role(name)}/runtime/normal.webp").crop((0, 0, w, h))
         frame.thumbnail((40, 48), Image.Resampling.NEAREST)
         thumbs.alpha_composite(frame.convert("RGBA"), (i * 40 + (40 - frame.width) // 2, 48 - frame.height))
     for name in ("knight", "elf", "wizard", "goblin", "imp", "chort", "zombie"):
         if name in ('knight', 'elf', 'goblin'):
-            awakened.append(f'    SpriteAsset {{ bytes: include_bytes!("../../assets/roles/{name}-legacy.webp"), w: 384., h: 384., durations: &[0.06; 12], indices: &{list(range(12))}, cast: Some(LEGACY_AWAKE_CAST), sleep: None, anchor: Some([192., 336.]) }},')
+            awakened.append(f'    SpriteAsset {{ bytes: include_bytes!("../../assets/roles/{name}-legacy/runtime/atlas.webp"), w: 384., h: 384., durations: &[0.06; 12], indices: &{list(range(12))}, cast: Some(LEGACY_AWAKE_CAST), sleep: None, anchor: Some([192., 336.]) }},')
             continue
         if name == 'wizard':
-            awakened.append(f'    SpriteAsset {{ bytes: include_bytes!("../../assets/roles/wizard.webp"), w: 384., h: 384., durations: &[0.06; 12], indices: &{list(range(12))}, cast: Some(WIZARD_AWAKE_CAST), sleep: None, anchor: Some([192., 336.]) }},')
+            awakened.append(f'    SpriteAsset {{ bytes: include_bytes!("../../assets/roles/wizard/runtime/atlas.webp"), w: 384., h: 384., durations: &[0.06; 12], indices: &{list(range(12))}, cast: Some(WIZARD_AWAKE_CAST), sleep: None, anchor: Some([192., 336.]) }},')
             continue
-        path = ROOT / f"assets/awakened/{name}-awakening.webp"
+        path = ROOT / f"assets/roles/{name}/runtime/awake.webp"
         w, h = Image.open(path).size
-        awakened.append(f'    SpriteAsset {{ bytes: include_bytes!("../../assets/awakened/{name}-awakening.webp"), w: {w}., h: {h}., durations: &[1.], indices: &[0], cast: None, sleep: None, anchor: None }},')
+        awakened.append(f'    SpriteAsset {{ bytes: include_bytes!("../../assets/roles/{name}/runtime/awake.webp"), w: {w}., h: {h}., durations: &[1.], indices: &[0], cast: None, sleep: None, anchor: None }},')
     for i, role in enumerate(ROLES, 7):
         for awake, entries in ((False, normal), (True, awakened)):
             idle = list(range(12, 24)) if awake else list(range(12))
             cast = "AWAKE_CAST" if awake and role != "fire-elf" else "NORMAL_CAST"
             sleep = "Some(SLEEP)" if role == "fire-elf" else "None"
-            entries.append(f'    SpriteAsset {{ bytes: include_bytes!("../../assets/roles/{role}.webp"), w: 384., h: 384., durations: &[0.06; 12], indices: &{idle}, cast: Some({cast}), sleep: {sleep}, anchor: Some([192., 336.]) }},')
-        frame = Image.open(ROOT / f"assets/roles/{role}.webp").crop((0, 0, FRAME, FRAME)).resize((48, 48), Image.Resampling.NEAREST)
+            entries.append(f'    SpriteAsset {{ bytes: include_bytes!("../../assets/roles/{role}/runtime/atlas.webp"), w: 384., h: 384., durations: &[0.06; 12], indices: &{idle}, cast: Some({cast}), sleep: {sleep}, anchor: Some([192., 336.]) }},')
+        frame = Image.open(ROOT / f"assets/roles/{role}/runtime/atlas.webp").crop((0, 0, FRAME, FRAME)).resize((48, 48), Image.Resampling.NEAREST)
         thumbs.alpha_composite(frame.convert("RGBA"), (i * 40 - 4, 0))
-    cube = Image.open(ROOT / "assets/roles/portal-cube.webp").crop((0,0,FRAME,FRAME))
+    cube = Image.open(ROOT / "assets/roles/portal-cube/runtime/atlas.webp").crop((0,0,FRAME,FRAME))
     cube.thumbnail((40,48),Image.Resampling.NEAREST)
     thumbs.alpha_composite(cube.convert("RGBA"),((7+len(ROLES))*40+(40-cube.width)//2,(48-cube.height)//2))
-    save_webp(thumbs, ROOT / "assets/hero-thumbnails.webp")
-    report_path = ROOT / "assets/roles/report.json"
+    save_webp(thumbs, ROOT / "assets/ui/hero-thumbnails.webp")
+    report_path = ROOT / "config/role-assets.json"
     report = json.loads(report_path.read_text(encoding="utf-8"))
     for role in ROLES:
         details = json.loads((source_dir(role) / "report.json").read_text(encoding="utf-8"))

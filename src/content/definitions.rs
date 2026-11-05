@@ -102,7 +102,7 @@ impl Skill {
     fn definition(self) -> &'static SkillDefinition {
         static DEFINITIONS: std::sync::OnceLock<Vec<SkillDefinition>> = std::sync::OnceLock::new();
         let all = DEFINITIONS.get_or_init(|| {
-            include_str!("../../assets/skills.txt")
+            include_str!("../../config/skills.txt")
                 .lines()
                 .filter(|line| !line.starts_with('#') && !line.is_empty())
                 .map(|line| {
@@ -199,7 +199,7 @@ pub struct Hero {
     pub skills: &'static [Skill],
 }
 pub static HEROES: std::sync::LazyLock<Vec<Hero>> = std::sync::LazyLock::new(|| {
-    include_str!("../../assets/heroes.txt")
+    include_str!("../../config/heroes.txt")
         .lines()
         .filter(|l| !l.is_empty() && !l.starts_with('#'))
         .map(|line| {
@@ -277,7 +277,7 @@ pub fn role_text(key: &str, zh: bool) -> &'static str {
     static TEXT: std::sync::OnceLock<Vec<(&'static str, String, String)>> =
         std::sync::OnceLock::new();
     let entries = TEXT.get_or_init(|| {
-        include_str!("../../assets/role-text.txt")
+        include_str!("../../config/role-text.txt")
             .lines()
             .filter(|l| !l.is_empty() && !l.starts_with('#'))
             .map(|line| {

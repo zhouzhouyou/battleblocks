@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / '.build-tools/art-site'))
 from PIL import Image
 
-SOURCE = ROOT / 'asset-sources/art-direction/characters/wizard/production/v3'
+SOURCE = ROOT / 'assets-source/roles/wizard/animation'
 CLIPS = ('awake-idle', 'awake-cast')
 FRAME, ANCHOR = 384, (192, 336)
 CAST_MS = [60, 80, 90, 90, 120, 180, 280, 100, 100, 100, 100, 100]
@@ -28,9 +28,11 @@ def import_wizard():
     assert len(colors) == 64*3
     palette = Image.new('P', (1,1))
     palette.putpalette(colors + colors[-3:]*(256-64))
+    previews = ROOT / '.local/previews/wizard'
+    previews.mkdir(parents=True, exist_ok=True)
     clips = {}
     for clip in CLIPS:
-        image = Image.open(SOURCE/f'{clip}-source-v3.webp').convert('RGBA')
+        image = Image.open(SOURCE/f'{clip}-source.webp').convert('RGBA')
         assert image.size == (1448,1086), 'Expected 4x3 authored square cells'
         cells = []
         for i,anchor in enumerate(registration[clip]):
@@ -72,15 +74,15 @@ def import_wizard():
         start = len(all_frames)
         report['clips'][clip] = {'indices':list(range(start,start+12)), 'checks':checks,
             'duration_ms':sum(durations),'durations_ms':durations,
-            'playback':'loop' if clip.endswith('idle') else 'once','source':f'{clip}-source-v3.webp'}
-        sequence[0].save(SOURCE/f'{clip}.webp','WEBP',save_all=True,append_images=sequence[1:],
+            'playback':'loop' if clip.endswith('idle') else 'once','source':f'{clip}-source.webp'}
+        sequence[0].save(previews/f'{clip}.webp','WEBP',save_all=True,append_images=sequence[1:],
             duration=durations,loop=0,lossless=True,exact=True,method=6)
         all_frames.extend(sequence)
     for i,frame in enumerate(all_frames):
         atlas.alpha_composite(frame,(i%6*FRAME,i//6*FRAME))
-    path = ROOT/'assets/roles/wizard.webp'
+    path = ROOT/'assets/roles/wizard/runtime/atlas.webp'
     save(atlas,path)
-    save(all_frames[0],SOURCE/'awake-idle-0.webp')
+    save(all_frames[0],previews/'awake-idle-0.webp')
     report['webp_bytes'] = path.stat().st_size
     (SOURCE/'report.json').write_text(json.dumps(report,indent=2)+'\n')
     print(f'wizard: 24 fine-pixel awakened poses; normal unchanged; {path.stat().st_size} bytes')

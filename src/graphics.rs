@@ -340,7 +340,7 @@ static LOCALIZATION: OnceLock<LocalizationTable> = OnceLock::new();
 fn localization() -> &'static LocalizationTable {
     LOCALIZATION.get_or_init(|| {
         let mut table = HashMap::new();
-        for (line_number, line) in include_str!("../assets/localization.tsv")
+        for (line_number, line) in include_str!("../config/localization.tsv")
             .lines()
             .enumerate()
         {

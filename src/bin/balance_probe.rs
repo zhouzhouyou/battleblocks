@@ -17,7 +17,7 @@ use content::HEROES;
 fn tr_key(zh: bool, key: &'static str) -> &'static str {
     static TEXT: std::sync::LazyLock<std::collections::HashMap<&'static str, [&'static str; 2]>> =
         std::sync::LazyLock::new(|| {
-            include_str!("../../assets/localization.tsv")
+            include_str!("../../config/localization.tsv")
                 .lines()
                 .filter(|line| !line.is_empty() && !line.starts_with('#'))
                 .map(|line| {

@@ -216,20 +216,20 @@ class PipelineTests(unittest.TestCase):
     def test_fingerprint_local_vs_shared_change(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            (root / "assets").mkdir()
+            (root / "config").mkdir()
             (root / "src").mkdir()
             (root / "tools").mkdir()
-            for f in ("Cargo.toml", "Cargo.lock", "build.rs", "tools/balance_fingerprint.py", "src/main.rs", "assets/skills.txt"):
+            for f in ("Cargo.toml", "Cargo.lock", "build.rs", "tools/balance_fingerprint.py", "src/main.rs", "config/skills.txt"):
                 (root / f).write_text("original")
-            (root / "assets/heroes.txt").write_text("A|a|100|50|0\nB|b|100|50|1\n")
-            (root / "assets/ability-loadouts.txt").write_text("0|X|X||text\n1|Y|Y||text\n")
+            (root / "config/heroes.txt").write_text("A|a|100|50|0\nB|b|100|50|1\n")
+            (root / "config/ability-loadouts.txt").write_text("0|X|X||text\n1|Y|Y||text\n")
             before = manifest(root, "test")
-            (root / "assets/heroes.txt").write_text("A|a|110|50|0\nB|b|100|50|1\n")
+            (root / "config/heroes.txt").write_text("A|a|110|50|0\nB|b|100|50|1\n")
             after = manifest(root, "test")
             self.assertEqual(before["shared"], after["shared"])
             self.assertNotEqual(before["heroes"][0], after["heroes"][0])
             self.assertEqual(before["heroes"][1], after["heroes"][1])
-            (root / "assets/skills.txt").write_text("changed shared skill")
+            (root / "config/skills.txt").write_text("changed shared skill")
             self.assertNotEqual(after["shared"], manifest(root, "test")["shared"])
 
 

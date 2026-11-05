@@ -34,7 +34,7 @@ const AWAKE_GRAVITY: AnimationClip = AnimationClip {
     ..NORMAL_PORTAL
 };
 pub const PORTAL_NORMAL: SpriteAsset = SpriteAsset {
-    bytes: include_bytes!("../../assets/roles/portal-cube.webp"),
+    bytes: include_bytes!("../../assets/roles/portal-cube/runtime/atlas.webp"),
     w: 384.,
     h: 384.,
     durations: &IDLE_TIME,
@@ -100,7 +100,7 @@ mod tests {
         let runtime = image::load_from_memory(PORTAL_NORMAL.bytes)
             .unwrap()
             .to_rgba8();
-        let source=image::load_from_memory(include_bytes!("../../asset-sources/art-direction/characters/portal-cube/production/v3/portal-cube-review-atlas-v3.webp")).unwrap().to_rgba8();
+        let source=image::load_from_memory(include_bytes!("../../assets-source/roles/portal-cube/animation/atlas.webp")).unwrap().to_rgba8();
         assert_eq!(runtime.dimensions(), (3840, 3840));
         assert!(runtime.width() <= 4096 && runtime.height() <= 4096);
         assert_ne!(PORTAL_NORMAL.bytes, crate::sprites::SPRITES[3].bytes);
@@ -116,7 +116,7 @@ mod tests {
 
     #[test]
     fn dedicated_thumbnail_slot_is_visible_and_not_the_goblin_placeholder() {
-        let thumbs = image::load_from_memory(include_bytes!("../../assets/hero-thumbnails.webp"))
+        let thumbs = image::load_from_memory(include_bytes!("../../assets/ui/hero-thumbnails.webp"))
             .unwrap()
             .to_rgba8();
         assert!(thumbs.width() >= 13 * 40);

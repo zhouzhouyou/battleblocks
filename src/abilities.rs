@@ -52,7 +52,7 @@ pub struct AbilityLoadout {
 pub fn ability_loadout(hero: usize) -> &'static AbilityLoadout {
     static DATA: std::sync::OnceLock<Vec<AbilityLoadout>> = std::sync::OnceLock::new();
     &DATA.get_or_init(|| {
-        include_str!("../assets/ability-loadouts.txt")
+        include_str!("../config/ability-loadouts.txt")
             .lines()
             .filter(|s| !s.starts_with('#') && !s.is_empty())
             .enumerate()

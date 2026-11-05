@@ -27,7 +27,7 @@ def run_variant(name, webp, decoder, png_ref):
     folder.mkdir(parents=True)
     for filename in ['Cargo.toml', 'Cargo.lock', 'build.rs']:
         shutil.copy2(ROOT / filename, folder / filename)
-    for directory in ['src', 'assets', 'tools']:
+    for directory in ['src', 'assets', 'config', 'tools']:
         shutil.copytree(ROOT / directory, folder / directory)
     (folder / '.build-tools').symlink_to(ROOT / '.build-tools', target_is_directory=True)
     if png_ref:

@@ -2,7 +2,8 @@
 
 Rust + Macroquad 的单机三消战斗游戏，保留原有像素素材。传统横向/纵向三消、重力下落和连锁；12 个可选角色互相对战，分为 5 个新角色和 7 个老角色，支持中文和英文。
 
-![角色选择与技能预览](analysis/character-select-preview.png)
+工程目录、资源入库边界及 `gallery/` 等特殊目录见 [目录约定](docs/LAYOUT.md)。
+
 
 ## 安装、运行与打包
 
@@ -120,16 +121,16 @@ cargo run --release -- --headless --autoplay \
 
 - `src/`：游戏逻辑、角色技能与界面。
 - `assets/`：直接嵌入的压缩素材、图集元数据、字体许可。
-- `asset-sources/`：用于重建图集和音频的原始素材，不随游戏分发。
+- `assets/`：用于重建图集和音频的原始素材，不随游戏分发。
 - `tools/`：构建、字体裁剪、素材转换、打包与内存采样。
 - `analysis/`、`docs/`：内存对照实验、数据与审查记录。
 - `dist/`：生成的分发包；`target/` 和 `.build-tools/` 为本机构建缓存，均不提交。
 
-`python3 tools/prepare_assets.py`（需要 Pillow）重新生成裁剪、去重后的动画图集，验证还原画布后的帧像素一致性。BGM 重建：`ffmpeg -i asset-sources/bgm.wav -c:a vorbis -strict -2 -q:a 3 assets/bgm.ogg`。
+`python3 tools/prepare_assets.py`（需要 Pillow）重新生成裁剪、去重后的动画图集，验证还原画布后的帧像素一致性。BGM 重建：`ffmpeg -i assets-source/audio/bgm.wav -c:a vorbis -strict -2 -q:a 3 assets/audio/runtime/bgm.ogg`。
 
 Macroquad 0.4.16 与依赖通过 Cargo.lock 固定；网页 JS 使用匹配的 miniquad 运行时和本项目音频插件，无 CDN。字体 Noto Sans SC 使用 OFL 许可，构建自动裁剪；完整字体仅存本地缓存。
 
-棋盘和格子背景默认用代码绘制，不加载背景图片。绘制使用按纹理分组和512顶点/768索引缓冲；文字使用有限字号与整帧预缓存。内存测量与实际限制见 [内存分析](docs/MEMORY_ANALYSIS.md)、[对照报告](analysis/memory-comparison/REPORT.md)、[字体审查](analysis/memory-comparison/AUDIT.md)。包体积由 `dist/measurements.json` 记录。
+棋盘和格子背景默认用代码绘制，不加载背景图片。绘制使用按纹理分组和512顶点/768索引缓冲；文字使用有限字号与整帧预缓存。内存测量与实际限制见 [内存分析](docs/MEMORY_ANALYSIS.md)、[对照报告](experiments/memory-comparison/REPORT.md)、[字体审查](experiments/memory-comparison/AUDIT.md)。包体积由 `dist/measurements.json` 记录。
 
 原素材美术与音频来源授权仍待核实；构建收集依赖和字体许可。macOS 包尚未签名、公证。
 
@@ -137,7 +138,7 @@ Macroquad 0.4.16 与依赖通过 Cargo.lock 固定；网页 JS 使用匹配的 m
 
 音乐已采用流式原曲：原生CPAL输出、Lewton按包解码、128 KiB固定队列；短音效预解码并与音乐在同一输出中混合。网页音乐使用浏览器媒体播放，音效使用Web Audio。角色选择、暂停、胜负结束暂停音乐；M静音时仍推进播放位置。音频缓冲行为、8-bit试听与优化选项见 [音频调研](docs/AUDIO_OPTIMIZATION.md)。
 
-可试听的流式播放 / 实时合成实验：`python3 tools/prepare_audio_lab.py`，启动网页服务后访问 `/audio-lab/`；原生实验见 [音频实验](analysis/audio-lab/README.md)。
+可试听的流式播放 / 实时合成实验：`python3 tools/prepare_audio_lab.py`，启动网页服务后访问 `/audio-lab/`；原生实验见 [音频实验](experiments/audio-lab/README.md)。
 
 ### 游戏界面与设置
 
@@ -160,6 +161,6 @@ Windows x64 Release 由 `.github/workflows/windows-release.yml` 在 GitHub Windo
 
 在 macOS 本地交叉编译 Windows x64：安装 `mingw-w64`，执行 `rustup target add x86_64-pc-windows-gnu`，用 `CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER=x86_64-w64-mingw32-gcc cargo build --release --locked --bin battleblocks --target x86_64-pc-windows-gnu` 编译，然后使用构建工具的 Python 执行 `tools/package.py --native-only --target x86_64-pc-windows-gnu` 打包为 `dist/windows-x64.zip`。本地 Mac 只能检查产物，实际窗口和音频需要 Windows 验证。
 
-技能默认结束回合；不结束回合的技能明确标注。冷却期间整个技能卡变暗，圆圈显示剩余自己的回合数。技能卡只显示编号、名称、消耗/冷却和「不结束回合」标记；完整说明在悬停技能卡或选中施法时，显示在另一侧栏的说明面板里并按面板宽度换行，避免长说明挤出卡片。牧师可点击口袋选择复生方块。术语及冷却规则见 [技能规则](docs/SKILL-RULES.md)。运行时配置为 `assets/heroes.txt`、`assets/skills.txt` 和 `assets/role-text.txt`。三位新角色动画使用 `production/v3/` 的高密度原图，通过 `tools/prepare_role_assets.py` 导入；三人统一显示尺寸，矮人不缩为一半。
+技能默认结束回合；不结束回合的技能明确标注。冷却期间整个技能卡变暗，圆圈显示剩余自己的回合数。技能卡只显示编号、名称、消耗/冷却和「不结束回合」标记；完整说明在悬停技能卡或选中施法时，显示在另一侧栏的说明面板里并按面板宽度换行，避免长说明挤出卡片。牧师可点击口袋选择复生方块。术语及冷却规则见 [技能规则](docs/SKILL-RULES.md)。运行时配置为 `config/heroes.txt`、`config/skills.txt` 和 `config/role-text.txt`。三位新角色动画使用 `production//` 的高密度原图，通过 `tools/prepare_role_assets.py` 导入；三人统一显示尺寸，矮人不缩为一半。
 
 源码职责与未来角色扩展见 [代码结构](docs/ARCHITECTURE.md)。`main.rs` 只做启动与调度，角色技能、共用结算、战斗操作和绘制分开维护。

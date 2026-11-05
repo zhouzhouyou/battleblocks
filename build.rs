@@ -1,14 +1,14 @@
 use std::{env, path::PathBuf, process::Command};
 fn main() {
     println!("cargo:rerun-if-changed=src");
-    println!("cargo:rerun-if-changed=assets/skills.txt");
-    println!("cargo:rerun-if-changed=assets/ability-loadouts.txt");
+    println!("cargo:rerun-if-changed=config/skills.txt");
+    println!("cargo:rerun-if-changed=config/ability-loadouts.txt");
     println!("cargo:rerun-if-changed=Cargo.lock");
     println!("cargo:rerun-if-changed=tools/balance_fingerprint.py");
-    println!("cargo:rerun-if-changed=assets/heroes.txt");
-    println!("cargo:rerun-if-changed=assets/role-text.txt");
-    println!("cargo:rerun-if-changed=assets/role-lore.txt");
-    println!("cargo:rerun-if-changed=assets/localization.tsv");
+    println!("cargo:rerun-if-changed=config/heroes.txt");
+    println!("cargo:rerun-if-changed=config/role-text.txt");
+    println!("cargo:rerun-if-changed=config/role-lore.txt");
+    println!("cargo:rerun-if-changed=config/localization.tsv");
     println!("cargo:rerun-if-changed=tools/prepare_font.py");
     println!("cargo:rerun-if-changed=.build-tools/NotoSansSC.ttf");
     println!("cargo:rerun-if-changed=.build-tools/python-path.txt");

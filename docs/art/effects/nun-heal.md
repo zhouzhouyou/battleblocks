@@ -1,4 +1,4 @@
-# Nun Healing overlays 
+# Nun Healing overlays
 
 Reference: PixelFX `holy/heal`, pinned at `a84159688af3ca37a4be05a0d422b94451b2e24e` (MIT). Attribution and full license: `licenses/pixelfx/`.
 

@@ -13,15 +13,15 @@ from contextlib import closing
 from wizard_recording_frames import frames, WIDTH, HEIGHT
 
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--directory', type=Path, default=ROOT / 'analysis/issue27-wizard-animation')
+parser.add_argument('--directory', type=Path, default=ROOT / '.local/analysis/issue27-wizard-animation')
 OUT = parser.parse_args().directory.resolve()
 OUT.mkdir(parents=True, exist_ok=True)
-BASELINE = ROOT / 'analysis/issue27-wizard-animation/baseline'
+BASELINE = ROOT / '.local/analysis/issue27-wizard-animation/baseline'
 sys.path.insert(0, str(ROOT / '.build-tools/media-site'))
 import imageio_ffmpeg
 FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
 meta = json.loads((SOURCE / 'report.json').read_text())
-atlas = Image.open(ROOT / 'assets/roles/wizard.webp').convert('RGBA')
+atlas = Image.open(ROOT / 'assets/roles/wizard/runtime/atlas.webp').convert('RGBA')
 
 
 def extract(path, seconds):
@@ -130,7 +130,7 @@ page='''<!doctype html><meta charset="utf-8"><title>老巫师动作验收 · #27
 <p><a href="atlas-contact.webp">觉醒24帧</a> · <a href="idle-seams.webp">待机11→12→1→2及脚线</a> · <a href="normal-menu-comparison.webp">普通同尺寸前后对比</a> · <a href="awake-menu-comparison.webp">觉醒同尺寸前后对比</a></p>
 <h2>实战录像 · 真实游戏窗口</h2><p>固定棋盘通过原生控制台载入；施法、觉醒、清除和回滚均运行原游戏 Session。原始事件与录像同目录。录制目标60fps、1280×900设备像素，源视频为可变帧率；同步按统一60Hz采样。</p>
 VIDEOS
-<script>const meta=METADATA;const img=new Image();img.src='../../assets/roles/wizard.webp';const select=document.querySelector('#clip'),canvas=document.querySelector('#view'),ctx=canvas.getContext('2d');for(const name of Object.keys(meta.clips)){select.add(new Option(name,name))}let elapsed=0,last=performance.now(),playing=true;
+<script>const meta=METADATA;const img=new Image();img.src='../../assets/roles/wizard/runtime/atlas.webp';const select=document.querySelector('#clip'),canvas=document.querySelector('#view'),ctx=canvas.getContext('2d');for(const name of Object.keys(meta.clips)){select.add(new Option(name,name))}let elapsed=0,last=performance.now(),playing=true;
 document.querySelector('#replay').onclick=()=>{elapsed=0;playing=true};document.querySelector('#pause').onclick=()=>playing=!playing;select.onchange=()=>elapsed=0;document.querySelector('#seek').oninput=e=>{elapsed=+e.target.value;playing=false};
 function sample(clip,t){if(clip.playback==='loop')t%=clip.duration_ms;for(let i=0;i<12;i++){if(t<clip.durations_ms[i])return clip.indices[i];t-=clip.durations_ms[i]}return clip.indices[11]}
 function draw(now){if(playing)elapsed+=now-last;last=now;const name=select.value,awake=name.startsWith('awake');let clip=meta.clips[name],t=elapsed;const hit=+document.querySelector('#hit').value*1000;if(name.endsWith('cast')){t=elapsed<hit?Math.min(elapsed,833.333):900+elapsed-hit;if(t>=1400){clip=meta.clips[awake?'awake-idle':'normal-idle'];t-=1400}}const index=sample(clip,t);ctx.fillStyle='#191d28';ctx.fillRect(0,0,420,430);ctx.imageSmoothingEnabled=false;const mode=document.querySelector('#slot').value;let scale=mode==='source'?1:mode==='battle'?Math.min(208/84,184/83,3)/4:Math.min(230/84,(awake?140:190)/83,3)/4;let foot=mode==='source'?386:340;ctx.drawImage(img,index%6*384,Math.floor(index/6)*384,384,384,210-192*scale,foot-336*scale,384*scale,384*scale);ctx.strokeStyle='#70a89b';ctx.beginPath();ctx.moveTo(0,foot);ctx.lineTo(420,foot);ctx.stroke();document.querySelector('#readout').textContent=(elapsed/1000).toFixed(3)+'s / atlas '+index+' / pose '+(index%12+1);document.querySelector('#seek').value=Math.min(4000,elapsed);requestAnimationFrame(draw)}img.onload=()=>requestAnimationFrame(draw);</script>'''
@@ -138,6 +138,6 @@ videos=''
 for scene in ('normal-menu','awake-menu','normal-lightning','normal-meteor','awake-lightning','awake-meteor','awake-delayed-meteor','awake-terminal-meteor','awake-rollback'):
     videos+=f'<h3>{scene}</h3><video controls preload="metadata" src="current/{scene}.mp4"></video><p><a href="current/{scene}.jsonl">事件日志</a></p>'
 import os
-atlas_url = os.path.relpath(ROOT/'assets/roles/wizard.webp', OUT).replace('\\','/')
-(OUT/'index.html').write_text(page.replace('../../assets/roles/wizard.webp',atlas_url).replace('METADATA',json.dumps(meta)).replace('VIDEOS',videos),encoding='utf-8')
+atlas_url = os.path.relpath(ROOT/'assets/roles/wizard/runtime/atlas.webp', OUT).replace('\\','/')
+(OUT/'index.html').write_text(page.replace('../../assets/roles/wizard/runtime/atlas.webp',atlas_url).replace('METADATA',json.dumps(meta)).replace('VIDEOS',videos),encoding='utf-8')
 print(f'Review evidence: {OUT}')

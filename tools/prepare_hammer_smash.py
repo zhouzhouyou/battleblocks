@@ -12,7 +12,9 @@ import tempfile
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / 'asset-sources/effects/hammer-smash/v1'
+SOURCE = ROOT / 'assets-source/effects/hammer-smash'
+PREVIEWS=ROOT/'.local/previews/hammer_smash'
+PREVIEWS.mkdir(parents=True,exist_ok=True)
 WIDTH, HEIGHT, COUNT, COLUMNS, FPS = 192, 128, 28, 7, 30
 
 with tempfile.TemporaryDirectory(prefix='battleblocks-hammer-') as directory:
@@ -43,7 +45,7 @@ for frame in frames:
 
 # Review on our actual board textures at 1 logical pixel per image pixel.
 board = Image.new('RGBA', (512,512), '#252633')
-tiles = [Image.open(ROOT/'assets'/name).convert('RGBA').resize((64,64),Image.Resampling.NEAREST)
+tiles = [Image.open(ROOT/'assets/ui'/name).convert('RGBA').resize((64,64),Image.Resampling.NEAREST)
          for name in ['balanced.webp','hp.webp','damage.webp','mp.webp','hd.webp','hm.webp','dm.webp']]
 for y in range(8):
     for x in range(8):
@@ -74,7 +76,7 @@ for i, frame in enumerate(frames):
                         canvas.alpha_composite(piece,(round(px+vx*age),round(py+vy*age+500*age*age)))
     canvas.alpha_composite(frame,(256-96,256-88))
     review.append(canvas.convert('RGB'))
-review[0].save(SOURCE/'board-preview.webp',save_all=True,append_images=review[1:],
+review[0].save(PREVIEWS/'board-preview.webp',save_all=True,append_images=review[1:],
                duration=[33,33,34]*(COUNT//3)+[33]*(COUNT%3),loop=0,lossless=True,method=6)
 contact=Image.new('RGB',(4*256,3*220),'#161820')
 draw=ImageDraw.Draw(contact)
@@ -82,5 +84,5 @@ for j,i in enumerate([5,8,10,11,12,13,14,15,17,20,24,27]):
     crop=review[i].crop((128,144,384,336))
     contact.paste(crop,((j%4)*256,(j//4)*220+20))
     draw.text(((j%4)*256+6,(j//4)*220+4),f'{i/FPS:.2f}s',fill='#E2D4BC')
-contact.save(SOURCE/'contact.webp',lossless=True,method=6)
+contact.save(PREVIEWS/'contact.webp',lossless=True,method=6)
 print(f'{out.relative_to(ROOT)}: {out.stat().st_size} bytes, {COUNT} frames, lossless round-trip and empty borders verified')

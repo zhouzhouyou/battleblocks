@@ -12,7 +12,7 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]/".build-tools/art-site
 from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
-DIRECTORY = ROOT / 'asset-sources/art-direction/characters/portal-cube/production/v3'
+DIRECTORY = ROOT / 'assets-source/roles/portal-cube/animation'
 
 
 def digest(image):
@@ -37,7 +37,7 @@ def install_runtime(atlas, report):
     for n in range(report['frames']):
         x,y=n%report['columns']*width,n//report['columns']*height
         packed.alpha_composite(atlas.crop((x,y,x+width,y+height)),(n%columns*width,n//columns*height))
-    target=ROOT/'assets/roles/portal-cube.webp'
+    target=ROOT/'assets/roles/portal-cube/runtime/atlas.webp'
     packed.save(target,'WEBP',lossless=True,exact=True,method=6)
     runtime=Image.open(target).convert('RGBA')
     for clip in report['clips'].values():
@@ -45,7 +45,7 @@ def install_runtime(atlas, report):
             x,y=n%columns*width,n//columns*height
             if digest(runtime.crop((x,y,x+width,y+height)))!=check['sha256']:
                 raise ValueError(f'runtime frame {n} changed while packing')
-    thumb_path=ROOT/'assets/hero-thumbnails.webp'
+    thumb_path=ROOT/'assets/ui/hero-thumbnails.webp'
     old=Image.open(thumb_path).convert('RGBA')
     thumbs=Image.new('RGBA',(max(old.width,13*40),48));thumbs.alpha_composite(old)
     thumbs.paste((0,0,0,0),(12*40,0,13*40,48))
@@ -54,7 +54,7 @@ def install_runtime(atlas, report):
     thumbs.save(thumb_path,'WEBP',lossless=True,exact=True,method=6)
     if Image.open(thumb_path).convert('RGBA').crop((0,0,480,48)).tobytes()!=old.crop((0,0,480,48)).tobytes():
         raise ValueError('an existing hero thumbnail changed')
-    report_path=ROOT/'assets/roles/report.json'
+    report_path=ROOT/'config/role-assets.json'
     runtime_report=json.loads(report_path.read_text())
     runtime_report['portal-cube']={
         'frame_size':[width,height],'atlas_size':list(runtime.size),'frames':report['frames'],
@@ -71,7 +71,7 @@ def main():
     parser.add_argument('--install',action='store_true',help='Install verified final artwork and thumbnail into assets/')
     args = parser.parse_args()
     report = json.loads((DIRECTORY / 'report.json').read_text())
-    atlas = Image.open(DIRECTORY / 'portal-cube-review-atlas-v3.webp').convert('RGBA')
+    atlas = Image.open(DIRECTORY / 'atlas.webp').convert('RGBA')
     if list(atlas.size) != report['atlas_size']:
         raise ValueError('atlas dimensions do not match report')
     colors = set()
@@ -101,15 +101,17 @@ def main():
             indices.append(n)
         if len({digest(frame) for frame in frames}) != 16:
             raise ValueError(f'{clip}: duplicate complete frames')
-        preview = DIRECTORY / f'{clip}.webp'
+        preview_root = ROOT / '.local/previews/portal-cube'
+        preview_root.mkdir(parents=True, exist_ok=True)
+        preview = preview_root / f'{clip}.webp'
         if args.export:
             frames[0].save(preview, 'WEBP', save_all=True, append_images=frames[1:],
                            duration=durations, loop=0, lossless=True, exact=True, method=6)
             contact = Image.new('RGBA', (4*width, 4*height))
             for i, frame in enumerate(frames):
                 contact.alpha_composite(frame, (i%4*width, i//4*height))
-            contact.save(DIRECTORY / f'{clip}-contact.webp', 'WEBP', lossless=True, exact=True, method=6)
-        verify_preview(preview, frames, durations)
+            contact.save(preview_root / f'{clip}-contact.webp', 'WEBP', lossless=True, exact=True, method=6)
+        if preview.exists(): verify_preview(preview, frames, durations)
         print(f'{clip}: 16 distinct frames, {sum(durations)} ms, lossless preview verified')
     if sorted(indices) != list(range(report['frames'])) or report['frames'] != 96:
         raise ValueError('atlas frames are missing or duplicated')

@@ -27,7 +27,7 @@ def licenses_for(target,out):
                 target_file=dest/file.relative_to(directory);target_file.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(file,target_file)
         manifest.append({'name':package['name'],'version':package['version'],'license':package.get('license')})
     (out/'DEPENDENCIES.json').write_text(json.dumps(manifest,indent=2))
-    shutil.copy2(ROOT/'assets/FONT-LICENSE.txt',out/'FONT-LICENSE.txt')
+    shutil.copy2(ROOT/'licenses/FONT-LICENSE.txt',out/'FONT-LICENSE.txt')
     shutil.copytree(ROOT/'licenses/pixelfx',out/'pixelfx')
     (out/'ASSETS.txt').write_text('Legacy artwork/audio originate from the original BattleBlocks repository. Original third-party redistribution rights have not been independently verified.\nHammer-smash, landing, Ember Blast, sleep, lightning, meteor and nun healing effects reference/adapt PixelFX (Patch / Hugo Duprez), MIT; see pixelfx/. No PixelFX fonts or stock characters are included.\n')
 def zip_directory(name,directory):
@@ -41,7 +41,7 @@ if not args.native_only:
     registry=next((Path.home()/'.cargo/registry/src').glob('*/miniquad-0.4.11'))
     (web/'mq_js_bundle.js').write_bytes((registry/'js/gl.js').read_bytes()+b'\n'+(ROOT/'src/audio/web.js').read_bytes())
     shutil.copy2(ROOT/'target/wasm32-unknown-unknown/release/battleblocks.wasm',web/'battleblocks.wasm')
-    for file in ['bgm.ogg','crush.wav']:shutil.copy2(ROOT/'assets'/file,web/file)
+    for file in ['bgm.ogg','crush.wav']:shutil.copy2(ROOT/'assets/audio/runtime'/file,web/file)
     (web/'index.html').write_text('''<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BattleBlocks</title><style>html,body{margin:0;background:#191b26;width:100%;height:100%;overflow:hidden}canvas{width:100%;height:100%;display:block}</style></head><body><canvas id="glcanvas" tabindex="1"></canvas><script src="mq_js_bundle.js"></script><script>load('battleblocks.wasm');</script></body></html>''')
     page=web/'index.html'
     page.write_text(page.read_text().replace('src="mq_js_bundle.js"','src="mq_js_bundle.js?v='+hashlib.sha256((web/'mq_js_bundle.js').read_bytes()).hexdigest()[:12]+'"').replace("load('battleblocks.wasm')","load('battleblocks.wasm?v="+hashlib.sha256((web/'battleblocks.wasm').read_bytes()).hexdigest()[:12]+"')"))
