@@ -1,4 +1,60 @@
 use super::*;
+
+/// A compact artificial horizon. The brown half always faces the settling side,
+/// the white horizon line is perpendicular to gravity and the square board glyph
+/// stays upright, so the dial reads like an aircraft attitude indicator.
+fn draw_gravity_instrument(
+    center: Vec2,
+    radius: f32,
+    gravity: board::Gravity,
+    active: bool,
+    accent: Color,
+) {
+    let sky = if active {
+        Color::from_rgba(36, 70, 112, 255)
+    } else {
+        Color::from_rgba(40, 55, 74, 255)
+    };
+    let ground = if active {
+        Color::from_rgba(126, 86, 54, 255)
+    } else {
+        Color::from_rgba(96, 76, 58, 255)
+    };
+    draw_circle(center.x, center.y, radius, sky);
+    let (dx, dy) = gravity.vector();
+    let direction = (dy as f32).atan2(dx as f32);
+    let steps = 24;
+    for i in 0..steps {
+        let a0 = direction - std::f32::consts::FRAC_PI_2
+            + std::f32::consts::PI * i as f32 / steps as f32;
+        let a1 = direction - std::f32::consts::FRAC_PI_2
+            + std::f32::consts::PI * (i + 1) as f32 / steps as f32;
+        draw_triangle(
+            center,
+            center + vec2(a0.cos(), a0.sin()) * radius,
+            center + vec2(a1.cos(), a1.sin()) * radius,
+            ground,
+        );
+    }
+    let normal = vec2(-(dy as f32), dx as f32);
+    draw_line(
+        center.x - normal.x * radius,
+        center.y - normal.y * radius,
+        center.x + normal.x * radius,
+        center.y + normal.y * radius,
+        1.,
+        WHITE,
+    );
+    draw_circle_lines(
+        center.x,
+        center.y,
+        radius + 1.,
+        1.,
+        Color::from_rgba(14, 17, 24, 255),
+    );
+    draw_circle_lines(center.x, center.y, radius, 1.5, accent);
+    outline(center.x - 2.5, center.y - 2.5, 5., 5., 1., WHITE);
+}
 impl Session {
     fn draw_board_mechanics(&self, frame: &Frame) {
         let draw_edge = |edge: board::PortalEdge, color: Color| {
@@ -104,6 +160,8 @@ impl Session {
     }
     /// Always keep the current fall direction on screen. A temporary shift gets
     /// the caster's accent, an expiry note and a gold frame while it is cast.
+    /// The dial is an artificial-horizon style instrument: the brown ground half
+    /// points at where tiles settle while the board glyph stays upright.
     fn draw_gravity_status(&self) {
         let gravity = self.board_mechanics.gravity();
         let active = self.board_mechanics.gravity_effect;
@@ -113,7 +171,7 @@ impl Session {
             Some(_) => SKYBLUE,
             None => GRAY,
         };
-        let (x, y, w, h) = (256., 86., 512., 22.);
+        let (x, y, w, h) = (256., 85., 512., 24.);
         draw_rectangle(x, y, w, h, Color::from_rgba(20, 27, 38, 245));
         outline(
             x,
@@ -129,16 +187,11 @@ impl Session {
                 Color::new(0.3, 0.33, 0.4, 1.)
             },
         );
-        let d = vec2(gravity.vector().0 as f32, gravity.vector().1 as f32);
-        let center = vec2(x + 15., y + h / 2.);
-        let tail = center - d * 6.;
-        let tip = center + d * 6.;
-        draw_line(tail.x, tail.y, tip.x, tip.y, 2., accent);
-        let normal = vec2(-d.y, d.x);
-        draw_triangle(
-            tip,
-            tip - d * 5. + normal * 4.,
-            tip - d * 5. - normal * 4.,
+        draw_gravity_instrument(
+            vec2(x + 19., y + h / 2.),
+            11.,
+            gravity,
+            active.is_some(),
             accent,
         );
         let name = match gravity {
@@ -150,8 +203,8 @@ impl Session {
         let title = format_text(self.zh, "ui.gravity.label", &[name]);
         label(
             &title,
-            x + 28.,
-            y + 16.,
+            x + 37.,
+            y + 17.,
             15.,
             if active.is_some() { accent } else { WHITE },
         );
@@ -169,9 +222,9 @@ impl Session {
         };
         label(
             state,
-            x + w - 10. - label_width(state, 14.),
+            x + w - 10. - label_width(state, 13.),
             y + 16.,
-            14.,
+            13.,
             if active.is_some() { accent } else { GRAY },
         );
     }
