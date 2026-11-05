@@ -141,6 +141,9 @@ def registry():
         frame.thumbnail((40, 48), Image.Resampling.NEAREST)
         thumbs.alpha_composite(frame.convert("RGBA"), (i * 40 + (40 - frame.width) // 2, 48 - frame.height))
     for name in ("knight", "elf", "wizard", "goblin", "imp", "chort", "zombie"):
+        if name == 'wizard':
+            awakened.append(f'    SpriteAsset {{ bytes: include_bytes!("../../assets/roles/wizard.webp"), w: 384., h: 384., durations: &[0.06; 12], indices: &{list(range(12))}, cast: Some(WIZARD_AWAKE_CAST), sleep: None, anchor: Some([192., 336.]) }},')
+            continue
         path = ROOT / f"assets/awakened/{name}-awakening.webp"
         w, h = Image.open(path).size
         awakened.append(f'    SpriteAsset {{ bytes: include_bytes!("../../assets/awakened/{name}-awakening.webp"), w: {w}., h: {h}., durations: &[1.], indices: &[0], cast: None, sleep: None, anchor: None }},')
@@ -161,6 +164,12 @@ def registry():
         report[role]["detail_report"] = (source_dir(role) / "report.json").relative_to(ROOT).as_posix()
         report[role]["clips"] = {name: {key: clip[key] for key in ("indices", "duration_ms", "playback")}
                                 for name, clip in details["clips"].items()}
+    from prepare_wizard_assets import SOURCE
+    details = json.loads((SOURCE / 'report.json').read_text())
+    report['wizard'] = {key: details[key] for key in ('frame_size', 'atlas_size', 'frames', 'foot_anchor', 'webp_bytes')}
+    report['wizard']['detail_report'] = (SOURCE / 'report.json').relative_to(ROOT).as_posix()
+    report['wizard']['clips'] = {name: {key: clip[key] for key in ('indices', 'duration_ms', 'playback')}
+                               for name, clip in details['clips'].items()}
     report_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     dest = ROOT / "src/sprites/registry.rs"
     dest.parent.mkdir(exist_ok=True)
@@ -170,12 +179,16 @@ def registry():
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--role", choices=ROLES, help="Import one role without rebuilding the shared registry")
+    parser.add_argument("--role", choices=(*ROLES, 'wizard'), help="Import one role without rebuilding the shared registry")
     parser.add_argument("--registry-only", action="store_true")
     args = parser.parse_args()
     if not args.registry_only:
+        if not args.role or args.role == 'wizard':
+            from prepare_wizard_assets import import_wizard
+            import_wizard()
         for role in ([args.role] if args.role else ROLES):
-            import_role(role)
+            if role != 'wizard':
+                import_role(role)
     if not args.role:
         registry()
 

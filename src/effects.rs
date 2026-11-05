@@ -22,6 +22,7 @@ pub struct Textures {
     cast_tiles: Vec<(usize, usize, u8)>,
     jumps: [Option<f64>; 2],
     sleep_clocks: [crate::sprites::SleepClock; 2],
+    idle_clocks: [crate::sprites::IdleClock; 2],
     wizard: wizard_spells::Effects,
     heal: nun_heal::Effects,
 }
@@ -42,6 +43,7 @@ impl Textures {
             blast: None,
             jumps: [None; 2],
             sleep_clocks: Default::default(),
+            idle_clocks: Default::default(),
             wizard: wizard_spells::Effects::load(),
             heal: nun_heal::Effects::load(),
         }
@@ -72,6 +74,7 @@ impl Textures {
         self.cast_tiles.clear();
         self.jumps = [None; 2];
         self.sleep_clocks = Default::default();
+        self.idle_clocks = Default::default();
         self.blast = None;
         self.wizard.clear();
         self.heal.clear();
@@ -84,6 +87,12 @@ impl Textures {
     }
     pub fn sleep_elapsed(&mut self, enemy: bool, sleeping: bool) -> f64 {
         self.sleep_clocks[enemy as usize].elapsed(sleeping, get_time())
+    }
+    pub fn actor_moment(&self, enemy: bool, over: bool) -> Option<crate::sprites::CastMoment> {
+        self.wizard.actor_moment(enemy, over)
+    }
+    pub fn idle_elapsed(&mut self, enemy: bool, casting: bool, awake: bool) -> f64 {
+        self.idle_clocks[enemy as usize].elapsed(casting, awake, get_time())
     }
     pub fn draw_heal(&self, foot: Vec2, front: bool, enemy: bool) {
         self.heal.draw(foot, front, enemy);

@@ -14,6 +14,20 @@ struct Cast {
     cells: Vec<(usize, usize)>,
     tiles: Vec<(usize, usize, u8)>,
     clock: ImpactClock,
+    actor_active: bool,
+}
+impl Cast {
+    fn actor_moment(
+        &self,
+        enemy: bool,
+        over: bool,
+        now: f64,
+    ) -> Option<crate::sprites::CastMoment> {
+        (self.actor_active && self.enemy == enemy).then(|| crate::sprites::CastMoment {
+            elapsed: self.clock.elapsed_at(now, over, timing::IMPACT) as f64,
+            impact: timing::IMPACT as f64,
+        })
+    }
 }
 fn frame(skill: Skill, elapsed: f32) -> Option<Rect> {
     if !matches!(skill, Skill::Lightning | Skill::Meteor) {
@@ -54,6 +68,10 @@ impl Effects {
         original: &[(usize, usize, u8)],
     ) {
         if !matches!(skill, Skill::Lightning | Skill::Meteor) {
+            if let Some(cast) = self.cast.as_mut().filter(|cast| cast.enemy == enemy) {
+                // Keep the board aftermath, but a newer action owns this actor.
+                cast.actor_active = false;
+            }
             return;
         }
         self.cast = Some(Cast {
@@ -62,7 +80,11 @@ impl Effects {
             cells: cells.to_vec(),
             tiles: original.to_vec(),
             clock: ImpactClock::new(get_time()),
+            actor_active: true,
         });
+    }
+    pub fn actor_moment(&self, enemy: bool, over: bool) -> Option<crate::sprites::CastMoment> {
+        self.cast.as_ref()?.actor_moment(enemy, over, get_time())
     }
     pub fn clear(&mut self) {
         self.cast = None;
@@ -158,6 +180,46 @@ impl Effects {
 mod tests {
     use super::*;
     use image::GenericImageView;
+    #[test]
+    fn actor_waits_with_both_spells_and_recovers_from_the_actual_clear() {
+        for skill in [Skill::Lightning, Skill::Meteor] {
+            let mut cast = Cast {
+                skill,
+                enemy: false,
+                cells: vec![],
+                tiles: vec![],
+                clock: ImpactClock::new(10.),
+                actor_active: true,
+            };
+            let clip = crate::sprites::WIZARD_AWAKE_CAST;
+            let frame = |cast: &Cast, now, over| {
+                clip.frame(clip.aligned_time(cast.actor_moment(false, over, now).unwrap()))
+            };
+            assert_eq!(frame(&cast, 10., false), 12);
+            assert_eq!(frame(&cast, 10.35, false), 16);
+            assert_eq!(frame(&cast, 12., false), 18); // beyond the old 1.4s lifetime
+            assert!(cast.actor_moment(true, false, 12.).is_none());
+            cast.clock.cleared(12.);
+            assert_eq!(frame(&cast, 12., false), 19);
+            assert_eq!(frame(&cast, 12.45, false), 23);
+            assert!(
+                clip.aligned_time(cast.actor_moment(false, false, 12.51).unwrap())
+                    > clip.duration()
+            );
+            cast.actor_active = false;
+            assert!(cast.actor_moment(false, false, 12.6).is_none());
+            let terminal = Cast {
+                clock: ImpactClock::new(20.),
+                actor_active: true,
+                ..cast
+            };
+            assert_eq!(frame(&terminal, 20.95, true), 19); // no clear after victory
+            assert!(
+                clip.aligned_time(terminal.actor_moment(false, true, 22.).unwrap())
+                    > clip.duration()
+            );
+        }
+    }
     #[test]
     fn wave_clears_inner_tiles_before_outer_tiles_and_waits_before_falling() {
         assert!(timing::arrival(true, 3, 3) < timing::arrival(true, 0, 3));
