@@ -133,16 +133,7 @@ def registry():
     legacy = json.loads((ROOT / "assets/report.json").read_text())
     normal, awakened = [], []
     thumbs = Image.new("RGBA", (480, 48))
-    def wizard_entry(awake):
-        idle = list(range(12, 24)) if awake else list(range(12))
-        cast = 'WIZARD_AWAKE_CAST' if awake else 'WIZARD_CAST'
-        return f'    SpriteAsset {{ bytes: include_bytes!("../../assets/roles/wizard.webp"), w: 384., h: 384., durations: &[0.06; 12], indices: &{idle}, cast: Some({cast}), sleep: None, anchor: Some([192., 336.]) }},'
     for i, name in enumerate(("knight", "elf", "wizzard", "goblin", "imp", "chort", "big_zombie")):
-        if name == 'wizzard':
-            normal.append(wizard_entry(False))
-            frame = Image.open(ROOT / 'assets/roles/wizard.webp').crop((0, 0, FRAME, FRAME)).resize((48, 48), Image.Resampling.NEAREST)
-            thumbs.alpha_composite(frame.convert('RGBA'), (i * 40 - 4, 0))
-            continue
         meta = legacy[name]
         w, h = meta["frame_size"]
         normal.append(f'    SpriteAsset {{ bytes: include_bytes!("../../assets/{name}.webp"), w: {w}., h: {h}., durations: &{meta["durations"]}, indices: &{meta["indices"]}, cast: None, sleep: None, anchor: None }},')
@@ -151,7 +142,7 @@ def registry():
         thumbs.alpha_composite(frame.convert("RGBA"), (i * 40 + (40 - frame.width) // 2, 48 - frame.height))
     for name in ("knight", "elf", "wizard", "goblin", "imp", "chort", "zombie"):
         if name == 'wizard':
-            awakened.append(wizard_entry(True))
+            awakened.append(f'    SpriteAsset {{ bytes: include_bytes!("../../assets/roles/wizard.webp"), w: 384., h: 384., durations: &[0.06; 12], indices: &{list(range(12))}, cast: Some(WIZARD_AWAKE_CAST), sleep: None, anchor: Some([192., 336.]) }},')
             continue
         path = ROOT / f"assets/awakened/{name}-awakening.webp"
         w, h = Image.open(path).size
