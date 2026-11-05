@@ -20,7 +20,10 @@ BASELINE = ROOT / '.local/analysis/issue27-wizard-animation/baseline'
 sys.path.insert(0, str(ROOT / '.build-tools/media-site'))
 import imageio_ffmpeg
 FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
-meta = json.loads((SOURCE / 'report.json').read_text())
+from asset_paths import report_path
+from prepare_wizard_assets import import_wizard
+if not report_path('wizard').exists(): import_wizard()
+meta = json.loads(report_path('wizard').read_text())
 atlas = Image.open(ROOT / 'assets/roles/wizard/runtime/atlas.webp').convert('RGBA')
 
 

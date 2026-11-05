@@ -7,6 +7,7 @@ from pathlib import Path
 
 from prepare_character_animations import Image, ROOT, ROLES, source_dir
 from PIL import ImageDraw
+from asset_paths import report_path
 
 
 def frame(atlas, index, columns):
@@ -55,7 +56,7 @@ def main():
                 image = frame(atlas, 24 + clip * 12 + col, 6).resize((128, 128), Image.Resampling.NEAREST)
                 contact.paste(image, (col * 130, row * 280 + clip * 130 + 20), image)
     contact.save(out / "cast-contact.webp", "WEBP", lossless=True, method=6)
-    meta = {role: json.loads((source_dir(role) / "report.json").read_text()) for role in ROLES}
+    meta = {role: json.loads(report_path(role).read_text()) for role in ROLES}
     page = r'''<!doctype html><meta charset="utf-8"><title>Issue 11 · 动作评审</title>
 <style>body{background:#20232d;color:#eee;font:16px system-ui;margin:32px}button,select,input{font:inherit;margin:8px}canvas{display:block;max-width:100%;image-rendering:pixelated}small{color:#b5b9c5}</style>
 <h1>新五人 · 12 帧动作</h1><p>待机循环；施法／入睡播放一次后停留。拖动时间条可逐帧检查。</p>

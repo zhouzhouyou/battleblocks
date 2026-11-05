@@ -4,6 +4,7 @@ import hashlib
 import json
 import re
 import subprocess
+from repository_policy import output_violation
 
 ROOT = Path(__file__).resolve().parents[1]
 MEDIA = {'.webp', '.png', '.jpg', '.jpeg', '.gif', '.mp4', '.mov', '.wav', '.ogg', '.ttf', '.woff', '.woff2', '.zip', '.gz', '.pdf'}
@@ -12,6 +13,7 @@ MEDIA = {'.webp', '.png', '.jpg', '.jpeg', '.gif', '.mp4', '.mov', '.wav', '.ogg
 def check():
     paths = subprocess.check_output(['git', 'ls-files', '-z'], cwd=ROOT).decode().split('\0')[:-1]
     approved = json.loads((ROOT / 'config/asset-manifest.json').read_text())
+    inputs = json.loads((ROOT / 'config/repository-inputs.json').read_text())
     errors = []
     for entry in ['README.md', 'AGENTS.md']:
         if 'docs/LAYOUT.md' not in (ROOT / entry).read_text():
@@ -21,6 +23,9 @@ def check():
     actual = set()
     for name in paths:
         path = Path(name)
+        reason = output_violation(name, inputs)
+        if reason:
+            errors.append(f'Forbidden generated/one-off file: {name}: {reason}')
         if name.startswith(('asset-sources/', 'assets/awakened/', '.local/')) or 'references' in path.parts:
             errors.append(f'Forbidden location: {name}')
         if name.startswith('assets/') and (len(path.parts) < 3 or path.parts[1] not in {'roles', 'effects', 'environment', 'ui', 'audio'}):
@@ -38,6 +43,7 @@ def check():
         if name.startswith('docs/') and path.suffix == '.md' and (ROOT / name).exists():
             if re.search(r'(?i)(?<![a-z])v\d+', name + '\n' + (ROOT / name).read_text()):
                 errors.append(f'Iteration identifier in documentation: {name}')
+    errors.extend(f'Missing declared reproduction input: {name}' for name in sorted(set(inputs) - set(paths)))
     errors.extend(f'Missing tracked binary: {name}' for name in sorted(set(approved) - actual))
     if errors:
         raise SystemExit('\n'.join(errors))
@@ -50,6 +56,7 @@ def check_history():
     for name in approved:
         contents = (ROOT / name).read_bytes()
         ids[name] = hashlib.sha1(b'blob ' + str(len(contents)).encode() + b'\0' + contents).hexdigest()
+    inputs = json.loads((ROOT / 'config/repository-inputs.json').read_text())
     commits = subprocess.check_output(['git', 'rev-list', 'HEAD'], cwd=ROOT, text=True).splitlines()
     seen = set()
     for commit in commits:
@@ -60,6 +67,9 @@ def check_history():
             metadata, name = entry.split(b'\t', 1)
             name = name.decode()
             oid = metadata.split()[2].decode()
+            reason = output_violation(name, inputs)
+            if reason:
+                raise SystemExit(f'Forbidden generated/one-off history: {commit} {name}: {reason}')
             if name.startswith(('asset-sources/', 'assets/awakened/', '.local/')) or '/references/' in name or name == 'docs/art/ART-DIRECTION-F-ARCHIVE.md':
                 raise SystemExit(f'Forbidden path in history: {commit} {name}')
             if Path(name).suffix.lower() in MEDIA:

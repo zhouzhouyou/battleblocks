@@ -70,7 +70,7 @@
 
 同一套参数在旧的十人名单（含小恶魔、哥布林等将移除角色）为标准 47.8% / 进阶 47.7%，仅作兼容参考，不把旧角色配对当作调参目标。计数 1 的新五人为标准 49.5% / 进阶 43.8%；计数 2 更接近 50 且炎爆更早，因此最终采用 2。
 
-原始输出：[新五人标准](../../../analysis/fire-elf-new-roster-2-standard.csv)、[新五人进阶](../../../analysis/fire-elf-new-roster-2-advanced.csv)、[旧十人标准 A](../../../analysis/fire-elf-mana-affinity-2-standard-a.csv)、[旧十人进阶](../../../analysis/fire-elf-mana-affinity-2-advanced.csv)。复现：
+原始输出：新五人标准、新五人进阶、旧十人标准 A、旧十人进阶。复现：
 
 ```sh
 cargo run --release -- --headless --autoplay --samples 24 --seed 940000 --level 1 \

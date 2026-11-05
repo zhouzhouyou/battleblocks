@@ -25,4 +25,4 @@ for repeat in range(2):
             finally:
                 p.terminate();p.wait(timeout=10)
 result = dict(binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(), scenario='Release, knight + demon, fixed window, BGM playing, small buffers and grouped draws; no_actors removes sprites without replacing them.', rows=rows)
-(ROOT/'analysis/asset-rendering-current.json').write_text(json.dumps(result,indent=2))
+(OUT/'summary.json').write_text(json.dumps(result,indent=2))

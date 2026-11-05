@@ -9,8 +9,8 @@
 ```sh
 python tools/evaluate_balance.py --budget 400 --seed 1200000 --level 1
 python tools/evaluate_balance.py --budget 800 --seed 1200000 --level 1
-python tools/evaluate_balance.py --budget 400 --seed 1200000 --level 2 --out analysis/evaluation-advanced
-python tools/evaluate_balance.py --roster all --budget 800 --out analysis/evaluation-all
+python tools/evaluate_balance.py --budget 400 --seed 1200000 --level 2 --out .local/analysis/evaluation-advanced
+python tools/evaluate_balance.py --roster all --budget 800 --out .local/analysis/evaluation-all
 ```
 
 默认新五人 `8,7,9,10,11`，支持任意至少两个不同角色。对手等权、双方先手等权；标准与进阶数据隔离。`--budget` 是当前条件下的**累计对局上限，包含缓存命中**，必须是正偶数；一个采样单元是同种子交换双方位置的两局。首次执行最多新跑 budget 局，再次使用相同预算不追加模拟，增大预算才追加。缓存已有对局超过预算时拒绝运行，不悄悄筛选历史结果。
@@ -62,9 +62,9 @@ python tools/evaluate_balance.py --roster all --budget 800 --out analysis/evalua
 先采集同一程序版本、同一难度下的两个独立种子全集，再做预算重放：
 
 ```sh
-python tools/evaluate_balance.py --sampler uniform --budget 1280 --seed 121001 --out analysis/evaluation-runs/train
-python tools/evaluate_balance.py --sampler uniform --budget 2560 --seed 122001 --out analysis/evaluation-runs/reference
-python tools/benchmark_balance.py --training analysis/evaluation-runs/train --reference analysis/evaluation-runs/reference --budgets 100,200,400,800 --repetitions 12 --out analysis/evaluation-benchmark.json
+python tools/evaluate_balance.py --sampler uniform --budget 1280 --seed 121001 --out .local/analysis/evaluation-runs/train
+python tools/evaluate_balance.py --sampler uniform --budget 2560 --seed 122001 --out .local/analysis/evaluation-runs/reference
+python tools/benchmark_balance.py --training analysis/evaluation-runs/train --reference analysis/evaluation-runs/reference --budgets 100,200,400,800 --repetitions 12 --out .local/analysis/evaluation-benchmark.json
 ```
 
 基准保留三个明确不同的比较列：`uniform_raw_empirical_rmse` 是原有均匀采样＋原始配对得分率；`uniform_rmse` 是均匀采样＋新收缩估计；`adaptive_rmse` 是自适应采样＋新收缩估计。第一列与第三列比较整个系统的收益；第二列与第三列使用**相同估计器、训练池与总预算**，才隔离采样策略的贡献。不能把收缩估计带来的优势归功于自适应采样。

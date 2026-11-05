@@ -3,3 +3,10 @@ LEGACY_ROLES = {'knight': 'knight-legacy', 'elf': 'elf-legacy', 'wizzard': 'wiza
 
 def legacy_role(name):
     return LEGACY_ROLES[name]
+
+from pathlib import Path
+ROOT = Path(__file__).resolve().parents[1]
+def report_path(role):
+    directory = ROOT / '.local/production' / role
+    directory.mkdir(parents=True, exist_ok=True)
+    return directory / 'report.json'
