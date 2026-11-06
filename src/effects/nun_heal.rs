@@ -76,25 +76,16 @@ impl Effects {
             }
             let i = (age * 20.).floor() as usize;
             let origin = (foot - vec2(80., 176.)).round();
-            let Some(visible) = Rect::new(origin.x, origin.y, 160., 192.).intersect(clip) else {
-                continue;
-            };
-            let source = Rect::new(
-                (i % 8) as f32 * 160. + visible.x - origin.x,
-                (i / 8 + if front { 5 } else { 0 }) as f32 * 192. + visible.y - origin.y,
-                visible.w,
-                visible.h,
-            );
-            draw_texture_ex(
-                &self.textures[variant],
-                visible.x,
-                visible.y,
-                WHITE,
-                DrawTextureParams {
-                    source: Some(source),
-                    ..Default::default()
-                },
-            );
+            if let Some((at, source)) = super::atlas::clipped(
+                i,
+                8,
+                vec2(160., 192.),
+                origin,
+                clip,
+                if front { 5 } else { 0 },
+            ) {
+                super::atlas::draw(&self.textures[variant], at, source);
+            }
         }
     }
 }

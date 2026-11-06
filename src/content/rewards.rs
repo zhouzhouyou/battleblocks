@@ -32,7 +32,7 @@ pub fn clear_rewards(
 ) -> (i32, i32, i32) {
     clear_rewards_in(hero, hp, mp, board, cells, chain, bonus, Rules::default())
 }
-#[allow(dead_code)] // Aggregate view retained for the legacy balance probe and rule tests.
+#[cfg(test)]
 pub fn clear_rewards_in(
     hero: usize,
     hp: i32,

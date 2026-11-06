@@ -18,19 +18,7 @@ impl Session {
             && frame.clicked(MouseButton::Left)
         {
             // Same ranking as the drawn list, so row and badge numbers match.
-            let hints: Vec<Move> = content::ranked_moves_in(
-                &self.b,
-                self.hero_id,
-                self.hp,
-                self.mp,
-                self.enemy,
-                self.extra_bonus,
-                self.armed,
-                self.rules(false),
-            )
-            .into_iter()
-            .map(|(m, _)| m)
-            .collect();
+            let hints: Vec<Move> = self.ranked_hints(false).iter().map(|(m, _)| *m).collect();
             if let Some(i) =
                 hint_row_at(frame.pointer, self.move_hint_page, hints.len()).or_else(|| {
                     is_key_down(KeyCode::H)
@@ -139,15 +127,24 @@ impl Session {
                             self.new_role_states[0].force_armed = false;
                         }
                         ok
-                    } else if self.armed && a.0.abs_diff(c.0) + a.1.abs_diff(c.1) == 1 {
-                        parallel_swap(&mut self.b, a, c);
-                        self.armed = false;
-                        self.new_role_states[self.enemy_turn as usize]
-                            .statuses
-                            .consume(content::StatusDuration::UntilSwap);
-                        true
                     } else {
-                        board::hero_swap_in(&mut self.b, a, c, self.hero_id, self.board_mechanics)
+                        board::exchange_in(
+                            &mut self.b,
+                            a,
+                            c,
+                            self.hero_id,
+                            self.armed,
+                            self.board_mechanics,
+                        )
+                        .is_some_and(|parallel| {
+                            if parallel {
+                                self.armed = false;
+                                self.new_role_states[self.enemy_turn as usize]
+                                    .statuses
+                                    .consume(content::StatusDuration::UntilSwap);
+                            }
+                            true
+                        })
                     };
                     if legal {
                         self.presentation.swap(

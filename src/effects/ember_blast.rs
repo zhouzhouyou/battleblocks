@@ -8,16 +8,7 @@ pub const DURATION: f32 = 1.4;
 impl Blast {
     pub fn draw(&self, texture: &Texture2D, over: bool) {
         if let Some(source) = board_frame(self.elapsed(get_time(), over)) {
-            draw_texture_ex(
-                texture,
-                256.,
-                110.,
-                WHITE,
-                DrawTextureParams {
-                    source: Some(source),
-                    ..Default::default()
-                },
-            );
+            super::atlas::draw(texture, vec2(256., 110.), source);
         }
     }
 }
@@ -26,12 +17,7 @@ fn board_frame(elapsed: f32) -> Option<Rect> {
         return None;
     }
     let frame = (elapsed * 15.).floor() as usize;
-    Some(Rect::new(
-        (frame % 6) as f32 * 512.,
-        (frame / 6) as f32 * 512.,
-        512.,
-        512.,
-    ))
+    Some(super::atlas::frame(frame, 6, vec2(512., 512.)))
 }
 pub(super) fn sleeping(active: bool, pending: bool, casting: bool) -> bool {
     active || (pending && !casting)
@@ -46,26 +32,10 @@ pub(super) fn draw_sleep(texture: &Texture2D, area: Rect, foot: Vec2, lying: boo
     let origin = (head - vec2(24., 70.)).round();
     let panel = crate::graphics::side_panel_rect(enemy);
     let clip = Rect::new(panel.x, 188., panel.w, 188.);
-    let Some(visible) = Rect::new(origin.x, origin.y, 96., 96.).intersect(clip) else {
-        return;
-    };
     let frame = ((get_time().rem_euclid(2.4) * 15.) as usize).min(35);
-    let source = Rect::new(
-        (frame % 6) as f32 * 96. + visible.x - origin.x,
-        (frame / 6) as f32 * 96. + visible.y - origin.y,
-        visible.w,
-        visible.h,
-    );
-    draw_texture_ex(
-        texture,
-        visible.x,
-        visible.y,
-        WHITE,
-        DrawTextureParams {
-            source: Some(source),
-            ..Default::default()
-        },
-    );
+    if let Some((at, source)) = super::atlas::clipped(frame, 6, vec2(96., 96.), origin, clip, 0) {
+        super::atlas::draw(texture, at, source);
+    }
 }
 
 #[cfg(test)]

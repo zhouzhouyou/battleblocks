@@ -98,30 +98,13 @@ fn placement(cells: &[(usize, usize)], elapsed: f32) -> Option<(Vec2, Rect)> {
         142. + (min_y + max_y) as f32 * 32.,
     );
     let origin = (center - PIVOT).round();
-    let visible = Rect::new(origin.x, origin.y, WIDTH, HEIGHT).intersect(BOARD)?;
     let index = ((elapsed * FPS).floor() as usize).min(FRAMES - 1);
-    let source = Rect::new(
-        (index % COLUMNS) as f32 * WIDTH + visible.x - origin.x,
-        (index / COLUMNS) as f32 * HEIGHT + visible.y - origin.y,
-        visible.w,
-        visible.h,
-    );
-    Some((vec2(visible.x, visible.y), source))
+    super::atlas::clipped(index, COLUMNS, vec2(WIDTH, HEIGHT), origin, BOARD, 0)
 }
 
 pub(super) fn draw(texture: &Texture2D, cells: &[(usize, usize)], elapsed: f32) {
     if let Some((at, source)) = placement(cells, elapsed) {
-        draw_texture_ex(
-            texture,
-            at.x,
-            at.y,
-            WHITE,
-            DrawTextureParams {
-                source: Some(source),
-                // No noninteger scaling or mirroring: both sides hit the same board coordinates.
-                ..Default::default()
-            },
-        );
+        super::atlas::draw(texture, at, source);
     }
 }
 
