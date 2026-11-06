@@ -159,6 +159,14 @@ impl BoardMechanics {
         self.gravity_effect = Some(TimedGravity { direction, owner });
         self.revalidate();
     }
+    /// Set gravity from the board quadrant containing `target`.
+    pub fn set_gravity_from_quadrant(&mut self, target: Cell, owner: bool) {
+        self.set_gravity(Gravity::from_quadrant(target), owner);
+    }
+    /// Whether the quadrant containing `target` already selects current gravity.
+    pub fn gravity_matches_quadrant(self, target: Cell) -> bool {
+        self.gravity() == Gravity::from_quadrant(target)
+    }
     fn revalidate(&mut self) {
         let g = self.gravity();
         for p in &mut self.portals {

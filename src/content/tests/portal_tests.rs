@@ -264,3 +264,19 @@ fn portal_pair_defaults_to_the_opposite_gravity_line_inside_the_board() {
         assert!(!pair.owner);
     }
 }
+
+#[test]
+fn board_methods_resolve_gravity_from_quadrants() {
+    let mut mechanics = BoardMechanics::default();
+    for (target, gravity) in [
+        ((0, 0), Gravity::Up),
+        ((7, 0), Gravity::Right),
+        ((0, 7), Gravity::Left),
+        ((7, 7), Gravity::Down),
+    ] {
+        mechanics.set_gravity_from_quadrant(target, false);
+        assert_eq!(mechanics.gravity(), gravity);
+        assert!(mechanics.gravity_matches_quadrant(target));
+    }
+    assert!(!mechanics.gravity_matches_quadrant((0, 0)));
+}
