@@ -379,6 +379,19 @@ fn gravity_depth_measures_from_the_settling_edge() {
                 assert_eq!(g.upstream((x, y)), g.depth((x, y)) >= N / 2);
             }
         }
+        for depth in 0..N {
+            for along in 0..N {
+                assert_eq!(g.depth(g.cell_at_depth(depth, along)), depth);
+            }
+        }
+    }
+    for (cell, g) in [
+        ((0, 0), Gravity::Up),
+        ((7, 0), Gravity::Right),
+        ((0, 7), Gravity::Left),
+        ((7, 7), Gravity::Down),
+    ] {
+        assert_eq!(Gravity::from_quadrant(cell), g);
     }
 }
 

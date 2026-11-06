@@ -245,3 +245,22 @@ fn only_the_gravity_setup_skill_advertises_gravity_control() {
     assert!(!skill_profile(Skill::PortalPair, Rules::default()).gravity_change);
     assert!(!skill_profile(Skill::Hammer, Rules::default()).gravity_change);
 }
+
+#[test]
+fn portal_pair_defaults_to_the_opposite_gravity_line_inside_the_board() {
+    for (gravity, target, partner) in [
+        (Gravity::Down, (1, 2), (5, 2)),
+        (Gravity::Up, (1, 2), (5, 2)),
+        (Gravity::Left, (1, 2), (1, 6)),
+        (Gravity::Right, (1, 2), (1, 6)),
+    ] {
+        let mut mechanics = BoardMechanics::default();
+        mechanics.set_gravity(gravity, false);
+        let pair = mechanics.portal_pair(target, None, false);
+        assert_eq!(pair.a.cell, partner, "{gravity:?}");
+        assert_eq!(pair.b.cell, target);
+        assert_eq!(pair.a.horizontal, gravity.vertical());
+        assert_eq!(pair.b.horizontal, gravity.vertical());
+        assert!(!pair.owner);
+    }
+}

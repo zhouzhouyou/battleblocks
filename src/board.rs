@@ -67,6 +67,34 @@ pub fn swap(b: &mut Board, a: (usize, usize), c: (usize, usize)) {
     b[a.1][a.0] = b[c.1][c.0];
     b[c.1][c.0] = t;
 }
+/// Insert a tile at `target`, push the rest of its row/column toward the
+/// current settling side, and destroy the tile squeezed out at that edge.
+pub fn insert_tile(b: &mut Board, target: (usize, usize), tile: u8, mechanics: BoardMechanics) {
+    let (x, y) = target;
+    match mechanics.gravity() {
+        Gravity::Down => {
+            for row in (y + 1..N).rev() {
+                b[row][x] = b[row - 1][x];
+            }
+        }
+        Gravity::Up => {
+            for row in 0..y {
+                b[row][x] = b[row + 1][x];
+            }
+        }
+        Gravity::Right => {
+            for column in (x + 1..N).rev() {
+                b[y][column] = b[y][column - 1];
+            }
+        }
+        Gravity::Left => {
+            for column in 0..x {
+                b[y][column] = b[y][column + 1];
+            }
+        }
+    }
+    b[y][x] = tile;
+}
 pub fn valid_swap(b: &mut Board, a: (usize, usize), c: (usize, usize)) -> bool {
     if a.0.abs_diff(c.0) + a.1.abs_diff(c.1) != 1 {
         return false;
@@ -260,6 +288,39 @@ pub fn fresh_for(hero: usize) -> Board {
         let b = new_board();
         if !hero_options(&b, hero).is_empty() {
             return b;
+        }
+    }
+}
+
+#[cfg(test)]
+mod insert_tests {
+    use super::*;
+    #[test]
+    fn insert_tile_pushes_toward_each_gravity_edge_and_destroys_it() {
+        let cases = [
+            (Gravity::Down, (2, 2), [1, 2, 6, 3, 4, 5, 6, 1]),
+            (Gravity::Up, (2, 5), [2, 3, 4, 5, 6, 6, 1, 2]),
+            (Gravity::Left, (5, 2), [2, 3, 4, 5, 6, 6, 1, 2]),
+            (Gravity::Right, (2, 2), [1, 2, 6, 3, 4, 5, 6, 1]),
+        ];
+        for (gravity, target, expected) in cases {
+            let mut mechanics = BoardMechanics::default();
+            mechanics.set_gravity(gravity, false);
+            let mut board = [[0; N]; N];
+            for i in 0..N {
+                match gravity {
+                    Gravity::Down | Gravity::Up => board[i][target.0] = (i % 6 + 1) as u8,
+                    Gravity::Left | Gravity::Right => board[target.1][i] = (i % 6 + 1) as u8,
+                }
+            }
+            insert_tile(&mut board, target, 6, mechanics);
+            let line: Vec<u8> = (0..N)
+                .map(|i| match gravity {
+                    Gravity::Down | Gravity::Up => board[i][target.0],
+                    Gravity::Left | Gravity::Right => board[target.1][i],
+                })
+                .collect();
+            assert_eq!(line, expected, "{gravity:?}");
         }
     }
 }

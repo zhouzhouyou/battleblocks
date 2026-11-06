@@ -108,12 +108,7 @@ pub fn legal_target(
 pub fn random_reachable_target(hero: usize, hp: i32, rules: Rules) -> (usize, usize) {
     let depth = crate::rng::gen_range(0, reachable_depth(hero, hp, rules).max(1));
     let along = crate::rng::gen_range(0, N - 1);
-    match rules.board_mechanics.gravity() {
-        crate::board::Gravity::Up => (along, depth),
-        crate::board::Gravity::Down => (along, N - 1 - depth),
-        crate::board::Gravity::Left => (depth, along),
-        crate::board::Gravity::Right => (N - 1 - depth, along),
-    }
+    rules.board_mechanics.gravity().cell_at_depth(depth, along)
 }
 /// Actual actions that can continue a no-swap turn. Preparations alone do not unlock a dead board.
 #[cfg(test)]
