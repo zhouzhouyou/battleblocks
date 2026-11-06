@@ -30,7 +30,8 @@ def clips_for(role):
 
 
 def save_webp(image, path):
-    image.save(path, "WEBP", lossless=True, exact=True, method=6)
+    # In lossless mode quality controls compression effort, not pixel fidelity.
+    image.save(path, "WEBP", lossless=True, exact=True, method=6, quality=100)
 
 
 def load_cells(path):

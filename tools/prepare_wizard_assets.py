@@ -20,7 +20,7 @@ CAST_MS = [60, 80, 90, 90, 120, 180, 280, 100, 100, 100, 100, 100]
 
 
 def save(image, path):
-    image.save(path, 'WEBP', lossless=True, exact=True, method=6)
+    image.save(path, 'WEBP', lossless=True, exact=True, method=6, quality=100)
 
 
 def import_wizard():

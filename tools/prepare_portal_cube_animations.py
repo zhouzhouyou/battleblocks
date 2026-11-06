@@ -38,7 +38,7 @@ def install_runtime(atlas, report):
         x,y=n%report['columns']*width,n//report['columns']*height
         packed.alpha_composite(atlas.crop((x,y,x+width,y+height)),(n%columns*width,n//columns*height))
     target=ROOT/'assets/roles/portal-cube/runtime/atlas.webp'
-    packed.save(target,'WEBP',lossless=True,exact=True,method=6)
+    packed.save(target,'WEBP',lossless=True,exact=True,method=6,quality=100)
     runtime=Image.open(target).convert('RGBA')
     for clip in report['clips'].values():
         for n in clip['indices']:
@@ -52,7 +52,7 @@ def install_runtime(atlas, report):
     thumbs.paste((0,0,0,0),(12*40,0,13*40,48))
     thumb=runtime.crop((0,0,width,height));thumb.thumbnail((40,48),Image.Resampling.NEAREST)
     thumbs.alpha_composite(thumb,(12*40+(40-thumb.width)//2,(48-thumb.height)//2))
-    thumbs.save(thumb_path,'WEBP',lossless=True,exact=True,method=6)
+    thumbs.save(thumb_path,'WEBP',lossless=True,exact=True,method=6,quality=100)
     if Image.open(thumb_path).convert('RGBA').crop((0,0,480,48)).tobytes()!=old.crop((0,0,480,48)).tobytes():
         raise ValueError('an existing hero thumbnail changed')
     report_path=ROOT/'.local/production/role-assets.json'

@@ -30,7 +30,7 @@ for layer,frames in enumerate(layers):
         assert frame.crop((W-1,0,W,H)).getextrema()[3]==(0,0)
         atlas.paste(frame,((i%COLUMNS)*W,(layer*4+i//COLUMNS)*H))
 out=ROOT/'assets/effects/heavy-landing.webp'
-atlas.save(out,lossless=True,exact=True,method=6)
+atlas.save(out,lossless=True,exact=True,method=6,quality=100)
 with Image.open(out) as decoded: assert decoded.convert('RGBA').tobytes()==atlas.tobytes()
 (SOURCE/'atlas.json').write_text(json.dumps(dict(width=W,height=H,frames=N,columns=COLUMNS,layer_rows=4,layers=['back','front'],fps=30,pivot=[88,60],landing_seconds=0.65,dust_duration=0.7,upstream='patch-gg/pixelfx@a84159688af3ca37a4be05a0d422b94451b2e24e',effect='impacts/heavy-landing'),indent=2)+'\n')
 

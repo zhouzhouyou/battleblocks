@@ -6,7 +6,7 @@
 
 - 全项目美术统一采用高细节像素插画（densely detailed pixel illustration，明确像素簇与材质色阶）。生成或修改美术前，遵循 `docs/art/ART-DIRECTION.md` 的全局提示词和制作规范；不保留早期画风比较稿及其引用。
 - 旧角色普通版保持原素材、帧数、顺序、时长、显示尺寸与既有施法表现；只优化觉醒版细像素待机与施法，各至少十二个独立姿势。巫师普通资源为 `assets/roles/wizard/runtime/normal.webp`，觉醒制作输入为 `assets-source/roles/wizard/animation/`。
-- 生成或导出图片素材时优先选择无损 WebP；运行时只打包 `assets/` 下的 WebP，设计源图不进入游戏包。仅当动画 WebP 无法保持帧数、时序或像素时保留 GIF。
+- 生成或导出图片素材时优先选择无损 WebP；运行时只打包 `assets/` 下的 WebP，设计源图不进入游戏包。所有发布 WebP 必须遵从 [无损压缩流程](docs/art/WEBP-EXPORT.md)，通过 `tools/optimize_webp.py --check`。仅当动画 WebP 无法保持帧数、时序或像素时保留 GIF。
 - 角色按 `docs/art/CHARACTER-REVIEW.md` 逐人评审；候选必须在性别、轮廓、服装、性格或觉醒方式上有实质差异，不只换色。概念稿未经用户选定，不视为最终游戏素材。
 - 用户决定、设定原文、动画设计与未决规则记入 `docs/art/characters/` 并更新索引；讨论与提示词文字允许入库。所有参考原图禁止入库，仅保留文字说明。正式资源按 `docs/LAYOUT.md` 分入 `assets/`、`assets-source/` 或 `gallery/`。
 - 每位角色评审都要包含「角色介绍」；未提供时提醒用户补充。矮人以 `docs/art/characters/DWARF.md` 为当前权威设计：造型强调矮壮，但最新显示要求不再缩成骑士一半；三位新角色统一显示高度与像素密度；最新为黑红服装、无头盔、双端对称精良战锤与锤形符文；觉醒不增加护甲或头发，只改变锤子的红色符文发光；仇恨之书另作脚下垫高层。
