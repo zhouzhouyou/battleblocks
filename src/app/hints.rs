@@ -122,12 +122,7 @@ impl Session {
         let step = self.hint_queue.pop_front().unwrap();
         if step.before.as_ref() != plan_key(self.snapshot()) {
             self.hint_queue.clear();
-            self.feedback = if self.zh {
-                "局面已变化，已停止提示方案"
-            } else {
-                "Position changed; hint plan stopped"
-            }
-            .into();
+            self.feedback = tr_key(self.zh, "ui.hints.plans.position_changed").to_string();
             self.feedback_time = 2.5;
             return;
         }

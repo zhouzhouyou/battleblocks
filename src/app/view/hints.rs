@@ -114,11 +114,7 @@ impl Session {
                 2.,
                 if show_moves { GOLD } else { GRAY },
             );
-            let heading = if self.zh {
-                "提示 H · 组合 Shift+H"
-            } else {
-                "Hints H · Plans Shift+H"
-            };
+            let heading = tr_key(self.zh, "ui.hints.draw_hints.moves_hold_h");
             label(
                 heading,
                 hints_rect.x + 8.,
@@ -142,12 +138,7 @@ impl Session {
                     tr_key(self.zh, "ui.hints.draw_hints.moves")
                 )
             } else {
-                if self.zh {
-                    "悬停交换 · 点击组合提示"
-                } else {
-                    "Hover: swaps · Click: plans"
-                }
-                .to_string()
+                tr_key(self.zh, "ui.hints.draw_hints.hover_to_list_click_to_play").to_string()
             };
             label(
                 &detail,
@@ -360,22 +351,14 @@ impl Session {
             label(text, x, y, fit_size(text, size, 402.), color);
         };
         line(
-            if self.zh {
-                "AI 组合提示 · Shift+H / Esc 关闭"
-            } else {
-                "AI plans · Shift+H / Esc to close"
-            },
+            tr_key(self.zh, "ui.hints.plans.title"),
             584.,
             232.,
             19.,
             GOLD,
         );
         line(
-            if self.zh {
-                "按 AI 收益排序 · 含补充连锁推演 · 点击方案全部执行"
-            } else {
-                "AI reward order · simulated cascades · click to execute"
-            },
+            tr_key(self.zh, "ui.hints.plans.description"),
             584.,
             253.,
             13.,
@@ -402,25 +385,17 @@ impl Session {
             let last = plan.steps.last().unwrap();
             let mana: i32 = plan.steps.iter().map(|s| s.mana_cost).sum();
             let blood: i32 = plan.steps.iter().map(|s| s.blood_cost).sum();
-            let title = if self.zh {
-                format!(
-                    "#{} 评分 {:.1} · 伤害 {} · 消耗 魔力 {} / 血量 {}",
-                    i + 1,
-                    plan.score,
-                    plan.damage,
-                    mana,
-                    blood
-                )
-            } else {
-                format!(
-                    "#{} Score {:.1} · DMG {} · Cost MP {} / HP {}",
-                    i + 1,
-                    plan.score,
-                    plan.damage,
-                    mana,
-                    blood
-                )
-            };
+            let title = format_text(
+                self.zh,
+                "ui.hints.plans.summary",
+                &[
+                    &(i + 1).to_string(),
+                    &format!("{:.1}", plan.score),
+                    &plan.damage.to_string(),
+                    &mana.to_string(),
+                    &blood.to_string(),
+                ],
+            );
             line(&title, rect.x + 7., rect.y + 19., 15., GOLD);
             for (n, step) in plan.steps.iter().enumerate() {
                 let action = match step.action {
@@ -432,49 +407,66 @@ impl Session {
                     ),
                     crate::app::planning::PlanAction::Cast(_, target, anchor) => {
                         if let Some(a) = anchor {
-                            format!(
-                                "{} ({},{}) → ({},{})",
-                                step.name,
-                                a.0 + 1,
-                                a.1 + 1,
-                                target.0 + 1,
-                                target.1 + 1
+                            format_text(
+                                self.zh,
+                                "ui.hints.plans.paired_target",
+                                &[
+                                    &step.name,
+                                    &(a.0 + 1).to_string(),
+                                    &(a.1 + 1).to_string(),
+                                    &(target.0 + 1).to_string(),
+                                    &(target.1 + 1).to_string(),
+                                ],
                             )
                         } else {
-                            format!("{} ({},{})", step.name, target.0 + 1, target.1 + 1)
+                            format_text(
+                                self.zh,
+                                "ui.hints.plans.target",
+                                &[
+                                    &step.name,
+                                    &(target.0 + 1).to_string(),
+                                    &(target.1 + 1).to_string(),
+                                ],
+                            )
                         }
                     }
                 };
                 let y = rect.y + 40. + n as f32 * 42.;
                 line(
-                    &format!("{}. {}", n + 1, action),
+                    &format_text(
+                        self.zh,
+                        "ui.hints.plans.step",
+                        &[&(n + 1).to_string(), &action],
+                    ),
                     rect.x + 7.,
                     y,
                     15.,
                     SKYBLUE,
                 );
-                let details = if self.zh {
-                    format!(
-                        "消耗 MP {} / HP {} · 剩余 HP {} / MP {} · 敌 HP {}",
-                        step.mana_cost, step.blood_cost, step.hp, step.mp, step.enemy_hp
-                    )
-                } else {
-                    format!(
-                        "Cost MP {} / HP {} · HP {} / MP {} · Enemy HP {}",
-                        step.mana_cost, step.blood_cost, step.hp, step.mp, step.enemy_hp
-                    )
-                };
+                let details = format_text(
+                    self.zh,
+                    "ui.hints.plans.step_resources",
+                    &[
+                        &step.mana_cost.to_string(),
+                        &step.blood_cost.to_string(),
+                        &step.hp.to_string(),
+                        &step.mp.to_string(),
+                        &step.enemy_hp.to_string(),
+                    ],
+                );
                 line(&details, rect.x + 7., y + 17., 12., WHITE);
             }
             line(
-                &format!(
-                    "HP {} → {}   MP {} → {}   {} {}",
-                    self.hp,
-                    last.hp,
-                    self.mp,
-                    last.mp,
-                    if self.zh { "敌方 HP" } else { "Enemy HP" },
-                    last.enemy_hp
+                &format_text(
+                    self.zh,
+                    "ui.hints.plans.resources",
+                    &[
+                        &self.hp.to_string(),
+                        &last.hp.to_string(),
+                        &self.mp.to_string(),
+                        &last.mp.to_string(),
+                        &last.enemy_hp.to_string(),
+                    ],
                 ),
                 rect.x + 7.,
                 rect.y + rect.h - 9.,
@@ -484,11 +476,7 @@ impl Session {
         }
         if plans.is_empty() {
             line(
-                if self.zh {
-                    "当前没有可执行方案"
-                } else {
-                    "No executable plans"
-                },
+                tr_key(self.zh, "ui.hints.plans.none"),
                 584.,
                 300.,
                 17.,
@@ -496,17 +484,19 @@ impl Session {
             );
         }
         // Draw and click the footer at the same adaptive position.
-        let footer = format!(
-            "{} / {} · {} {} · ← / →",
-            self.move_hint_page + 1,
-            pages.len(),
-            plans.len(),
-            if self.zh { "方案" } else { "plans" }
+        let footer = format_text(
+            self.zh,
+            "ui.hints.plans.pages",
+            &[
+                &(self.move_hint_page + 1).to_string(),
+                &pages.len().to_string(),
+                &plans.len().to_string(),
+            ],
         );
         line(&footer, 664., footer_y + 12., 13., GOLD);
         for (x, text) in [
-            (584., if self.zh { "上一页" } else { "Prev" }),
-            (930., if self.zh { "下一页" } else { "Next" }),
+            (584., tr_key(self.zh, "ui.shared.prev")),
+            (930., tr_key(self.zh, "ui.shared.next")),
         ] {
             let r = Rect::new(x, footer_y - 4., 70., 24.);
             outline(r.x, r.y, r.w, r.h, 1., SKYBLUE);
