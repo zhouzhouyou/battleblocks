@@ -12,36 +12,36 @@
     "bytes": 2309998
   },
   "assets/effects/ember-blast.webp": {
-    "sha256": "17466d9f8160bcd73a691c6b21d5a15f04970dbd55ba6a60d91346cfb8111025",
-    "bytes": 616448
+    "sha256": "09eea3a49892572f65e94724a47163bd60c6d7042b9def6c0bfc2a3c7d6680a3",
+    "bytes": 602680
   },
   "assets/effects/hammer-smash.webp": {
-    "sha256": "3e85b7a816840a3729329e81799d36bea114b502073011b6774163c26c2fbb91",
-    "bytes": 21678
+    "sha256": "c6fe41b105f23f9904b857fdb0bd78cd1634feff529a3aa1f2f584ed1a0eef94",
+    "bytes": 21552
   },
   "assets/effects/heavy-landing.webp": {
-    "sha256": "181c420c065ddef8868457a2425d13aea54888ce2d7637a7fc47485c5437f675",
-    "bytes": 35418
+    "sha256": "e4ce43f3133326ed4c04466b67a7cba8b93cb77d0a4e8cfa087a49f83401a93e",
+    "bytes": 35252
   },
   "assets/effects/nun-heal-damage.webp": {
-    "sha256": "f1c14876c4dd3892e3a4feec157f5ac2e3adac637d63eadbe1ca1ac97efadd89",
-    "bytes": 17318
+    "sha256": "f4ffca3529f8c72263bfd94a0ef72e3efe2dc6ac9e2bcc7c5cb4037df07e67e3",
+    "bytes": 16746
   },
   "assets/effects/nun-heal-normal.webp": {
-    "sha256": "0c62a61a46ea283b51653f60ec2400acaa1817fa40fdef87d68c616303feab21",
-    "bytes": 17634
+    "sha256": "ec55b07de87968a0e2aeeab8bfefe5e8d0c3584168735a1bd1cf3164b3661503",
+    "bytes": 17208
   },
   "assets/effects/sleep-zzz.webp": {
-    "sha256": "d3bdce19055bdb760e62415c83f7d09bfc7919a5598d16d7f09d979d693c07c7",
-    "bytes": 2200
+    "sha256": "9f69075231591aacab8e96bd738e16aa25599f14aaf9ed1603e2276243f7e6fa",
+    "bytes": 2182
   },
   "assets/effects/wizard-lightning.webp": {
-    "sha256": "134ab81b7141226bc2bd68194c7760dc16a181e7aa31272d494e92c5ce2f58cf",
-    "bytes": 407306
+    "sha256": "f25c0ddbde8ef074a63c5afbf69a22f7b286ede12b88a63b103cdeaf22db5a2a",
+    "bytes": 402544
   },
   "assets/effects/wizard-meteor.webp": {
-    "sha256": "c592f39453f9cf32036f0ccf29dd09bfe8299eca78f483b6bfa84fb0a370dab2",
-    "bytes": 161282
+    "sha256": "881f7c7d775c6863b73afc6bf75e5e519b5e4d60dbc9ea53f116d478c50c33d2",
+    "bytes": 159890
   },
   "assets-source/environment/board_bg.webp": {
     "sha256": "de9c0131527ab68ae4b24b8a048f63faa0546980982c8514377581b0970b6530",
@@ -76,16 +76,16 @@
     "bytes": 1693534
   },
   "assets/roles/dwarf/runtime/atlas.webp": {
-    "sha256": "c4d45f2c74abb78e71629ae3369443a8bf20a34c1d1daae87d6eb62539a65e3c",
-    "bytes": 1373530
+    "sha256": "8a13ab122ed664d9237f4cbec42637cc1592ac7403c876fe83f69ec467a1d487",
+    "bytes": 1285954
   },
   "assets/roles/dwarf/runtime/book-bottom.webp": {
     "sha256": "727ee2743d901d876af037d0d3813d1a9d046ee79f467013d279ca1303d62b9c",
     "bytes": 504
   },
   "assets/roles/dwarf/runtime/book-cover.webp": {
-    "sha256": "5916b2c406dd4c1a31dccf83128c11453d406f6e3723cf4741953f9ce05fdaf5",
-    "bytes": 1606
+    "sha256": "846ff719d27e5e3f18fa54846d764cd3bba0412c4081ead501ad4bfedbb93228",
+    "bytes": 1564
   },
   "assets/roles/dwarf/runtime/book-pages.webp": {
     "sha256": "b458b872c2a7e2de7633521279eace27dfdba1a18b5f6120e10743f9d67b3bc1",
@@ -124,8 +124,8 @@
     "bytes": 1548126
   },
   "assets/roles/elf-legacy/runtime/atlas.webp": {
-    "sha256": "bcb4daa60f2177cddb4e10e7a38279ebb2af60216a13f3b1de1664b5591806e1",
-    "bytes": 454390
+    "sha256": "f449b5ef6cdd957f1853873b9e7b58ae13178d6046a0777b073f3465de6f750d",
+    "bytes": 431160
   },
   "assets/roles/elf-legacy/runtime/normal.webp": {
     "sha256": "909c1e3f1f9e1fed80ebb935b480aa35c9a4ca60990fff92d2768cb16fbffbaf",
@@ -148,8 +148,8 @@
     "bytes": 1583722
   },
   "assets/roles/fire-elf/runtime/atlas.webp": {
-    "sha256": "3bf4a418213c5d55cbb7ea5c7f95f8224b6d32c37724a1d3be41c56e2b05364a",
-    "bytes": 872714
+    "sha256": "5a762dd72575a79b47cdacfc45d3fa0a44b51ef68f6825cc9f9a61e5ba203ecd",
+    "bytes": 822268
   },
   "assets-source/roles/fire-elf/animation/awake-idle-source.webp": {
     "sha256": "d0a7ee6a1bad01849d06470d2b2283a8576bdbb3fb523c1fbe1a7225441a9d02",
@@ -168,8 +168,8 @@
     "bytes": 1049588
   },
   "assets/roles/goblin-legacy/runtime/atlas.webp": {
-    "sha256": "dbbe93a1ecedf0283f77d02784f4cf9cc6d1a05613d17af782bc2cb540cdb25d",
-    "bytes": 407120
+    "sha256": "8a226bd44d219da538cea8000b13a8a40f01e882a1842898a17511051325055e",
+    "bytes": 385672
   },
   "assets/roles/goblin-legacy/runtime/normal.webp": {
     "sha256": "7ae05f203b699ac2a4c86564e99279c25e31e2a705ca5a2c2f94f9b04189bf59",
@@ -204,8 +204,8 @@
     "bytes": 1639968
   },
   "assets/roles/knight/runtime/atlas.webp": {
-    "sha256": "b7bcd005019123aea2b5a81918060ae9fecc6f50dfded0a6df78e31002a78be2",
-    "bytes": 962044
+    "sha256": "1c2238f580d54318d1a79d894c28101e3df11a3e037f6c11214044a7eda06cc8",
+    "bytes": 913142
   },
   "assets-source/roles/knight/animation/awake-cast-source.webp": {
     "sha256": "f0a6b8f5b9eab03b68881da6bfbdef3abf09075c4eb210ba8b64c054da47cef2",
@@ -224,8 +224,8 @@
     "bytes": 1427132
   },
   "assets/roles/knight-legacy/runtime/atlas.webp": {
-    "sha256": "056ce959553d001a00141de090e923be4f32b82082806ab37f87013887babf1c",
-    "bytes": 307048
+    "sha256": "2f63faff299ed5617572228c174e50a85adf20ee42f46f2e7d4d56f10f17e25b",
+    "bytes": 290836
   },
   "assets/roles/knight-legacy/runtime/normal.webp": {
     "sha256": "017870411cfaba10f6794af037f9b23c064f17c0ecad0cf75cb4d5a99b8c20de",
@@ -256,8 +256,8 @@
     "bytes": 280222
   },
   "assets/roles/nun/runtime/atlas.webp": {
-    "sha256": "a1af842d2d941977f059f047df9f39e41df5a2b9993447ad39ed41cce8dfea4f",
-    "bytes": 1151756
+    "sha256": "9945c46702423fff669326f85eda137cb6f0f66be752e13c47db2e76e719085d",
+    "bytes": 980316
   },
   "assets-source/roles/nun/animation/awake-cast-source.webp": {
     "sha256": "2cbc9ca5ba1e518607d2e4befb3b971b3eb84ab343db0d23d526ef91b335f0ac",
@@ -288,8 +288,8 @@
     "bytes": 1252572
   },
   "assets/roles/portal-cube/runtime/atlas.webp": {
-    "sha256": "0eae18e712afe754e12315685addf31069f008fb55c93d6e41756ae4b33a8e59",
-    "bytes": 405992
+    "sha256": "eed375ac26646fe9a3dca1f96c7f113b7dcdc331569ce523df54fa9c84eee782",
+    "bytes": 404256
   },
   "assets-source/roles/portal-cube/animation/atlas.webp": {
     "sha256": "0e25cff2409a5576aba0765eea6bf41fa6ae2e8dbf63595d7f237fffec1eee6b",
@@ -300,8 +300,8 @@
     "bytes": 1454530
   },
   "assets/roles/priest/runtime/atlas.webp": {
-    "sha256": "4cfb72457cecd31249a8643b5370210d68405f8484e22d99f8d0608bde588595",
-    "bytes": 905084
+    "sha256": "1d409ce587bceaafde41f6c847852c93c99bf378128c09fbe04f838cca740a96",
+    "bytes": 799574
   },
   "assets-source/roles/priest/animation/awake-cast-source.webp": {
     "sha256": "a0c649d896062cc1ed3af6996ce860d214ffb4dc8734596441d7f03b3a28e1d6",
@@ -320,8 +320,8 @@
     "bytes": 1172572
   },
   "assets/roles/wizard/runtime/atlas.webp": {
-    "sha256": "a2d45ca2dcd541e061eb45066d54097f8f54155d108ee0fcfa5790b6b476a039",
-    "bytes": 488004
+    "sha256": "f1010e0fe3f8ecd3201cf6fd66c5c1017cdcabc150d28b5063d8d4ab418110e3",
+    "bytes": 468788
   },
   "assets/roles/wizard/runtime/normal.webp": {
     "sha256": "e11a425ca2ecad9b974bfef2ccd27619736639a500fade0ac4879991a30c3f72",
@@ -340,8 +340,8 @@
     "bytes": 968
   },
   "assets/roles/zombie/runtime/awake.webp": {
-    "sha256": "f16f2b497cd55b68af438cbde9ff8941e7480f995e800f3695f0c016fefc9f76",
-    "bytes": 5846
+    "sha256": "d2e6da4fb8f5caa08f6deeb674c75eebc208fd6e48237efd580b2219996c02ee",
+    "bytes": 5782
   },
   "assets/roles/zombie/runtime/normal.webp": {
     "sha256": "a7d6aa0e74231fd116a6e69b0a50e30c4fd995671939ae26688ff46b8918f7e1",
@@ -352,40 +352,40 @@
     "bytes": 1458
   },
   "assets/ui/balanced.webp": {
-    "sha256": "c6da2f92b017ad1b7b27a6ae5ea426d56c8aa60fdfa5cbfe31ec04f193ea35ad",
-    "bytes": 2826
+    "sha256": "1254498e6ed1590e98b3f71c9055edca86de6305aa99213b4e7dc283132389b8",
+    "bytes": 2738
   },
   "assets/ui/damage.webp": {
-    "sha256": "967498ed64301d1f2ab1b162e62775c7b02e896c72fa26864c0266121277fa91",
-    "bytes": 3520
+    "sha256": "dc30470dc6e1a33079e3dd918436c6f4f75f1b7fe8ffa8d6e5af415550f63f0c",
+    "bytes": 2952
   },
   "assets/ui/defeat.webp": {
     "sha256": "a4ec5461f46e85b12ea968054f640c5509a30872cd77b86178dcf33914ac2a6a",
     "bytes": 1658
   },
   "assets/ui/dm.webp": {
-    "sha256": "57a40bdf37f1e9fdf68c06cf0d78e917bd71d10872d895dad3d557481d53ce98",
-    "bytes": 1690
+    "sha256": "ed05a8724f7ce32c383dfbbfcc7dc7f122407f02ec6b6b834d2fb9c27e635777",
+    "bytes": 1536
   },
   "assets/ui/hd.webp": {
-    "sha256": "d082895a04a5ca8e349c9ba4ebf22350bc58107a016d6e80d52cfdfc9dbab73d",
-    "bytes": 1692
+    "sha256": "cbbf57f2be6c223f155e088c0f652076ca6223879e3d59110156332b803d6e34",
+    "bytes": 1658
   },
   "assets/ui/hero-thumbnails.webp": {
-    "sha256": "4688e1f8662c93d9812e2ba992a6e678c9ef07fa134cc2f6f351336e8a03d3b8",
-    "bytes": 7102
+    "sha256": "e46bd78bdd39fe0ba311508176663901258dc1926a56865cc90c932eb6c21d24",
+    "bytes": 6672
   },
   "assets/ui/hm.webp": {
-    "sha256": "9c87a2fd48eb30201ded272625287c22bd74819876fc6bc5d166a0fa9b95599e",
-    "bytes": 2940
+    "sha256": "4c89c3459dd140f19ddbd8735ac8be952e69817553864768faf54c1c58c8a357",
+    "bytes": 2536
   },
   "assets/ui/hp.webp": {
-    "sha256": "5f5be77ead3acb6df48b4774b0ebaef092c95679392778115aa791d65e27808e",
-    "bytes": 3076
+    "sha256": "8d90e57d43dc2479653e71f7c1741a9a5d58e809c94d5728c191ef3e05de9973",
+    "bytes": 2826
   },
   "assets/ui/mp.webp": {
-    "sha256": "bd8b225d4b5446acb17c7988a0bb3a8a740ddb694ad3cfa131b0abb170816764",
-    "bytes": 2534
+    "sha256": "50f5c3d72007967777b522bcf418f56b363031ed3205f4940f77f5981a342cb2",
+    "bytes": 2240
   },
   "experiments/memory-comparison/assets/ui.ttf": {
     "sha256": "1f1f02699b80c86a4c4fff22c68e1dda63b1b6e3a64def4d08c0ae24f6408f67",

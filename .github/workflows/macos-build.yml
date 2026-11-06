@@ -1,23 +1,15 @@
-name: Build macOS review package
+# Manual only: macOS runners are expensive and review packages are produced
+# locally. Pull requests use the repository-policy workflow instead.
+name: Build macOS review package (manual)
 
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/macos-build.yml'
-      - 'Cargo.toml'
-      - 'Cargo.lock'
-      - 'build.rs'
-      - 'src/**'
-      - 'assets/**'
-      - 'config/**'
-      - 'tools/**'
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: macos-review-${{ github.event.pull_request.number || github.ref }}
+  group: macos-review-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
