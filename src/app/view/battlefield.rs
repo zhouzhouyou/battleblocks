@@ -97,8 +97,47 @@ impl Session {
                 );
                 draw_edge(
                     board::PortalEdge::at(target, self.board_mechanics.gravity()),
-                    if allowed { GREEN } else { RED },
+                    if self.target_anchor.is_none() {
+                        GOLD
+                    } else if allowed {
+                        GREEN
+                    } else {
+                        RED
+                    },
                 );
+                if self.target_anchor.is_some() && allowed {
+                    let mut copy = self.b;
+                    let effect = content::effect_at_in(
+                        skill,
+                        &mut copy,
+                        target,
+                        self.hero_id,
+                        self.hp,
+                        self.mp,
+                        self.rules(false),
+                    );
+                    let mut mechanics = self.board_mechanics;
+                    if effect
+                        .board_change
+                        .is_some_and(|change| change.apply(&mut mechanics, false).is_ok())
+                    {
+                        // Directional links identify the two remote neighbors of each gate.
+                        for (source, dest) in mechanics.topology().unwrap().portal_links {
+                            let from =
+                                vec2(288. + source.0 as f32 * 64., 142. + source.1 as f32 * 64.);
+                            let to = vec2(288. + dest.0 as f32 * 64., 142. + dest.1 as f32 * 64.);
+                            let direction = (to - from).normalize();
+                            let start = from + direction * 20.;
+                            let end = to - direction * 20.;
+                            let normal = vec2(-direction.y, direction.x);
+                            draw_line(start.x, start.y, end.x, end.y, 2., SKYBLUE);
+                            for sign in [-1., 1.] {
+                                let wing = end - direction * 10. + normal * sign * 5.;
+                                draw_line(end.x, end.y, wing.x, wing.y, 2., SKYBLUE);
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -261,6 +300,11 @@ impl Session {
                     (self.hero_id, self.hp, self.mp)
                 };
                 if !content::legal_target(id, health, skill, &self.b, (x, y), self.rules(side)) {
+                    return Vec::new();
+                }
+                if content::skill_profile(skill, self.rules(side)).paired_target
+                    && self.target_anchor.is_none()
+                {
                     return Vec::new();
                 }
                 content::target_cells_in(skill, &self.b, (x, y), id, health, mana, self.rules(side))

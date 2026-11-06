@@ -299,6 +299,15 @@ impl Session {
                 label(text, x + 10., 292. + line as f32 * 18., 15., LIGHTGRAY);
             }
 
+            if content::skill_profile(skill, self.rules(is_enemy)).paired_target
+                && (is_enemy || self.target_anchor.is_none())
+            {
+                let message = tr_key(self.zh, "ui.portal.choose_first_preview");
+                for (i, text) in wrap_label_text(message, 17., 200.).iter().enumerate() {
+                    label(text, x + 10., 435. + i as f32 * 24., 17., GOLD);
+                }
+                return;
+            }
             let exact_target = if !is_enemy
                 && self.targeting == Some(skill)
                 && frame.pointer.x >= 256.

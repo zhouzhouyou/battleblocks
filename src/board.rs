@@ -8,31 +8,73 @@ pub fn matches(b: &Board) -> Vec<(usize, usize)> {
     matches_in(b, BoardMechanics::default())
 }
 pub fn matches_in(b: &Board, mechanics: BoardMechanics) -> Vec<(usize, usize)> {
+    if mechanics.portals.iter().all(Option::is_none) {
+        let mut hit = [[false; N]; N];
+        for y in 0..N {
+            for x in 0..N {
+                if b[y][x] == 255 {
+                    continue;
+                }
+                if x + 2 < N
+                    && b[y][x] == b[y][x + 1]
+                    && b[y][x] == b[y][x + 2]
+                    && !mechanics.blocks((x, y), (x + 1, y))
+                    && !mechanics.blocks((x + 1, y), (x + 2, y))
+                {
+                    hit[y][x] = true;
+                    hit[y][x + 1] = true;
+                    hit[y][x + 2] = true;
+                }
+                if y + 2 < N
+                    && b[y][x] == b[y + 1][x]
+                    && b[y][x] == b[y + 2][x]
+                    && !mechanics.blocks((x, y), (x, y + 1))
+                    && !mechanics.blocks((x, y + 1), (x, y + 2))
+                {
+                    hit[y][x] = true;
+                    hit[y + 1][x] = true;
+                    hit[y + 2][x] = true;
+                }
+            }
+        }
+        let mut out = Vec::new();
+        for y in 0..N {
+            for x in 0..N {
+                if hit[y][x] {
+                    out.push((x, y));
+                }
+            }
+        }
+        return out;
+    }
     let mut hit = [[false; N]; N];
-    for y in 0..N {
-        for x in 0..N {
-            if b[y][x] == 255 {
-                continue;
-            }
-            if x + 2 < N
-                && b[y][x] == b[y][x + 1]
-                && b[y][x] == b[y][x + 2]
-                && !mechanics.blocks((x, y), (x + 1, y))
-                && !mechanics.blocks((x + 1, y), (x + 2, y))
-            {
-                hit[y][x] = true;
-                hit[y][x + 1] = true;
-                hit[y][x + 2] = true;
-            }
-            if y + 2 < N
-                && b[y][x] == b[y + 1][x]
-                && b[y][x] == b[y + 2][x]
-                && !mechanics.blocks((x, y), (x, y + 1))
-                && !mechanics.blocks((x, y + 1), (x, y + 2))
-            {
-                hit[y][x] = true;
-                hit[y + 1][x] = true;
-                hit[y + 2][x] = true;
+    // Along gravity, portals reconnect matching exactly as they reconnect falls.
+    // The perpendicular axis remains an ordinary straight board line.
+    let mut lines = mechanics
+        .topology()
+        .expect("validated board topology")
+        .chains;
+    for i in 0..N {
+        lines.push(
+            (0..N)
+                .map(|j| {
+                    if mechanics.gravity().vertical() {
+                        (j, i)
+                    } else {
+                        (i, j)
+                    }
+                })
+                .collect(),
+        );
+    }
+    for line in lines {
+        for triple in line.windows(3) {
+            let (x, y) = triple[0];
+            let tile = b[y][x];
+            if tile != 255 && triple.iter().all(|&(x, y)| b[y][x] == tile) {
+                for &(x, y) in triple {
+                    hit[y][x] = true;
+                }
             }
         }
     }

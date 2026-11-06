@@ -3,6 +3,7 @@ use super::*;
 /// Exact rewards before the first random refill, including conversion matches, cost and caps.
 #[derive(Clone, Copy)]
 pub struct SkillPreview {
+    pub opponent_heal: i32,
     pub enemy_health_after: i32,
     pub awakens_enemy: bool,
     pub awakens_self: bool,
@@ -49,6 +50,7 @@ pub fn preview_rewards_in(
 ) -> SkillPreview {
     if !legal_target(hero, hp, skill, board, target, rules) {
         return SkillPreview {
+            opponent_heal: 0,
             enemy_health_after: enemy_hp,
             awakens_enemy: false,
             awakens_self: false,
@@ -97,6 +99,7 @@ pub fn preview_rewards_in(
     );
     health = settled.actor_hp;
     let mut opponent = settled.opponent_hp;
+    let mut opponent_heal = opponent - enemy_hp;
     let (mut damage, mut hit_rules) = preview_hit(rules, &mut opponent, settled.damage);
     let spent = mp - pay.mana;
     let mut mana = settled.actor_mp;
@@ -105,31 +108,37 @@ pub fn preview_rewards_in(
     } else {
         (e.cells.clone(), e.reward)
     };
-    if health > 0 && opponent > 0 && rewarded && !cells.is_empty() {
+    let mut clear_awakens_self = false;
+    if health > 0 && opponent > 0 && !cells.is_empty() {
         let clear_rules = Rules {
             initial_loot: skill_profile(skill, rules).initial_loot && e.reward,
-            ..rules
+            ..hit_rules
         };
-        let batch = clear_batch_in(
+        let clear = preview_clear_in(
+            &copy,
+            &cells,
             hero,
             health,
             mana,
-            &copy,
-            &cells,
+            opponent,
             1,
             bonus + e.bonus,
+            rewarded,
             clear_rules,
         );
-        let settled = settle_batch_in(hero, health, mana, opponent, batch, hit_rules);
-        health = settled.actor_hp;
-        opponent = settled.opponent_hp;
-        let (actual, next) = preview_hit(hit_rules, &mut opponent, settled.damage);
-        damage += actual;
-        hit_rules = next;
-        mana = settled.actor_mp;
+        health = clear.health_after;
+        opponent = clear.enemy_health_after;
+        damage += clear.damage;
+        opponent_heal += clear.opponent_heal;
+        mana = clear.mana_after;
+        clear_awakens_self = clear.awakens_self;
+        if clear.awakens_enemy {
+            hit_rules.opponent = hit_rules.opponent.map(|(id, _)| (id, true));
+        }
     }
     SkillPreview {
-        awakens_self: paid_hit.awakened,
+        opponent_heal,
+        awakens_self: paid_hit.awakened || clear_awakens_self,
         heal: health - hp,
         damage,
         enemy_health_after: opponent,
@@ -192,6 +201,8 @@ pub fn preview_range_in(
             high.awakens_self |= p.awakens_self;
             low.health_after = low.health_after.min(p.health_after);
             high.health_after = high.health_after.max(p.health_after);
+            low.opponent_heal = low.opponent_heal.min(p.opponent_heal);
+            high.opponent_heal = high.opponent_heal.max(p.opponent_heal);
             low.heal = low.heal.min(p.heal);
             high.heal = high.heal.max(p.heal);
             low.damage = low.damage.min(p.damage);
@@ -206,6 +217,8 @@ pub fn preview_range_in(
 }
 
 pub struct MovePreview {
+    pub opponent_heal: i32,
+    pub awakens_self: bool,
     pub enemy_health_after: i32,
     pub awakens_enemy: bool,
     pub heal: i32,
@@ -264,23 +277,98 @@ pub fn preview_move_in(
         ..rules
     };
     let cells = rules.board_mechanics.matches(&copy);
-    let batch = clear_batch_in(hero, hp, mp, &copy, &cells, 1, bonus, rules);
+    Some(preview_clear_in(
+        &copy, &cells, hero, hp, mp, enemy_hp, 1, bonus, true, rules,
+    ))
+}
+/// First-wave rewards plus guaranteed survivor crossings; generated tiles are unknown.
+/// Uses the same compaction, per-owner event dispatch and side ordering as Session.
+pub fn preview_clear_in(
+    board: &Board,
+    cells: &[(usize, usize)],
+    hero: usize,
+    hp: i32,
+    mp: i32,
+    enemy_hp: i32,
+    chain: usize,
+    bonus: i32,
+    rewarded: bool,
+    mut rules: Rules,
+) -> MovePreview {
+    let opponent_was_awake = rules.opponent.is_some_and(|(_, a)| a);
+    let batch = if rewarded {
+        clear_batch_in(hero, hp, mp, board, cells, chain, bonus, rules)
+    } else {
+        RewardBatch::default()
+    };
     let settled = settle_batch_in(hero, hp, mp, enemy_hp, batch, rules);
-    let health_after = settled.actor_hp;
-    let mana_after = settled.actor_mp;
+    let mut health = settled.actor_hp;
+    let mut mana = settled.actor_mp;
     let mut opponent = settled.opponent_hp;
-    let (damage, hit_rules) = preview_hit(rules, &mut opponent, settled.damage);
-    Some(MovePreview {
-        heal: health_after - hp,
+    let mut opponent_heal = opponent - enemy_hp;
+    let (mut damage, next) = preview_hit(rules, &mut opponent, settled.damage);
+    let mut awakens_self = false;
+    let mut opponent_mana = rules.opponent_mp;
+    rules = next;
+    if rewarded {
+        rules.statuses.consume(StatusDuration::UntilClear);
+    }
+    if rules.board_mechanics.portals.iter().any(Option::is_some) {
+        let mut copy = *board;
+        for &(x, y) in cells {
+            copy[y][x] = 255;
+        }
+        let falls = crate::board::compact_board_in(&mut copy, rules.board_mechanics)
+            .expect("validated board topology");
+        for side in [false, true] {
+            rules.opponent_hp = Some(opponent);
+            rules.opponent_mp = opponent_mana;
+            if side == rules.actor_enemy {
+                let batch = portal_transit_batch(hero, health, mana, &falls, rules);
+                let settled = settle_batch_in(hero, health, mana, opponent, batch, rules);
+                health = settled.actor_hp;
+                mana = settled.actor_mp;
+                opponent_heal += settled.opponent_hp - opponent;
+                opponent = settled.opponent_hp;
+                let (actual, next) = preview_hit(rules, &mut opponent, settled.damage);
+                damage += actual;
+                rules = next;
+            } else if let Some((id, awake)) = rules.opponent {
+                let other = Rules {
+                    actor_enemy: side,
+                    awake,
+                    opponent: Some((hero, rules.awake)),
+                    opponent_hp: Some(health),
+                    opponent_mp: mana,
+                    statuses: rules.opponent_statuses,
+                    opponent_statuses: rules.statuses,
+                    ..rules
+                };
+                let batch = portal_transit_batch(id, opponent, opponent_mana, &falls, other);
+                let settled = settle_batch_in(id, opponent, opponent_mana, health, batch, other);
+                opponent_heal += settled.actor_hp - opponent;
+                opponent = settled.actor_hp;
+                opponent_mana = settled.actor_mp;
+                health = settled.opponent_hp;
+                let hit = take_damage(hero, &mut health, &mut rules.awake, settled.damage);
+                awakens_self |= hit.awakened;
+            }
+        }
+    }
+    MovePreview {
+        opponent_heal,
+        awakens_self,
+        heal: health - hp,
         damage,
         enemy_health_after: opponent,
-        awakens_enemy: rules.opponent.is_some_and(|(_, a)| !a)
-            && hit_rules.opponent.is_some_and(|(_, a)| a),
-        mana_gain: mana_after - mp,
-        health_after,
-        mana_after,
-        cells,
-    })
+        awakens_enemy: rules.opponent.is_some()
+            && !opponent_was_awake
+            && rules.opponent.is_some_and(|(_, a)| a),
+        mana_gain: mana - mp,
+        health_after: health,
+        mana_after: mana,
+        cells: cells.to_vec(),
+    }
 }
 /// Every listed exchange with its preview, best first: by heal + damage + mana, then by
 /// heal, damage and mana, each from high to low. Equal rewards keep the board order.

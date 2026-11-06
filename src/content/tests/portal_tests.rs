@@ -280,3 +280,51 @@ fn board_methods_resolve_gravity_from_quadrants() {
     }
     assert!(!mechanics.gravity_matches_quadrant((0, 0)));
 }
+
+#[test]
+fn portal_setup_ai_uses_actual_net_rewards_instead_of_a_constant_bonus() {
+    let b = board();
+    let rules = Rules {
+        target_anchor: Some((1, 2)),
+        ..Default::default()
+    };
+    let value = ability_ai_utility(
+        Skill::PortalPair,
+        &EventContext::new(PORTAL_CUBE, 620, 100, rules),
+        &b,
+        0,
+        10000.,
+    )
+    .unwrap();
+    assert!(
+        value < 0,
+        "a setup that loses the better exchange must not get a fixed bonus"
+    );
+    let mut b = b;
+    for (x, y) in [(1, 1), (1, 2), (4, 5)] {
+        b[y][x] = 6;
+    }
+    let p = preview_rewards_in(
+        Skill::PortalPair,
+        &b,
+        (4, 4),
+        PORTAL_CUBE,
+        620,
+        100,
+        700,
+        1,
+        rules,
+    );
+    assert!(p.damage > 0 && p.mana_gain > 0);
+    assert!(
+        ability_ai_utility(
+            Skill::PortalPair,
+            &EventContext::new(PORTAL_CUBE, 620, 100, rules),
+            &b,
+            1,
+            0.
+        )
+        .unwrap()
+            > 0
+    );
+}

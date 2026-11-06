@@ -35,18 +35,50 @@ pub fn active(
             }));
         }
         RuleEvent::AiUtility {
-            value, swap_value, ..
+            value,
+            board,
+            bonus,
+            swap_value,
         } => {
-            // These setup skills leave the turn open for an ordinary exchange.
-            **value = Some(if *swap_value > 0. {
-                if s == Skill::PortalPair {
-                    8
-                } else {
-                    4
-                }
+            let target = crate::strategy::choose_target_in(
+                s, board, ctx.hero, ctx.hp, ctx.mp, *bonus, ctx.rules,
+            );
+            let Some(next) = skill::mechanics(s, ctx.rules, target) else {
+                return;
+            };
+            let preview = preview_rewards_in(
+                s,
+                board,
+                target,
+                ctx.hero,
+                ctx.hp,
+                ctx.mp,
+                ctx.rules.opponent_hp.unwrap_or(10000),
+                *bonus,
+                ctx.rules,
+            );
+            // Immediate clears and the following exchange use the edited topology.
+            // Never score an exchange on tiles already queued to clear.
+            let followup = if next.matches(board).is_empty() {
+                crate::strategy::best_move_score_in(
+                    board,
+                    ctx.hero,
+                    preview.health_after,
+                    preview.mana_after,
+                    Rules {
+                        board_mechanics: next,
+                        ..ctx.rules
+                    },
+                ) - *swap_value
             } else {
-                0
-            });
+                0.
+            };
+            **value = Some(
+                ((preview.damage - preview.opponent_heal) as f32
+                    + preview.heal as f32 * 0.8
+                    + (preview.mana_after - ctx.mp) as f32 * 0.65
+                    + followup) as i32,
+            );
         }
         RuleEvent::Cast { target, effect, .. } => {
             if let Some(next) = skill::mechanics(s, ctx.rules, *target) {

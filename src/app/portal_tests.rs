@@ -135,3 +135,200 @@ fn portal_matches_finish_with_identical_seeded_results_at_different_frame_speeds
         );
     }
 }
+
+#[test]
+fn placing_a_pair_queues_remote_matches_immediately_and_preview_equals_real_first_wave() {
+    for side in [false, true] {
+        let mut s = session();
+        s.enemy_turn = side;
+        for (x, y) in [(1, 1), (1, 2), (4, 5)] {
+            s.b[y][x] = 6;
+        }
+        assert!(board::matches(&s.b).is_empty());
+        let before = s.snapshot();
+        let rules = content::Rules {
+            target_anchor: Some((1, 2)),
+            ..s.rules(side)
+        };
+        let preview = content::preview_rewards_in(
+            content::Skill::PortalPair,
+            &s.b,
+            (4, 4),
+            content::PORTAL_CUBE,
+            500,
+            100,
+            500,
+            0,
+            rules,
+        );
+        assert_eq!(rng::state(), before.rng_state);
+        // GUI player input uses the selected anchor; enemy command defaults to the
+        // opposite line, so exercise the same explicit effect through player cast.
+        s.enemy_turn = false;
+        s.target_anchor = Some((1, 2));
+        let mut frame = Frame::headless(1.);
+        frame.command_target = Some((4, 4));
+        frame.command_skill = Some(content::Skill::PortalPair);
+        assert!(s.cast_skill(&frame, Some(content::Skill::PortalPair), false));
+        assert_eq!(s.pending, vec![(1, 1), (1, 2), (4, 5)]);
+        assert_eq!(s.mp, 65);
+        assert_eq!(s.chain, 1);
+        assert!(!s.action_done);
+        s.resolve_pending(1.);
+        assert_eq!(
+            (
+                preview.health_after,
+                preview.mana_after,
+                preview.enemy_health_after
+            ),
+            (s.hp, s.mp, s.enemy)
+        );
+        let after = s.snapshot();
+        s.restore(before.clone());
+        assert_eq!(s.b, before.board);
+        assert_eq!(s.board_mechanics, before.board_mechanics);
+        // Same commands after rollback reproduce resources, board and RNG.
+        s.enemy_turn = false;
+        s.target_anchor = Some((1, 2));
+        assert!(s.cast_skill(&frame, Some(content::Skill::PortalPair), false));
+        s.resolve_pending(1.);
+        assert_eq!(
+            (s.b, s.hp, s.mp, s.enemy, rng::state()),
+            (
+                after.board,
+                after.hp,
+                after.mp,
+                after.enemy_hp,
+                after.rng_state
+            )
+        );
+    }
+}
+
+#[test]
+fn existing_portals_work_for_ordinary_roles_and_ai_values_the_same_remote_clear() {
+    let mut s = session();
+    s.hero_id = content::PRIEST;
+    s.board_mechanics.place(portals()).unwrap();
+    for (x, y) in [(1, 1), (1, 2), (5, 5)] {
+        s.b[y][x] = 6;
+    }
+    s.b[5][4] = 2;
+    assert!(s.board_mechanics.matches(&s.b).is_empty());
+    let rules = s.rules(false);
+    let before = s.snapshot();
+    let p = content::preview_move_in(
+        &s.b,
+        s.hero_id,
+        s.hp,
+        s.mp,
+        s.enemy,
+        0,
+        false,
+        (4, 5),
+        (5, 5),
+        rules,
+    )
+    .unwrap();
+    assert_eq!(p.cells, vec![(1, 1), (1, 2), (4, 5)]);
+    let mut copy = s.b;
+    assert!(board::hero_swap_in(
+        &mut copy,
+        (4, 5),
+        (5, 5),
+        s.hero_id,
+        s.board_mechanics
+    ));
+    let score = strategy::score(
+        &copy,
+        s.hero_id,
+        s.hp,
+        s.mp,
+        content::Rules {
+            swap_clear: true,
+            horizontal: true,
+            ..rules
+        },
+    );
+    assert!(
+        (score
+            - ((p.damage - p.opponent_heal) as f32
+                + p.heal as f32 * 0.8
+                + p.mana_gain as f32 * 0.65))
+            .abs()
+            < 0.001
+    );
+    assert!(
+        content::ranked_moves_in(&s.b, s.hero_id, s.hp, s.mp, s.enemy, 0, false, rules)
+            .iter()
+            .any(|(m, _)| *m == ((4, 5), (5, 5)))
+    );
+    assert_eq!(rng::state(), before.rng_state);
+    s.b = copy;
+    s.pending = p.cells.clone();
+    s.reward = true;
+    s.chain = 1;
+    s.new_role_states[0].horizontal = true;
+    s.new_role_states[0].swap_clear = true;
+    s.resolve_pending(1.);
+    assert_eq!(
+        (s.hp, s.mp, s.enemy),
+        (p.health_after, p.mana_after, p.enemy_health_after)
+    );
+}
+
+#[test]
+fn known_transit_preview_matches_actual_caps_defenders_and_both_side_orders() {
+    for side in [false, true] {
+        for opponent in [content::PORTAL_CUBE, content::DWARF, content::FIRE_ELF] {
+            let mut s = session();
+            s.enemy_turn = side;
+            if side {
+                s.hero_id = opponent;
+            } else {
+                s.enemy_id = opponent;
+            }
+            s.hp = content::health_cap(s.hero_id, false) - 1;
+            s.enemy = content::health_cap(s.enemy_id, false) - 1;
+            s.mp = content::mana_cap(s.hero_id, false) - 1;
+            s.enemy_mp = content::mana_cap(s.enemy_id, false) - 1;
+            s.board_mechanics.place(portals()).unwrap();
+            s.b[4][4] = 0;
+            s.pending = vec![(1, 3)];
+            s.reward = false;
+            s.chain = 1;
+            let before = s.snapshot();
+            let (hp, mp, enemy_hp) = if side {
+                (s.enemy, s.enemy_mp, s.hp)
+            } else {
+                (s.hp, s.mp, s.enemy)
+            };
+            let p = content::preview_clear_in(
+                &s.b,
+                &s.pending,
+                content::PORTAL_CUBE,
+                hp,
+                mp,
+                enemy_hp,
+                1,
+                0,
+                false,
+                s.rules(side),
+            );
+            assert_eq!(s.snapshot().rng_state, before.rng_state);
+            assert_eq!(s.b, before.board);
+            assert_eq!(s.rules(side).statuses, Default::default());
+            s.resolve_pending(1.);
+            let actual = if side {
+                (s.enemy, s.enemy_mp, s.hp)
+            } else {
+                (s.hp, s.mp, s.enemy)
+            };
+            assert_eq!(
+                (p.health_after, p.mana_after, p.enemy_health_after),
+                actual,
+                "actor_enemy={side}, opponent={opponent}"
+            );
+        }
+    }
+}

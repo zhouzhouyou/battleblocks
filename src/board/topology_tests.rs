@@ -99,7 +99,7 @@ fn removal_expiry_and_gravity_revalidation_restore_geometry() {
     assert_eq!(m, BoardMechanics::default());
 }
 #[test]
-fn gates_cut_matches_and_exchanges_without_connecting_remote_tiles() {
+fn gates_cut_old_adjacencies_and_exchanges() {
     let mut b: Board = std::array::from_fn(|y| std::array::from_fn(|x| ((x + 2 * y) % 7) as u8));
     b[1][1] = 2;
     b[2][1] = 2;
@@ -165,4 +165,78 @@ fn invalid_topology_never_mutates_board_or_rng() {
     assert!(drop_board_in(&mut b, m).is_err());
     assert_eq!(before, b);
     assert_eq!(seed, crate::rng::state());
+}
+
+#[test]
+fn matches_follow_both_sides_of_each_gate_in_all_gravity_directions() {
+    for g in [Gravity::Down, Gravity::Up, Gravity::Left, Gravity::Right] {
+        let mut m = BoardMechanics::default();
+        m.set_gravity(g, false);
+        m.place(pair(g, (1, 2), (4, 4), false)).unwrap();
+        let topology = m.topology().unwrap();
+        for &(source, dest) in &topology.portal_links {
+            let chain = topology
+                .chains
+                .iter()
+                .find(|c| c.contains(&source))
+                .unwrap();
+            let at = chain.iter().position(|&c| c == source).unwrap();
+            for triple in [&chain[at - 1..=at + 1], &chain[at..=at + 2]] {
+                assert!(triple.contains(&source) && triple.contains(&dest));
+                let mut b = marked();
+                for &(x, y) in triple {
+                    b[y][x] = 2;
+                }
+                assert!(matches(&b).is_empty());
+                let mut expected = triple.to_vec();
+                expected.sort_by_key(|&(x, y)| (y, x));
+                assert_eq!(m.matches(&b), expected, "{g:?}: {triple:?}");
+                let (x, y) = triple[1];
+                b[y][x] = 255;
+                assert!(m.matches(&b).is_empty());
+            }
+        }
+    }
+}
+
+#[test]
+fn a_match_can_cross_two_pairs_and_intersections_only_reward_each_cell_once() {
+    let mut m = BoardMechanics::default();
+    m.place(pair(Gravity::Down, (0, 1), (3, 1), false)).unwrap();
+    m.place(pair(Gravity::Down, (3, 2), (6, 2), true)).unwrap();
+    let mut b = marked();
+    for (x, y) in [(0, 1), (3, 2), (6, 3), (2, 2), (4, 2)] {
+        b[y][x] = 6;
+    }
+    assert_eq!(m.matches(&b), vec![(0, 1), (2, 2), (3, 2), (4, 2), (6, 3)]);
+}
+
+#[test]
+fn deterministic_compaction_matches_real_survivor_paths_without_consuming_rng() {
+    let mut m = BoardMechanics::default();
+    m.place(pair(Gravity::Down, (1, 2), (4, 4), false)).unwrap();
+    let mut b = marked();
+    for (x, y) in [(1, 3), (4, 6), (4, 7)] {
+        b[y][x] = 255;
+    }
+    let mut actual = b;
+    let seed = crate::rng::state();
+    let known = compact_board_in(&mut b, m).unwrap();
+    assert_eq!(crate::rng::state(), seed);
+    let real = drop_board_in(&mut actual, m).unwrap();
+    let paths = |falls: &[TileFall]| {
+        falls
+            .iter()
+            .filter(|f| f.kind >= 10)
+            .map(|f| (f.from, f.to, f.kind, f.portals.clone()))
+            .collect::<Vec<_>>()
+    };
+    assert_eq!(paths(&known), paths(&real));
+    for y in 0..N {
+        for x in 0..N {
+            if b[y][x] != 255 {
+                assert_eq!(b[y][x], actual[y][x]);
+            }
+        }
+    }
 }

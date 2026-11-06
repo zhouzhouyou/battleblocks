@@ -20,6 +20,20 @@ pub fn drop_board_in(
     b: &mut Board,
     mechanics: BoardMechanics,
 ) -> Result<Vec<TileFall>, &'static str> {
+    settle_board_in(b, mechanics, || Some(rng::gen_range(0, 7)))
+}
+/// Compact known survivors without generating tiles or consuming randomness.
+pub fn compact_board_in(
+    b: &mut Board,
+    mechanics: BoardMechanics,
+) -> Result<Vec<TileFall>, &'static str> {
+    settle_board_in(b, mechanics, || None)
+}
+fn settle_board_in(
+    b: &mut Board,
+    mechanics: BoardMechanics,
+    mut generate: impl FnMut() -> Option<u8>,
+) -> Result<Vec<TileFall>, &'static str> {
     let topology = mechanics.topology()?;
     let mut falls = Vec::new();
     let (dx, dy) = mechanics.gravity().vector();
@@ -49,7 +63,10 @@ pub fn drop_board_in(
         }
         for dest in 0..missing {
             let (x, y) = chain[dest];
-            let kind = rng::gen_range(0, 7);
+            let Some(kind) = generate() else {
+                b[y][x] = 255;
+                continue;
+            };
             b[y][x] = kind;
             let distance = (missing - dest) as isize;
             falls.push(TileFall {
