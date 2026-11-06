@@ -88,7 +88,7 @@ def import_role(role):
             'preview_durations_ms': durations,
             'runtime_timing': 'src/sprites/legacy.rs (per skill)' if row else '60ms per pose'}
     target = ROOT/'assets/roles'/role/'runtime/atlas.webp'
-    atlas.save(target, 'WEBP', lossless=True, exact=True, method=6)
+    atlas.save(target, 'WEBP', lossless=True, exact=True, method=6, quality=100)
     report['webp_bytes'] = target.stat().st_size
     report_path(role).write_text(json.dumps(report, indent=2)+'\n', encoding='utf-8')
     print(f'{role}: 24 authored awake poses, {target.stat().st_size} bytes')

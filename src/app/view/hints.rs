@@ -8,32 +8,22 @@ impl Session {
             self.hero_id
         };
         let hints_playable = show_moves && !self.enemy_turn;
+        let (hint_health, hint_mana) = if self.enemy_turn {
+            (self.enemy, self.enemy_mp)
+        } else {
+            (self.hp, self.mp)
+        };
         // Hints are derived only from the settled board; drawing never changes
         // selection, RNG, turn state, resources or the action log.
-        let hint_health = if self.enemy_turn { self.enemy } else { self.hp };
-        let hint_mana = if self.enemy_turn {
-            self.enemy_mp
-        } else {
-            self.mp
-        };
-        let hint_opponent = if self.enemy_turn { self.hp } else { self.enemy };
         // Best total reward first; numbers on the board follow the same order.
-        let (legal_hints, move_previews): (Vec<Move>, Vec<_>) = if show_moves {
-            content::ranked_moves_in(
-                &self.b,
-                hint_actor,
-                hint_health,
-                hint_mana,
-                hint_opponent,
-                self.extra_bonus,
-                self.armed,
-                self.rules(self.enemy_turn),
-            )
-            .into_iter()
-            .unzip()
-        } else {
-            (Vec::new(), Vec::new())
-        };
+        let ranked = show_moves.then(|| self.ranked_hints(self.enemy_turn));
+        let (legal_hints, move_previews): (Vec<Move>, Vec<_>) = ranked
+            .as_deref()
+            .map(Vec::as_slice)
+            .unwrap_or(&[])
+            .iter()
+            .map(|(m, preview)| (*m, preview.as_ref()))
+            .unzip();
         let pages = legal_hints.len().div_ceil(7).max(1);
         let previous_page_rect = Rect::new(798., 590., 52., 24.);
         let next_page_rect = Rect::new(950., 590., 52., 24.);

@@ -4,6 +4,7 @@ import argparse,gzip,hashlib,json,platform,shutil,subprocess,sys,zipfile
 ROOT=Path(__file__).resolve().parents[1];DIST=ROOT/'dist';DIST.mkdir(exist_ok=True)
 parser=argparse.ArgumentParser();group=parser.add_mutually_exclusive_group();group.add_argument('--native-only',action='store_true');group.add_argument('--web-only',action='store_true');parser.add_argument('--target',help='Native cross-compilation target (currently Windows x64 GNU)');args=parser.parse_args()
 cargo=shutil.which('cargo') or str(Path.home()/'.cargo/bin/cargo')
+subprocess.run([sys.executable,str(ROOT/'tools/optimize_webp.py'),'--check'],cwd=ROOT,check=True)
 rustc=shutil.which('rustc') or str(Path.home()/'.cargo/bin/rustc')
 host=next(line.split(': ',1)[1] for line in subprocess.check_output([rustc,'-vV'],text=True).splitlines() if line.startswith('host:'))
 if args.target and args.target != 'x86_64-pc-windows-gnu':parser.error('--target currently supports x86_64-pc-windows-gnu only')

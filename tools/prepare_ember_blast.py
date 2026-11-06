@@ -22,7 +22,7 @@ def bake(raw,w,h,count,columns,path):
     frames=[Image.frombytes('RGBA',(w,h),raw[i*w*h*4:(i+1)*w*h*4]) for i in range(count)]
     atlas=Image.new('RGBA',(w*columns,h*((count+columns-1)//columns)))
     for i,frame in enumerate(frames):atlas.paste(frame,((i%columns)*w,(i//columns)*h))
-    atlas.save(path,lossless=True,exact=True,method=6)
+    atlas.save(path,lossless=True,exact=True,method=6,quality=100)
     with Image.open(path) as check:assert check.convert('RGBA').tobytes()==atlas.tobytes()
     print(f'{path.relative_to(ROOT)}: {path.stat().st_size} bytes, {count} frames, lossless pixels verified',flush=True)
     return frames

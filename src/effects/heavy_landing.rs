@@ -13,14 +13,14 @@ fn placement(foot: Vec2, elapsed: f32, front: bool, clip: Rect) -> Option<(Vec2,
     }
     let index = (age * 30.).floor() as usize;
     let origin = (foot - vec2(88., 60.)).round();
-    let visible = Rect::new(origin.x, origin.y, W, H).intersect(clip)?;
-    let source = Rect::new(
-        (index % COLUMNS) as f32 * W + visible.x - origin.x,
-        (index / COLUMNS + if front { ROWS } else { 0 }) as f32 * H + visible.y - origin.y,
-        visible.w,
-        visible.h,
-    );
-    Some((vec2(visible.x, visible.y), source))
+    super::atlas::clipped(
+        index,
+        COLUMNS,
+        vec2(W, H),
+        origin,
+        clip,
+        if front { ROWS } else { 0 },
+    )
 }
 
 pub(super) fn draw(texture: &Texture2D, foot: Vec2, elapsed: f32, front: bool, enemy: bool) {
@@ -33,16 +33,7 @@ pub(super) fn draw(texture: &Texture2D, foot: Vec2, elapsed: f32, front: bool, e
         crate::graphics::passive_rect(enemy).y - 188.,
     );
     if let Some((at, source)) = placement(foot, elapsed, front, clip) {
-        draw_texture_ex(
-            texture,
-            at.x,
-            at.y,
-            WHITE,
-            DrawTextureParams {
-                source: Some(source),
-                ..Default::default()
-            },
-        );
+        super::atlas::draw(texture, at, source);
     }
 }
 

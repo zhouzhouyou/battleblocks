@@ -12,6 +12,12 @@ fn base() -> Board {
 fn every_character_webp_decodes_with_its_original_atlas_dimensions() {
     for asset in sprites::SPRITES.iter().chain(sprites::AWAKENED) {
         let decoded = image::load_from_memory(asset.bytes).expect("runtime image decoder");
+        let explicit = graphics::decode_webp(asset.bytes);
+        assert_eq!(
+            explicit,
+            decoded.to_rgba8(),
+            "explicit WebP decoding must preserve RGBA"
+        );
         let frames = asset.indices.iter().max().unwrap() + 1;
         assert_eq!(decoded.width() % asset.w as u32, 0);
         assert_eq!(decoded.height() % asset.h as u32, 0);
@@ -99,7 +105,10 @@ fn new_role_atlases_have_twelve_distinct_poses_per_action_and_shared_palettes() 
 #[test]
 fn wizard_normal_is_unchanged_and_only_awakened_uses_fine_pixel_animation() {
     let normal = &sprites::SPRITES[2];
-    assert_eq!(normal.bytes, include_bytes!("../assets/roles/wizard/runtime/normal.webp"));
+    assert_eq!(
+        normal.bytes,
+        include_bytes!("../assets/roles/wizard/runtime/normal.webp")
+    );
     assert_eq!((normal.w, normal.h), (300., 400.));
     assert_eq!(normal.indices, &[0, 1, 2, 3]);
     assert_eq!(normal.durations, &[0.1; 4]);

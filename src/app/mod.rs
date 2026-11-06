@@ -6,6 +6,7 @@ mod console;
 mod controls;
 mod exchange;
 mod headless;
+mod hints;
 pub(crate) use headless::BatchOutcome;
 mod lifecycle;
 mod resolution;
@@ -39,6 +40,7 @@ pub(crate) struct Session {
     move_hint_page: usize,
     hints_hover_open: bool,
     hints_shown: bool,
+    hint_cache: Option<hints::HintCache>,
     hp: i32,
     enemy: i32,
     mp: i32,
@@ -324,6 +326,7 @@ impl Session {
             move_hint_page,
             hints_hover_open,
             hints_shown,
+            hint_cache: None,
             hp,
             enemy,
             mp,
@@ -688,6 +691,7 @@ impl Session {
         }
     }
     fn restore(&mut self, state: debug::Snapshot) {
+        self.hint_cache = None;
         self.awakened = state.awakened;
         self.cooldowns = state.cooldowns;
         self.new_role_states = state.new_role_states;

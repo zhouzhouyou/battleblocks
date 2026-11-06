@@ -2,6 +2,7 @@
 use crate::content::Skill;
 use crate::outline;
 use macroquad::prelude::*;
+mod atlas;
 mod ember_blast;
 mod hammer_smash;
 mod heavy_landing;

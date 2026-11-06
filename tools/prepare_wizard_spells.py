@@ -27,7 +27,7 @@ for name,count,columns,raw,states in zip(['lightning','meteor'],[29,29],[6,6],ra
     atlas=Image.new('RGBA',(columns*512,((count+columns-1)//columns)*512))
     for i,frame in enumerate(frames):atlas.paste(frame,((i%columns)*512,(i//columns)*512))
     path=ROOT/f'assets/effects/wizard-{name}.webp'
-    atlas.save(path,lossless=True,exact=True,method=6)
+    atlas.save(path,lossless=True,exact=True,method=6,quality=100)
     with Image.open(path) as check:assert check.convert('RGBA').tobytes()==atlas.tobytes()
     assert frames[-1].getextrema()[3]==(0,0)
     previews=[]

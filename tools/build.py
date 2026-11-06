@@ -6,6 +6,7 @@ CACHE=ROOT/'.build-tools'
 FONT_URL='https://raw.githubusercontent.com/google/fonts/main/ofl/notosanssc/NotoSansSC%5Bwght%5D.ttf'
 FONT_SHA256='a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da'
 FONTTOOLS='4.67.0'
+PILLOW='13.0.0'
 parser=argparse.ArgumentParser();parser.add_argument('--setup-only',action='store_true');group=parser.add_mutually_exclusive_group();group.add_argument('--native-only',action='store_true');group.add_argument('--web-only',action='store_true');args=parser.parse_args()
 if sys.version_info<(3,10): raise SystemExit('Font build tools require Python 3.10 or newer.')
 CACHE.mkdir(exist_ok=True)
@@ -21,13 +22,18 @@ site=CACHE/'site'
 if not (site/f'fonttools-{FONTTOOLS}.dist-info').exists():
     shutil.rmtree(site,ignore_errors=True)
     subprocess.run([sys.executable,'-m','pip','install','--target',str(site),f'fonttools=={FONTTOOLS}'],check=True)
+art_site=CACHE/'art-site'
+if not (art_site/f'pillow-{PILLOW}.dist-info').exists():
+    shutil.rmtree(art_site,ignore_errors=True)
+    subprocess.run([sys.executable,'-m','pip','install','--target',str(art_site),f'pillow=={PILLOW}'],check=True)
 path_file=CACHE/'python-path.txt'
 if not path_file.exists() or path_file.read_text()!=sys.executable:path_file.write_text(sys.executable)
 if args.setup_only:raise SystemExit(0)
 cargo=shutil.which('cargo') or str(Path.home()/'.cargo/bin/cargo')
 rustup=shutil.which('rustup') or str(Path.home()/'.cargo/bin/rustup')
 if not args.native_only:subprocess.run([rustup,'target','add','wasm32-unknown-unknown'],check=True)
-commands=[[sys.executable,str(ROOT/'tools/check_repository.py')], [cargo,'test','--locked']]
+commands=[[sys.executable,str(ROOT/'tools/optimize_webp.py'),'--check'], [sys.executable,str(ROOT/'tools/check_repository.py')], [cargo,'test','--locked']]
+commands.insert(1,[sys.executable,str(ROOT/'tools/test_optimize_webp.py')])
 commands.append([sys.executable, str(ROOT/'tools/test_balance.py')])
 if not args.web_only:commands.append([cargo,'build','--release','--locked','--bin','battleblocks'])
 if not args.native_only:commands.append([cargo,'build','--release','--locked','--bin','battleblocks','--target','wasm32-unknown-unknown'])

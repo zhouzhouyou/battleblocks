@@ -161,7 +161,7 @@ mod gravity;
 pub use gravity::*;
 
 /// Role-specific swaps are transactional, including invalid coordinates.
-#[allow(dead_code)] // Legacy probes and tests use the default-topology wrapper.
+#[cfg(test)]
 pub fn hero_swap(b: &mut Board, a: (usize, usize), c: (usize, usize), hero: usize) -> bool {
     hero_swap_in(b, a, c, hero, BoardMechanics::default())
 }
@@ -172,10 +172,29 @@ pub fn hero_swap_in(
     hero: usize,
     mechanics: BoardMechanics,
 ) -> bool {
+    let original = *b;
+    if !swap_shape_in(b, a, c, hero, mechanics) {
+        return false;
+    }
+    if matches_in(b, mechanics).is_empty() {
+        *b = original;
+        false
+    } else {
+        true
+    }
+}
+
+/// Shared movement geometry for matching and nonmatching (forced) exchanges.
+pub(crate) fn swap_shape_in(
+    b: &mut Board,
+    a: Cell,
+    c: Cell,
+    hero: usize,
+    mechanics: BoardMechanics,
+) -> bool {
     if !adjacent(a, c, hero) || !exchange_allowed(a, c, hero, false, mechanics) {
         return false;
     }
-    let original = *b;
     if crate::content::movement_profile(hero).columns && a.1 == c.1 {
         for y in 0..N {
             swap(b, (a.0, y), (c.0, y));
@@ -183,11 +202,30 @@ pub fn hero_swap_in(
     } else {
         swap(b, a, c);
     }
-    if matches_in(b, mechanics).is_empty() {
-        *b = original;
-        false
+    true
+}
+
+/// Apply an ordinary or prepared exchange. The result says whether preparation was used.
+/// Illegal inputs leave the board unchanged; callers own status consumption and presentation.
+pub fn exchange_in(
+    b: &mut Board,
+    a: Cell,
+    c: Cell,
+    hero: usize,
+    armed: bool,
+    mechanics: BoardMechanics,
+) -> Option<bool> {
+    if !armed {
+        return hero_swap_in(b, a, c, hero, mechanics).then_some(false);
+    }
+    if !adjacent(a, c, hero) || !exchange_allowed(a, c, hero, armed, mechanics) {
+        return None;
+    }
+    if a.0.abs_diff(c.0) + a.1.abs_diff(c.1) == 1 {
+        parallel_swap(b, a, c);
+        Some(true)
     } else {
-        true
+        hero_swap_in(b, a, c, hero, mechanics).then_some(false)
     }
 }
 pub fn adjacent(a: (usize, usize), c: (usize, usize), hero: usize) -> bool {
@@ -321,6 +359,54 @@ mod insert_tests {
                 })
                 .collect();
             assert_eq!(line, expected, "{gravity:?}");
+        }
+    }
+}
+
+#[cfg(test)]
+mod exchange_tests {
+    use super::*;
+
+    fn base() -> Board {
+        std::array::from_fn(|y| std::array::from_fn(|x| ((x + 2 * y) % 7) as u8))
+    }
+
+    #[test]
+    fn matching_forced_and_prepared_exchanges_share_geometry_and_reject_transactionally() {
+        let original = base();
+        let m = BoardMechanics::default();
+        for armed in [false, true] {
+            let mut b = original;
+            assert_eq!(exchange_in(&mut b, (N, 0), (0, 0), 0, armed, m), None);
+            assert_eq!(b, original);
+        }
+        let mut b = original;
+        assert_eq!(exchange_in(&mut b, (3, 3), (4, 3), 2, false, m), None);
+        assert_eq!(b, original);
+        assert_eq!(exchange_in(&mut b, (3, 3), (4, 3), 2, true, m), Some(true));
+        for y in 0..N {
+            for x in 0..N {
+                let from = if (2..=4).contains(&y) && x == 3 {
+                    4
+                } else if (2..=4).contains(&y) && x == 4 {
+                    3
+                } else {
+                    x
+                };
+                assert_eq!(b[y][x], original[y][from]);
+            }
+        }
+        let mut b = original;
+        assert!(crate::role_state::force_swap_in(
+            &mut b,
+            (2, 3),
+            (3, 3),
+            0,
+            m
+        ));
+        for y in 0..N {
+            assert_eq!(b[y][2], original[y][3]);
+            assert_eq!(b[y][3], original[y][2]);
         }
     }
 }

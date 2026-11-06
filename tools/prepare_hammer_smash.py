@@ -29,7 +29,7 @@ for i, frame in enumerate(frames):
     atlas.paste(frame, ((i%COLUMNS)*WIDTH, (i//COLUMNS)*HEIGHT))
 out = ROOT/'assets/effects/hammer-smash.webp'
 out.parent.mkdir(parents=True, exist_ok=True)
-atlas.save(out, lossless=True, exact=True, method=6)
+atlas.save(out, lossless=True, exact=True, method=6, quality=100)
 with Image.open(out) as decoded:
     assert decoded.convert('RGBA').tobytes() == atlas.tobytes(), 'WebP must preserve every pixel'
 assert frames[-1].getextrema()[3] == (0, 0), 'effect must end empty'

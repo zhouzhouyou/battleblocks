@@ -311,8 +311,17 @@ pub(crate) fn procedural_cell(x: f32, y: f32) {
         Color::from_rgba(214, 193, 167, 255),
     );
 }
+pub(crate) fn decode_webp(bytes: &[u8]) -> image::RgbaImage {
+    let decoder = image::codecs::webp::WebPDecoder::new(std::io::Cursor::new(bytes))
+        .expect("runtime WebP header");
+    image::DynamicImage::from_decoder(decoder)
+        .expect("runtime WebP pixels")
+        .into_rgba8()
+}
+
 pub(crate) fn texture(bytes: &[u8]) -> Texture2D {
-    let t = Texture2D::from_file_with_format(bytes, None);
+    let rgba = decode_webp(bytes);
+    let t = Texture2D::from_rgba8(rgba.width() as u16, rgba.height() as u16, rgba.as_raw());
     t.set_filter(FilterMode::Nearest);
     t
 }

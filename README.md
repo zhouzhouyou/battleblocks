@@ -169,4 +169,4 @@ macOS 评审包默认在本地构建；`.github/workflows/macos-build.yml` 仅�
 
 源码职责与未来角色扩展见 [代码结构](docs/ARCHITECTURE.md)。`main.rs` 只做启动与调度，角色技能、共用结算、战斗操作和绘制分开维护。
 
-方块图片和消除音效直接使用 `assets/ui/`、`assets/audio/runtime/crush.wav`；制作源与独立实验不保存相同内容的副本。
+方块图片和消除音效直接使用 `assets/ui/`、`assets/audio/runtime/crush.wav`；制作源与独立实验不保存相同内容的副本。所有发布 WebP 必须通过 [无损压缩流程](docs/art/WEBP-EXPORT.md)，构建和打包会检查尚可无损缩小的资源。

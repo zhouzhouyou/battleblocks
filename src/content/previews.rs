@@ -1,6 +1,7 @@
 use super::*;
 
 /// Exact rewards before the first random refill, including conversion matches, cost and caps.
+#[derive(Clone, Copy)]
 pub struct SkillPreview {
     pub enemy_health_after: i32,
     pub awakens_enemy: bool,
@@ -176,10 +177,10 @@ pub fn preview_range_in(
         .find(|&t| legal_target(hero, hp, skill, board, t, rules))
         .unwrap_or((0, 0));
     let mut low = preview_rewards_in(skill, board, first, hero, hp, mp, enemy_hp, bonus, rules);
-    let mut high = preview_rewards_in(skill, board, first, hero, hp, mp, enemy_hp, bonus, rules);
+    let mut high = low;
     for y in 0..N {
         for x in 0..N {
-            if !legal_target(hero, hp, skill, board, (x, y), rules) {
+            if (x, y) == first || !legal_target(hero, hp, skill, board, (x, y), rules) {
                 continue;
             }
             let p = preview_rewards_in(skill, board, (x, y), hero, hp, mp, enemy_hp, bonus, rules);
@@ -253,14 +254,7 @@ pub fn preview_move_in(
     rules: Rules,
 ) -> Option<MovePreview> {
     let mut copy = *board;
-    if !crate::board::exchange_allowed(a, c, hero, armed, rules.board_mechanics) {
-        return None;
-    }
-    if armed && crate::board::adjacent(a, c, hero) && a.0.abs_diff(c.0) + a.1.abs_diff(c.1) == 1 {
-        crate::board::parallel_swap(&mut copy, a, c);
-    } else if !crate::board::hero_swap_in(&mut copy, a, c, hero, rules.board_mechanics) {
-        return None;
-    }
+    crate::board::exchange_in(&mut copy, a, c, hero, armed, rules.board_mechanics)?;
     if !reachable_cell(hero, hp, a, rules) || !reachable_cell(hero, hp, c, rules) {
         return None;
     }

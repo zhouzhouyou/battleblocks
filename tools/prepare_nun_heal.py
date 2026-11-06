@@ -71,7 +71,7 @@ for hurt,name in [(False,'normal'),(True,'damage')]:
     for layer,frames in enumerate(layers):
         for i,im in enumerate(frames):atlas.paste(im,((i%COLS)*W,(i//COLS+layer*5)*H))
     target=ROOT/f'assets/effects/nun-heal-{name}.webp'
-    atlas.save(target,lossless=True,exact=True,method=6)
+    atlas.save(target,lossless=True,exact=True,method=6,quality=100)
     assert Image.open(target).convert('RGBA').tobytes()==atlas.tobytes()
     previews=[]
     for i in range(COUNT):

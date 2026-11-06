@@ -28,29 +28,7 @@ pub fn utility(
                             statuses: state.statuses,
                             ..rules
                         };
-                        crate::strategy::choose_move_in(&next, hp, id, mp, id, 1, next_rules)
-                            .map(|(p, q)| {
-                                let mut after = next;
-                                crate::board::hero_swap_in(
-                                    &mut after,
-                                    p,
-                                    q,
-                                    id,
-                                    next_rules.board_mechanics,
-                                );
-                                crate::strategy::score(
-                                    &after,
-                                    id,
-                                    hp,
-                                    mp,
-                                    Rules {
-                                        horizontal: p.1 == q.1,
-                                        swap_clear: true,
-                                        ..next_rules
-                                    },
-                                ) as i32
-                            })
-                            .unwrap_or(0)
+                        crate::strategy::best_move_score_in(&next, id, hp, mp, next_rules) as i32
                     })
                     .unwrap_or(0)
                     - skill_cost_in(id, skill, rules) / 5,
@@ -63,23 +41,7 @@ pub fn utility(
                 statuses: state.statuses,
                 ..rules
             };
-            let future = crate::strategy::choose_move_in(b, hp, id, mp, id, 1, next_rules)
-                .map(|(a, c)| {
-                    let mut next = *b;
-                    crate::board::hero_swap_in(&mut next, a, c, id, rules.board_mechanics);
-                    crate::strategy::score(
-                        &next,
-                        id,
-                        hp,
-                        mp,
-                        Rules {
-                            swap_clear: true,
-                            horizontal: a.1 == c.1,
-                            ..next_rules
-                        },
-                    ) as i32
-                })
-                .unwrap_or(0);
+            let future = crate::strategy::best_move_score_in(b, id, hp, mp, next_rules) as i32;
             Some(future - swap_value as i32 - skill_cost_in(id, skill, rules) / 5)
         }
         _ => None,

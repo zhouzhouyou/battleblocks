@@ -1,6 +1,8 @@
 //! Snapshot-owned character state and turn-local skill preparation. Board changes use the same rules in the
 //! live loop and previews; random choices are supplied by the saved RNG stream.
-use crate::board::{self, Board, N};
+#[cfg(test)]
+use crate::board::N;
+use crate::board::{self, Board};
 use crate::content::{self, Skill, StatusDuration, StatusId, StatusSet};
 
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
@@ -117,18 +119,11 @@ pub fn force_swap_in(
     hero: usize,
     mechanics: board::BoardMechanics,
 ) -> bool {
-    if !board::adjacent(a, b, hero) || !board::exchange_allowed(a, b, hero, false, mechanics) {
-        return false;
-    }
     let mut copy = *board;
-    if content::movement_profile(hero).columns && a.1 == b.1 {
-        for y in 0..N {
-            board::swap(&mut copy, (a.0, y), (b.0, y));
-        }
-    } else {
-        board::swap(&mut copy, a, b);
-    }
-    if copy == *board || !mechanics.matches(&copy).is_empty() {
+    if !board::swap_shape_in(&mut copy, a, b, hero, mechanics)
+        || copy == *board
+        || !mechanics.matches(&copy).is_empty()
+    {
         return false;
     }
     *board = copy;

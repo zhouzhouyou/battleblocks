@@ -1,6 +1,35 @@
 use crate::content::Rules;
 use crate::{content::Skill, Board, N};
 type Move = ((usize, usize), (usize, usize));
+
+/// Apply a candidate to a private board, with the same exchange and reward context everywhere.
+fn after_move(
+    b: &Board,
+    hero: usize,
+    a: (usize, usize),
+    c: (usize, usize),
+    rules: Rules,
+) -> (Board, Rules) {
+    let mut copy = *b;
+    let _ = crate::board::exchange_in(&mut copy, a, c, hero, false, rules.board_mechanics);
+    (
+        copy,
+        Rules {
+            horizontal: a.1 == c.1,
+            swap_clear: true,
+            ..rules
+        },
+    )
+}
+
+pub(crate) fn best_move_score_in(b: &Board, hero: usize, hp: i32, mp: i32, rules: Rules) -> f32 {
+    choose_move_in(b, hp, hero, mp, hero, 1, rules)
+        .map(|(a, c)| {
+            let (next, next_rules) = after_move(b, hero, a, c, rules);
+            score(&next, hero, hp, mp, next_rules)
+        })
+        .unwrap_or(0.)
+}
 pub(crate) fn score(b: &Board, hero: usize, hp: i32, mp: i32, rules: Rules) -> f32 {
     let batch = crate::content::clear_batch_in(
         hero,
@@ -54,19 +83,8 @@ pub fn choose_move_in(
     moves
         .into_iter()
         .map(|(a, c)| {
-            let mut copy = *b;
-            crate::board::hero_swap_in(&mut copy, a, c, hero, rules.board_mechanics);
-            let mut value = score(
-                &copy,
-                hero,
-                hp,
-                mp,
-                Rules {
-                    horizontal: a.1 == c.1,
-                    swap_clear: true,
-                    ..rules
-                },
-            );
+            let (mut copy, move_rules) = after_move(b, hero, a, c, rules);
+            let mut value = score(&copy, hero, hp, mp, move_rules);
             if level == 2 {
                 for (x, y) in rules.board_mechanics.matches(&copy) {
                     copy[y][x] = 255;
@@ -117,7 +135,7 @@ pub fn choose_skill(
 ) -> Option<Skill> {
     choose_skill_in(b, id, hp, mp, level, armed, bonus, Rules::default())
 }
-#[allow(dead_code)] // Legacy balance probe entry point.
+#[cfg(test)]
 pub fn choose_skill_in(
     b: &Board,
     id: usize,
@@ -313,30 +331,7 @@ pub fn choose_force_move_in(
                     statuses: state.statuses,
                     ..rules
                 };
-                let value = choose_move_in(&next, hp, id, mp, id, 1, next_rules)
-                    .map(|(p, q)| {
-                        let mut after = next;
-                        crate::board::hero_swap_in(
-                            &mut after,
-                            p,
-                            q,
-                            id,
-                            next_rules.board_mechanics,
-                        );
-                        score(
-                            &after,
-                            id,
-                            hp,
-                            mp,
-                            Rules {
-                                horizontal: p.1 == q.1,
-                                swap_clear: true,
-                                ..next_rules
-                            },
-                        )
-                    })
-                    .unwrap_or(0.)
-                    + bonus as f32;
+                let value = best_move_score_in(&next, id, hp, mp, next_rules) + bonus as f32;
                 if best.as_ref().is_none_or(|(_, v)| value > *v) {
                     best = Some(((a, c), value));
                 }

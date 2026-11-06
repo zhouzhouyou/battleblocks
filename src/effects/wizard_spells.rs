@@ -38,12 +38,7 @@ fn frame(skill: Skill, elapsed: f32) -> Option<Rect> {
     }
     let index = ((elapsed * timing::FPS).floor() as usize).min(timing::FRAMES - 1);
     let columns = timing::COLUMNS;
-    Some(Rect::new(
-        (index % columns) as f32 * 512.,
-        (index / columns) as f32 * 512.,
-        512.,
-        512.,
-    ))
+    Some(super::atlas::frame(index, columns, vec2(512., 512.)))
 }
 fn selected(cells: &[(usize, usize)], x: usize, y: usize) -> bool {
     cells.contains(&(x, y))
@@ -141,16 +136,7 @@ impl Effects {
             }
         }
         if let (Some(source), Some(texture)) = (frame(cast.skill, elapsed), texture) {
-            draw_texture_ex(
-                texture,
-                256.,
-                110.,
-                WHITE,
-                DrawTextureParams {
-                    source: Some(source),
-                    ..Default::default()
-                },
-            );
+            super::atlas::draw(texture, vec2(256., 110.), source);
         }
         // Lightning restores mana. Its motes converge on the caster's mana bar, never the opponent.
         if cast.skill == Skill::Lightning && (1.5..2.6).contains(&elapsed) {
