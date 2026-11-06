@@ -1,6 +1,6 @@
 //! Skill targeting translates player choices into board topology edits.
 use super::*;
-use crate::board::{BoardMechanics, Gravity, PortalPair};
+use crate::board::{BoardMechanics, PortalPair};
 /// Pair construction, default partner selection and edge orientation are board
 /// topology; the skill only supplies the chosen target and anchor.
 pub fn pair(rules: Rules, target: (usize, usize)) -> PortalPair {
@@ -15,7 +15,7 @@ pub fn mechanics(skill: Skill, rules: Rules, target: (usize, usize)) -> Option<B
             next.place(pair(rules, target)).ok()?;
         }
         Skill::GravityShift => {
-            next.set_gravity(Gravity::from_quadrant(target), rules.actor_enemy);
+            next.set_gravity_from_quadrant(target, rules.actor_enemy);
         }
         _ => return None,
     }

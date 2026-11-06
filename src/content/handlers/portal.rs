@@ -22,8 +22,7 @@ pub fn active(
         } => {
             **allowed = skill::mechanics(s, ctx.rules, *target).is_some()
                 && (s != Skill::GravityShift
-                    || crate::board::Gravity::from_quadrant(*target)
-                        != ctx.rules.board_mechanics.gravity());
+                    || !ctx.rules.board_mechanics.gravity_matches_quadrant(*target));
         }
         RuleEvent::NoSwapUsable { value, board } => {
             **value = Some((0..N).any(|y| {
