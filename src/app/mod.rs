@@ -7,6 +7,7 @@ mod controls;
 mod exchange;
 mod headless;
 mod hints;
+mod planning;
 pub(crate) use headless::BatchOutcome;
 mod lifecycle;
 mod resolution;
@@ -41,6 +42,9 @@ pub(crate) struct Session {
     hints_hover_open: bool,
     hints_shown: bool,
     hint_cache: Option<hints::HintCache>,
+    advanced_hints: bool,
+    plan_cache: Option<planning::AiPlanCache>,
+    hint_queue: std::collections::VecDeque<planning::PlanStep>,
     hp: i32,
     enemy: i32,
     mp: i32,
@@ -164,13 +168,16 @@ impl Frame {
 }
 impl Session {
     pub(crate) fn new() -> Self {
-        Self::create(true)
+        Self::create(true, false)
     }
     /// Build the canonical headless game model without touching a graphics or audio context.
     pub(crate) fn new_headless() -> Self {
-        Self::create(false)
+        Self::create(false, false)
     }
-    fn create(rendering: bool) -> Self {
+    fn new_simulation() -> Self {
+        Self::create(false, true)
+    }
+    fn create(rendering: bool, simulation: bool) -> Self {
         let zh = std::env::var("BATTLEBLOCKS_LANG")
             .map(|value| value != "en")
             .unwrap_or(true);
@@ -281,7 +288,11 @@ impl Session {
         let reward = true;
         let extra_bonus = 0;
         let armed = false;
-        let console = debug::Console::new(zh);
+        let console = if simulation {
+            debug::Console::detached(zh)
+        } else {
+            debug::Console::new(zh)
+        };
         let game_over_logged = false;
         let awakened = [false; 2];
         let reward_skill = None;
@@ -327,6 +338,9 @@ impl Session {
             hints_hover_open,
             hints_shown,
             hint_cache: None,
+            advanced_hints: false,
+            plan_cache: None,
+            hint_queue: Default::default(),
             hp,
             enemy,
             mp,
@@ -692,6 +706,8 @@ impl Session {
     }
     fn restore(&mut self, state: debug::Snapshot) {
         self.hint_cache = None;
+        self.plan_cache = None;
+        self.hint_queue.clear();
         self.awakened = state.awakened;
         self.cooldowns = state.cooldowns;
         self.new_role_states = state.new_role_states;

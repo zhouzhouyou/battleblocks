@@ -122,6 +122,7 @@ impl Session {
             || self.enemy == 0
             || !self.pending.is_empty()
             || self.action_done
+            || !self.new_role_states[0].turn_start_done
             || self.presentation.busy()
             || self.console.open
             || self.interface.panel.is_some()
@@ -129,6 +130,12 @@ impl Session {
             return;
         }
         self.targeting = None;
+        if self.difficulty > 0 {
+            if let Some(action) = self.best_ai_action(false) {
+                action.inject(self, frame);
+                return;
+            }
+        }
         if self.new_role_states[0].force_armed {
             if let Some(m) = strategy::choose_force_move_in(
                 &self.b,

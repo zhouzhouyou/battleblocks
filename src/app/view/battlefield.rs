@@ -132,6 +132,7 @@ impl Session {
 
     pub(in crate::app) fn hints_ready(&self, frame: &Frame) -> bool {
         self.targeting.is_none()
+            && self.new_role_states[self.enemy_turn as usize].turn_start_done
             && !self.action_done
             && self.pending.is_empty()
             && !self.presentation.busy()
@@ -150,11 +151,36 @@ impl Session {
         Option<(content::Skill, bool)>,
         Option<(content::Skill, bool)>,
     ) {
-        let hints_ready = self.hints_ready(frame);
+        if frame.key(KeyCode::H)
+            && (is_key_down(KeyCode::LeftShift)
+                || is_key_down(KeyCode::RightShift)
+                || is_key_pressed(KeyCode::LeftShift)
+                || is_key_pressed(KeyCode::RightShift))
+        {
+            self.advanced_hints = !self.advanced_hints;
+            self.move_hint_page = 0;
+        }
+        if frame.key(KeyCode::Escape) {
+            self.advanced_hints = false;
+        }
+        if !self.advanced_hints
+            && self.hints_ready(frame)
+            && !self.enemy_turn
+            && frame.clicked(MouseButton::Left)
+            && move_hints_rect().contains(frame.pointer)
+        {
+            self.advanced_hints = true;
+            self.move_hint_page = 0;
+        }
+        let hints_ready = self.hints_ready(frame) && self.hint_queue.is_empty();
         let hints_rect = move_hints_rect();
         // The continuous hover region bridges the entry button and its panel,
         // so a mouse/trackpad can reach rows and pagination without holding H.
-        let hints_region = Rect::new(790., 208., 220., 484.);
+        let hints_region = if self.advanced_hints {
+            Rect::new(574., 208., 436., 500.)
+        } else {
+            Rect::new(790., 208., 220., 484.)
+        };
         self.hints_hover_open = hints_ready
             && !frame.key(KeyCode::Escape)
             && (hints_rect.contains(frame.pointer)
@@ -162,7 +188,7 @@ impl Session {
                     && hints_region.contains(frame.pointer)));
         let show_moves = hints_ready
             && !frame.key(KeyCode::Escape)
-            && (is_key_down(KeyCode::H) || self.hints_hover_open);
+            && (is_key_down(KeyCode::H) || self.hints_hover_open || self.advanced_hints);
         self.hints_shown = show_moves;
         // Hints can be played only on the player's own turn; the enemy's are view-only.
         let player_hover = if !show_moves

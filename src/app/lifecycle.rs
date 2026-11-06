@@ -1,6 +1,9 @@
 use super::*;
 impl Session {
     pub(super) fn reset_battle(&mut self) {
+        self.hint_queue.clear();
+        self.plan_cache = None;
+        self.advanced_hints = false;
         self.b = fresh();
         self.board_mechanics = Default::default();
         self.target_anchor = None;
