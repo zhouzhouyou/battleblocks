@@ -128,7 +128,17 @@ impl Session {
                 };
                 let batch = content::portal_transit_batch(id, hp, mp, &falls, self.rules(side));
                 if !batch.events.is_empty() {
-                    self.apply_batch_rewards_for(batch, side);
+                    let applied = self.apply_batch_rewards_for(batch, side);
+                    if side == self.enemy_turn {
+                        let (after_hp, after_mp) = if side {
+                            (self.enemy, self.enemy_mp)
+                        } else {
+                            (self.hp, self.mp)
+                        };
+                        self.turn_log
+                            .current
+                            .add(after_hp - hp, applied.hit.damage, after_mp - mp);
+                    }
                 }
             }
             self.presentation.fall(falls);

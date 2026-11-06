@@ -285,7 +285,10 @@ impl Session {
         let mut cast_this_frame = false;
         if let Some(skill) = cast {
             let before = self.snapshot();
-            let cast_rules = self.rules(self.enemy_turn);
+            let cast_rules = content::Rules {
+                target_anchor: self.target_anchor,
+                ..self.rules(self.enemy_turn)
+            };
             let id = if self.enemy_turn {
                 self.enemy_id
             } else {

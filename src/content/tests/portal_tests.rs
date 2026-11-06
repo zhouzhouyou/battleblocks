@@ -102,12 +102,12 @@ fn setup_skills_validate_before_cost_and_previews_leave_state_and_rng_untouched(
         (4, 4),
         rules
     ));
-    assert!(payment_in(PORTAL_CUBE, 620, 34, Skill::PortalPair, rules).is_none());
+    assert!(payment_in(PORTAL_CUBE, 620, 54, Skill::PortalPair, rules).is_none());
     assert_eq!(
-        payment_in(PORTAL_CUBE, 620, 35, Skill::PortalPair, rules)
+        payment_in(PORTAL_CUBE, 620, 55, Skill::PortalPair, rules)
             .unwrap()
             .mana,
-        35
+        55
     );
     let p = preview_rewards_in(
         Skill::PortalPair,
@@ -120,7 +120,7 @@ fn setup_skills_validate_before_cost_and_previews_leave_state_and_rng_untouched(
         0,
         rules,
     );
-    assert_eq!((p.heal, p.damage, p.mana_after), (0, 0, 65));
+    assert_eq!((p.heal, p.damage, p.mana_after), (0, 0, 45));
     let invalid = preview_rewards_in(
         Skill::PortalPair,
         &b,
@@ -327,4 +327,35 @@ fn portal_setup_ai_uses_actual_net_rewards_instead_of_a_constant_bonus() {
         .unwrap()
             > 0
     );
+}
+
+#[test]
+fn portals_can_be_recast_when_the_previous_pair_expires_on_the_next_owner_turn() {
+    for side in [false, true] {
+        let mut cooldowns = Cooldowns::default();
+        let mut mechanics = BoardMechanics::default();
+        mechanics
+            .place(PortalPair {
+                a: PortalEdge::at((1, 2), Gravity::Down),
+                b: PortalEdge::at((4, 4), Gravity::Down),
+                owner: side,
+            })
+            .unwrap();
+        cooldowns.cast(side as usize, Skill::PortalPair);
+        assert_eq!(cooldowns.remaining(side as usize, Skill::PortalPair), 1);
+        cooldowns.start_turn((!side) as usize);
+        mechanics.start_turn(!side);
+        assert_eq!(cooldowns.remaining(side as usize, Skill::PortalPair), 1);
+        assert!(mechanics.portals[side as usize].is_some());
+        cooldowns.start_turn(side as usize);
+        mechanics.start_turn(side);
+        assert_eq!(cooldowns.remaining(side as usize, Skill::PortalPair), 0);
+        assert!(mechanics.portals[side as usize].is_none());
+        assert_eq!(
+            payment_in(PORTAL_CUBE, 620, 55, Skill::PortalPair, Rules::default())
+                .unwrap()
+                .mana,
+            55
+        );
+    }
 }

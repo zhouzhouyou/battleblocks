@@ -37,12 +37,12 @@ fn cast_commits_only_valid_pairs_and_undo_restores_board_geometry_and_cost() {
     assert_eq!(s.board_mechanics, before.board_mechanics);
     frame.command_target = Some((4, 4));
     assert!(s.cast_skill(&frame, Some(content::Skill::PortalPair), false));
-    assert_eq!(s.mp, 65);
+    assert_eq!(s.mp, 45);
     assert_eq!(s.board_mechanics.portals[0], Some(portals()));
     assert!(!s.action_done);
     assert_eq!(s.b, before.board);
     assert!(s.targeting.is_none() && s.target_anchor.is_none());
-    assert_eq!(s.cooldowns.remaining(0, content::Skill::PortalPair), 2);
+    assert_eq!(s.cooldowns.remaining(0, content::Skill::PortalPair), 1);
     s.restore(before.clone());
     assert_eq!(s.mp, before.mp);
     assert_eq!(s.board_mechanics, before.board_mechanics);
@@ -64,6 +64,14 @@ fn real_refill_rewards_both_owners_on_either_turn_and_rollback_replays_rng() {
         assert_eq!(s.b[3][1], 0);
         assert_eq!((s.mp, s.enemy_mp), (101, 101));
         assert_eq!((s.hp, s.enemy), (500, 500));
+        assert_eq!(
+            (
+                s.turn_log.current.heal,
+                s.turn_log.current.damage,
+                s.turn_log.current.mana
+            ),
+            (1, 1, 1)
+        );
         s.restore(before);
         s.resolve_pending(1.);
         assert_eq!(s.b, after.board);
@@ -171,7 +179,7 @@ fn placing_a_pair_queues_remote_matches_immediately_and_preview_equals_real_firs
         frame.command_skill = Some(content::Skill::PortalPair);
         assert!(s.cast_skill(&frame, Some(content::Skill::PortalPair), false));
         assert_eq!(s.pending, vec![(1, 1), (1, 2), (4, 5)]);
-        assert_eq!(s.mp, 65);
+        assert_eq!(s.mp, 45);
         assert_eq!(s.chain, 1);
         assert!(!s.action_done);
         s.resolve_pending(1.);
@@ -329,6 +337,64 @@ fn known_transit_preview_matches_actual_caps_defenders_and_both_side_orders() {
                 actual,
                 "actor_enemy={side}, opponent={opponent}"
             );
+        }
+    }
+}
+
+#[test]
+fn enemy_portal_cast_preserves_the_planned_anchor_in_validation_and_effects() {
+    let mut s = session();
+    s.enemy_turn = true;
+    s.target_anchor = Some((1, 2));
+    let mut frame = Frame::headless(1.);
+    frame.command_skill = Some(content::Skill::PortalPair);
+    frame.command_target = Some((4, 4));
+    assert!(s.cast_skill(&frame, Some(content::Skill::PortalPair), false));
+    let mut expected = portals();
+    expected.owner = true;
+    assert_eq!(s.board_mechanics.portals[1], Some(expected));
+    assert_eq!(s.enemy_mp, 45);
+    assert_eq!(s.cooldowns.remaining(1, content::Skill::PortalPair), 1);
+    assert!(!s.action_done);
+}
+
+#[test]
+fn portal_and_copying_priest_finish_the_previously_stalled_seed() {
+    let mut s = session();
+    let result = s.headless_batch_match(
+        content::PORTAL_CUBE,
+        content::PRIEST,
+        5541476115080839947,
+        1,
+        20000,
+    );
+    assert!(
+        result.winner.is_some(),
+        "stalled at round {}",
+        result.rounds
+    );
+}
+
+#[test]
+fn portal_mirrors_finish_with_both_sides_using_the_same_two_gate_limit() {
+    let mut s = session();
+    for (level, seed) in [(1, 361201), (2, 361202)] {
+        let result = s.headless_batch_match(
+            content::PORTAL_CUBE,
+            content::PORTAL_CUBE,
+            seed,
+            level,
+            20000,
+        );
+        assert!(
+            result.winner.is_some(),
+            "mirror stalled: level={level}, seed={seed}"
+        );
+        assert_eq!(s.board_mechanics.portals.len(), 2);
+        for (side, pair) in s.board_mechanics.portals.iter().enumerate() {
+            if let Some(pair) = pair {
+                assert_eq!(pair.owner, side == 1);
+            }
         }
     }
 }

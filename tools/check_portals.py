@@ -20,13 +20,13 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-portals-') as directory:
     casts = [e for e in records if e['event'] == 'skill']
     assert len(casts) == 3, [e['detail'] for e in casts]
     portal, up, right = casts
-    assert portal['after']['mp'] == 125 and not portal['after']['action_done']
+    assert portal['after']['mp'] == 105 and not portal['after']['action_done']
     assert portal['before']['board'] == portal['after']['board']
     gates = portal['after']['board_mechanics']['portals']
     assert gates == [{'a': [1, 2, True], 'b': [4, 4, True], 'owner': False}], gates
     assert up['after']['board_mechanics']['gravity'] == 'Up'
     assert up['after']['board_mechanics']['portals'] == gates
-    assert up['after']['mp'] == 100
+    assert up['after']['mp'] == 80
     assert right['after']['board_mechanics']['gravity'] == 'Right'
     assert right['after']['board_mechanics']['portals'] == []
     undos = [e for e in records if e['event'] == 'rollback']
@@ -69,7 +69,7 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-portals-') as directory:
     records = [json.loads(line) for line in log.read_text().splitlines()]
     cast = next(e for e in records if e['event'] == 'skill')
     assert cast['after']['pending'] == [[1, 1], [1, 2], [4, 5]], cast['after']['pending']
-    assert cast['after']['mp'] == 125 and not cast['after']['action_done']
+    assert cast['after']['mp'] == 105 and not cast['after']['action_done']
     resolution = next(e for e in records if e['event'] == 'resolution')
     assert 'damage=21' in resolution['detail'], resolution['detail']
     assert resolution['action'] == cast['action']
