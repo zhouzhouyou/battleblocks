@@ -1,4 +1,5 @@
 use super::*;
+
 impl Session {
     fn draw_board_mechanics(&self, frame: &Frame) {
         let draw_edge = |edge: board::PortalEdge, color: Color| {
@@ -100,13 +101,32 @@ impl Session {
                 );
             }
         }
-        if self.board_mechanics.gravity_effect.is_some() {
-            let (dx, dy) = self.board_mechanics.gravity().vector();
-            let end = vec2(744. + dx as f32 * 14., 86. + dy as f32 * 14.);
-            draw_line(744., 86., end.x, end.y, 3., SKYBLUE);
-            let d = vec2(dx as f32, dy as f32);
-            let n = vec2(-d.y, d.x);
-            draw_triangle(end, end - d * 8. + n * 5., end - d * 8. - n * 5., SKYBLUE);
+    }
+    /// Shade the settling side the actor cannot reach; the axis follows gravity.
+    fn draw_reach_mask(&self) {
+        let depth = content::reachable_depth(self.hero_id, self.hp, self.rules(false));
+        if depth >= N || self.enemy_turn || !self.pending.is_empty() || self.action_done {
+            return;
+        }
+        let excluded = (N - depth) as f32 * 64.;
+        let grain = Color::new(0., 0., 0., 0.35);
+        match self.board_mechanics.gravity() {
+            board::Gravity::Down => {
+                draw_rectangle(256., 110., 512., excluded, grain);
+                draw_line(256., 110. + excluded, 768., 110. + excluded, 2., GOLD);
+            }
+            board::Gravity::Up => {
+                draw_rectangle(256., 622. - excluded, 512., excluded, grain);
+                draw_line(256., 622. - excluded, 768., 622. - excluded, 2., GOLD);
+            }
+            board::Gravity::Left => {
+                draw_rectangle(768. - excluded, 110., excluded, 512., grain);
+                draw_line(768. - excluded, 110., 768. - excluded, 622., 2., GOLD);
+            }
+            board::Gravity::Right => {
+                draw_rectangle(256., 110., excluded, 512., grain);
+                draw_line(256. + excluded, 110., 256. + excluded, 622., 2., GOLD);
+            }
         }
     }
 
@@ -359,31 +379,8 @@ impl Session {
         }
         self.presentation.draw_tiles(self.tiles());
         self.draw_board_mechanics(frame);
-        if content::reachable_rows(self.hero_id, self.hp, self.rules(false)) < N
-            && !self.enemy_turn
-            && self.pending.is_empty()
-            && !self.action_done
-        {
-            let excluded = N - content::reachable_rows(self.hero_id, self.hp, self.rules(false));
-            if excluded > 0 {
-                draw_rectangle(
-                    256.,
-                    110.,
-                    512.,
-                    excluded as f32 * 64.,
-                    Color::new(0., 0., 0., 0.35),
-                );
-                draw_line(
-                    256.,
-                    110. + excluded as f32 * 64.,
-                    768.,
-                    110. + excluded as f32 * 64.,
-                    2.,
-                    GOLD,
-                );
-            }
-        }
-        if content::reachable_rows(self.hero_id, self.hp, self.rules(false)) < N
+        self.draw_reach_mask();
+        if content::reachable_depth(self.hero_id, self.hp, self.rules(false)) < N
             && self.feedback_time > 0.
             && self.feedback == self.rejection_message(false)
         {

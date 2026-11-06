@@ -238,3 +238,45 @@ fn ai_and_hints_share_blocked_matching_and_never_preview_an_illegal_exchange() {
         assert!(p.is_some());
     }
 }
+
+#[test]
+fn only_the_gravity_setup_skill_advertises_gravity_control() {
+    assert!(skill_profile(Skill::GravityShift, Rules::default()).gravity_change);
+    assert!(!skill_profile(Skill::PortalPair, Rules::default()).gravity_change);
+    assert!(!skill_profile(Skill::Hammer, Rules::default()).gravity_change);
+}
+
+#[test]
+fn portal_pair_defaults_to_the_opposite_gravity_line_inside_the_board() {
+    for (gravity, target, partner) in [
+        (Gravity::Down, (1, 2), (5, 2)),
+        (Gravity::Up, (1, 2), (5, 2)),
+        (Gravity::Left, (1, 2), (1, 6)),
+        (Gravity::Right, (1, 2), (1, 6)),
+    ] {
+        let mut mechanics = BoardMechanics::default();
+        mechanics.set_gravity(gravity, false);
+        let pair = mechanics.portal_pair(target, None, false);
+        assert_eq!(pair.a.cell, partner, "{gravity:?}");
+        assert_eq!(pair.b.cell, target);
+        assert_eq!(pair.a.horizontal, gravity.vertical());
+        assert_eq!(pair.b.horizontal, gravity.vertical());
+        assert!(!pair.owner);
+    }
+}
+
+#[test]
+fn board_methods_resolve_gravity_from_quadrants() {
+    let mut mechanics = BoardMechanics::default();
+    for (target, gravity) in [
+        ((0, 0), Gravity::Up),
+        ((7, 0), Gravity::Right),
+        ((0, 7), Gravity::Left),
+        ((7, 7), Gravity::Down),
+    ] {
+        mechanics.set_gravity_from_quadrant(target, false);
+        assert_eq!(mechanics.gravity(), gravity);
+        assert!(mechanics.gravity_matches_quadrant(target));
+    }
+    assert!(!mechanics.gravity_matches_quadrant((0, 0)));
+}

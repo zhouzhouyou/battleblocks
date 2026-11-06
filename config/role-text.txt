@@ -6,9 +6,9 @@ DwarfStrength.description|Each attack-bearing tile deals 2 extra damage.|每个�
 Might.name|Might|大力
 Might.description|Each attack-bearing tile deals 2 extra damage.|每个攻击方块额外造成2伤害
 Short.name|Short|矮
-Short.description|Only reach the bottom four rows. On enemy swaps, damage from tiles cleared in the top four rows is blocked.|只能操作下方四行；敌方交换消除时，上方四行方块产生的伤害无效
+Short.description|Only reach the four rows or columns gravity settles toward. On enemy swaps, damage from tiles cleared in the four upstream rows or columns is blocked.|只能操作重力下游（方块落向的一侧）四行或四列；敌方交换消除时，重力上游四行或四列方块产生的伤害无效
 Grudge.name|Book of grudges|仇恨之书
-Grudge.description|At 80%, 60%, 40% current HP cap, reach one extra row per threshold. Healing reduces the book height.|生命不高于当前上限80%／60%／40%时，每级额外触及一行，最多三级；恢复生命会降低书的厚度与范围
+Grudge.description|At 80%, 60%, 40% current HP cap, reach one extra settling row or column per threshold. Healing reduces the book height.|生命不高于当前上限80%／60%／40%时，每级额外触及下游一行或一列，最多三级；恢复生命会降低书的厚度与范围
 Clumsy.name|Clumsy|笨拙
 Clumsy.description|Horizontal swaps exchange whole adjacent columns. Direct clears from a column swap gain +8% rewards.|左右移动时交换相邻两整列；整列交换产生的直接消除收益 +8%
 ClumsyAwake.name|Clumsy+|笨拙·觉醒
@@ -39,7 +39,7 @@ Status.double|Double rewards|消除增幅准备
 Status.parallel|Parallel swap|三线换位准备
 Status.frenzy.description|Your healing for the opponent becomes damage. Your own healing still works.|为对手触发的治疗改为伤害；自身治疗照常生效
 Status.rational.description|Madness is disabled. Normal attacks still deal damage.|暂时禁用癫狂；普通攻击仍造成伤害
-Status.reach.description|You can reach one additional row.|可操作范围增加一行
+Status.reach.description|You can reach one additional row or column.|可操作范围增加一行或一列
 Status.double.description|Your next clear gains 100% additional effects.|下次消除额外触发100%效果
 Status.parallel.description|The next orthogonal exchange includes its two parallel pairs.|下次正交交换附带两侧平行交换
 ManaAffinity.name|Mana affinity|魔力亲和

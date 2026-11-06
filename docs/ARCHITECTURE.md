@@ -58,7 +58,7 @@ Headless `Session` 是权威游戏模型，GUI 只是同一模型的输入、帧
 - 觉醒修女：友谊之奶仍生效；原自身治疗和派生对手治疗分别由癫狂被动转为伤害。
 - 回归理性：状态通过能力启用查询暂时禁用癫狂，普通攻击不转换。
 
-矮被动只过滤最近来源为上四行交换消除方块的伤害。转换后最近来源是修女能力或状态，原方块位置仅供追溯，不再触发矮。调试 JSONL 的 `reward_event.payload` 保存资源、接收方、数值、当前来源及完整 `source_chain`。
+矮被动只过滤最近来源为重力上游交换消除方块的伤害（上游按当前下沉方向计算）。转换后最近来源是修女能力或状态，原方块位置仅供追溯，不再触发矮。调试 JSONL 的 `reward_event.payload` 保存资源、接收方、数值、当前来源及完整 `source_chain`。
 
 ## 状态、反馈与回滚
 
@@ -74,7 +74,7 @@ Headless `Session` 是权威游戏模型，GUI 只是同一模型的输入、帧
 
 改动收益或事件顺序时验证实际规则、费用、上限、目标差异、来源链、事件终止、预览纯度及回滚。运行 Rust 测试、`tools/check_debug_console.py` 、`tools/check_new_roles.py` 和 `tools/check_ability_events.py`；用 `.build-tools/python-path.txt` 指定的 Python 运行 `tools/build.py` 更新 macOS 和网页包。
 
-传送门与重力接入见 [PORTAL-MECHANICS.md](PORTAL-MECHANICS.md)。`BoardMechanics` 是共享棋盘状态，含施法者与下次自己回合开始过期语义，进入 Snapshot／JSONL；角色被动只监听 `PortalTransit`，不搬运方块。
+传送门与重力接入见 [PORTAL-MECHANICS.md](PORTAL-MECHANICS.md)。`BoardMechanics` 是共享棋盘状态，含施法者与下次自己回合开始过期语义，进入 Snapshot／JSONL；角色被动只监听 `PortalTransit`，不搬运方块。重力方向、深度、门边、默认配对与插入推移都由 `src/board/` 提供；技能只表达目标与效果，不自行按重力分支。
 
 ## 资源与输出的边界
 

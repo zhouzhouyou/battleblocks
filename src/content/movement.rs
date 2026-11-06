@@ -1,13 +1,18 @@
 use super::*;
 
-pub fn reachable_rows(hero: usize, hp: i32, rules: Rules) -> usize {
-    let mut rows = N;
+/// Reach is measured from the downstream edge of the current gravity, so a
+/// "bottom four rows" passive becomes the settling four rows/columns.
+pub fn reachable_depth(hero: usize, hp: i32, rules: Rules) -> usize {
+    let mut depth = N;
     dispatch_rules(
         &EventContext::new(hero, hp, 0, rules),
-        &mut RuleEvent::Reach { rows: &mut rows },
+        &mut RuleEvent::Reach { depth: &mut depth },
         &mut Vec::new(),
     );
-    rows.min(N)
+    depth.min(N)
+}
+pub fn reachable_cell(hero: usize, hp: i32, cell: (usize, usize), rules: Rules) -> bool {
+    rules.board_mechanics.gravity().depth(cell) < reachable_depth(hero, hp, rules)
 }
 pub fn movement_profile(hero: usize) -> MovementProfile {
     let mut profile = MovementProfile::default();
@@ -41,9 +46,9 @@ pub fn legal_swap_region(
     b: (usize, usize),
     rules: Rules,
 ) -> bool {
-    !rules.board_mechanics.blocks(a, b)
-        && a.1 >= N - reachable_rows(hero, hp, rules)
-        && b.1 >= N - reachable_rows(hero, hp, rules)
+    let depth = reachable_depth(hero, hp, rules);
+    let gravity = rules.board_mechanics.gravity();
+    !rules.board_mechanics.blocks(a, b) && gravity.depth(a) < depth && gravity.depth(b) < depth
 }
 
 pub fn legal_target(
@@ -79,8 +84,8 @@ pub fn legal_target(
     if !allowed {
         return false;
     }
-    let rows = reachable_rows(hero, hp, rules);
-    if rows < N && targeted(effective) {
+    let depth = reachable_depth(hero, hp, rules);
+    if depth < N && targeted(effective) {
         let mut copy = *board;
         let e = effect_at_in(effective, &mut copy, target, hero, hp, 0, rules);
         let mut cells = e.cells;
@@ -91,11 +96,19 @@ pub fn legal_target(
                 }
             }
         }
-        if cells.iter().any(|&(_, y)| y < N - rows) {
+        let gravity = rules.board_mechanics.gravity();
+        if cells.iter().any(|&cell| gravity.depth(cell) >= depth) {
             return false;
         }
     }
     true
+}
+/// Uniformly pick a target inside the reachable settling region. Used by
+/// skills whose target is chosen at random (Hammer) so it follows gravity.
+pub fn random_reachable_target(hero: usize, hp: i32, rules: Rules) -> (usize, usize) {
+    let depth = crate::rng::gen_range(0, reachable_depth(hero, hp, rules).max(1));
+    let along = crate::rng::gen_range(0, N - 1);
+    rules.board_mechanics.gravity().cell_at_depth(depth, along)
 }
 /// Actual actions that can continue a no-swap turn. Preparations alone do not unlock a dead board.
 #[cfg(test)]

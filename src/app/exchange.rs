@@ -76,8 +76,8 @@ impl Session {
                 if let Some((a, _)) = frame.command_move {
                     self.selected = Some(a);
                 }
-                if content::reachable_rows(self.hero_id, self.hp, self.rules(false)) < N
-                    && c.1 < N - content::reachable_rows(self.hero_id, self.hp, self.rules(false))
+                if content::reachable_depth(self.hero_id, self.hp, self.rules(false)) < N
+                    && !content::reachable_cell(self.hero_id, self.hp, c, self.rules(false))
                 {
                     self.selected = None;
                     if self.feedback_time <= 0. || self.feedback != self.rejection_message(false) {

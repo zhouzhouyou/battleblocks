@@ -13,6 +13,7 @@ pub fn active(
     match event {
         RuleEvent::Profile { value } => {
             value.paired_target = s == Skill::PortalPair;
+            value.gravity_change = s == Skill::GravityShift;
             value.zero_ai_threshold = true;
         }
         RuleEvent::Targeted { value, .. } => **value = true,
@@ -21,7 +22,7 @@ pub fn active(
         } => {
             **allowed = skill::mechanics(s, ctx.rules, *target).is_some()
                 && (s != Skill::GravityShift
-                    || skill::direction(*target) != ctx.rules.board_mechanics.gravity());
+                    || !ctx.rules.board_mechanics.gravity_matches_quadrant(*target));
         }
         RuleEvent::NoSwapUsable { value, board } => {
             **value = Some((0..N).any(|y| {

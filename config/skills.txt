@@ -17,10 +17,10 @@ Corrupt|Corrupt|伤害转生|Transform attack tiles into healing tiles. Each tri
 Rush|Charge|冲锋|Destroy two adjacent columns. Trigger each tile's attack and mana effects; no healing.|摧毁相邻两列；每块触发攻击与魔力效果，不触发治疗|3|true|||100|destroy
 Miracle|Brute-force miracle|大力出奇迹|Force one adjacent non-matching swap. Does not end turn.|强行执行一次不产生消除的相邻移动；不结束回合|2|false|||40|prepare
 Hammer|Hammer 80|大锤80|Deal 80 damage. Clear a random 2×2 area.|造成80伤害；消除随机2×2区域|1|true|||80|eliminate
-Jump|Jump up|跳起来|Reach one more row this turn. Does not end turn.|本回合可操作范围增加一行；不结束回合|2|false|||0|prepare
+Jump|Jump up|跳起来|Reach one more row or column this turn. Does not end turn.|本回合可操作范围增加一行或一列；不结束回合|2|false|||0|prepare
 Forge|Forge|锻造|Transform a 2×2 area into attack tiles.|将2×2区域转化为攻击方块|1|true|||80|transform
 Entomb|Entomb|埋葬|Store a tile in your pocket. Capacity: two tiles.|将一个方块置入口袋；最多持有两个方块|1|true|||55|store
-Resurrect|Resurrect|复生|Insert a pocket tile. Push tiles down; destroy the bottom tile. Deal 6 damage. Does not end turn.|放入口袋中的方块；下方方块下移，摧毁被挤出的底部方块；造成6伤害；不结束回合|0|false|||25|insert
+Resurrect|Resurrect|复生|Insert a pocket tile. Push tiles along that row or column toward gravity's settling side; destroy the tile at the downstream edge. Deal 6 damage. Does not end turn.|放入口袋中的方块；同行／同列方块向重力下游推移，摧毁被挤出的下游边缘方块；造成6伤害；不结束回合|0|false|||25|insert
 Copy|Borrowed|复制|Copies an opponent active each turn. Uses its cost and turn-ending rule.|每回合随机复制一个对手主动；消耗及是否结束回合随复制技能|1|true|||0|copy
 Frenzy|Into frenzy|陷入癫狂|This turn, healing for the opponent becomes damage. Does not end turn.|本回合为对手触发的治疗改为伤害；不结束回合|1|false|||30|prepare
 Healing|Healing prayer|治疗术|Restore 7% of each side's own max HP.|双方各回复自身最大生命值的7%|3|true|||60|heal

@@ -9,14 +9,6 @@ pub(super) fn effect(skill: Skill, target: (usize, usize)) -> Effect {
         Effect::default()
     }
 }
-pub(super) fn insert(b: &mut Board, target: (usize, usize), tile: u8) {
-    // Insertion pushes toward the bottom even if a future turn changes gravity.
-    for y in (target.1 + 1..N).rev() {
-        b[y][target.0] = b[y - 1][target.0];
-    }
-    b[target.1][target.0] = tile;
-}
-
 pub(super) fn cast(
     skill: Skill,
     b: &mut Board,
@@ -31,7 +23,7 @@ pub(super) fn cast(
             .copied()
             .flatten()
         {
-            insert(b, target, tile);
+            crate::board::insert_tile(b, target, tile, ctx.rules.board_mechanics);
             let mut batch = RewardBatch::default();
             batch.push(
                 Resource::Damage,

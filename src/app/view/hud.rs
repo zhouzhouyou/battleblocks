@@ -1,4 +1,26 @@
 use super::*;
+
+/// A falling-block glyph: a 2x2 cluster with motion lines and an arrow pointing
+/// where tiles settle. It reads without any aviation or level-training knowledge.
+fn draw_gravity_glyph(center: Vec2, gravity: board::Gravity, accent: Color) {
+    let (dx, dy) = gravity.vector();
+    let d = vec2(dx as f32, dy as f32);
+    let n = vec2(-d.y, d.x);
+    let block = center - d * 3.;
+    for (side, along, color) in [
+        (-1., -1., Color::from_rgba(86, 148, 208, 255)),
+        (1., -1., Color::from_rgba(101, 180, 108, 255)),
+        (-1., 1., Color::from_rgba(206, 123, 72, 255)),
+        (1., 1., Color::from_rgba(158, 118, 197, 255)),
+    ] {
+        let cell = block + n * (side * 3.) + d * (along * 3.);
+        draw_rectangle(cell.x - 2.5, cell.y - 2.5, 5., 5., color);
+    }
+    let tail = block + d * 6.;
+    let tip = center + d * 12.;
+    draw_line(tail.x, tail.y, tip.x, tip.y, 2., accent);
+    draw_triangle(tip, tip - d * 5. + n * 3.5, tip - d * 5. - n * 3.5, accent);
+}
 impl Session {
     pub(in crate::app) fn draw_actors(&mut self, frame: &Frame) {
         clear_background(Color::from_rgba(25, 27, 38, 255));
@@ -287,16 +309,7 @@ impl Session {
         }
     }
     pub(in crate::app) fn draw_turns(&mut self, frame: &Frame) {
-        // Title centered over the player's sidebar.
-        let title = tr_key(self.zh, "ui.hud.draw_turns.battle_blocks");
-        let sidebar = side_panel_rect(false);
-        label_centered(
-            title,
-            sidebar.x + sidebar.w / 2.,
-            57.,
-            fit_size(title, 32., sidebar.w - 24.),
-            GOLD,
-        );
+        self.draw_battle_status();
         self.interface
             .draw_top(false, self.muted, self.paused, frame.pointer, self.zh);
         // Two-row turn indicator above the board. The current turn, next to the board,
@@ -489,54 +502,6 @@ impl Session {
             15.,
             previous.x + previous.w - 14. - text_x,
         );
-        if !over {
-            // The rule is permanent in Help; this strip makes the ramp visible in play.
-            let (fatigue, color) = if self.round == content::FATIGUE_START_ROUND {
-                let (damage, healing) = content::fatigue_scales(self.round + 1);
-                let damage = (damage - 100).to_string();
-                let healing = (100 - healing).to_string();
-                (
-                    Some(crate::format_text(
-                        self.zh,
-                        "ui.hud.draw_turns.fatigue_warning",
-                        &[&damage, &healing],
-                    )),
-                    GOLD,
-                )
-            } else if self.round > content::FATIGUE_START_ROUND {
-                let (damage, healing) = content::fatigue_scales(self.round);
-                let damage = (damage - 100).to_string();
-                let healing = (100 - healing).to_string();
-                (
-                    Some(crate::format_text(
-                        self.zh,
-                        "ui.hud.draw_turns.fatigue_active",
-                        &[&damage, &healing],
-                    )),
-                    ORANGE,
-                )
-            } else {
-                (None, GRAY)
-            };
-            if let Some(text) = fatigue {
-                let strip = Rect::new(236., 88., 552., 18.);
-                draw_rectangle(
-                    strip.x,
-                    strip.y,
-                    strip.w,
-                    strip.h,
-                    Color::from_rgba(45, 29, 35, 245),
-                );
-                outline(strip.x, strip.y, strip.w, strip.h, 1., color);
-                label_centered(
-                    &text,
-                    strip.x + strip.w / 2.,
-                    strip.y + 14.,
-                    fit_size(&text, 15., strip.w - 20.),
-                    color,
-                );
-            }
-        }
         // Below the board frame; the hint legend uses this line while hints are shown.
         if self.new_role_states[self.enemy_turn as usize].force_armed && !self.hints_shown {
             label(
@@ -558,5 +523,136 @@ impl Session {
             };
             label(&self.feedback, 262., y, 17., GOLD);
         }
+    }
+    /// The old title area now carries round, gravity and global modifiers.
+    /// The gravity row is absent when neither side can ever change gravity.
+    fn gravity_change_available(&self) -> bool {
+        let available = |id: usize| {
+            content::skills(id, false)
+                .iter()
+                .chain(content::skills(id, true))
+                .any(|&skill| {
+                    content::skill_profile(skill, content::Rules::default()).gravity_change
+                })
+        };
+        available(self.hero_id)
+            || available(self.enemy_id)
+            || self.board_mechanics.gravity_effect.is_some()
+    }
+    fn draw_battle_status(&self) {
+        let gravity_visible = self.gravity_change_available();
+        let (x, w) = (12., 224.);
+        let h = if gravity_visible { 78. } else { 50. };
+        let y = if gravity_visible { 6. } else { 20. };
+        draw_rectangle(x, y, w, h, Color::from_rgba(20, 27, 38, 240));
+        outline(x, y, w, h, 1., Color::new(0.25, 0.28, 0.35, 0.8));
+        let round = crate::format_text(self.zh, "ui.hud.status.round", &[&self.round.to_string()]);
+        label(&round, x + 10., y + 16., 13., LIGHTGRAY);
+        let (heading, heading_color) = if self.round == content::FATIGUE_START_ROUND {
+            (tr_key(self.zh, "ui.hud.status.next_round"), GOLD)
+        } else {
+            (tr_key(self.zh, "ui.hud.status.global"), GRAY)
+        };
+        label(
+            heading,
+            x + w - 10. - label_width(heading, 11.),
+            y + 15.,
+            11.,
+            heading_color,
+        );
+        draw_line(
+            x + 8.,
+            y + 22.,
+            x + w - 8.,
+            y + 22.,
+            1.,
+            Color::from_rgba(45, 53, 66, 255),
+        );
+        let mut row = y + 22.;
+        if gravity_visible {
+            self.draw_gravity_row(x, row);
+            row += 28.;
+            draw_line(
+                x + 8.,
+                row,
+                x + w - 8.,
+                row,
+                1.,
+                Color::from_rgba(45, 53, 66, 255),
+            );
+        }
+        self.draw_global_row(x, row, w);
+    }
+    fn draw_gravity_row(&self, x: f32, y: f32) {
+        let gravity = self.board_mechanics.gravity();
+        let active = self.board_mechanics.gravity_effect;
+        let accent = match active {
+            Some(effect) if effect.owner => ORANGE,
+            Some(_) => SKYBLUE,
+            None => GRAY,
+        };
+        draw_gravity_glyph(vec2(x + 20., y + 14.), gravity, accent);
+        let name = match gravity {
+            board::Gravity::Up => tr_key(self.zh, "ui.gravity.up"),
+            board::Gravity::Down => tr_key(self.zh, "ui.gravity.down"),
+            board::Gravity::Left => tr_key(self.zh, "ui.gravity.left"),
+            board::Gravity::Right => tr_key(self.zh, "ui.gravity.right"),
+        };
+        let title = crate::format_text(self.zh, "ui.gravity.label", &[name]);
+        label(
+            &title,
+            x + 38.,
+            y + 14.,
+            14.,
+            if active.is_some() { accent } else { WHITE },
+        );
+        let state = if let Some(effect) = active {
+            tr_key(
+                self.zh,
+                if effect.owner {
+                    "ui.gravity.until_enemy"
+                } else {
+                    "ui.gravity.until_yours"
+                },
+            )
+        } else {
+            tr_key(self.zh, "ui.gravity.default")
+        };
+        label(
+            state,
+            x + 38.,
+            y + 25.,
+            10.,
+            if active.is_some() { accent } else { GRAY },
+        );
+    }
+    fn draw_global_row(&self, x: f32, y: f32, w: f32) {
+        let displayed_round = if self.round == content::FATIGUE_START_ROUND {
+            self.round + 1
+        } else {
+            self.round
+        };
+        let (damage_scale, healing_scale) = content::fatigue_scales(displayed_round);
+        let damage = (damage_scale - 100).to_string();
+        let healing = (100 - healing_scale).to_string();
+        let color = if self.round < content::FATIGUE_START_ROUND {
+            GRAY
+        } else if self.round == content::FATIGUE_START_ROUND {
+            GOLD
+        } else {
+            ORANGE
+        };
+        let segments = [
+            (
+                crate::format_text(self.zh, "ui.hud.status.damage", &[&damage]),
+                color,
+            ),
+            ("   ".to_string(), GRAY),
+            (
+                crate::format_text(self.zh, "ui.hud.status.healing", &[&healing]),
+                color,
+            ),
+        ];
+        label_segments(&segments, x + 10., y + 18., 13., w - 20.);
     }
 }

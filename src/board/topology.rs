@@ -21,6 +21,55 @@ impl Gravity {
     pub fn vertical(self) -> bool {
         matches!(self, Self::Up | Self::Down)
     }
+    /// Distance from the downstream board edge, along the gravity axis.
+    ///
+    /// Reach and "short" rules count from where tiles settle, so they flip with
+    /// gravity instead of staying tied to the top-left origin's bottom rows.
+    pub fn depth(self, (x, y): Cell) -> usize {
+        match self {
+            Self::Up => y,
+            Self::Down => N - 1 - y,
+            Self::Left => x,
+            Self::Right => N - 1 - x,
+        }
+    }
+    /// Whether a cell lies in the upstream half, away from where tiles settle.
+    pub fn upstream(self, cell: Cell) -> bool {
+        self.depth(cell) >= N / 2
+    }
+    /// Deterministic partner on the opposite gravity line at the same depth.
+    pub fn opposite_line_cell(self, (x, y): Cell) -> Cell {
+        if self.vertical() {
+            ((x + N / 2) % N, y)
+        } else {
+            (x, (y + N / 2) % N)
+        }
+    }
+    /// Inverse of `depth`: a cell at `depth` from the settling edge, `along`
+    /// steps across the gravity axis. Board geometry stays here, not in skills.
+    pub fn cell_at_depth(self, depth: usize, along: usize) -> Cell {
+        match self {
+            Self::Up => (along, depth),
+            Self::Down => (along, N - 1 - depth),
+            Self::Left => (depth, along),
+            Self::Right => (N - 1 - depth, along),
+        }
+    }
+    /// Direction selected by the quadrant containing `cell`.
+    pub fn from_quadrant(cell: Cell) -> Self {
+        let (x, y) = cell;
+        if y < N / 2 {
+            if x < N / 2 {
+                Self::Up
+            } else {
+                Self::Right
+            }
+        } else if x < N / 2 {
+            Self::Left
+        } else {
+            Self::Down
+        }
+    }
     pub fn name(self) -> &'static str {
         match self {
             Self::Up => "Up",
@@ -110,6 +159,14 @@ impl BoardMechanics {
         self.gravity_effect = Some(TimedGravity { direction, owner });
         self.revalidate();
     }
+    /// Set gravity from the board quadrant containing `target`.
+    pub fn set_gravity_from_quadrant(&mut self, target: Cell, owner: bool) {
+        self.set_gravity(Gravity::from_quadrant(target), owner);
+    }
+    /// Whether the quadrant containing `target` already selects current gravity.
+    pub fn gravity_matches_quadrant(self, target: Cell) -> bool {
+        self.gravity() == Gravity::from_quadrant(target)
+    }
     fn revalidate(&mut self) {
         let g = self.gravity();
         for p in &mut self.portals {
@@ -134,6 +191,17 @@ impl BoardMechanics {
             self.gravity(),
             &self.portals.iter().flatten().copied().collect::<Vec<_>>(),
         )
+    }
+    /// Canonical pair for a target cell. Without an anchor, the partner sits on
+    /// the opposite gravity line. Validation remains in `place`.
+    pub fn portal_pair(self, target: Cell, anchor: Option<Cell>, owner: bool) -> PortalPair {
+        let gravity = self.gravity();
+        let first = anchor.unwrap_or_else(|| gravity.opposite_line_cell(target));
+        PortalPair {
+            a: PortalEdge::at(first, gravity),
+            b: PortalEdge::at(target, gravity),
+            owner,
+        }
     }
     pub fn matches(self, board: &Board) -> Vec<Cell> {
         super::matches_in(board, self)

@@ -38,7 +38,7 @@ pub fn handle(
         }
         (StatusId::Frenzy, RuleEvent::Appearance { dark }) => **dark = true,
         (StatusId::Rational, RuleEvent::Appearance { dark }) => **dark = false,
-        (StatusId::ExtraReach, RuleEvent::Reach { rows }) => **rows += 1,
+        (StatusId::ExtraReach, RuleEvent::Reach { depth }) => **depth += 1,
         _ => {}
     }
 }
