@@ -5,6 +5,24 @@ impl Session {
         frame: &mut Frame,
         cast_this_frame: bool,
     ) -> Option<usize> {
+        if self.advanced_hints && self.hints_shown && !self.enemy_turn {
+            if frame.clicked(MouseButton::Left)
+                && !cast_this_frame
+                && self.pending.is_empty()
+                && !self.action_done
+                && self.targeting.is_none()
+                && self.hint_queue.is_empty()
+            {
+                let ranked = self.ranked_ai_plans(false);
+                let plans = &ranked[..ranked.len().min(6)];
+                if let Some(i) = hints::plan_row_at(plans, self.move_hint_page, frame.pointer) {
+                    self.hint_queue = plans[i].steps.clone().into();
+                    self.selected = None;
+                    frame.block_input = true;
+                }
+            }
+            return None;
+        }
         // Clicking a listed exchange (a reward-panel row, or a numbered badge on the
         // board while H is held) plays it through the normal player swap below.
         let mut hint_number = None;

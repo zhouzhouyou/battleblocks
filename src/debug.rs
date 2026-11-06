@@ -118,11 +118,20 @@ pub struct Console {
 }
 impl Console {
     pub fn new(zh: bool) -> Self {
-        let quiet_events = std::env::var_os("BATTLEBLOCKS_HEADLESS_QUIET").is_some();
+        Self::create(zh, false)
+    }
+    /// Private model previews must never open/truncate a log or consume stdin.
+    pub(crate) fn detached(zh: bool) -> Self {
+        Self::create(zh, true)
+    }
+    fn create(zh: bool, detached: bool) -> Self {
+        let quiet_events = detached || std::env::var_os("BATTLEBLOCKS_HEADLESS_QUIET").is_some();
         #[allow(unused_mut)]
         let mut commands = VecDeque::new();
         #[cfg(not(target_arch = "wasm32"))]
-        let (file, receiver, path, open) = {
+        let (file, receiver, path, open) = if detached {
+            (None, std::sync::mpsc::channel().1, String::new(), false)
+        } else {
             use std::io::BufRead;
             let args: Vec<_> = std::env::args().collect();
             // The evaluation protocol owns stdin and emits its own result stream.
@@ -207,7 +216,7 @@ impl Console {
             seq: 0,
             started: macroquad::miniquad::date::now(),
             quiet_events,
-            batch: false,
+            batch: detached,
             action: 0,
             next_action: 0,
             #[cfg(not(target_arch = "wasm32"))]

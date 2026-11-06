@@ -1,6 +1,6 @@
 use super::*;
 impl Session {
-    pub(super) fn choose_cast(&mut self, frame: &Frame) -> Option<content::Skill> {
+    pub(super) fn choose_cast(&mut self, frame: &mut Frame) -> Option<content::Skill> {
         let mut cast = frame.command_skill;
         if self.pending.is_empty() && self.hp > 0 && !self.enemy_turn && !self.action_done {
             for (i, skill) in content::skills(self.hero_id, self.awakened[0])
@@ -28,16 +28,30 @@ impl Session {
             && self.enemy_clock >= 1.1
             && self.pending.is_empty()
             && !self.action_done
+            && self.new_role_states[1].turn_start_done
         {
+            let planned = if self.difficulty > 0 {
+                self.best_ai_action(true)
+            } else {
+                None
+            };
             if self.new_role_states[1].force_armed {
-                if let Some((a, c)) = strategy::choose_force_move_in(
-                    &self.b,
-                    self.enemy_id,
-                    self.enemy,
-                    self.enemy_mp,
-                    self.extra_bonus,
-                    self.rules(true),
-                ) {
+                if let Some((a, c)) = planned
+                    .and_then(|a| match a {
+                        planning::PlanAction::Swap(m) => Some(m),
+                        _ => None,
+                    })
+                    .or_else(|| {
+                        strategy::choose_force_move_in(
+                            &self.b,
+                            self.enemy_id,
+                            self.enemy,
+                            self.enemy_mp,
+                            self.extra_bonus,
+                            self.rules(true),
+                        )
+                    })
+                {
                     let before = self.snapshot();
                     self.console.checkpoint(before.clone());
                     self.new_role_states[1].complete_force_in(
@@ -70,30 +84,54 @@ impl Session {
                     .copied()
                     .filter(|skill| self.cooldowns.remaining(1, *skill) > 0)
                     .collect();
-                cast = strategy::choose_skill_available_in(
-                    &self.b,
-                    self.enemy_id,
-                    self.enemy,
-                    self.enemy_mp,
-                    self.difficulty,
-                    self.armed,
-                    self.extra_bonus,
-                    self.rules(true),
-                    &unavailable,
-                );
-                if cast.is_none() {
-                    if let Some((a, c)) = strategy::choose_move_in(
+                cast = if let Some(action) = planned {
+                    match action {
+                        planning::PlanAction::Cast(skill, target, anchor) => {
+                            frame.command_skill = Some(skill);
+                            frame.command_target = Some(target);
+                            self.target_anchor = anchor;
+                            Some(skill)
+                        }
+                        planning::PlanAction::Swap(_) => None,
+                    }
+                } else {
+                    strategy::choose_skill_available_in(
                         &self.b,
-                        self.enemy,
                         self.enemy_id,
+                        self.enemy,
                         self.enemy_mp,
-                        self.hero_id,
                         self.difficulty,
+                        self.armed,
+                        self.extra_bonus,
                         self.rules(true),
+                        &unavailable,
                     )
-                    .or_else(|| {
-                        if self.armed {
-                            board::move_hints_in(&self.b, self.enemy_id, true, self.board_mechanics)
+                };
+                if cast.is_none() {
+                    if let Some((a, c)) = planned
+                        .and_then(|a| match a {
+                            planning::PlanAction::Swap(m) => Some(m),
+                            _ => None,
+                        })
+                        .or_else(|| {
+                            strategy::choose_move_in(
+                                &self.b,
+                                self.enemy,
+                                self.enemy_id,
+                                self.enemy_mp,
+                                self.hero_id,
+                                self.difficulty,
+                                self.rules(true),
+                            )
+                        })
+                        .or_else(|| {
+                            if self.armed {
+                                board::move_hints_in(
+                                    &self.b,
+                                    self.enemy_id,
+                                    true,
+                                    self.board_mechanics,
+                                )
                                 .into_iter()
                                 .find(|&(a, b)| {
                                     content::legal_swap_region(
@@ -104,10 +142,11 @@ impl Session {
                                         self.rules(true),
                                     )
                                 })
-                        } else {
-                            None
-                        }
-                    }) {
+                            } else {
+                                None
+                            }
+                        })
+                    {
                         let before = enemy_before.clone();
                         self.console.checkpoint(before.clone());
                         self.presentation.swap(
@@ -264,6 +303,11 @@ impl Session {
                 && content::payment_in(id, actor_hp, actor_mp, skill, cast_rules).is_some()
             {
                 content::random_reachable_target(id, actor_hp, cast_rules)
+            } else if let Some(target) = frame
+                .command_target
+                .filter(|_| !self.enemy_turn || frame.command_skill == Some(skill))
+            {
+                target
             } else if self.enemy_turn {
                 strategy::choose_target_in(
                     skill,

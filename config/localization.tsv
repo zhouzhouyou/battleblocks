@@ -78,7 +78,7 @@ ui.hints.draw_hints.first_clear_no_refill_chains	First clear; no refill chains	�
 ui.actions.cast_skill.flesh_casting	Flesh casting	血肉施法
 ui.screen.draw_panel.fullscreen	Fullscreen	全屏
 ui.screen.draw_game_over_buttons.home	Home	回到首页
-ui.hints.draw_hints.hover_to_list_click_to_play	Hover to list · click to play	悬停查看 · 点击条目执行
+ui.hints.draw_hints.hover_to_list_click_to_play	Hover: swaps · Click: plans	悬停交换 · 点击组合提示
 ui.menu.draw.hp_20_max	HP +20% max	回复生命上限20%
 ui.shared.hp	HP	生命
 ui.hints.draw_hints.hp	HP+	治
@@ -93,7 +93,7 @@ ui.menu.draw.max_health	MAX HEALTH	生命上限
 ui.menu.draw.max_mana	MAX MANA	魔力上限
 ui.hints.draw_hints.move_rewards	Move rewards	移动收益
 ui.hints.draw_hints.moves	moves	种交换
-ui.hints.draw_hints.moves_hold_h	Moves · hold H	可行移动 · 按住 H
+ui.hints.draw_hints.moves_hold_h	Hints H · Plans Shift+H	提示 H · 组合 Shift+H
 ui.hints.draw_hints.mp	MP+	魔
 ui.shared.mp	MP	魔力
 ui.menu.draw_passive_entries.new	New	新增
@@ -285,3 +285,14 @@ ui.selection.legacy	Legacy	老角色
 ui.selection.group_hint	Tab: switch group	Tab：切换分组
 ui.selection.random_in_group	This group, excluding your hero	本组随机，排除自己
 note.invalid_target	Invalid target: choose another position	目标无效，请选择其他位置
+ui.hints.plans.title	AI plans · Shift+H / Esc to close	AI 组合提示 · Shift+H / Esc 关闭
+ui.hints.plans.description	AI reward order · simulated cascades · click to execute	按 AI 收益排序 · 含补充连锁推演 · 点击方案全部执行
+ui.hints.plans.summary	#{0} Score {1} · DMG {2} · Cost MP {3} / HP {4}	#{0} 评分 {1} · 伤害 {2} · 消耗 魔力 {3} / 血量 {4}
+ui.hints.plans.paired_target	{0} ({1},{2}) → ({3},{4})	{0} ({1},{2}) → ({3},{4})
+ui.hints.plans.target	{0} ({1},{2})	{0} ({1},{2})
+ui.hints.plans.step	{0}. {1}	{0}. {1}
+ui.hints.plans.step_resources	Cost MP {0} / HP {1} · HP {2} / MP {3} · Enemy HP {4}	消耗 MP {0} / HP {1} · 剩余 HP {2} / MP {3} · 敌 HP {4}
+ui.hints.plans.resources	HP {0} → {1}   MP {2} → {3}   Enemy HP {4}	HP {0} → {1}   MP {2} → {3}   敌方 HP {4}
+ui.hints.plans.none	No executable plans	当前没有可执行方案
+ui.hints.plans.pages	{0} / {1} · {2} plans · ← / →	{0} / {1} · {2} 方案 · ← / →
+ui.hints.plans.position_changed	Position changed; hint plan stopped	局面已变化，已停止提示方案

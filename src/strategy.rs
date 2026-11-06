@@ -30,6 +30,10 @@ pub(crate) fn best_move_score_in(b: &Board, hero: usize, hp: i32, mp: i32, rules
         })
         .unwrap_or(0.)
 }
+/// Shared AI resource weights for single actions and multi-step hints.
+pub(crate) fn reward_value(damage: i32, health: i32, mana: i32) -> f32 {
+    damage as f32 + health as f32 * 0.8 + mana as f32 * 0.65
+}
 pub(crate) fn score(b: &Board, hero: usize, hp: i32, mp: i32, rules: Rules) -> f32 {
     let batch = crate::content::clear_batch_in(
         hero,
@@ -49,9 +53,8 @@ pub(crate) fn score(b: &Board, hero: usize, hp: i32, mp: i32, rules: Rules) -> f
     } else {
         settled.damage
     };
-    progress as f32 - (settled.opponent_hp - original_opponent_hp) as f32
-        + (settled.actor_hp - hp) as f32 * 0.8
-        + (settled.actor_mp - mp) as f32 * 0.65
+    reward_value(progress, settled.actor_hp - hp, settled.actor_mp - mp)
+        - (settled.opponent_hp - original_opponent_hp) as f32
 }
 #[cfg(test)]
 pub fn choose_move(
@@ -80,7 +83,23 @@ pub fn choose_move_in(
     if level == 0 {
         return Some(moves[crate::rng::gen_range(0, moves.len())]);
     }
-    moves
+    ranked_move_options_in(b, hp, hero, mp, opponent, level, rules)
+        .first()
+        .map(|(m, _)| *m)
+}
+
+/// All exchange candidates scored by the same policy used for an AI move.
+pub(crate) fn ranked_move_options_in(
+    b: &Board,
+    hp: i32,
+    hero: usize,
+    mp: i32,
+    opponent: usize,
+    level: usize,
+    rules: Rules,
+) -> Vec<(Move, f32)> {
+    let moves = crate::content::move_options_in(b, hero, hp, rules);
+    let mut ranked: Vec<_> = moves
         .into_iter()
         .map(|(a, c)| {
             let (mut copy, move_rules) = after_move(b, hero, a, c, rules);
@@ -120,8 +139,9 @@ pub fn choose_move_in(
             }
             ((a, c), value)
         })
-        .max_by(|a, b| a.1.total_cmp(&b.1))
-        .map(|(m, _)| m)
+        .collect();
+    ranked.sort_by(|a, b| b.1.total_cmp(&a.1));
+    ranked
 }
 #[cfg(test)]
 pub fn choose_skill(
