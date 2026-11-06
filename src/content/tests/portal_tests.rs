@@ -238,3 +238,10 @@ fn ai_and_hints_share_blocked_matching_and_never_preview_an_illegal_exchange() {
         assert!(p.is_some());
     }
 }
+
+#[test]
+fn only_the_gravity_setup_skill_advertises_gravity_control() {
+    assert!(skill_profile(Skill::GravityShift, Rules::default()).gravity_change);
+    assert!(!skill_profile(Skill::PortalPair, Rules::default()).gravity_change);
+    assert!(!skill_profile(Skill::Hammer, Rules::default()).gravity_change);
+}

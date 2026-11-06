@@ -227,6 +227,8 @@ pub struct SkillProfile {
     pub requires_unarmed: bool,
     pub requires_no_bonus: bool,
     pub zero_ai_threshold: bool,
+    /// Setup skill can change the shared gravity direction.
+    pub gravity_change: bool,
 }
 #[derive(Clone, Copy, Debug, Default)]
 pub struct AbilityCapabilities {

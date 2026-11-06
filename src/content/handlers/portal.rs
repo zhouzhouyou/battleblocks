@@ -13,6 +13,7 @@ pub fn active(
     match event {
         RuleEvent::Profile { value } => {
             value.paired_target = s == Skill::PortalPair;
+            value.gravity_change = s == Skill::GravityShift;
             value.zero_ai_threshold = true;
         }
         RuleEvent::Targeted { value, .. } => **value = true,
