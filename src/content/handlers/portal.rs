@@ -16,10 +16,11 @@ pub fn active(
             value.gravity_change = s == Skill::GravityShift;
             value.zero_ai_threshold = true;
         }
-        RuleEvent::SkillCost { skill, value }
-            if s == Skill::GravityShift && *skill == s && ctx.rules.awake =>
+        RuleEvent::SkillCost { .. }
+            if s == Skill::GravityShift && ctx.rules.awake && ctx.rules.copied_skill == Some(s) =>
         {
-            **value = 15;
+            // Copied actives retain their native awakened cost through the same rule.
+            gravity_mastery_cost(event);
         }
         RuleEvent::Targeted { value, .. } => **value = true,
         RuleEvent::LegalTarget {
@@ -132,4 +133,25 @@ pub fn passive(
     }
     batch.events.extend(rewards.events);
     trigger(out, ctx.owner, id, None);
+}
+
+fn gravity_mastery_cost(event: &mut RuleEvent<'_>) {
+    if let RuleEvent::SkillCost {
+        skill: Skill::GravityShift,
+        value,
+    } = event
+    {
+        **value = 15;
+    }
+}
+
+pub fn mastery(
+    id: AbilityId,
+    ctx: &EventContext,
+    event: &mut RuleEvent<'_>,
+    _: &mut Vec<AbilityTrigger>,
+) {
+    if id == AbilityId::Passive(Passive::GravityMastery) && ctx.rules.awake {
+        gravity_mastery_cost(event);
+    }
 }

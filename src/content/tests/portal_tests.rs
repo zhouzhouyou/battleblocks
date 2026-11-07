@@ -433,3 +433,43 @@ fn gravity_mastery_costs_follow_phase_for_payment_preview_and_copied_skills() {
         55
     );
 }
+
+#[test]
+fn gravity_mastery_is_a_registered_awakened_ability_and_owns_its_cost_rule() {
+    assert!(!passives(PORTAL_CUBE, false).contains(&Passive::GravityMastery));
+    assert!(passives(PORTAL_CUBE, true).contains(&Passive::GravityMastery));
+    assert!(passives(PORTAL_CUBE, true).contains(&Passive::PortalYield));
+    for zh in [false, true] {
+        assert!(!Passive::GravityMastery.name(zh).is_empty());
+        assert!(Passive::GravityMastery.description(zh).contains("15"));
+    }
+    let ctx = EventContext::new(
+        PORTAL_CUBE,
+        300,
+        100,
+        Rules {
+            awake: true,
+            ..Default::default()
+        },
+    );
+    let mut cost = 25;
+    dispatch_active(
+        Skill::GravityShift,
+        &ctx,
+        &mut RuleEvent::SkillCost {
+            skill: Skill::GravityShift,
+            value: &mut cost,
+        },
+        &mut Vec::new(),
+    );
+    assert_eq!(cost, 25);
+    dispatch_rules(
+        &ctx,
+        &mut RuleEvent::SkillCost {
+            skill: Skill::GravityShift,
+            value: &mut cost,
+        },
+        &mut Vec::new(),
+    );
+    assert_eq!(cost, 15);
+}

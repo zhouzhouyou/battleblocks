@@ -41,6 +41,7 @@ pub enum Passive {
     SleepRecovery,
     SoundSleep,
     PortalYield,
+    GravityMastery,
 }
 use Passive::*;
 pub struct AbilityLoadout {
@@ -142,6 +143,7 @@ impl Passive {
         Self::SleepRecovery,
         Self::SoundSleep,
         Self::PortalYield,
+        Self::GravityMastery,
     ];
     fn is_new(self) -> bool {
         matches!(
@@ -162,6 +164,7 @@ impl Passive {
                 | SleepRecovery
                 | SoundSleep
                 | PortalYield
+                | GravityMastery
         )
     }
     pub fn replaces(self) -> Option<Self> {
@@ -183,7 +186,7 @@ impl Passive {
         let key = match self {
             KnightStrength | DwarfStrength | Might | Short | Grudge | Clumsy | ClumsyAwake
             | MindVision | BorrowedSlot | FriendMilk | AutoRecovery | Madness | ManaAffinity
-            | SleepRecovery | SoundSleep | PortalYield => {
+            | SleepRecovery | SoundSleep | PortalYield | GravityMastery => {
                 unreachable!()
             }
             ColumnFormation => "passive.name.column_formation",
@@ -221,7 +224,7 @@ impl Passive {
         let key = match self {
             KnightStrength | DwarfStrength | Might | Short | Grudge | Clumsy | ClumsyAwake
             | MindVision | BorrowedSlot | FriendMilk | AutoRecovery | Madness | ManaAffinity
-            | SleepRecovery | SoundSleep | PortalYield => {
+            | SleepRecovery | SoundSleep | PortalYield | GravityMastery => {
                 unreachable!()
             }
             ColumnFormation => "passive.short_name.column_formation",
@@ -256,7 +259,7 @@ impl Passive {
         let key = match self {
             KnightStrength | DwarfStrength | Might | Short | Grudge | Clumsy | ClumsyAwake
             | MindVision | BorrowedSlot | FriendMilk | AutoRecovery | Madness | ManaAffinity
-            | SleepRecovery | SoundSleep | PortalYield => {
+            | SleepRecovery | SoundSleep | PortalYield | GravityMastery => {
                 unreachable!()
             }
             ColumnFormation => "passive.description.column_formation",

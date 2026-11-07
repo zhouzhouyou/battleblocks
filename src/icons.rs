@@ -197,6 +197,7 @@ pub fn draw_passive(passive: crate::content::Passive, x: f32, y: f32, size: f32)
         Short | Grudge | Clumsy | ClumsyAwake => Skill::Landslide,
         MindVision | BorrowedSlot => Skill::Greedy,
         PortalYield => Skill::PortalPair,
+        GravityMastery => Skill::GravityShift,
         FriendMilk => Skill::Healing,
         AutoRecovery => Skill::Guard,
         Madness => Skill::Frenzy,
