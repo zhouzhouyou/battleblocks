@@ -8,8 +8,11 @@ ui.hud.draw_actors.active	ACTIVE	行动中
 ui.shared.advanced	Advanced	进阶
 ui.menu.draw.after_casting	After casting	释放后
 ui.skills.draw_skill_details.after_hp	After: HP	结算后生命
-ui.screen.draw_pause.ai_difficulty	AI: 	AI 难度：
-ui.screen.draw_opponents.ai_difficulty	AI difficulty	AI 难度
+ui.screen.draw_pause.ai_difficulty	AI: {0} · {1}	AI 难度：{0} · {1}
+ui.screen.draw_opponents.ai_difficulty	AI difficulty · thinking depth	AI 难度 · 推演深度
+ui.screen.draw_opponents.depth_advanced	2 turns · reads the reply	两回合推演 · 预判反击
+ui.screen.draw_opponents.depth_beginner	Random · no lookahead	随机交换 · 不推演
+ui.screen.draw_opponents.depth_standard	1 action · immediate value	一步推演 · 即时收益
 ui.menu.draw.animated_preview	ANIMATED PREVIEW	角色动画预览
 ui.screen.draw_top.audio_m	All audio / M	全部声音 / M
 ui.menu.draw.awakening	AWAKENING	觉醒能力
@@ -300,6 +303,16 @@ ui.portal.choose_first_preview	Choose the first gate, then hover to preview link
 settings.general	General	通用
 settings.display	Display	显示
 settings.sound	Sound	声音
+settings.experiment	Experiment	实验
+settings.experiment.note	These switches change Standard/Advanced AI search only; rules still resolve normally.	这些开关只改变标准／进阶 AI 的推演；规则结算保持不变。
+settings.experiment.opponent_skills	Opponent skills	对手技能
+settings.experiment.opponent_skills_note	Price skills in the opponent's best reply	预判反击时计入对手技能
+settings.experiment.opponent_reply	Opponent reply	对手反击
+settings.experiment.opponent_reply_note	Look one opponent turn ahead and subtract its value	推演一步对手的最佳回应并扣除其收益
+settings.experiment.follow_up	Follow-up turn	后续回合
+settings.experiment.follow_up_note	After the reply, price your following turn	在对手反击后继续评估己方下一回合
+settings.experiment.portals	Portals	传送门
+settings.experiment.portals_note	Actively consider portal and gravity skills	主动考虑传送门与重力改向技能
 settings.master_volume	Master volume	总音量
 settings.music	Background music	背景音乐
 settings.effects	Sound effects	音效

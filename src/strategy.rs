@@ -2,6 +2,31 @@ use crate::content::Rules;
 use crate::{content::Skill, Board, N};
 type Move = ((usize, usize), (usize, usize));
 
+/// Experimental AI evaluation switches. They only change what the search
+/// prices; the canonical rules always settle actions normally.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) struct AiExperiment {
+    /// Include the opponent's skills when pricing their best reply.
+    pub opponent_skills: bool,
+    /// Look one opponent turn ahead and subtract their best reply.
+    pub opponent_reply: bool,
+    /// After that reply, also price the owner's following turn.
+    pub follow_up: bool,
+    /// Actively consider portal and gravity-changing skills.
+    pub portals: bool,
+}
+
+impl Default for AiExperiment {
+    fn default() -> Self {
+        Self {
+            opponent_skills: true,
+            opponent_reply: true,
+            follow_up: true,
+            portals: true,
+        }
+    }
+}
+
 /// Apply a candidate to a private board, with the same exchange and reward context everywhere.
 fn after_move(
     b: &Board,
