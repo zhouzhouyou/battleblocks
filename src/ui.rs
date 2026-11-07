@@ -6,8 +6,8 @@ pub enum Panel {
 }
 /// Window sizes offered in settings; the game opens in the larger one.
 pub const WINDOW_SIZES: [(i32, i32); 2] = [(1024, 720), (1280, 900)];
-// Horizontal extent of the volume slider in the first settings row.
-const VOLUME_TRACK: (f32, f32) = (462., 662.);
+// Shared slider geometry for master, music, effects and voice.
+const VOLUME_TRACK: (f32, f32) = (506., 662.);
 /// Modal panel frame. Every panel row is laid out inside it with this much padding,
 /// so content can neither touch the border nor spill past it.
 pub const PANEL: Rect = Rect::new(212., 108., 600., 516.);
@@ -44,10 +44,13 @@ pub struct Ui {
     pub hero_scroll: usize,
     pub opponent_scroll: usize,
     help_tab: usize,
+    settings_tab: usize,
     fullscreen: bool,
     // Index into WINDOW_SIZES.
     window: usize,
     pub volume: u32,
+    channel_volume: [u32; 3],
+    channel_enabled: [bool; 3],
 }
 impl Default for Ui {
     fn default() -> Self {
@@ -60,9 +63,12 @@ impl Default for Ui {
             hero_scroll: 0,
             opponent_scroll: 0,
             help_tab: 0,
+            settings_tab: 0,
             fullscreen: false,
             window: 1,
             volume: 100,
+            channel_volume: [100; 3],
+            channel_enabled: [true; 3],
         }
     }
 }
@@ -114,12 +120,16 @@ pub fn draw_group_tabs(opponents: bool, selected: content::HeroGroup, zh: bool, 
     }
 }
 fn settings_row(i: usize) -> Rect {
-    Rect::new(280., 190. + i as f32 * 58., 464., 46.)
+    Rect::new(280., 208. + i as f32 * 58., 464., 46.)
 }
 /// One of the two choices at the right end of a settings toggle row.
 fn option_rect(row: usize, i: usize) -> Rect {
     let r = settings_row(row);
     Rect::new(r.x + r.w - 236. + i as f32 * 116., r.y + 7., 112., 32.)
+}
+fn sound_toggle_rect(row: usize) -> Rect {
+    let r = settings_row(row);
+    Rect::new(444., r.y + 7., 42., 32.)
 }
 pub fn top(i: usize) -> Rect {
     Rect::new(814. + i as f32 * 48., 20., 42., 42.)
@@ -140,16 +150,33 @@ impl Ui {
             self.panel = None;
             return true;
         }
-        let (start, end) = VOLUME_TRACK;
         if self.panel == Some(Panel::Settings)
+            && self.settings_tab == 2
             && is_mouse_button_down(MouseButton::Left)
-            && Rect::new(start - 14., 190., end - start + 28., 46.).contains(pointer)
         {
-            self.volume =
-                (((pointer.x - start) / (end - start)).clamp(0., 1.) * 100.).round() as u32;
-            *muted = false;
+            self.drag_volume(pointer);
         }
         if click {
+            if self.panel == Some(Panel::Settings) {
+                for i in 0..3 {
+                    if help_tab_rect(i).contains(pointer) {
+                        self.settings_tab = i;
+                        return true;
+                    }
+                }
+                if self.settings_tab == 2 {
+                    for row in 0..4 {
+                        if sound_toggle_rect(row).contains(pointer) {
+                            if row == 0 {
+                                *muted = !*muted;
+                            } else {
+                                self.channel_enabled[row - 1] = !self.channel_enabled[row - 1];
+                            }
+                            return true;
+                        }
+                    }
+                }
+            }
             if self.panel == Some(Panel::Help) {
                 for i in 0..HELP_TAB_COUNT {
                     if help_tab_rect(i).contains(pointer) {
@@ -186,10 +213,10 @@ impl Ui {
                 self.panel = None;
                 return true;
             }
-            if self.panel == Some(Panel::Settings) {
+            if self.panel == Some(Panel::Settings) && self.settings_tab < 2 {
                 // Toggle rows: clicking a choice selects it, clicking elsewhere on the
                 // row switches to the other one.
-                for row in 1..4 {
+                for row in 0..(if self.settings_tab == 0 { 1 } else { 2 }) {
                     if !settings_row(row).contains(pointer) {
                         continue;
                     }
@@ -200,12 +227,12 @@ impl Ui {
                     if choice == current {
                         continue;
                     }
-                    match row {
-                        1 => {
+                    match (self.settings_tab, row) {
+                        (1, 0) => {
                             self.fullscreen = choice == 1;
                             set_fullscreen(self.fullscreen);
                         }
-                        2 => {
+                        (1, 1) => {
                             self.window = choice;
                             let (w, h) = WINDOW_SIZES[choice];
                             request_new_screen_size(w as f32, h as f32);
@@ -217,11 +244,35 @@ impl Ui {
         }
         previous || self.panel.is_some()
     }
-    /// Selected choice of a settings toggle row: fullscreen off/on, window size, 中文/English.
+    /// Effective channel gains retain each slider value when its switch is off.
+    pub fn sound_levels(&self) -> [u32; 3] {
+        std::array::from_fn(|i| {
+            if self.channel_enabled[i] {
+                self.channel_volume[i]
+            } else {
+                0
+            }
+        })
+    }
+    fn drag_volume(&mut self, pointer: Vec2) {
+        let (start, end) = VOLUME_TRACK;
+        for row in 0..4 {
+            let r = settings_row(row);
+            if Rect::new(start - 10., r.y, end - start + 20., r.h).contains(pointer) {
+                let value =
+                    (((pointer.x - start) / (end - start)).clamp(0., 1.) * 100.).round() as u32;
+                if row == 0 {
+                    self.volume = value;
+                } else {
+                    self.channel_volume[row - 1] = value;
+                }
+            }
+        }
+    }
     fn choice(&self, row: usize, zh: bool) -> usize {
-        match row {
-            1 => self.fullscreen as usize,
-            2 => self.window,
+        match (self.settings_tab, row) {
+            (1, 0) => self.fullscreen as usize,
+            (1, 1) => self.window,
             _ => (!zh) as usize,
         }
     }
@@ -593,69 +644,127 @@ impl Ui {
         }
         match panel {
             Panel::Settings => {
-                let names = [
-                    if muted {
-                        tr_key(zh, "ui.screen.draw_panel.volume_muted")
-                    } else {
-                        tr_key(zh, "ui.screen.draw_panel.volume")
-                    },
-                    tr_key(zh, "ui.screen.draw_panel.fullscreen"),
-                    tr_key(zh, "ui.screen.draw_panel.window"),
-                    tr_key(zh, "ui.screen.draw_panel.language"),
-                ];
-                let windows = WINDOW_SIZES.map(|(w, h)| format!("{w} × {h}"));
-                let choices = [
-                    [
-                        tr_key(zh, "ui.screen.draw_panel.off"),
-                        tr_key(zh, "ui.screen.draw_panel.on"),
-                    ],
-                    [windows[0].as_str(), windows[1].as_str()],
-                    [
-                        tr_key(zh, "settings.language_chinese"),
-                        tr_key(zh, "settings.language_english"),
-                    ],
-                ];
-                for (row, name) in names.iter().enumerate() {
-                    let r = settings_row(row);
-                    frame(r, row > 0 && r.contains(pointer));
-                    label(name, r.x + 12., r.y + r.h / 2. + 8., 22., WHITE);
-                    if row == 0 {
-                        continue;
-                    }
-                    let selected = self.choice(row, zh);
-                    for (i, text) in choices[row - 1].iter().enumerate() {
-                        let o = option_rect(row, i);
-                        draw_rectangle(o.x, o.y, o.w, o.h, Color::from_rgba(24, 30, 43, 255));
-                        let on = i == selected;
-                        outline(
-                            o.x,
-                            o.y,
-                            o.w,
-                            o.h,
-                            if on { 2. } else { 1. },
-                            if on {
-                                GOLD
+                for (i, key) in ["settings.general", "settings.display", "settings.sound"]
+                    .iter()
+                    .enumerate()
+                {
+                    let r = help_tab_rect(i);
+                    frame(r, self.settings_tab == i);
+                    label(tr_key(zh, key), r.x + 10., r.y + 21., 17., WHITE);
+                }
+                if self.settings_tab == 2 {
+                    for (row, key) in [
+                        "settings.master_volume",
+                        "settings.music",
+                        "settings.effects",
+                        "settings.voice",
+                    ]
+                    .iter()
+                    .enumerate()
+                    {
+                        let r = settings_row(row);
+                        frame(r, false);
+                        let name = tr_key(zh, key);
+                        label(name, r.x + 12., r.y + 30., fit_size(name, 20., 144.), WHITE);
+                        let enabled = if row == 0 {
+                            !muted
+                        } else {
+                            self.channel_enabled[row - 1]
+                        };
+                        let toggle = sound_toggle_rect(row);
+                        frame(toggle, enabled);
+                        let text = tr_key(
+                            zh,
+                            if enabled {
+                                "ui.screen.draw_panel.on"
                             } else {
-                                Color::from_rgba(66, 71, 83, 255)
+                                "ui.screen.draw_panel.off"
                             },
                         );
                         label_centered(
                             text,
-                            o.x + o.w / 2.,
-                            o.y + 22.,
-                            18.,
-                            if on { WHITE } else { GRAY },
+                            toggle.x + toggle.w / 2.,
+                            toggle.y + 21.,
+                            14.,
+                            if enabled { GOLD } else { GRAY },
+                        );
+                        let value = if row == 0 {
+                            self.volume
+                        } else {
+                            self.channel_volume[row - 1]
+                        };
+                        let (start, end) = VOLUME_TRACK;
+                        let y = r.y + 23.;
+                        let x = start + (end - start) * value as f32 / 100.;
+                        draw_line(start, y, end, y, 5., GRAY);
+                        draw_line(start, y, x, y, 5., if enabled { SKYBLUE } else { GRAY });
+                        draw_circle(x, y, 8., WHITE);
+                        label_centered(
+                            &format_text(zh, "settings.percent", &[&value.to_string()]),
+                            707.,
+                            y + 7.,
+                            20.,
+                            SKYBLUE,
                         );
                     }
+                } else {
+                    let windows = WINDOW_SIZES.map(|(w, h)| {
+                        format_text(
+                            zh,
+                            "settings.window_size",
+                            &[&w.to_string(), &h.to_string()],
+                        )
+                    });
+                    let entries = if self.settings_tab == 0 {
+                        vec![(
+                            "ui.screen.draw_panel.language",
+                            [
+                                tr_key(zh, "settings.language_chinese"),
+                                tr_key(zh, "settings.language_english"),
+                            ],
+                        )]
+                    } else {
+                        vec![
+                            (
+                                "ui.screen.draw_panel.fullscreen",
+                                [
+                                    tr_key(zh, "ui.screen.draw_panel.off"),
+                                    tr_key(zh, "ui.screen.draw_panel.on"),
+                                ],
+                            ),
+                            (
+                                "ui.screen.draw_panel.window",
+                                [windows[0].as_str(), windows[1].as_str()],
+                            ),
+                        ]
+                    };
+                    for (row, (key, choices)) in entries.iter().enumerate() {
+                        let r = settings_row(row);
+                        frame(r, r.contains(pointer));
+                        label(tr_key(zh, key), r.x + 12., r.y + 31., 22., WHITE);
+                        let selected = self.choice(row, zh);
+                        for (i, text) in choices.iter().enumerate() {
+                            let o = option_rect(row, i);
+                            draw_rectangle(o.x, o.y, o.w, o.h, Color::from_rgba(24, 30, 43, 255));
+                            let on = i == selected;
+                            outline(
+                                o.x,
+                                o.y,
+                                o.w,
+                                o.h,
+                                if on { 2. } else { 1. },
+                                if on { GOLD } else { GRAY },
+                            );
+                            label_centered(
+                                text,
+                                o.x + o.w / 2.,
+                                o.y + 22.,
+                                18.,
+                                if on { WHITE } else { GRAY },
+                            );
+                        }
+                    }
                 }
-                // Slider and percentage share the volume row.
-                let (start, end) = VOLUME_TRACK;
-                let y = settings_row(0).y + 23.;
-                draw_line(start, y, end, y, 5., GRAY);
-                let x = start + (end - start) * self.volume as f32 / 100.;
-                draw_line(start, y, x, y, 5., SKYBLUE);
-                draw_circle(x, y, 8., WHITE);
-                label_centered(&format!("{}%", self.volume), 707., y + 7., 20., SKYBLUE);
             }
             Panel::Help => {
                 let names = [
@@ -875,4 +984,37 @@ pub fn back_rect() -> Rect {
 
 pub fn difficulty_rect(i: usize) -> Rect {
     Rect::new(230. + i as f32 * 194., 112., 180., 40.)
+}
+
+#[cfg(test)]
+mod sound_settings_tests {
+    use super::*;
+    #[test]
+    fn category_switches_preserve_slider_values_and_other_channels() {
+        let mut ui = Ui::default();
+        assert_eq!(ui.sound_levels(), [100; 3]);
+        ui.channel_volume = [25, 40, 60];
+        ui.channel_enabled[1] = false;
+        assert_eq!(ui.sound_levels(), [25, 0, 60]);
+        ui.volume = 0;
+        ui.volume = 100;
+        assert_eq!(ui.sound_levels(), [25, 0, 60]);
+        ui.channel_enabled[1] = true;
+        assert_eq!(ui.sound_levels(), [25, 40, 60]);
+    }
+    #[test]
+    fn sound_slider_hit_boxes_do_not_toggle_or_drag_neighbours() {
+        let mut ui = Ui::default();
+        let row = settings_row(2);
+        ui.drag_volume(vec2(VOLUME_TRACK.0, row.y + 20.));
+        assert_eq!(ui.channel_volume, [100, 0, 100]);
+        ui.drag_volume(vec2(VOLUME_TRACK.1, row.y + 20.));
+        assert_eq!(ui.channel_volume, [100; 3]);
+        ui.drag_volume(vec2(sound_toggle_rect(1).x + 5., settings_row(1).y + 20.));
+        assert_eq!(ui.channel_volume, [100; 3]);
+        for row in 0..4 {
+            assert!(settings_row(row).y + settings_row(row).h < PANEL.y + PANEL.h);
+            assert!(sound_toggle_rect(row).x + sound_toggle_rect(row).w < VOLUME_TRACK.0 - 10.);
+        }
+    }
 }

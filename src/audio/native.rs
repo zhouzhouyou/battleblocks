@@ -110,6 +110,7 @@ struct Control {
     playing: AtomicBool,
     muted: AtomicBool,
     volume: AtomicU32,
+    channels: [AtomicU32; 3],
     crush: AtomicBool,
     portal: AtomicBool,
     underruns: AtomicUsize,
@@ -134,6 +135,7 @@ impl Audio {
             playing: AtomicBool::new(false),
             muted: AtomicBool::new(false),
             volume: AtomicU32::new(100),
+            channels: std::array::from_fn(|_| AtomicU32::new(100)),
             crush: AtomicBool::new(false),
             portal: AtomicBool::new(false),
             underruns: AtomicUsize::new(0),
@@ -211,17 +213,21 @@ impl Audio {
                     speech_output.ready.store(false, Ordering::Release);
                 }
             }
+            let gains = state
+                .channels
+                .each_ref()
+                .map(|v| v.load(Ordering::Relaxed) as f32 / 100.);
             let mut pair = [0., 0.];
             if spoken_generation != speech_output.generation.load(Ordering::Relaxed) {
                 spoken_at = spoken.len();
             }
             if spoken_at < spoken.len() {
-                pair = [spoken[spoken_at]; 2];
+                pair = [spoken[spoken_at] * gains[2]; 2];
                 spoken_at += 1;
             }
             if portal_at != usize::MAX {
                 for sample in &mut pair {
-                    *sample += portal[portal_at];
+                    *sample += portal[portal_at] * gains[1];
                 }
                 portal_at += 1;
                 if portal_at == portal.len() {
@@ -235,14 +241,14 @@ impl Audio {
                         state.underruns.fetch_add(1, Ordering::Relaxed);
                         [0., 0.]
                     })
-                    .map(|v| v * 0.2);
+                    .map(|v| v * 0.2 * gains[0]);
                 for c in 0..2 {
                     pair[c] += music_pair[c];
                 }
             }
             for position in &mut voices {
                 if *position != usize::MAX {
-                    let sample = effect[*position] * 0.35;
+                    let sample = effect[*position] * 0.35 * gains[1];
                     pair[0] += sample;
                     pair[1] += sample;
                     *position += 1;
@@ -335,6 +341,14 @@ impl Audio {
             self.stop_speech();
         }
     }
+    pub fn channel_volumes(&self, levels: [u32; 3]) {
+        for (channel, value) in self.control.channels.iter().zip(levels) {
+            channel.store(value.min(100), Ordering::Relaxed);
+        }
+        if levels[2] == 0 {
+            self.stop_speech();
+        }
+    }
     pub fn portal(&self) {
         if self.effects {
             self.control.portal.store(true, Ordering::Relaxed);
@@ -344,6 +358,7 @@ impl Audio {
         if self.effects
             && !self.control.muted.load(Ordering::Relaxed)
             && self.control.volume.load(Ordering::Relaxed) > 0
+            && self.control.channels[2].load(Ordering::Relaxed) > 0
         {
             self.speech.borrow_mut().speak(text, zh);
         }

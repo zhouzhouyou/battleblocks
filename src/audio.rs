@@ -18,6 +18,7 @@ mod web {
         fn bb_audio_muted(value: u32);
         fn bb_audio_crush();
         fn bb_audio_volume(value: u32);
+        fn bb_audio_channels(music: u32, effects: u32, voice: u32);
         fn bb_audio_portal();
         fn bb_audio_speak(ptr: *const u8, len: usize, zh: u32);
         fn bb_audio_stop_speech();
@@ -38,6 +39,9 @@ mod web {
         }
         pub fn volume(&self, value: u32) {
             unsafe { bb_audio_volume(value.min(100)) }
+        }
+        pub fn channel_volumes(&self, levels: [u32; 3]) {
+            unsafe { bb_audio_channels(levels[0].min(100), levels[1].min(100), levels[2].min(100)) }
         }
         pub fn portal(&self) {
             unsafe { bb_audio_portal() }
