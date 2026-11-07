@@ -501,7 +501,16 @@ pub fn draw(
             .copied()
             .filter(|p| !content::passives(hero, false).contains(p))
             .collect::<Vec<_>>();
-        draw_passive_entries(&changes, zh, true);
+        if changes.is_empty() {
+            for (i, text) in wrap_label_text(content::awakening_effect(hero, zh), 16., 204.)
+                .iter()
+                .enumerate()
+            {
+                label(text, 304., 401. + i as f32 * 21., 16., LIGHTGRAY);
+            }
+        } else {
+            draw_passive_entries(&changes, zh, true);
+        }
     } else {
         label(tr_key(zh, "ui.menu.draw.lore_intro"), 304., 373., 22., GOLD);
         if let Some(lore) = content::role_lore(hero) {
