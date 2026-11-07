@@ -1,4 +1,5 @@
 use super::*;
+mod help;
 #[derive(Clone, Copy, PartialEq)]
 pub enum Panel {
     Settings,
@@ -16,14 +17,18 @@ const PANEL_PAD: f32 = 24.;
 const PANEL_LEFT: f32 = PANEL.x + PANEL_PAD;
 const PANEL_INNER: f32 = PANEL.w - 2. * PANEL_PAD;
 /// Tabs of the help panel and the gap between them.
-pub const HELP_TAB_COUNT: usize = 3;
+pub const HELP_TAB_COUNT: usize = 5;
+const SETTINGS_TAB_COUNT: usize = 3;
 const TAB_GAP: f32 = 10.;
 const TAB_TOP: f32 = 158.;
 const TAB_HEIGHT: f32 = 30.;
 /// Tabs share the content width, so the strip always ends on the panel's inner edge
 /// no matter how many tabs exist. Input and drawing use this one geometry.
 pub fn help_tab_rect(i: usize) -> Rect {
-    let count = HELP_TAB_COUNT.max(1) as f32;
+    panel_tab_rect(i, HELP_TAB_COUNT)
+}
+fn panel_tab_rect(i: usize, count: usize) -> Rect {
+    let count = count.max(1) as f32;
     let w = (PANEL_INNER - TAB_GAP * (count - 1.)) / count;
     Rect::new(
         PANEL_LEFT + i as f32 * (w + TAB_GAP),
@@ -158,8 +163,8 @@ impl Ui {
         }
         if click {
             if self.panel == Some(Panel::Settings) {
-                for i in 0..3 {
-                    if help_tab_rect(i).contains(pointer) {
+                for i in 0..SETTINGS_TAB_COUNT {
+                    if panel_tab_rect(i, SETTINGS_TAB_COUNT).contains(pointer) {
                         self.settings_tab = i;
                         return true;
                     }
@@ -591,13 +596,25 @@ impl Ui {
                 tr_key(zh, "ui.screen.draw_panel.tiles_matching"),
                 tr_key(zh, "ui.screen.draw_panel.awakening"),
                 tr_key(zh, "ui.screen.draw_panel.fatigue_tab"),
+                tr_key(zh, "help.gravity.tab"),
+                tr_key(zh, "help.portals.tab"),
             ]
             .iter()
             .enumerate()
             {
                 let r = help_tab_rect(i);
                 frame(r, self.help_tab == i);
-                label(text, r.x + 10., r.y + 21., 17., WHITE);
+                label_centered(
+                    text,
+                    r.x + r.w / 2.,
+                    r.y + 21.,
+                    fit_size(text, 17., r.w - 12.),
+                    WHITE,
+                );
+            }
+            if self.help_tab >= 3 {
+                help::draw(self.help_tab, zh, tiles);
+                return;
             }
             if self.help_tab >= 1 {
                 // Awakening explains the mechanic; endgame pressure explains the ramp.
@@ -648,7 +665,7 @@ impl Ui {
                     .iter()
                     .enumerate()
                 {
-                    let r = help_tab_rect(i);
+                    let r = panel_tab_rect(i, SETTINGS_TAB_COUNT);
                     frame(r, self.settings_tab == i);
                     label(tr_key(zh, key), r.x + 10., r.y + 21., 17., WHITE);
                 }
@@ -989,6 +1006,14 @@ pub fn difficulty_rect(i: usize) -> Rect {
 #[cfg(test)]
 mod sound_settings_tests {
     use super::*;
+    #[test]
+    fn settings_tabs_fill_the_panel_independently_of_help_tabs() {
+        let first = panel_tab_rect(0, SETTINGS_TAB_COUNT);
+        let last = panel_tab_rect(SETTINGS_TAB_COUNT - 1, SETTINGS_TAB_COUNT);
+        assert_eq!(first.x, PANEL_LEFT);
+        assert!((last.x + last.w - PANEL_LEFT - PANEL_INNER).abs() < 0.001);
+        assert!(first.w > help_tab_rect(0).w);
+    }
     #[test]
     fn category_switches_preserve_slider_values_and_other_channels() {
         let mut ui = Ui::default();
