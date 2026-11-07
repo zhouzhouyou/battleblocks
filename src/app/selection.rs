@@ -7,6 +7,11 @@ impl Session {
                 audio.stop_speech();
             }
             self.sync_selection_groups();
+            // Warm the visible roster in the background so switching heroes
+            // rarely waits on the network. The selected atlas jumps the queue.
+            for &id in self.interface.hero_group.roster() {
+                crate::assets::want(sprites::SPRITES[id].asset.path);
+            }
             let opponents = self.interface.opponent_step;
             let group = if opponents {
                 self.interface.opponent_group
@@ -220,7 +225,7 @@ impl Session {
                         self.hero_id,
                         self.interface.hero_group,
                         self.zh,
-                        self.player_texture(),
+                        self.player_sprite(),
                         self.thumbs(),
                         self.tiles(),
                         &self.preview,

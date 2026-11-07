@@ -90,9 +90,17 @@ mod web {
         LOADED.with(|loaded| loaded.borrow().get(path).copied())
     }
 
-    /// Queue a file for the frame loop. A file already loaded, in flight or
-    /// failed is never queued twice.
+    /// Queue background artwork (the roster next to the selected hero).
     pub(crate) fn want(path: &'static str) {
+        enqueue(path, false);
+    }
+
+    /// Queue artwork the current frame draws; jumps ahead of background work.
+    pub(crate) fn require(path: &'static str) {
+        enqueue(path, true);
+    }
+
+    fn enqueue(path: &'static str, front: bool) {
         if loaded(path).is_some()
             || IN_FLIGHT.with(Cell::get) == Some(path)
             || FAILED.with(|failed| failed.borrow().contains(path))
@@ -101,27 +109,32 @@ mod web {
         }
         QUEUE.with(|queue| {
             let mut queue = queue.borrow_mut();
-            if !queue.contains(&path) {
+            if queue.contains(&path) {
+                if front {
+                    queue.retain(|queued| *queued != path);
+                    queue.push_front(path);
+                }
+                return;
+            }
+            if front {
+                queue.push_front(path);
+            } else {
                 queue.push_back(path);
             }
         });
     }
 
-    /// True while artwork is queued or arriving; the frame loop draws the
-    /// loading screen instead of the game.
-    pub(crate) fn pending() -> bool {
-        QUEUE.with(|queue| !queue.borrow().is_empty()) || IN_FLIGHT.with(Cell::get).is_some()
-    }
-
-    /// Install a finished download and start the next one. One call per frame:
-    /// miniquad's callback API keeps the frame loop free to animate.
-    pub(crate) fn pump() {
+    /// Install a finished download and start the next one. Returns whether any
+    /// texture can be rebuilt this frame.
+    pub(crate) fn pump() -> bool {
+        let mut installed = false;
         if let Some((path, bytes)) = ARRIVED.with(|slot| slot.borrow_mut().take()) {
             IN_FLIGHT.with(|slot| slot.set(None));
             match bytes {
                 Some(bytes) => {
                     let bytes: &'static [u8] = Box::leak(bytes.into_boxed_slice());
                     LOADED.with(|loaded| loaded.borrow_mut().insert(path, bytes));
+                    installed = true;
                 }
                 None => {
                     FAILED.with(|failed| failed.borrow_mut().insert(path));
@@ -129,10 +142,10 @@ mod web {
             }
         }
         if IN_FLIGHT.with(Cell::get).is_some() {
-            return;
+            return installed;
         }
         let Some(path) = QUEUE.with(|queue| queue.borrow_mut().pop_front()) else {
-            return;
+            return installed;
         };
         IN_FLIGHT.with(|slot| slot.set(Some(path)));
         let url = format!("assets/{path}");
@@ -147,22 +160,22 @@ mod web {
             };
             ARRIVED.with(|slot| *slot.borrow_mut() = Some((path, bytes)));
         });
+        installed
     }
 }
 
 #[cfg(target_arch = "wasm32")]
-pub(crate) use web::{pending, pump, want};
+pub(crate) use web::{pump, require, want};
 
 #[cfg(not(target_arch = "wasm32"))]
 pub(crate) fn want(_path: &'static str) {}
 
 #[cfg(not(target_arch = "wasm32"))]
-#[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
-pub(crate) fn pump() {}
+pub(crate) fn require(_path: &'static str) {}
 
 #[cfg(not(target_arch = "wasm32"))]
-#[cfg_attr(not(any(test, target_arch = "wasm32")), allow(dead_code))]
-pub(crate) fn pending() -> bool {
+#[allow(dead_code)]
+pub(crate) fn pump() -> bool {
     false
 }
 

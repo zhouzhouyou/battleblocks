@@ -201,8 +201,9 @@ fn draw_skill_actor(
     hero: usize,
     preview: &Preview,
     after: bool,
-    texture: &Texture2D,
+    texture: Option<&Texture2D>,
     awakened: Option<&Texture2D>,
+    thumbs: &Texture2D,
 ) {
     let area = Rect::new(558., 428., 200., 184.);
     let center = area.x + area.w / 2.;
@@ -244,13 +245,14 @@ fn draw_skill_actor(
         draw_circle_lines(center, area.y + area.h - 54., 30. + t * 26., 2., color);
     }
     let (texture, asset) = if dark {
-        // `Session` loads the awakening sheet before a dark preview is drawn.
-        (
-            awakened.expect("dark preview needs the awakening sheet"),
-            &sprites::AWAKENED[hero],
-        )
+        (awakened, &sprites::AWAKENED[hero])
     } else {
         (texture, &sprites::SPRITES[hero])
+    };
+    let Some(texture) = texture else {
+        // The web build is still fetching this atlas; keep the preview alive.
+        crate::loading_portal(area, thumbs, hero, get_time());
+        return;
     };
     let area = Rect::new(area.x, area.y - lift, area.w, area.h);
     // After the cast point the hero performs the skill: play its cast row (the same
@@ -278,7 +280,7 @@ pub fn draw(
     hero: usize,
     group: content::HeroGroup,
     zh: bool,
-    texture: &Texture2D,
+    texture: Option<&Texture2D>,
     thumbs: &Texture2D,
     tiles: &[Texture2D; 7],
     preview: &Preview,
@@ -410,37 +412,42 @@ pub fn draw(
         &sprites::SPRITES[hero]
     };
     let portrait_texture = if page == 2 {
-        // The awakening page asks `Session` to load this sheet before drawing.
-        awakened_texture.expect("awakening page needs the awakening sheet")
+        awakened_texture
     } else {
         texture
     };
     let portrait_area = Rect::new(291., 198., 230., portrait_height);
-    if portrait_asset.legacy_awake() {
-        let cycle = (get_time() - preview.since).max(0.) % 3.;
-        let skill = content::skills(hero, true)[preview.skill];
-        let cast = portrait_asset.actor_cast(skill).unwrap().clip;
-        let (clip, elapsed) = if (1.35..2.75).contains(&cycle) {
-            (cast, cycle - 1.35)
-        } else {
-            (
-                portrait_asset.idle(),
-                if cycle >= 2.75 {
-                    cycle - 2.75
-                } else {
-                    cycle + 0.25
-                },
-            )
-        };
-        sprite_frames(
-            portrait_texture,
-            portrait_asset,
-            portrait_area,
-            elapsed,
-            clip,
-        );
-    } else {
-        sprite(portrait_texture, portrait_asset, portrait_area);
+    match portrait_texture {
+        // The atlas is still downloading: summon the hero instead of a blank card.
+        None => {
+            crate::loading_portal(portrait_area, thumbs, hero, get_time());
+            label_centered(
+                tr_key(zh, "ui.loading.assets"),
+                406.,
+                portrait_area.y + 20.,
+                13.,
+                LIGHTGRAY,
+            );
+        }
+        Some(texture) if portrait_asset.legacy_awake() => {
+            let cycle = (get_time() - preview.since).max(0.) % 3.;
+            let skill = content::skills(hero, true)[preview.skill];
+            let cast = portrait_asset.actor_cast(skill).unwrap().clip;
+            let (clip, elapsed) = if (1.35..2.75).contains(&cycle) {
+                (cast, cycle - 1.35)
+            } else {
+                (
+                    portrait_asset.idle(),
+                    if cycle >= 2.75 {
+                        cycle - 2.75
+                    } else {
+                        cycle + 0.25
+                    },
+                )
+            };
+            sprite_frames(texture, portrait_asset, portrait_area, elapsed, clip);
+        }
+        Some(texture) => sprite(texture, portrait_asset, portrait_area),
     }
     if page == 0 {
         label(
@@ -686,7 +693,7 @@ pub fn draw(
             }
         } else {
             // The board would not change, so preview the hero acting instead of tiles.
-            draw_skill_actor(hero, preview, after, texture, awakened_texture);
+            draw_skill_actor(hero, preview, after, texture, awakened_texture, thumbs);
         }
         label(
             tr_key(zh, "ui.menu.draw.effect_preview"),
