@@ -59,8 +59,12 @@ fn wrap_measured_text(text: &str, limit: f32, measure: impl Fn(&str) -> f32) -> 
     }
     lines
 }
+/// Battle sidebars move outward together. Input and visual anchors use the same transform.
+pub(crate) fn sidebar_x(enemy: bool, x: f32) -> f32 {
+    x + if enemy { ui::SIDE_GAP } else { -ui::SIDE_GAP }
+}
 pub(crate) fn move_hints_rect() -> Rect {
-    Rect::new(796., 648., 208., 44.)
+    Rect::new(sidebar_x(true, 796.), 648., 208., 44.)
 }
 pub(crate) fn reroll_rect() -> Rect {
     Rect::new(256., 650., 512., 38.)
@@ -71,29 +75,49 @@ pub(crate) fn cancel_skill_rect() -> Rect {
 // Battle sidebars: the player on the left, the enemy on the right. Every element
 // below stays inside its sidebar frame.
 pub(crate) fn side_panel_rect(enemy: bool) -> Rect {
-    Rect::new(if enemy { 788. } else { 12. }, 90., 224., 610.)
+    Rect::new(
+        sidebar_x(enemy, if enemy { 788. } else { 12. }),
+        90.,
+        224.,
+        610.,
+    )
 }
 pub(crate) fn sprite_rect(enemy: bool) -> Rect {
-    Rect::new(if enemy { 796. } else { 20. }, 188., 208., 184.)
+    Rect::new(
+        sidebar_x(enemy, if enemy { 796. } else { 20. }),
+        188.,
+        208.,
+        184.,
+    )
 }
 pub(crate) fn passive_rect(enemy: bool) -> Rect {
-    Rect::new(if enemy { 796. } else { 20. }, 376., 208., 50.)
+    Rect::new(
+        sidebar_x(enemy, if enemy { 796. } else { 20. }),
+        376.,
+        208.,
+        50.,
+    )
 }
 // The status strip owns the row between the passive tags and the skill cards.
 pub(crate) fn status_strip_rect(enemy: bool) -> Rect {
-    Rect::new(if enemy { 796. } else { 20. }, 430., 208., 24.)
+    Rect::new(
+        sidebar_x(enemy, if enemy { 796. } else { 20. }),
+        430.,
+        208.,
+        24.,
+    )
 }
 // Cards keep three rows (number + name, cost, "does not end turn") and leave the
 // description to the hover panel; the pocket strip sits under the last card.
 pub(crate) fn player_skill_rect(i: usize) -> Rect {
-    Rect::new(20., 460. + i as f32 * 70., 208., 66.)
+    Rect::new(sidebar_x(false, 20.), 460. + i as f32 * 70., 208., 66.)
 }
 pub(crate) fn enemy_skill_rect(i: usize) -> Rect {
-    Rect::new(796., 470. + i as f32 * 44., 208., 38.)
+    Rect::new(sidebar_x(true, 796.), 470. + i as f32 * 44., 208., 38.)
 }
 pub(crate) fn pocket_rect(enemy: bool, slot: usize) -> Rect {
     Rect::new(
-        if enemy { 796. } else { 20. } + slot as f32 * 105.,
+        sidebar_x(enemy, if enemy { 796. } else { 20. }) + slot as f32 * 105.,
         if enemy { 610. } else { 670. },
         100.,
         25.,
@@ -131,7 +155,10 @@ pub(crate) type Move = ((usize, usize), (usize, usize));
 pub(crate) fn hint_row_at(pointer: Vec2, page: usize, count: usize) -> Option<usize> {
     // Half-open bounds: `Rect::contains` includes the bottom edge, which would reach a
     // row of the next page.
-    (pointer.x >= 798. && pointer.x < 1002. && pointer.y >= 278. && pointer.y < 586.)
+    (pointer.x >= sidebar_x(true, 798.)
+        && pointer.x < sidebar_x(true, 1002.)
+        && pointer.y >= 278.
+        && pointer.y < 586.)
         .then(|| page * 7 + ((pointer.y - 278.) / 44.) as usize)
         .filter(|&i| i < count)
 }
@@ -203,8 +230,8 @@ pub(crate) fn draw_breaking_lock(x: f32, y: f32, t: f32, color: Color) {
 }
 /// World units per device pixel for the camera the UI draws through.
 pub(crate) fn device_scale() -> f32 {
-    (screen_width() / 1024.)
-        .min(screen_height() / 720.)
+    (screen_width() / ui::CANVAS.w)
+        .min(screen_height() / ui::CANVAS.h)
         .max(0.001)
 }
 fn snap_to_pixel(value: f32, scale: f32) -> f32 {

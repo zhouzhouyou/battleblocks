@@ -31,6 +31,8 @@ pub enum Skill {
     EmberBlast,
     PortalPair,
     GravityShift,
+    LightSlingshot,
+    HeavySlingshot,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum TileOperation {
@@ -95,6 +97,8 @@ impl Skill {
         Skill::EmberBlast,
         Skill::PortalPair,
         Skill::GravityShift,
+        Skill::LightSlingshot,
+        Skill::HeavySlingshot,
     ];
     pub fn from_index(index: usize) -> Option<Self> {
         Self::ALL.get(index).copied()

@@ -67,7 +67,7 @@ impl Session {
                 // settle another clear from the same action.
                 if self.hp > 0 && self.enemy > 0 {
                     let hint_number = self.hint_action(frame, cast_this_frame);
-                    if !self.pending.is_empty() {
+                    if !self.pending.is_empty() && !self.presentation.busy() {
                         self.resolve_pending(frame.dt);
                     } else {
                         self.player_swap(frame, hint_number, cast_this_frame);

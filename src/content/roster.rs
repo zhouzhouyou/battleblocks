@@ -1,4 +1,4 @@
-use super::{DWARF, FIRE_ELF, KNIGHT, NUN, PORTAL_CUBE, PRIEST};
+use super::{DWARF, FIRE_ELF, KNIGHT, NUN, PORTAL_CUBE, PRIEST, SLINGSHOT_USER};
 
 /// Preserve the historical batch-analysis sample independently of menu filters.
 pub const DEFAULT_AUTOPLAY_ROSTER: &[usize] =
@@ -16,7 +16,15 @@ impl HeroGroup {
 
     pub const fn roster(self) -> &'static [usize] {
         match self {
-            Self::New => &[DWARF, KNIGHT, PRIEST, NUN, FIRE_ELF, PORTAL_CUBE],
+            Self::New => &[
+                DWARF,
+                KNIGHT,
+                PRIEST,
+                NUN,
+                FIRE_ELF,
+                PORTAL_CUBE,
+                SLINGSHOT_USER,
+            ],
             Self::Legacy => &[0, 1, 2, 3, 4, 5, 6],
         }
     }

@@ -55,8 +55,16 @@ mod tests {
         assert_eq!(lift(LANDING), 0.);
         assert_eq!(lift((TAKEOFF + LANDING) / 2.), 14.);
         for enemy in [false, true] {
-            let foot = vec2(if enemy { 900. } else { 124. }, 372.);
-            let clip = Rect::new(if enemy { 788. } else { 12. }, 188., 224., 188.);
+            let foot = vec2(
+                crate::sidebar_x(enemy, if enemy { 900. } else { 124. }),
+                372.,
+            );
+            let clip = Rect::new(
+                crate::sidebar_x(enemy, if enemy { 788. } else { 12. }),
+                188.,
+                224.,
+                188.,
+            );
             assert!(placement(foot, LANDING - 0.001, false, clip).is_none());
             for i in 0..21 {
                 let elapsed = LANDING + i as f32 / 30. + 0.0001;

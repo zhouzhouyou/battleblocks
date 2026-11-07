@@ -346,6 +346,7 @@ impl Session {
         };
         let mut frame = Frame::headless(1.);
         action.inject(self, &mut frame);
+        frame.command_aim = self.projectile_aim;
         let accepted = match action {
             PlanAction::Cast(s, _, _) => self.cast_skill(&frame, Some(s), false),
             PlanAction::Swap(_) => {

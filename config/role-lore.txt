@@ -106,3 +106,7 @@
 12|trait|Every mishap is useful data. Every objection is filed and ignored.|意外都是有用的数据，异议都会得到妥善归档。
 12|voice.victory|Victory · I wanted you gone. Thank you for cooperating.|胜利 · 我希望您离开。感谢您的配合。
 12|voice.defeat|Defeat · This result will be filed as your mistake.|失败 · 本次结果将归档为您的失误。
+13|title|Slingshot User|弹弓手
+13|intro|Aim with angle and power. Choose a light shot for precise clears or a heavy shot for long range and awakened explosions.|通过角度和力度瞄准，在轻型精准消除与重型远程射击之间选择；觉醒后重型弹弓解锁爆炸。
+13|trait|Two independently selectable slingshots.|轻型、重型两个独立主动技能。
+13|trait|Appearance temporarily shares the legacy goblin artwork.|形象暂时复用老哥布林素材。

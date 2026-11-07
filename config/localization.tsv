@@ -349,3 +349,27 @@ help.portals.rule3b	Each side keeps one pair, until its caster's next turn start
 help.portals.rule4	Portals and Gravity Shift do not end your turn.	布门与重力改向均不结束当前回合。
 help.portals.rule4b	Switching gravity between vertical and horizontal removes gates.	重力在竖向与横向之间切换时，会移除旧门。
 ui.loading.assets	Loading artwork…	正在加载美术资源…
+
+projectile.aim	Angle {0}° · Power {1}%	角度 {0}° · 力度 {1}%
+projectile.cells	Direct {0} · Blast {1} · Total {2}	穿透 {0} · 爆炸 {1} · 共 {2} 格
+projectile.cost	Cost {0} MP	技能消耗 {0} 魔力
+projectile.direct	Initial HP {0} / DMG {1} / MP {2}	初次收益 治疗 {0} / 伤害 {1} / 魔力 {2}
+projectile.net	Initial net MP {0}	初次净魔力 {0}
+projectile.sample	Approx. with cascades ({0} samples)	含连锁近似期望（{0} 次独立模拟）
+projectile.total	HP {0} / DMG {1} / net MP {2}	治疗 {0} / 伤害 {1} / 净魔力 {2}
+projectile.controls	Drag sling · Arrow keys adjust	拖动弹弓 · 方向键微调
+projectile.confirm	Enter fires · Esc cancels	Enter 发射 · Esc 取消
+projectile.command_error	This skill does not accept projectile aiming	该技能不接受弹射瞄准参数
+projectile.direct_expected	Approx. initial HP {0} / DMG {1} / MP {2}	初次近似期望 治疗 {0} / 伤害 {1} / 魔力 {2}
+projectile.net_expected	Approx. initial net MP {0}	初次近似净魔力 {0}
+projectile.flight_count	Penetrated {0} tiles	已穿透 {0} 格
+projectile.end	{0} s · {1}	{0} 秒 · {1}
+projectile.end.landing	Ground contact	接触地面
+projectile.end.outside	Horizontal exit	水平出界
+projectile.end.fuse	Fuse expired	引信到期
+projectile.end.penetrations	Penetration limit	穿透引爆
+projectile.launch	{0} · Projectile in flight	{0} · 弹珠飞行中
+projectile.flying	Projectile in flight	弹珠飞行中
+projectile.result	{0} · HP {1} · DMG {2} · MP {3}	{0} · 治疗 {1} · 伤害 {2} · 魔力 {3}
+projectile.lane	Sling area	弹弓操作区
+hero.awakening.slingshot	Light shot effects improve; heavy shot unlocks explosions	轻型弹弓收益提高；重型弹弓解锁爆炸

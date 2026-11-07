@@ -1,6 +1,7 @@
 use crate::board::Board;
 #[derive(Debug, PartialEq)]
 pub enum Command {
+    Shoot(usize, crate::content::projectile::Aim),
     CastPair(usize, (usize, usize), (usize, usize)),
     Help,
     Status,
@@ -160,6 +161,32 @@ pub fn parse(input: &str) -> Result<Command, ParseError> {
             (coord(1)?, coord(2)?),
             (coord(3)?, coord(4)?),
         )),
+        "shoot" if words.len() == 4 => {
+            let slot = n(1)?;
+            if !(1..=3).contains(&slot) {
+                return Err(ParseError::SkillSlot);
+            }
+            let angle = words[2]
+                .parse::<f64>()
+                .map_err(|_| ParseError::ExpectedInteger)?;
+            let power = words[3]
+                .parse::<f64>()
+                .map_err(|_| ParseError::ExpectedInteger)?;
+            if !angle.is_finite()
+                || !power.is_finite()
+                || !(0.0..90.0).contains(&angle)
+                || !(0.0..=100.0).contains(&power)
+            {
+                return Err(ParseError::Coordinate);
+            }
+            Ok(Command::Shoot(
+                (slot - 1) as usize,
+                crate::content::projectile::Aim {
+                    angle_mdeg: (angle * 1000.).round() as i32,
+                    power_permille: (power * 10.).round() as u16,
+                },
+            ))
+        }
         "cast" if words.len() == 6 => {
             let slot = n(1)?;
             if !(1..=3).contains(&slot) {

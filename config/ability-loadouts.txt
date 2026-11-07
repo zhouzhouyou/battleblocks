@@ -12,3 +12,4 @@
 10|FriendMilk,AutoRecovery|FriendMilk,Madness,AutoRecovery|25,24|Nun.awakening
 11|ManaAffinity,SleepRecovery|ManaAffinity,SoundSleep||FireElf.awakening
 12|PortalYield|PortalYield,GravityMastery||PortalCube.awakening
+13||||hero.awakening.slingshot

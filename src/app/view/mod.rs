@@ -18,6 +18,7 @@ impl Session {
         self.draw_reroll();
         self.draw_hints(frame, show_moves);
         self.draw_skill_details(frame, hover_context);
+        self.draw_projectile(frame);
         self.draw_overlays(frame);
     }
 }

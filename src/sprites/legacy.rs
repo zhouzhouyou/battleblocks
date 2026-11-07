@@ -42,6 +42,9 @@ impl SpriteAsset {
             return None;
         }
         let (durations, impact, signal) = match skill {
+            Skill::LightSlingshot | Skill::HeavySlingshot => {
+                (&CAST_FRAME_TIME, None, ActorSignal::CastApplied)
+            }
             Skill::Charge => (&CHARGE, Some(0.95), ActorSignal::DamageApplied),
             Skill::Guard | Skill::Greedy | Skill::Imp | Skill::Chort => {
                 (&COLLECT, Some(0.4), ActorSignal::InitialTargetsCleared)
@@ -74,7 +77,7 @@ mod tests {
             assert!(!asset.legacy_awake());
         }
         for (id, asset) in super::super::AWAKENED.iter().enumerate() {
-            assert_eq!(asset.legacy_awake(), matches!(id, 0 | 1 | 3 | 4 | 5 | 6));
+            assert_eq!(asset.legacy_awake(), matches!(id, 0 | 1 | 3 | 4 | 5 | 6) || id == crate::content::SLINGSHOT_USER);
             if asset.legacy_awake() {
                 for &skill in crate::content::skills(id, true) {
                     let spec = asset.actor_cast(skill).unwrap();

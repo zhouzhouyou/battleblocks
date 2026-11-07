@@ -17,6 +17,7 @@ impl Session {
         frame.command_move = None;
         frame.command_skill = None;
         frame.command_target = None;
+        frame.command_aim = None;
         frame.restart_command = false;
         // Process one command per frame so multiple CLI commands retain their order.
         if let Some(line) = self.console.commands.pop_front() {
@@ -30,6 +31,22 @@ impl Session {
                 Ok(command) => {
                     use debug::Command;
                     let command = match command {
+                        Command::Shoot(slot, aim) => {
+                            if !content::skills(self.hero_id, self.awakened[0])
+                                .get(slot)
+                                .is_some_and(|s| {
+                                    content::skill_profile(*s, self.rules(false))
+                                        .projectile
+                                        .is_some()
+                                })
+                            {
+                                self.console
+                                    .say(tr_key(self.zh, "projectile.command_error"));
+                                return false;
+                            }
+                            frame.command_aim = Some(aim);
+                            Command::Cast(slot, (3, 3))
+                        }
                         Command::CastPair(slot, a, b) => {
                             let paired = content::skills(self.hero_id, self.awakened[0])
                                 .get(slot)

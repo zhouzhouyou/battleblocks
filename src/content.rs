@@ -13,6 +13,7 @@ mod status;
 pub use status::*;
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct Rules {
+    pub projectile_aim: Option<projectile::Aim>,
     pub actor_enemy: bool,
     pub board_mechanics: crate::board::BoardMechanics,
     pub target_anchor: Option<(usize, usize)>,
@@ -45,6 +46,7 @@ pub const PRIEST: usize = 9;
 pub const NUN: usize = 10;
 pub const FIRE_ELF: usize = 11;
 pub const PORTAL_CUBE: usize = 12;
+pub const SLINGSHOT_USER: usize = 13;
 #[path = "content/roster.rs"]
 mod roster;
 pub use roster::*;
@@ -81,6 +83,7 @@ mod movement;
 pub use movement::*;
 #[path = "content/effects.rs"]
 mod effects;
+pub mod projectile;
 pub use effects::*;
 #[path = "content/previews.rs"]
 mod previews;

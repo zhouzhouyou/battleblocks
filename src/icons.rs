@@ -3,6 +3,8 @@ use crate::outline;
 use macroquad::prelude::*;
 pub fn draw(skill: Skill, x: f32, y: f32, size: f32) {
     let skill = match skill {
+        Skill::LightSlingshot => Skill::Greedy,
+        Skill::HeavySlingshot => Skill::Meteor,
         Skill::Rush => Skill::Charge,
         Skill::Miracle | Skill::Jump | Skill::Copy => Skill::Landslide,
         Skill::Hammer => Skill::Meteor,

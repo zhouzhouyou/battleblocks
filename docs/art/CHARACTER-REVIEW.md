@@ -23,6 +23,7 @@
 | 旧骑士 | [KNIGHT-LEGACY.md](characters/KNIGHT-LEGACY.md) |
 | 精灵 | [ELF-LEGACY.md](characters/ELF-LEGACY.md) |
 | 哥布林 | [GOBLIN-LEGACY.md](characters/GOBLIN-LEGACY.md) |
+| 弹弓手 | [SLINGSHOT.md](characters/SLINGSHOT.md)，独立新角色，暂用老哥布林图片 |
 | 巫师 | [WIZARD-LEGACY.md](characters/WIZARD-LEGACY.md) |
 | 小恶魔 | [IMP.md](characters/IMP.md) |
 | 角魔 | [CHORT.md](characters/CHORT.md) |

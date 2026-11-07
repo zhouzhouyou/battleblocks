@@ -295,7 +295,7 @@ class PipelineTests(unittest.TestCase):
             (root / "config").mkdir()
             (root / "src").mkdir()
             (root / "tools").mkdir()
-            for f in ("Cargo.toml", "Cargo.lock", "build.rs", "tools/balance_fingerprint.py", "src/main.rs", "config/skills.txt"):
+            for f in ("Cargo.toml", "Cargo.lock", "build.rs", "tools/balance_fingerprint.py", "src/main.rs", "config/skills.txt", "config/projectiles.txt"):
                 (root / f).write_text("original")
             (root / "config/heroes.txt").write_text("A|a|100|50|0\nB|b|100|50|1\n")
             (root / "config/ability-loadouts.txt").write_text("0|X|X||text\n1|Y|Y||text\n")
@@ -305,6 +305,8 @@ class PipelineTests(unittest.TestCase):
             self.assertEqual(before["shared"], after["shared"])
             self.assertNotEqual(before["heroes"][0], after["heroes"][0])
             self.assertEqual(before["heroes"][1], after["heroes"][1])
+            (root / "config/projectiles.txt").write_text("changed projectile gravity")
+            self.assertNotEqual(after["shared"], manifest(root, "test")["shared"])
             (root / "config/skills.txt").write_text("changed shared skill")
             self.assertNotEqual(after["shared"], manifest(root, "test")["shared"])
 

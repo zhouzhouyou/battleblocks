@@ -57,9 +57,13 @@ pub const BOOK_COVER: &[u8] = include_bytes!("../assets/roles/dwarf/runtime/book
 pub const BOOK_PAGES: &[u8] = include_bytes!("../assets/roles/dwarf/runtime/book-pages.webp");
 pub const BOOK_BOTTOM: &[u8] = include_bytes!("../assets/roles/dwarf/runtime/book-bottom.webp");
 
-/// Every registered hero has its own slot in the thumbnail atlas.
+/// Placeholder art aliases an existing thumbnail without changing the hero identity.
 pub fn thumbnail_index(hero: usize) -> usize {
-    hero
+    if hero == content::SLINGSHOT_USER {
+        3
+    } else {
+        hero
+    }
 }
 
 /// The same skill-specific cast selection serves the menu and both battle sides.

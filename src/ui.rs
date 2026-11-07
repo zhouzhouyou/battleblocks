@@ -6,7 +6,10 @@ pub enum Panel {
     Help,
 }
 /// Window sizes offered in settings; the game opens in the larger one.
-pub const WINDOW_SIZES: [(i32, i32); 2] = [(1024, 720), (1280, 900)];
+pub const WINDOW_SIZES: [(i32, i32); 2] = [(1184, 720), (1480, 900)];
+/// Keep the board and modal center stable while adding operating space beside it.
+pub const SIDE_GAP: f32 = 80.;
+pub const CANVAS: Rect = Rect::new(-SIDE_GAP, 0., 1024. + SIDE_GAP * 2., 720.);
 // Shared slider geometry for master, music, effects and voice.
 const VOLUME_TRACK: (f32, f32) = (506., 662.);
 /// Modal panel frame. Every panel row is laid out inside it with this much padding,
@@ -143,7 +146,7 @@ fn experiment_toggle_rect(row: usize) -> Rect {
     Rect::new(r.x + r.w - 54., r.y + 7., 42., 32.)
 }
 pub fn top(i: usize) -> Rect {
-    Rect::new(814. + i as f32 * 48., 20., 42., 42.)
+    Rect::new(sidebar_x(true, 814.) + i as f32 * 48., 20., 42., 42.)
 }
 impl Ui {
     // Returns whether the frame belongs to the interface, including the closing click.
@@ -610,7 +613,13 @@ impl Ui {
     pub fn draw_panel(&self, zh: bool, muted: bool, tiles: &[Texture2D; 7], pointer: Vec2) {
         let Some(panel) = self.panel else { return };
         flush_labels();
-        draw_rectangle(0., 0., 1024., 720., Color::new(0., 0., 0., 0.78));
+        draw_rectangle(
+            CANVAS.x,
+            CANVAS.y,
+            CANVAS.w,
+            CANVAS.h,
+            Color::new(0., 0., 0., 0.78),
+        );
         draw_rectangle(
             PANEL.x,
             PANEL.y,
@@ -1048,7 +1057,13 @@ pub fn pause_difficulty_rect() -> Rect {
 }
 pub fn draw_pause(zh: bool, difficulty: usize, pointer: Vec2) {
     flush_labels();
-    draw_rectangle(0., 0., 1024., 720., Color::new(0., 0., 0., 0.72));
+    draw_rectangle(
+        CANVAS.x,
+        CANVAS.y,
+        CANVAS.w,
+        CANVAS.h,
+        Color::new(0., 0., 0., 0.72),
+    );
     draw_rectangle(282., 180., 460., 390., Color::from_rgba(24, 30, 43, 255));
     outline(282., 180., 460., 390., 2., SKYBLUE);
     label(

@@ -392,6 +392,12 @@ impl Session {
         }
         let phase = if over {
             tr_key(self.zh, "ui.hud.draw_turns.battle_over").to_string()
+        } else if self
+            .charge_damage
+            .as_ref()
+            .is_some_and(|p| p.projectile.is_some())
+        {
+            tr_key(self.zh, "projectile.flying").to_string()
         } else if self.presentation.charging() {
             tr_key(self.zh, "ui.hud.draw_turns.charging").to_string()
         } else if let Some(swap) = self.presentation.swapping() {
@@ -416,7 +422,17 @@ impl Session {
             format!(
                 "{} · {}",
                 skill.name(self.zh),
-                tr_key(self.zh, "ui.hud.draw_turns.click_a_target")
+                tr_key(
+                    self.zh,
+                    if content::skill_profile(skill, self.rules(false))
+                        .projectile
+                        .is_some()
+                    {
+                        "projectile.controls"
+                    } else {
+                        "ui.hud.draw_turns.click_a_target"
+                    }
+                )
             )
         } else {
             localized_note(self.zh, self.note).to_string()
@@ -547,7 +563,7 @@ impl Session {
     }
     fn draw_battle_status(&self) {
         let gravity_visible = self.gravity_change_available();
-        let (x, w) = (12., 224.);
+        let (x, w) = (sidebar_x(false, 12.), 224.);
         let h = if gravity_visible { 78. } else { 50. };
         let y = if gravity_visible { 6. } else { 20. };
         draw_rectangle(x, y, w, h, Color::from_rgba(20, 27, 38, 240));

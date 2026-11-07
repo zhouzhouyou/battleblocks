@@ -122,6 +122,16 @@ pub const SPRITES: &[SpriteAsset] = &[
         anchor: Some([192., 336.]),
     },
     PORTAL_NORMAL,
+    SpriteAsset {
+        asset: crate::asset!("roles/goblin-legacy/runtime/normal.webp"),
+        w: 200.,
+        h: 200.,
+        durations: &[0.13, 0.13, 0.13, 0.13],
+        indices: &[0, 1, 2, 1],
+        cast: None,
+        sleep: None,
+        anchor: None,
+    },
 ];
 pub const AWAKENED: &[SpriteAsset] = &[
     SpriteAsset {
@@ -245,4 +255,14 @@ pub const AWAKENED: &[SpriteAsset] = &[
         anchor: Some([192., 336.]),
     },
     PORTAL_AWAKE,
+    SpriteAsset {
+        asset: crate::asset!("roles/goblin-legacy/runtime/atlas.webp"),
+        w: 384.,
+        h: 384.,
+        durations: &[0.06; 12],
+        indices: &[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+        cast: Some(LEGACY_AWAKE_CAST),
+        sleep: None,
+        anchor: Some([192., 336.]),
+    },
 ];

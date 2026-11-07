@@ -2,6 +2,11 @@ use super::*;
 impl Session {
     pub(super) fn choose_cast(&mut self, frame: &mut Frame) -> Option<content::Skill> {
         let mut cast = frame.command_skill;
+        let sling_grab = self.targeting.is_some_and(|s| {
+            content::skill_profile(s, self.rules(false))
+                .projectile
+                .is_some()
+        }) && frame.pointer.distance(projectile::origin_screen()) < 42.;
         if self.pending.is_empty() && self.hp > 0 && !self.enemy_turn && !self.action_done {
             for (i, skill) in content::skills(self.hero_id, self.awakened[0])
                 .iter()
@@ -18,7 +23,9 @@ impl Session {
                     && ((i == 0 && (frame.key(KeyCode::Key1) || frame.key(KeyCode::Space)))
                         || (i == 1 && frame.key(KeyCode::Key2))
                         || (i == 2 && frame.key(KeyCode::Key3))
-                        || (frame.clicked(MouseButton::Left) && rect.contains(frame.pointer)))
+                        || (frame.clicked(MouseButton::Left)
+                            && !sling_grab
+                            && rect.contains(frame.pointer)))
                 {
                     cast = Some(*skill);
                 }
@@ -241,6 +248,8 @@ impl Session {
                 && cancel_skill_rect().contains(frame.pointer));
         if cancel_target {
             self.targeting = None;
+            self.projectile_aim = None;
+            self.projectile_drag = false;
             self.target_anchor = None;
             self.selected = None;
             cast = None;
@@ -256,13 +265,20 @@ impl Session {
                     && frame.command_skill.is_none()
                 {
                     self.targeting = toggle_skill_target(self.targeting, skill);
+                    self.projectile_aim = None;
+                    self.projectile_drag = false;
                     self.target_anchor = None;
                     self.selected = None;
                     cast = None;
                 }
             }
             if let Some(skill) = self.targeting {
-                if !content::skill_profile(skill, self.rules(false)).force_move
+                if let Some(config) = content::skill_profile(skill, self.rules(false)).projectile {
+                    self.aim_projectile(frame, config);
+                    if frame.key(KeyCode::Enter) && !self.projectile_drag {
+                        cast = Some(skill);
+                    }
+                } else if !content::skill_profile(skill, self.rules(false)).force_move
                     && board_target.is_some()
                     && frame.clicked(MouseButton::Left)
                 {
@@ -286,6 +302,13 @@ impl Session {
         if let Some(skill) = cast {
             let before = self.snapshot();
             let cast_rules = content::Rules {
+                projectile_aim: frame.command_aim.or(
+                    if self.enemy_turn || frame.command_skill.is_some() {
+                        None
+                    } else {
+                        self.projectile_aim
+                    },
+                ),
                 target_anchor: self.target_anchor,
                 ..self.rules(self.enemy_turn)
             };
@@ -356,6 +379,7 @@ impl Session {
                     self.presentation.hold(hold);
                 }
                 let effect_rules = content::Rules {
+                    projectile_aim: cast_rules.projectile_aim,
                     target_anchor: cast_rules.target_anchor,
                     ..self.rules(self.enemy_turn)
                 };
@@ -380,7 +404,30 @@ impl Session {
                 }
                 self.target_anchor = None;
                 self.targeting = None;
+                self.projectile_aim = None;
+                self.projectile_drag = false;
                 let mut batch = e.reward_batch(effective);
+                if let Some(config) = content::skill_profile(effective, effect_rules).projectile {
+                    let flight = config.solve(
+                        &before.board,
+                        effect_rules
+                            .projectile_aim
+                            .unwrap_or_else(|| config.aim_for_target(target)),
+                    );
+                    self.console.event(
+                        "projectile_flight",
+                        &flight.json(),
+                        &before,
+                        &self.snapshot(),
+                    );
+                    self.presentation.hold(flight.duration + 0.3);
+                    self.charge_damage = Some(content::PendingImpact {
+                        rewards: std::mem::take(&mut batch),
+                        actor_enemy: self.enemy_turn,
+                        skill: effective,
+                        projectile: Some(flight),
+                    });
+                }
                 if content::skill_profile(effective, effect_rules).delayed_damage {
                     let mut delayed = content::RewardBatch::default();
                     let mut immediate = Vec::new();
@@ -396,6 +443,7 @@ impl Session {
                     delayed.triggers = std::mem::take(&mut batch.triggers);
                     batch.events = immediate;
                     self.charge_damage = Some(content::PendingImpact {
+                        projectile: None,
                         rewards: delayed,
                         actor_enemy: self.enemy_turn,
                         skill: effective,
@@ -437,6 +485,13 @@ impl Session {
                     skill.name(self.zh),
                     reward_summary(self.zh, actual_heal, actual_damage, actual_mana)
                 );
+                if content::skill_profile(effective, effect_rules)
+                    .projectile
+                    .is_some()
+                {
+                    self.feedback =
+                        crate::format_text(self.zh, "projectile.launch", &[skill.name(self.zh)]);
+                }
                 if content::skill_profile(effective, effect_rules).delayed_damage {
                     self.feedback = format!(
                         "{} · {} {}",
@@ -487,7 +542,12 @@ impl Session {
                 self.armed |= e.armed;
                 self.pending = e.cells;
                 self.reward = e.reward;
-                if self.pending.is_empty() {
+                if self.pending.is_empty()
+                    && self
+                        .charge_damage
+                        .as_ref()
+                        .is_none_or(|p| p.projectile.is_none())
+                {
                     self.pending = self.board_mechanics.matches(&self.b);
                     self.reward = true;
                 }

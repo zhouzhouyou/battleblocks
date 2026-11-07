@@ -216,9 +216,9 @@ impl Session {
         // The continuous hover region bridges the entry button and its panel,
         // so a mouse/trackpad can reach rows and pagination without holding H.
         let hints_region = if self.advanced_hints {
-            Rect::new(574., 208., 436., 500.)
+            Rect::new(sidebar_x(true, 574.), 208., 436., 500.)
         } else {
-            Rect::new(790., 208., 220., 484.)
+            Rect::new(sidebar_x(true, 790.), 208., 220., 484.)
         };
         self.hints_hover_open = hints_ready
             && !frame.key(KeyCode::Escape)
@@ -362,11 +362,12 @@ impl Session {
                 Color::new(0.24, 0.16, 0.18, 1.),
             );
             outline(cancel.x, cancel.y, cancel.w, cancel.h, 1., GOLD);
+            let text = tr_key(self.zh, "ui.battlefield.draw_board.cancel_esc_right_click");
             label(
-                tr_key(self.zh, "ui.battlefield.draw_board.cancel_esc_right_click"),
-                805.,
+                text,
+                cancel.x + 8.,
                 665.,
-                18.,
+                fit_size(text, 18., cancel.w - 16.),
                 GOLD,
             );
         }
@@ -454,13 +455,19 @@ impl Session {
             && self.feedback_time > 0.
             && self.feedback == self.rejection_message(false)
         {
-            draw_rectangle(22., 202., 204., 30., Color::from_rgba(20, 27, 38, 245));
-            outline(22., 202., 204., 30., 1., GOLD);
-            label_centered(&self.feedback, 124., 223., 16., WHITE);
+            draw_rectangle(
+                sidebar_x(false, 22.),
+                202.,
+                204.,
+                30.,
+                Color::from_rgba(20, 27, 38, 245),
+            );
+            outline(sidebar_x(false, 22.), 202., 204., 30., 1., GOLD);
+            label_centered(&self.feedback, sidebar_x(false, 124.), 223., 16., WHITE);
         }
         for (side, reaction) in self.reactions.iter().enumerate() {
             if let Some((text, _)) = reaction {
-                let x = if side == 0 { 22. } else { 798. };
+                let x = sidebar_x(side != 0, if side == 0 { 22. } else { 798. });
                 draw_rectangle(x, 202., 204., 30., Color::from_rgba(20, 27, 38, 245));
                 outline(x, 202., 204., 30., 1., GOLD);
                 label_centered(text, x + 102., 223., 16., WHITE);
