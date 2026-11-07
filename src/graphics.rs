@@ -337,8 +337,52 @@ pub(crate) fn asset_texture(asset: &crate::assets::Asset, flag: &str) -> Option<
     if asset.available() {
         Some(diagnostic_texture(asset.bytes(), flag))
     } else {
-        crate::assets::want(asset.path);
+        crate::assets::require(asset.path);
         None
+    }
+}
+
+/// Stand-in for an actor atlas the web build is still fetching: the roster
+/// thumbnail, dimmed and breathing, inside a summoning ring. It keeps the
+/// selection screen interactive instead of covering it with a loading page.
+pub(crate) fn loading_portal(area: Rect, thumbs: &Texture2D, hero: usize, time: f64) {
+    let t = time as f32;
+    let feet = vec2(area.x + area.w / 2., area.y + area.h - 4.);
+    let width = area.w * 0.46;
+    let height = width * 48. / 40.;
+    // Faint roster thumbnail so the hero stays recognisable while loading.
+    let pulse = 0.42 + 0.12 * (t * 2.4).sin();
+    draw_texture_ex(
+        thumbs,
+        feet.x - width / 2.,
+        area.y + area.h - height,
+        Color::new(1., 1., 1., pulse),
+        DrawTextureParams {
+            dest_size: Some(vec2(width, height)),
+            source: Some(Rect::new(hero as f32 * 40., 0., 40., 48.)),
+            ..Default::default()
+        },
+    );
+    // Summoning circle: a rotating dashed ellipse at the hero's feet.
+    let (rx, ry) = (area.w * 0.30, area.w * 0.075);
+    draw_ellipse_lines(
+        feet.x,
+        feet.y,
+        rx,
+        ry,
+        0.,
+        1.5,
+        Color::new(0.62, 0.78, 1., 0.22 + 0.12 * (t * 3.).sin()),
+    );
+    for i in 0..16 {
+        let angle = t * 2.2 + i as f32 * std::f32::consts::TAU / 16.;
+        let alpha = 0.08 + 0.5 * (0.5 + 0.5 * angle.sin());
+        draw_circle(
+            feet.x + angle.cos() * rx,
+            feet.y + angle.sin() * ry,
+            2.2,
+            Color::new(1., 0.84, 0.36, alpha),
+        );
     }
 }
 
@@ -378,7 +422,7 @@ impl Sheet {
             if self.asset.available() {
                 let _ = self.texture.set(texture(self.asset.bytes()));
             } else {
-                crate::assets::want(self.asset.path);
+                crate::assets::require(self.asset.path);
                 return self.blank.get_or_init(blank_texture);
             }
         }

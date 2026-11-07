@@ -280,19 +280,25 @@ impl Session {
             if let Some(effects) = &self.skill_effects {
                 effects.draw_heal(foot, false, enemy_side);
             }
-            actor(
-                if show_shadow {
-                    self.awake_texture(enemy_side)
-                } else if enemy_side {
-                    self.enemy_texture()
-                } else {
-                    self.player_texture()
-                },
-                sprite,
-                area,
-                elapsed,
-                clip,
-            );
+            if self.battle_sprite_ready(enemy_side, show_shadow) {
+                actor(
+                    if show_shadow {
+                        self.awake_texture(enemy_side)
+                    } else if enemy_side {
+                        self.enemy_texture()
+                    } else {
+                        self.player_texture()
+                    },
+                    sprite,
+                    area,
+                    elapsed,
+                    clip,
+                );
+            } else {
+                // The web build is still fetching this atlas; summon the actor
+                // instead of freezing the battle on a loading page.
+                crate::loading_portal(area, self.thumbs(), id, get_time());
+            }
             if let Some(elapsed) = jump {
                 if let Some(effects) = &self.skill_effects {
                     effects.draw_landing(foot, elapsed, true, enemy_side);

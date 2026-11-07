@@ -418,6 +418,20 @@ impl Session {
     fn player_texture(&self) -> &Texture2D {
         self.player_texture.as_ref().unwrap_or_else(|| self.blank())
     }
+    /// Selected hero atlas, or `None` while the web build is still fetching it.
+    fn player_sprite(&self) -> Option<&Texture2D> {
+        self.player_texture.as_ref()
+    }
+    /// Whether the battle actor of this side can be drawn from loaded artwork.
+    fn battle_sprite_ready(&self, enemy: bool, awakened: bool) -> bool {
+        if awakened {
+            self.awake_textures[enemy as usize].is_some()
+        } else if enemy {
+            self.enemy_texture.is_some()
+        } else {
+            self.player_texture.is_some()
+        }
+    }
     fn enemy_texture(&self) -> &Texture2D {
         self.enemy_texture.as_ref().unwrap_or_else(|| self.blank())
     }
@@ -519,12 +533,6 @@ impl Session {
             self.awake_textures[1] = Self::load_awake_texture(self.enemy_id, self.enemy_texture());
         }
         self.prefetch_battle_effects();
-    }
-
-    /// Web only: the session is waiting for artwork from the network.
-    #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
-    pub(crate) fn needs_assets(&self) -> bool {
-        self.rendering && crate::assets::pending()
     }
 
     /// Return to hero selection and drop the artwork only a battle draws.
