@@ -211,6 +211,11 @@ impl Session {
                         self.interface.opponent_scroll,
                     );
                 } else {
+                    // The awakening page and dark skill previews are the only menu
+                    // views that draw the awakening sheet.
+                    if self.wants_awake_texture() {
+                        self.ensure_player_awake_texture();
+                    }
                     menu::draw(
                         self.hero_id,
                         self.interface.hero_group,
@@ -222,7 +227,7 @@ impl Session {
                         frame.pointer,
                         self.character_page,
                         self.interface.hero_scroll,
-                        self.awake_texture(false),
+                        self.awake_textures[0].as_ref(),
                     );
                 }
                 self.interface

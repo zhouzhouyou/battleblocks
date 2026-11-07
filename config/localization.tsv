@@ -348,3 +348,4 @@ help.portals.rule3	No swaps across gate edges. Sideways matches stay straight.	�
 help.portals.rule3b	Each side keeps one pair, until its caster's next turn starts.	双方各可保留一对门，持续到各自下回合开始。
 help.portals.rule4	Portals and Gravity Shift do not end your turn.	布门与重力改向均不结束当前回合。
 help.portals.rule4b	Switching gravity between vertical and horizontal removes gates.	重力在竖向与横向之间切换时，会移除旧门。
+ui.loading.assets	Loading artwork…	正在加载美术资源…

@@ -319,11 +319,81 @@ pub(crate) fn decode_webp(bytes: &[u8]) -> image::RgbaImage {
         .into_rgba8()
 }
 
+/// Fully transparent 1x1 stand-in for artwork that is not in memory yet.
+pub(crate) fn blank_texture() -> Texture2D {
+    let t = Texture2D::from_rgba8(1, 1, &[0, 0, 0, 0]);
+    t.set_filter(FilterMode::Nearest);
+    t
+}
+
+/// Frames per atlas row. The 1x1 stand-in counts as one column so source-rect
+/// arithmetic stays total while artwork is loading.
+pub(crate) fn columns(texture: &Texture2D, frame_width: f32) -> usize {
+    ((texture.width() as f32 / frame_width) as usize).max(1)
+}
+
+/// Decode `asset` now, or ask the web loader for it and report that it is missing.
+pub(crate) fn asset_texture(asset: &crate::assets::Asset, flag: &str) -> Option<Texture2D> {
+    if asset.available() {
+        Some(diagnostic_texture(asset.bytes(), flag))
+    } else {
+        crate::assets::want(asset.path);
+        None
+    }
+}
+
 pub(crate) fn texture(bytes: &[u8]) -> Texture2D {
     let rgba = decode_webp(bytes);
     let t = Texture2D::from_rgba8(rgba.width() as u16, rgba.height() as u16, rgba.as_raw());
     t.set_filter(FilterMode::Nearest);
     t
+}
+
+/// A texture decoded the first time something needs it.
+///
+/// Battle sheets live here so the selection menu never uploads artwork it does
+/// not draw. The decoder runs on the frame that first asks for the sheet, which
+/// is why battle start prefetches the matchup's sheets before the first cast.
+pub(crate) struct Sheet {
+    asset: crate::assets::Asset,
+    texture: std::cell::OnceCell<Texture2D>,
+    /// Transparent stand-in while the web build is still fetching the file.
+    blank: std::cell::OnceCell<Texture2D>,
+}
+
+impl Sheet {
+    pub(crate) const fn new(asset: crate::assets::Asset) -> Self {
+        Self {
+            asset,
+            texture: std::cell::OnceCell::new(),
+            blank: std::cell::OnceCell::new(),
+        }
+    }
+
+    /// Upload the sheet now, or return the texture cached by an earlier call.
+    /// A file the web build has not fetched yet returns a transparent stand-in
+    /// and asks the frame loop for it.
+    pub(crate) fn get(&self) -> &Texture2D {
+        if self.texture.get().is_none() {
+            if self.asset.available() {
+                let _ = self.texture.set(texture(self.asset.bytes()));
+            } else {
+                crate::assets::want(self.asset.path);
+                return self.blank.get_or_init(blank_texture);
+            }
+        }
+        self.texture.get().expect("sheet uploaded above")
+    }
+
+    #[cfg(test)]
+    pub(crate) fn loaded(&self) -> bool {
+        self.texture.get().is_some()
+    }
+
+    /// Drop the uploaded texture. The next `get` decodes it again.
+    pub(crate) fn release(&mut self) {
+        self.texture = std::cell::OnceCell::new();
+    }
 }
 struct LabelJob {
     text: String,
@@ -581,8 +651,8 @@ pub(crate) fn actor(
         DrawTextureParams {
             dest_size: Some(size),
             source: Some(Rect::new(
-                (frame % (t.width() / w) as usize) as f32 * w,
-                (frame / (t.width() / w) as usize) as f32 * h,
+                (frame % columns(t, w)) as f32 * w,
+                (frame / columns(t, w)) as f32 * h,
                 w,
                 h,
             )),

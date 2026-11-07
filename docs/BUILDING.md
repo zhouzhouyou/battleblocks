@@ -48,7 +48,7 @@ python3 tools/build.py --setup-only
 python3 -m http.server 8765 --bind 127.0.0.1 --directory dist/web
 ```
 
-打开 [本地网页](http://127.0.0.1:8765/)。部署时上传整个 `dist/web/`，保留 HTML、JS、WASM、音频与许可目录。服务器为 WASM 返回 `application/wasm`，可启用 gzip / Brotli。首次点击或按键后解锁声音。
+打开 [本地网页](http://127.0.0.1:8765/)。部署时上传整个 `dist/web/`，保留 HTML、JS、WASM、`assets/`、音频与许可目录。`assets/` 存放角色图集与特效表，模块只保留代码、配置与字体；首页只需约 1.2 MB 的 WASM 和当前英雄图集（约 0.9 MB），其余角色与特效在选人、开战时按需加载。服务器为 WASM 返回 `application/wasm`，可启用 gzip / Brotli。首次点击或按键后解锁声音。
 
 - `.github/workflows/pages.yml` 在推送 main 或手动触发时构建并部署网页，GitHub Pages 的 Source 设为 GitHub Actions。
 - `.github/workflows/windows-release.yml` 在 Windows runner 上测试、构建并打包；手动触发时填写已有 draft release tag，产物与校验文件会附加到该 release。

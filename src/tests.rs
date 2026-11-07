@@ -11,8 +11,8 @@ fn base() -> Board {
 #[test]
 fn every_character_webp_decodes_with_its_original_atlas_dimensions() {
     for asset in sprites::SPRITES.iter().chain(sprites::AWAKENED) {
-        let decoded = image::load_from_memory(asset.bytes).expect("runtime image decoder");
-        let explicit = graphics::decode_webp(asset.bytes);
+        let decoded = image::load_from_memory(asset.bytes()).expect("runtime image decoder");
+        let explicit = graphics::decode_webp(asset.bytes());
         assert_eq!(
             explicit,
             decoded.to_rgba8(),
@@ -43,7 +43,7 @@ fn new_role_atlases_have_twelve_distinct_poses_per_action_and_shared_palettes() 
         } else {
             &sprites::SPRITES[id]
         };
-        let image = image::load_from_memory(asset.bytes).unwrap().to_rgba8();
+        let image = image::load_from_memory(asset.bytes()).unwrap().to_rgba8();
         assert_eq!(
             image.dimensions(),
             (384 * 6, 384 * if id == 2 { 4 } else { 8 })
@@ -106,7 +106,7 @@ fn new_role_atlases_have_twelve_distinct_poses_per_action_and_shared_palettes() 
 fn wizard_normal_is_unchanged_and_only_awakened_uses_fine_pixel_animation() {
     let normal = &sprites::SPRITES[2];
     assert_eq!(
-        normal.bytes,
+        normal.bytes(),
         include_bytes!("../assets/roles/wizard/runtime/normal.webp")
     );
     assert_eq!((normal.w, normal.h), (300., 400.));
@@ -116,8 +116,8 @@ fn wizard_normal_is_unchanged_and_only_awakened_uses_fine_pixel_animation() {
     assert!(normal.action(true).is_none());
     assert_eq!(normal.anchor, None);
     let awake = &sprites::AWAKENED[2];
-    assert_ne!(normal.bytes, awake.bytes);
-    let atlas = image::load_from_memory(awake.bytes).unwrap().to_rgba8();
+    assert_ne!(normal.bytes(), awake.bytes());
+    let atlas = image::load_from_memory(awake.bytes()).unwrap().to_rgba8();
     assert_eq!(atlas.dimensions(), (2304, 1536));
     assert_eq!(awake.indices, &(0..12).collect::<Vec<_>>());
     assert_eq!(awake.cast.unwrap().indices, &(12..24).collect::<Vec<_>>());
@@ -551,12 +551,12 @@ fn action_metadata_preserves_legacy_fallback_and_fire_elf_sleep() {
     assert_ne!(fire.cast, fire.sleep);
     assert_eq!(fire.sleep.unwrap().frame(60.), 47);
     assert!(sprites::SPRITES[content::NUN].sleep.is_none());
-    assert_ne!(sprites::SPRITES[2].bytes, sprites::AWAKENED[2].bytes);
+    assert_ne!(sprites::SPRITES[2].bytes(), sprites::AWAKENED[2].bytes());
 }
 
 #[test]
 fn nuns_shadow_lantern_keeps_its_purple_identity_after_quantization() {
-    let image = image::load_from_memory(sprites::SPRITES[content::NUN].bytes)
+    let image = image::load_from_memory(sprites::SPRITES[content::NUN].bytes())
         .unwrap()
         .to_rgba8();
     for (dark, asset) in [

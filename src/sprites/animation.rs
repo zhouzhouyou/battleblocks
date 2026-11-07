@@ -52,7 +52,8 @@ impl AnimationClip {
 }
 
 pub struct SpriteAsset {
-    pub bytes: &'static [u8],
+    /// Runtime artwork; embedded on native, fetched beside the web build.
+    pub asset: crate::assets::Asset,
     pub w: f32,
     pub h: f32,
     pub durations: &'static [f64],
@@ -64,6 +65,12 @@ pub struct SpriteAsset {
 }
 
 impl SpriteAsset {
+    /// Decoded WebP bytes of this atlas.
+    #[cfg_attr(not(test), allow(dead_code))]
+    pub fn bytes(&self) -> &'static [u8] {
+        self.asset.bytes()
+    }
+
     pub fn idle(&self) -> AnimationClip {
         AnimationClip {
             indices: self.indices,

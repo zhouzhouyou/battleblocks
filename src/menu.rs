@@ -186,8 +186,8 @@ fn sprite_frames(
             rotation,
             pivot: Some(vec2(area.x + area.w / 2., area.y + area.h)),
             source: Some(Rect::new(
-                (frame % (texture.width() / asset.w) as usize) as f32 * asset.w,
-                (frame / (texture.width() / asset.w) as usize) as f32 * asset.h,
+                (frame % crate::columns(texture, asset.w)) as f32 * asset.w,
+                (frame / crate::columns(texture, asset.w)) as f32 * asset.h,
                 asset.w,
                 asset.h,
             )),
@@ -202,7 +202,7 @@ fn draw_skill_actor(
     preview: &Preview,
     after: bool,
     texture: &Texture2D,
-    awakened: &Texture2D,
+    awakened: Option<&Texture2D>,
 ) {
     let area = Rect::new(558., 428., 200., 184.);
     let center = area.x + area.w / 2.;
@@ -244,7 +244,11 @@ fn draw_skill_actor(
         draw_circle_lines(center, area.y + area.h - 54., 30. + t * 26., 2., color);
     }
     let (texture, asset) = if dark {
-        (awakened, &sprites::AWAKENED[hero])
+        // `Session` loads the awakening sheet before a dark preview is drawn.
+        (
+            awakened.expect("dark preview needs the awakening sheet"),
+            &sprites::AWAKENED[hero],
+        )
     } else {
         (texture, &sprites::SPRITES[hero])
     };
@@ -281,7 +285,7 @@ pub fn draw(
     pointer: Vec2,
     page: usize,
     scroll: usize,
-    awakened_texture: &Texture2D,
+    awakened_texture: Option<&Texture2D>,
 ) {
     let mut resource_hint = None;
     let dim = Color::from_rgba(29, 33, 43, 255);
@@ -405,7 +409,12 @@ pub fn draw(
     } else {
         &sprites::SPRITES[hero]
     };
-    let portrait_texture = if page == 2 { awakened_texture } else { texture };
+    let portrait_texture = if page == 2 {
+        // The awakening page asks `Session` to load this sheet before drawing.
+        awakened_texture.expect("awakening page needs the awakening sheet")
+    } else {
+        texture
+    };
     let portrait_area = Rect::new(291., 198., 230., portrait_height);
     if portrait_asset.legacy_awake() {
         let cycle = (get_time() - preview.since).max(0.) % 3.;
