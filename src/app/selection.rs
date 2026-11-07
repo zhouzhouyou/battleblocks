@@ -4,6 +4,7 @@ impl Session {
         if self.choosing {
             if let Some(audio) = &self.audio {
                 audio.playing(false);
+                audio.stop_speech();
             }
             self.sync_selection_groups();
             let opponents = self.interface.opponent_step;

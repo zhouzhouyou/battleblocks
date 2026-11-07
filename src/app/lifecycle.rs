@@ -1,6 +1,9 @@
 use super::*;
 impl Session {
     pub(super) fn reset_battle(&mut self) {
+        if let Some(audio) = &self.audio {
+            audio.stop_speech();
+        }
         self.hint_queue.clear();
         self.plan_cache = None;
         self.advanced_hints = false;

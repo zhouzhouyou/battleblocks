@@ -11,7 +11,7 @@ ui.skills.draw_skill_details.after_hp	After: HP	结算后生命
 ui.screen.draw_pause.ai_difficulty	AI: 	AI 难度：
 ui.screen.draw_opponents.ai_difficulty	AI difficulty	AI 难度
 ui.menu.draw.animated_preview	ANIMATED PREVIEW	角色动画预览
-ui.screen.draw_top.audio_m	Audio / M	音频 / M
+ui.screen.draw_top.audio_m	All audio / M	全部声音 / M
 ui.menu.draw.awakening	AWAKENING	觉醒能力
 ui.screen.draw_panel.awakening	Awakening	觉醒
 ui.screen.draw_panel.awakening_numbers	Each hero's trigger point and new HP cap are on its awakening page.	各角色的觉醒点与新生命上限见角色觉醒页。
@@ -297,6 +297,15 @@ ui.hints.plans.none	No executable plans	当前没有可执行方案
 ui.hints.plans.pages	{0} / {1} · {2} plans · ← / →	{0} / {1} · {2} 方案 · ← / →
 ui.hints.plans.position_changed	Position changed; hint plan stopped	局面已变化，已停止提示方案
 ui.portal.choose_first_preview	Choose the first gate, then hover to preview links and clear rewards.	先选第一扇门，再移动鼠标预览连接与消除收益。
+settings.general	General	通用
+settings.display	Display	显示
+settings.sound	Sound	声音
+settings.master_volume	Master volume	总音量
+settings.music	Background music	背景音乐
+settings.effects	Sound effects	音效
+settings.voice	Character voice	角色语音
+settings.percent	{0}%	{0}%
+settings.window_size	{0} × {1}	{0} × {1}
 
 # Illustrated help: diagrams reuse runtime tiles and geometric drawing.
 help.gravity.tab	Gravity	重力

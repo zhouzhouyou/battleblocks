@@ -71,11 +71,20 @@ impl Presentation {
     pub fn clear(&mut self) {
         *self = Self::default();
     }
-    pub fn tick(&mut self, dt: f64) {
+    pub fn tick(&mut self, dt: f64) -> bool {
         self.hold = (self.hold - dt).max(0.);
         let motion_dt = (dt - self.motion_delay).max(0.);
         self.motion_delay = (self.motion_delay - dt).max(0.);
+        let before = 1. - self.time / self.duration.max(f64::EPSILON);
         self.time = (self.time - motion_dt).max(0.);
+        let after = 1. - self.time / self.duration.max(f64::EPSILON);
+        let ease = |t: f64| t * t * (3. - 2. * t);
+        let crossed = self.motions.iter().any(|m| {
+            (1..=m.portals.len()).any(|i| {
+                let boundary = i as f64 / (m.portals.len() + 1) as f64;
+                ease(before) < boundary && ease(after) >= boundary
+            })
+        });
         if self.time == 0. {
             self.charge_column = None;
             self.motions.clear();
@@ -88,6 +97,7 @@ impl Presentation {
             p.time -= dt as f32;
         }
         self.popups.retain(|p| p.time > 0.);
+        crossed
     }
     pub fn charge(&mut self, column: usize, remaining: f64) {
         self.motion_delay = 0.;
@@ -721,5 +731,37 @@ mod awakening_animation_tests {
         p.awakening(true, 20, 700, 385, 385);
         p.clear();
         assert!(!p.busy());
+    }
+}
+
+#[cfg(test)]
+mod portal_audio_tests {
+    use super::*;
+    #[test]
+    fn transit_cues_follow_delays_crossing_boundaries_and_large_steps() {
+        let motion = || TileFall {
+            from: (0, 0),
+            to: (5, 7),
+            kind: 1,
+            portals: vec![((0, 3), (5, 4))],
+        };
+        let mut p = Presentation::default();
+        p.fall(vec![motion(), motion()]);
+        p.delay_fall(0.3);
+        assert!(!p.tick(0.3));
+        assert!(!p.tick(FALL_TIME * 0.4));
+        assert!(p.tick(FALL_TIME * 0.2)); // both tiles coalesce into one cue
+        assert!(!p.tick(FALL_TIME));
+        p.fall(vec![motion()]);
+        assert!(p.tick(10.)); // a slow frame must not swallow a crossing
+        assert!(!p.tick(10.));
+        p.fall(vec![TileFall {
+            portals: Vec::new(),
+            ..motion()
+        }]);
+        assert!(!p.tick(10.));
+        p.fall(vec![motion()]);
+        p.stop_motion();
+        assert!(!p.tick(10.));
     }
 }

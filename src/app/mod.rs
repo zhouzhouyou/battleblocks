@@ -705,6 +705,9 @@ impl Session {
         }
     }
     fn restore(&mut self, state: debug::Snapshot) {
+        if let Some(audio) = &self.audio {
+            audio.stop_speech();
+        }
         self.hint_cache = None;
         self.plan_cache = None;
         self.hint_queue.clear();

@@ -12,6 +12,7 @@ Headless `Session` 是权威游戏模型，GUI 只是同一模型的输入、帧
 | `src/content/handlers/` | 主动、被动、临时状态自身的事件过滤与行为；`mod.rs` 只绑定身份和处理器 |
 | `src/content/skills/` | 各主动的棋盘操作实现，由施法事件调用 |
 | `src/content/rewards.rs` | 构造方块贡献、汇总倍率、分发资源事件、应用上限与终局加压；不识别具体角色或技能 |
+| `src/audio/` | 音乐、程序穿门音效与可选系统语音；macOS 后台合成 PCM、共享滤波器和有界缓存，浏览器使用 Web Speech API；不参与战斗规则 |
 | `src/content/lore.rs` | 角色档案文本的只读解析与查询，不参与战斗规则 |
 | `src/content/status.rs` | 临时效果的身份、施加技能、持续时间及消费规则 |
 | `src/content/health.rs`、`movement.rs`、`previews.rs` | 通用生命与觉醒、移动与目标、无副作用预览；能力规则通过事件查询 |
