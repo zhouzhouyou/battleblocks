@@ -138,8 +138,8 @@ ui.hud.draw_turns.swapping	Swapping	正在交换
 ui.skills.draw_skill_details.text	–	～
 ui.hud.draw_turns.text	: 	：
 ui.screen.draw_panel.the_triggering_hit_cannot_spill_ov	The triggering hit cannot spill over; later hits resolve normally.	触发觉醒的攻击不继续扣第二阶段生命；后续伤害正常结算。
-ui.screen.draw_panel.tile_guide	TILE GUIDE	方块说明
-ui.screen.draw_top.tile_guide	Tile guide	方块说明
+ui.screen.draw_panel.tile_guide	HOW TO PLAY	玩法指南
+ui.screen.draw_top.tile_guide	How to play	玩法指南
 ui.hud.draw_turns.tiles_falling	Tiles falling	方块掉落
 ui.screen.draw_panel.tiles_matching	Tiles & matching	方块与消除
 battle.outcome.victory	Victory	胜利
@@ -297,3 +297,32 @@ ui.hints.plans.none	No executable plans	当前没有可执行方案
 ui.hints.plans.pages	{0} / {1} · {2} plans · ← / →	{0} / {1} · {2} 方案 · ← / →
 ui.hints.plans.position_changed	Position changed; hint plan stopped	局面已变化，已停止提示方案
 ui.portal.choose_first_preview	Choose the first gate, then hover to preview links and clear rewards.	先选第一扇门，再移动鼠标预览连接与消除收益。
+
+# Illustrated help: diagrams reuse runtime tiles and geometric drawing.
+help.gravity.tab	Gravity	重力
+help.portals.tab	Portals	传送门
+help.gravity.title	Gravity decides where tiles settle	重力决定方块向哪里补位
+help.gravity.quadrants	Gravity Shift: click a quadrant	重力改向：点击棋盘象限
+help.gravity.up	Up	向上
+help.gravity.right	Right	向右
+help.gravity.left	Left	向左
+help.gravity.down	Down	向下
+help.gravity.before	Gap before settling	补位前有空格
+help.gravity.after	Settle left; refill from right	向左补位，从右侧生成
+help.gravity.rule1	Default: down. After a clear, tiles settle with gravity;	默认向下；消除后，方块沿重力方向补位，
+help.gravity.rule1b	new tiles enter from the opposite edge.	新方块从相反一侧进入。
+help.gravity.rule2	Changing direction alone does not move a full board.	只改变方向不会移动满盘方块。
+help.gravity.rule2b	It can create matches by changing portal connections.	但可能改变传送门连接，立即形成消除。
+help.gravity.rule3	Last cast wins; expires at the caster's next turn start.	后施放的方向覆盖先前方向；施法者下回合开始时到期。
+help.gravity.rule3b	Then gravity returns down. Reach limits turn with gravity.	到期恢复向下；角色的行动范围也随重力转向。
+help.portals.title	Portals join two falling paths	传送门把两条补位路径交叉连接
+help.portals.diagram	Downward gravity: follow the arrows through the gates	向下重力示例：沿箭头穿门，接到另一列下方
+help.portals.match	The 3 highlighted tiles match along the connected path.	高亮的三个同色方块沿连接路径相邻，可跨门三消。
+help.portals.rule1	Cast Portals, then click two tiles: first blue, then orange.	施放传送门后依次点两格：先蓝门，再橙门。
+help.portals.rule1b	Use internal bottom edges (vertical) or right edges (horizontal).	竖向重力取方块下边，横向取右边；门须在棋盘内部。
+help.portals.rule2	Use different columns / rows; conflicts and loops are invalid.	竖向重力选不同列，横向选不同行；冲突或成环无效。
+help.portals.rule2b	Hover to preview links and rewards; Esc / right-click cancels.	悬停第二门预览连接与收益；Esc／右键取消选门。
+help.portals.rule3	No swaps across gate edges. Sideways matches stay straight.	不能隔着门边交换；垂直于重力的三消仍按直线判断。
+help.portals.rule3b	Each side keeps one pair, until its caster's next turn starts.	双方各可保留一对门，持续到各自下回合开始。
+help.portals.rule4	Portals and Gravity Shift do not end your turn.	布门与重力改向均不结束当前回合。
+help.portals.rule4b	Switching gravity between vertical and horizontal removes gates.	重力在竖向与横向之间切换时，会移除旧门。
