@@ -102,12 +102,12 @@ fn setup_skills_validate_before_cost_and_previews_leave_state_and_rng_untouched(
         (4, 4),
         rules
     ));
-    assert!(payment_in(PORTAL_CUBE, 620, 34, Skill::PortalPair, rules).is_none());
+    assert!(payment_in(PORTAL_CUBE, 620, 54, Skill::PortalPair, rules).is_none());
     assert_eq!(
-        payment_in(PORTAL_CUBE, 620, 35, Skill::PortalPair, rules)
+        payment_in(PORTAL_CUBE, 620, 55, Skill::PortalPair, rules)
             .unwrap()
             .mana,
-        35
+        55
     );
     let p = preview_rewards_in(
         Skill::PortalPair,
@@ -120,7 +120,7 @@ fn setup_skills_validate_before_cost_and_previews_leave_state_and_rng_untouched(
         0,
         rules,
     );
-    assert_eq!((p.heal, p.damage, p.mana_after), (0, 0, 65));
+    assert_eq!((p.heal, p.damage, p.mana_after), (0, 0, 45));
     let invalid = preview_rewards_in(
         Skill::PortalPair,
         &b,
@@ -279,4 +279,197 @@ fn board_methods_resolve_gravity_from_quadrants() {
         assert!(mechanics.gravity_matches_quadrant(target));
     }
     assert!(!mechanics.gravity_matches_quadrant((0, 0)));
+}
+
+#[test]
+fn portal_setup_ai_uses_actual_net_rewards_instead_of_a_constant_bonus() {
+    let b = board();
+    let rules = Rules {
+        target_anchor: Some((1, 2)),
+        ..Default::default()
+    };
+    let value = ability_ai_utility(
+        Skill::PortalPair,
+        &EventContext::new(PORTAL_CUBE, 620, 100, rules),
+        &b,
+        0,
+        10000.,
+    )
+    .unwrap();
+    assert!(
+        value < 0,
+        "a setup that loses the better exchange must not get a fixed bonus"
+    );
+    let mut b = b;
+    for (x, y) in [(1, 1), (1, 2), (4, 5)] {
+        b[y][x] = 6;
+    }
+    let p = preview_rewards_in(
+        Skill::PortalPair,
+        &b,
+        (4, 4),
+        PORTAL_CUBE,
+        620,
+        100,
+        700,
+        1,
+        rules,
+    );
+    assert!(p.damage > 0 && p.mana_gain > 0);
+    assert!(
+        ability_ai_utility(
+            Skill::PortalPair,
+            &EventContext::new(PORTAL_CUBE, 620, 100, rules),
+            &b,
+            1,
+            0.
+        )
+        .unwrap()
+            > 0
+    );
+}
+
+#[test]
+fn portals_can_be_recast_when_the_previous_pair_expires_on_the_next_owner_turn() {
+    for side in [false, true] {
+        let mut cooldowns = Cooldowns::default();
+        let mut mechanics = BoardMechanics::default();
+        mechanics
+            .place(PortalPair {
+                a: PortalEdge::at((1, 2), Gravity::Down),
+                b: PortalEdge::at((4, 4), Gravity::Down),
+                owner: side,
+            })
+            .unwrap();
+        cooldowns.cast(side as usize, Skill::PortalPair);
+        assert_eq!(cooldowns.remaining(side as usize, Skill::PortalPair), 1);
+        cooldowns.start_turn((!side) as usize);
+        mechanics.start_turn(!side);
+        assert_eq!(cooldowns.remaining(side as usize, Skill::PortalPair), 1);
+        assert!(mechanics.portals[side as usize].is_some());
+        cooldowns.start_turn(side as usize);
+        mechanics.start_turn(side);
+        assert_eq!(cooldowns.remaining(side as usize, Skill::PortalPair), 0);
+        assert!(mechanics.portals[side as usize].is_none());
+        assert_eq!(
+            payment_in(PORTAL_CUBE, 620, 55, Skill::PortalPair, Rules::default())
+                .unwrap()
+                .mana,
+            55
+        );
+    }
+}
+
+#[test]
+fn gravity_mastery_costs_follow_phase_for_payment_preview_and_copied_skills() {
+    let b = board();
+    let seed = crate::rng::state();
+    for awake in [false, true] {
+        let rules = Rules {
+            awake,
+            opponent: Some((DWARF, false)),
+            ..Default::default()
+        };
+        let hp = health_cap(PORTAL_CUBE, awake);
+        let cost = if awake { 15 } else { 25 };
+        assert_eq!(skill_cost_in(PORTAL_CUBE, Skill::GravityShift, rules), cost);
+        assert_eq!(skill_cost_in(PORTAL_CUBE, Skill::PortalPair, rules), 55);
+        assert!(payment_in(PORTAL_CUBE, hp, cost - 1, Skill::GravityShift, rules).is_none());
+        let pay = payment_in(PORTAL_CUBE, hp, cost, Skill::GravityShift, rules).unwrap();
+        assert_eq!((pay.mana, pay.blood), (cost, 0));
+        let p = preview_rewards_in(
+            Skill::GravityShift,
+            &b,
+            (0, 0),
+            PORTAL_CUBE,
+            hp,
+            160,
+            600,
+            0,
+            rules,
+        );
+        assert_eq!(
+            (p.health_after, p.mana_after, p.enemy_health_after),
+            (hp, 160 - cost, 600)
+        );
+        assert_eq!((p.heal, p.damage, p.mana_gain), (0, 0, 0));
+        let rejected = preview_rewards_in(
+            Skill::GravityShift,
+            &b,
+            (7, 7),
+            PORTAL_CUBE,
+            hp,
+            160,
+            600,
+            0,
+            rules,
+        );
+        assert_eq!(rejected.mana_after, 160);
+        assert_eq!(crate::rng::state(), seed);
+        assert_eq!(b, board());
+    }
+    let copied = Rules {
+        awake: true,
+        copied_skill: Some(Skill::GravityShift),
+        ..Default::default()
+    };
+    assert_eq!(skill_cost_in(PRIEST, Skill::Copy, copied), 15);
+    assert!(payment_in(PRIEST, 300, 14, Skill::Copy, copied).is_none());
+    assert_eq!(
+        payment_in(PRIEST, 300, 15, Skill::Copy, copied)
+            .unwrap()
+            .mana,
+        15
+    );
+    assert_eq!(
+        skill_cost_in(
+            PRIEST,
+            Skill::Copy,
+            Rules {
+                copied_skill: Some(Skill::PortalPair),
+                ..copied
+            }
+        ),
+        55
+    );
+}
+
+#[test]
+fn gravity_mastery_is_a_registered_awakened_ability_and_owns_its_cost_rule() {
+    assert!(!passives(PORTAL_CUBE, false).contains(&Passive::GravityMastery));
+    assert!(passives(PORTAL_CUBE, true).contains(&Passive::GravityMastery));
+    assert!(passives(PORTAL_CUBE, true).contains(&Passive::PortalYield));
+    for zh in [false, true] {
+        assert!(!Passive::GravityMastery.name(zh).is_empty());
+        assert!(Passive::GravityMastery.description(zh).contains("15"));
+    }
+    let ctx = EventContext::new(
+        PORTAL_CUBE,
+        300,
+        100,
+        Rules {
+            awake: true,
+            ..Default::default()
+        },
+    );
+    let mut cost = 25;
+    dispatch_active(
+        Skill::GravityShift,
+        &ctx,
+        &mut RuleEvent::SkillCost {
+            skill: Skill::GravityShift,
+            value: &mut cost,
+        },
+        &mut Vec::new(),
+    );
+    assert_eq!(cost, 25);
+    dispatch_rules(
+        &ctx,
+        &mut RuleEvent::SkillCost {
+            skill: Skill::GravityShift,
+            value: &mut cost,
+        },
+        &mut Vec::new(),
+    );
+    assert_eq!(cost, 15);
 }

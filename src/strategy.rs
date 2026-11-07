@@ -35,26 +35,19 @@ pub(crate) fn reward_value(damage: i32, health: i32, mana: i32) -> f32 {
     damage as f32 + health as f32 * 0.8 + mana as f32 * 0.65
 }
 pub(crate) fn score(b: &Board, hero: usize, hp: i32, mp: i32, rules: Rules) -> f32 {
-    let batch = crate::content::clear_batch_in(
+    let p = crate::content::preview_clear_in(
+        b,
+        &rules.board_mechanics.matches(b),
         hero,
         hp,
         mp,
-        b,
-        &rules.board_mechanics.matches(b),
+        rules.opponent_hp.unwrap_or(10000),
         1,
         0,
+        true,
         rules,
     );
-    let original_opponent_hp = rules.opponent_hp.unwrap_or(10000);
-    let settled = crate::content::settle_batch_in(hero, hp, mp, original_opponent_hp, batch, rules);
-    let progress = if let (Some((id, mut awake)), Some(_)) = (rules.opponent, rules.opponent_hp) {
-        let mut health = settled.opponent_hp;
-        crate::content::take_damage(id, &mut health, &mut awake, settled.damage).damage
-    } else {
-        settled.damage
-    };
-    reward_value(progress, settled.actor_hp - hp, settled.actor_mp - mp)
-        - (settled.opponent_hp - original_opponent_hp) as f32
+    reward_value(p.damage - p.opponent_heal, p.heal, p.mana_gain)
 }
 #[cfg(test)]
 pub fn choose_move(
@@ -209,13 +202,7 @@ pub fn choose_skill_available_in(
             Some(affordable[crate::rng::gen_range(0, affordable.len())])
         };
     }
-    let swap_value = choose_move_in(b, hp, id, mp, id, 1, rules)
-        .map(|(a, c)| {
-            let mut copy = *b;
-            crate::board::hero_swap_in(&mut copy, a, c, id, rules.board_mechanics);
-            score(&copy, id, hp, mp, rules)
-        })
-        .unwrap_or(0.);
+    let swap_value = best_move_score_in(b, id, hp, mp, rules);
     let utility = |s| {
         let target = choose_target_in(s, b, id, hp, mp, bonus, rules);
         let mut copy = *b;
@@ -244,7 +231,7 @@ pub fn choose_skill_available_in(
             return (swap_value - crate::content::skill_cost(id, rules.awake, s) as f32 * 0.5)
                 as i32;
         }
-        (p.damage as f32
+        ((p.damage - p.opponent_heal) as f32
             + p.heal as f32 * 0.8
             + (p.mana_after - mp) as f32 * 0.5
             + e.cells.len() as f32 * 0.7) as i32
@@ -317,7 +304,7 @@ pub fn choose_target_in(
                 bonus,
                 rules,
             );
-            p.damage * 100 + p.heal * 80 + (p.mana_after - mp) * 50
+            (p.damage - p.opponent_heal) * 100 + p.heal * 80 + (p.mana_after - mp) * 65
         })
         .unwrap_or((3, 3))
 }

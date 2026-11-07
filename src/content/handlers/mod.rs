@@ -13,6 +13,7 @@ mod priest;
 pub fn passive_handler(p: Passive) -> RuleHandler {
     match p {
         Passive::PortalYield => portal::passive,
+        Passive::GravityMastery => portal::mastery,
         Passive::DwarfStrength | Passive::Short | Passive::Grudge => dwarf::handle,
         Passive::KnightStrength | Passive::Might | Passive::Clumsy | Passive::ClumsyAwake => {
             knight::handle

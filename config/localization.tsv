@@ -296,3 +296,4 @@ ui.hints.plans.resources	HP {0} → {1}   MP {2} → {3}   Enemy HP {4}	HP {0} �
 ui.hints.plans.none	No executable plans	当前没有可执行方案
 ui.hints.plans.pages	{0} / {1} · {2} plans · ← / →	{0} / {1} · {2} 方案 · ← / →
 ui.hints.plans.position_changed	Position changed; hint plan stopped	局面已变化，已停止提示方案
+ui.portal.choose_first_preview	Choose the first gate, then hover to preview links and clear rewards.	先选第一扇门，再移动鼠标预览连接与消除收益。

@@ -20,13 +20,13 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-portals-') as directory:
     casts = [e for e in records if e['event'] == 'skill']
     assert len(casts) == 3, [e['detail'] for e in casts]
     portal, up, right = casts
-    assert portal['after']['mp'] == 125 and not portal['after']['action_done']
+    assert portal['after']['mp'] == 105 and not portal['after']['action_done']
     assert portal['before']['board'] == portal['after']['board']
     gates = portal['after']['board_mechanics']['portals']
     assert gates == [{'a': [1, 2, True], 'b': [4, 4, True], 'owner': False}], gates
     assert up['after']['board_mechanics']['gravity'] == 'Up'
     assert up['after']['board_mechanics']['portals'] == gates
-    assert up['after']['mp'] == 100
+    assert up['after']['mp'] == 80
     assert right['after']['board_mechanics']['gravity'] == 'Right'
     assert right['after']['board_mechanics']['portals'] == []
     undos = [e for e in records if e['event'] == 'rollback']
@@ -54,4 +54,25 @@ with tempfile.TemporaryDirectory(prefix='battleblocks-portals-') as directory:
     assert rewards, 'no passive yield from actual gravity resolution'
     assert all(e['source_chain'][0]['source']['kind'] == 'portal_transit' for e in rewards)
     assert all(e['amount'] == 1 for e in rewards)
-    print('PASS: portal geometry, rejected cast cost, quadrant gravity, removal, complete rollback and real transit source chains')
+    # Placing gates on a stable board must immediately resolve the new remote line.
+    remote = [row[:] for row in clean]
+    for x, y in [(1, 1), (1, 2), (4, 5)]:
+        remote[y][x] = 6
+    commands = ['pause on', 'hero player 12', 'hero enemy 12', 'mp player 160',
+                'board load ' + ' '.join(str(v) for row in remote for v in row),
+                'pause off', 'cast 1 2 3 5 5', 'undo player']
+    args = [str(BIN), '--headless', '--log', str(log)]
+    for command in commands:
+        args += ['--command', command]
+    result = subprocess.run(args, cwd=ROOT, capture_output=True, text=True, timeout=60)
+    assert result.returncode == 0, result.stdout + result.stderr
+    records = [json.loads(line) for line in log.read_text().splitlines()]
+    cast = next(e for e in records if e['event'] == 'skill')
+    assert cast['after']['pending'] == [[1, 1], [1, 2], [4, 5]], cast['after']['pending']
+    assert cast['after']['mp'] == 105 and not cast['after']['action_done']
+    resolution = next(e for e in records if e['event'] == 'resolution')
+    assert 'damage=21' in resolution['detail'], resolution['detail']
+    assert resolution['action'] == cast['action']
+    rollback = next(e for e in records if e['event'] == 'rollback')
+    assert rollback['after'] == cast['before']
+    print('PASS: portal geometry, costs, gravity, immediate remote clears, passive source chains and complete rollback')

@@ -151,9 +151,11 @@ impl Session {
                             self.extra_bonus,
                             rules,
                         );
-                        let value = p.damage as f32
-                            + p.heal as f32 * 0.8
-                            + (p.mana_after - self.mp) as f32 * 0.65;
+                        let value = strategy::reward_value(
+                            p.damage - p.opponent_heal,
+                            p.heal,
+                            p.mana_after - self.mp,
+                        );
                         targets.push((value, PlanAction::Cast(skill, target, anchor)));
                     }
                 }
