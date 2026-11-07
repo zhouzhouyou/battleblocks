@@ -1,4 +1,5 @@
 use super::*;
+mod help;
 #[derive(Clone, Copy, PartialEq)]
 pub enum Panel {
     Settings,
@@ -16,7 +17,7 @@ const PANEL_PAD: f32 = 24.;
 const PANEL_LEFT: f32 = PANEL.x + PANEL_PAD;
 const PANEL_INNER: f32 = PANEL.w - 2. * PANEL_PAD;
 /// Tabs of the help panel and the gap between them.
-pub const HELP_TAB_COUNT: usize = 3;
+pub const HELP_TAB_COUNT: usize = 5;
 const TAB_GAP: f32 = 10.;
 const TAB_TOP: f32 = 158.;
 const TAB_HEIGHT: f32 = 30.;
@@ -540,13 +541,25 @@ impl Ui {
                 tr_key(zh, "ui.screen.draw_panel.tiles_matching"),
                 tr_key(zh, "ui.screen.draw_panel.awakening"),
                 tr_key(zh, "ui.screen.draw_panel.fatigue_tab"),
+                tr_key(zh, "help.gravity.tab"),
+                tr_key(zh, "help.portals.tab"),
             ]
             .iter()
             .enumerate()
             {
                 let r = help_tab_rect(i);
                 frame(r, self.help_tab == i);
-                label(text, r.x + 10., r.y + 21., 17., WHITE);
+                label_centered(
+                    text,
+                    r.x + r.w / 2.,
+                    r.y + 21.,
+                    fit_size(text, 17., r.w - 12.),
+                    WHITE,
+                );
+            }
+            if self.help_tab >= 3 {
+                help::draw(self.help_tab, zh, tiles);
+                return;
             }
             if self.help_tab >= 1 {
                 // Awakening explains the mechanic; endgame pressure explains the ramp.
