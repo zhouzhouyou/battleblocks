@@ -51,10 +51,6 @@
     "sha256": "cc050a9efe414181c2d8261f5ab9808b8e0d67c3d23aa6bd37056b5468620bbd",
     "bytes": 162
   },
-  "assets/roles/chort/runtime/awake.webp": {
-    "sha256": "93883e90c0bdd0099118c2a20b7ee89ecd9c41394197c8a25051db61a5831d8d",
-    "bytes": 7042
-  },
   "assets/roles/chort/runtime/normal.webp": {
     "sha256": "b9e8219a60a5a32e52bc176d9c9f793a3fd9abeb046cdf9311adce65ec4fd040",
     "bytes": 430
@@ -186,10 +182,6 @@
   "assets-source/roles/goblin-legacy/animation/normal-original.webp": {
     "sha256": "8c5c09f31c5007a86afe6fb775c00d0c1d5df54a2a3db6b917cd6f4ae786b02e",
     "bytes": 620
-  },
-  "assets/roles/imp/runtime/awake.webp": {
-    "sha256": "29f3fb604d63d88a30fa9cd09ddf4b181b62980b67ce4f374347ff62ce7459ed",
-    "bytes": 7102
   },
   "assets/roles/imp/runtime/normal.webp": {
     "sha256": "368cc3b16dd6ef45440fc56e4ab01d0a3af921423cda96e3d5dcf797b47e1795",
@@ -339,10 +331,6 @@
     "sha256": "b04c7e32aa9ca375ad1cfa47bbf782e84f3619076da933c47178cec1a919b362",
     "bytes": 968
   },
-  "assets/roles/zombie/runtime/awake.webp": {
-    "sha256": "d2e6da4fb8f5caa08f6deeb674c75eebc208fd6e48237efd580b2219996c02ee",
-    "bytes": 5782
-  },
   "assets/roles/zombie/runtime/normal.webp": {
     "sha256": "a7d6aa0e74231fd116a6e69b0a50e30c4fd995671939ae26688ff46b8918f7e1",
     "bytes": 716
@@ -390,5 +378,41 @@
   "experiments/memory-comparison/assets/ui.ttf": {
     "sha256": "1f1f02699b80c86a4c4fff22c68e1dda63b1b6e3a64def4d08c0ae24f6408f67",
     "bytes": 56684
+  },
+  "assets-source/roles/imp/animation/awake-cast-source.webp": {
+    "sha256": "df963a4ebf708644c06c3099ef03493669b938802093c9d3bee1db164fce212a",
+    "bytes": 362966
+  },
+  "assets-source/roles/imp/animation/awake-idle-source.webp": {
+    "sha256": "883fd1a66f4c841ff9aa5fe3186ad07ded0d3ce8c0c25ef555aab5d85a9e8b63",
+    "bytes": 373370
+  },
+  "assets/roles/imp/runtime/atlas.webp": {
+    "sha256": "267e223d69d03f3c675c6227c0d868ba1b17033d81fce5cc6cdaef07be082a8e",
+    "bytes": 231984
+  },
+  "assets-source/roles/chort/animation/awake-cast-source.webp": {
+    "sha256": "4e233b0e5a348690de94de4932ef0ca1e5f63f8c1ff9eb87058c5b9fceac31bb",
+    "bytes": 369048
+  },
+  "assets-source/roles/chort/animation/awake-idle-source.webp": {
+    "sha256": "ad7f76f2206774dc0d24854a3c566b2739e3d0d29e5b5151af30ade5a47e500c",
+    "bytes": 365446
+  },
+  "assets/roles/chort/runtime/atlas.webp": {
+    "sha256": "1e2ec2096b21c7f58181ef54649e7be468f18273c30602cb7683c89dbcd77490",
+    "bytes": 239584
+  },
+  "assets-source/roles/zombie/animation/awake-cast-source.webp": {
+    "sha256": "cf5e92d6c85032f182da91e87d2c35e050243d1ecceee79f6d4af89da7ef4112",
+    "bytes": 343582
+  },
+  "assets-source/roles/zombie/animation/awake-idle-source.webp": {
+    "sha256": "f435a774eb86b8d2fcc792a2269b3f43bc0e7f00a0ae40f6722d6f5d3b1617bf",
+    "bytes": 347782
+  },
+  "assets/roles/zombie/runtime/atlas.webp": {
+    "sha256": "839e35730d8af88eb7e7c7bb6fd05dc48f6244af4a65f141b3517d48acd6bd80",
+    "bytes": 279154
   }
 }

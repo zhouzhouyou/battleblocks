@@ -48,6 +48,8 @@
 !/assets-source/effects/wizard-spells/meteor.json
 !/assets-source/effects/wizard-spells/review-targets.json
 !/assets-source/roles/chort/animation/normal.json
+!/assets-source/roles/chort/animation/palette.json
+!/assets-source/roles/chort/animation/registration.json
 !/assets-source/roles/demon/original/normal.json
 !/assets-source/roles/dwarf/equipment/runtime-palette.json
 !/assets-source/roles/elf-legacy/animation/normal.json
@@ -57,6 +59,8 @@
 !/assets-source/roles/goblin-legacy/animation/palette.json
 !/assets-source/roles/goblin-legacy/animation/registration.json
 !/assets-source/roles/imp/animation/normal.json
+!/assets-source/roles/imp/animation/palette.json
+!/assets-source/roles/imp/animation/registration.json
 !/assets-source/roles/knight-legacy/animation/normal.json
 !/assets-source/roles/knight-legacy/animation/palette.json
 !/assets-source/roles/knight-legacy/animation/registration.json
@@ -66,6 +70,8 @@
 !/assets-source/roles/wizard/animation/palette.json
 !/assets-source/roles/wizard/animation/registration.json
 !/assets-source/roles/zombie/animation/normal.json
+!/assets-source/roles/zombie/animation/palette.json
+!/assets-source/roles/zombie/animation/registration.json
 !/config/asset-manifest.json
 !/config/normal-art-lock.json
 !/config/repository-inputs.json

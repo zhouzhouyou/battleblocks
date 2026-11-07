@@ -163,6 +163,10 @@ mod tests {
             (1, Skill::Nature, vec![(0, 0)]),
             (3, Skill::Blood, vec![]),
             (0, Skill::Guard, vec![]),
+            (4, Skill::Balance, vec![(0, 0)]),
+            (5, Skill::War, vec![(0, 0)]),
+            (6, Skill::Corrupt, vec![(0, 0)]),
+            (4, Skill::Imp, vec![]),
         ] {
             let c = cast(id, skill, &cells);
             assert!(c.sample(17, 10., false).is_some());
@@ -172,5 +176,23 @@ mod tests {
         assert!(c.sample(17, 30., false).is_some());
         assert!(c.sample(17, 30., true).is_none());
         assert!(c.sample(18, 10.1, false).is_none());
+    }
+
+    #[test]
+    fn final_legacy_batch_waits_for_its_clear_without_waiting_for_damage() {
+        for (id, skill) in [(4, Skill::Imp), (5, Skill::Chort), (6, Skill::Drain)] {
+            let cells = [(0, 0), (1, 0)];
+            let mut c = cast(id, skill, &cells);
+            // Rewards can be immediate (or zero); only this action's clear releases the impact pose.
+            c.notify(ActorSignal::DamageApplied, false, 17, &[], 10.1);
+            c.notify(ActorSignal::InitialTargetsCleared, false, 18, &cells, 10.4);
+            let impact_pose = if skill == Skill::Drain { 19 } else { 18 };
+            assert_eq!(c.spec.clip.frame(c.elapsed(13., false)), impact_pose - 1);
+            c.notify(ActorSignal::InitialTargetsCleared, false, 17, &cells, 13.);
+            assert_eq!(c.spec.clip.frame(c.elapsed(13., false)), impact_pose);
+            assert!(c.sample(17, 13.99, false).is_some());
+            assert!(c.sample(17, 14.01, false).is_none());
+            assert!(c.sample(18, 13., false).is_none());
+        }
     }
 }

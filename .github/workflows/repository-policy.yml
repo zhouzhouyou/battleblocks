@@ -20,4 +20,6 @@ jobs:
         with:
           python-version: '3.12'
       - name: Check files and commit history
-        run: python tools/check_repository.py --history
+        run: |
+          python tools/test_repository_history.py
+          python tools/check_repository.py --history

@@ -1,4 +1,4 @@
-"""Check tracked resources against the approved final binary inventory."""
+"""Check current resources and historically approved resources without retaining obsolete files."""
 from pathlib import Path
 import hashlib
 import json
@@ -63,32 +63,75 @@ def check(staged=False):
 
 
 def check_history():
-    approved = json.loads((ROOT / 'config/asset-manifest.json').read_text())
-    ids = {}
-    for name in approved:
-        contents = (ROOT / name).read_bytes()
-        ids[name] = hashlib.sha1(b'blob ' + str(len(contents)).encode() + b'\0' + contents).hexdigest()
-    inputs = json.loads((ROOT / 'config/repository-inputs.json').read_text())
-    commits = subprocess.check_output(['git', 'rev-list', 'HEAD'], cwd=ROOT, text=True).splitlines()
-    seen = set()
+    def git(*args):
+        return subprocess.check_output(['git', *args], cwd=ROOT)
+
+    inventories = {}
+    introductions = {}
+    digests = {}
+
+    def inventory(commit, tree, path):
+        oid = tree.get(path)
+        if oid is None:
+            # Older commits predate declarations. Deleting an established inventory
+            # must never turn off checks or fall back to today's inventory.
+            if path not in introductions:
+                additions = git('log', '--reverse', '--diff-filter=A', '--format=%H',
+                                'HEAD', '--', path).decode().splitlines()
+                if not additions:
+                    raise SystemExit(f'Missing historical inventory: {commit} {path}')
+                first = additions[0]
+                ancestors = set(git('rev-list', first).decode().splitlines())
+                introductions[path] = (git('rev-parse', f'{first}:{path}').decode().strip(), ancestors)
+            oid, ancestors = introductions[path]
+            if commit not in ancestors:
+                raise SystemExit(f'Missing historical inventory: {commit} {path}')
+        if oid not in inventories:
+            inventories[oid] = json.loads(git('cat-file', 'blob', oid))
+        return inventories[oid]
+
+    commits = git('rev-list', 'HEAD').decode().splitlines()
+    snapshots = []
+    approved_revisions = set()
     for commit in commits:
-        tree = subprocess.check_output(['git', 'ls-tree', '-r', '-z', commit], cwd=ROOT).split(b'\0')
-        for entry in tree:
+        tree = {}
+        for entry in git('ls-tree', '-r', '-z', commit).split(b'\0'):
             if not entry:
                 continue
             metadata, name = entry.split(b'\t', 1)
-            name = name.decode()
-            oid = metadata.split()[2].decode()
+            tree[name.decode()] = metadata.split()[2].decode()
+        approved = inventory(commit, tree, 'config/asset-manifest.json')
+        inputs = inventory(commit, tree, 'config/repository-inputs.json')
+        snapshots.append((commit, tree, inputs))
+        for name, oid in tree.items():
+            if Path(name).suffix.lower() not in MEDIA:
+                continue
+            if oid not in digests:
+                contents = git('cat-file', 'blob', oid)
+                digests[oid] = (hashlib.sha256(contents).hexdigest(), len(contents))
+            meta = approved.get(name, {})
+            if ('config/asset-manifest.json' in tree
+                    and (meta.get('sha256'), meta.get('bytes')) == digests[oid]):
+                approved_revisions.add((name, oid))
+
+    # Existing history was losslessly optimized before some inventories were
+    # corrected. Require an actual snapshot where file and inventory agree;
+    # a stale or fictitious inventory entry alone cannot approve any revision.
+    seen = set()
+    for commit, tree, inputs in snapshots:
+        for name, oid in tree.items():
             reason = output_violation(name, inputs)
             if reason:
                 raise SystemExit(f'Forbidden generated/one-off history: {commit} {name}: {reason}')
             if name.startswith(('asset-sources/', 'assets/awakened/', '.local/')) or '/references/' in name or name == 'docs/art/ART-DIRECTION-F-ARCHIVE.md':
                 raise SystemExit(f'Forbidden path in history: {commit} {name}')
             if Path(name).suffix.lower() in MEDIA:
-                if ids.get(name) != oid:
+                if re.search(r'preview|contact|candidate|comparison|reference', Path(name).name, re.I):
+                    raise SystemExit(f'Review/reference media in history: {commit} {name}')
+                if (name, oid) not in approved_revisions:
                     raise SystemExit(f'Unapproved binary revision in history: {commit} {name}')
                 seen.add((name, oid))
-    print(f'PASS: all {len(commits)} historical trees; {len(seen)} final binary paths; zero rejected resource revisions')
+    print(f'PASS: all {len(commits)} historical trees; {len(seen)} approved binary revisions; no forbidden history')
 
 
 if __name__ == '__main__':

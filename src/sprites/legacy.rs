@@ -2,7 +2,7 @@
 use super::{AnimationClip, Playback, SpriteAsset, CAST_FRAME_TIME};
 use crate::content::Skill;
 
-/// Explicit opt-in clip used only by the three Issue 28 awakened assets.
+/// Explicit opt-in for legacy awakened assets; normal sprites never use it.
 pub const LEGACY_AWAKE_CAST: AnimationClip = AnimationClip {
     indices: &[12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
     durations: &CAST_FRAME_TIME,
@@ -14,6 +14,10 @@ const CHARGE: [f64; 12] = [
 ];
 const COLLECT: [f64; 12] = [
     0.06, 0.06, 0.07, 0.07, 0.07, 0.07, 0.16, 0.16, 0.16, 0.16, 0.18, 0.18,
+];
+// The zombie's club reaches its low point one pose after the two demons.
+const DRAIN: [f64; 12] = [
+    0.04, 0.05, 0.06, 0.06, 0.06, 0.06, 0.07, 0.2, 0.2, 0.2, 0.2, 0.2,
 ];
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -39,12 +43,16 @@ impl SpriteAsset {
         }
         let (durations, impact, signal) = match skill {
             Skill::Charge => (&CHARGE, Some(0.95), ActorSignal::DamageApplied),
-            Skill::Guard | Skill::Greedy => {
+            Skill::Guard | Skill::Greedy | Skill::Imp | Skill::Chort => {
                 (&COLLECT, Some(0.4), ActorSignal::InitialTargetsCleared)
             }
-            Skill::Strike | Skill::Nature | Skill::Blood => {
-                (&CAST_FRAME_TIME, None, ActorSignal::CastApplied)
-            }
+            Skill::Drain => (&DRAIN, Some(0.4), ActorSignal::InitialTargetsCleared),
+            Skill::Strike
+            | Skill::Nature
+            | Skill::Blood
+            | Skill::Balance
+            | Skill::War
+            | Skill::Corrupt => (&CAST_FRAME_TIME, None, ActorSignal::CastApplied),
             _ => return None,
         };
         Some(ActorCast {
@@ -61,12 +69,12 @@ impl SpriteAsset {
 #[cfg(test)]
 mod tests {
     #[test]
-    fn only_three_awakened_assets_opt_in_and_each_skill_covers_twelve_poses() {
+    fn only_legacy_awakened_assets_opt_in_and_each_skill_covers_twelve_poses() {
         for asset in super::super::SPRITES {
             assert!(!asset.legacy_awake());
         }
         for (id, asset) in super::super::AWAKENED.iter().enumerate() {
-            assert_eq!(asset.legacy_awake(), matches!(id, 0 | 1 | 3));
+            assert_eq!(asset.legacy_awake(), matches!(id, 0 | 1 | 3 | 4 | 5 | 6));
             if asset.legacy_awake() {
                 for &skill in crate::content::skills(id, true) {
                     let spec = asset.actor_cast(skill).unwrap();

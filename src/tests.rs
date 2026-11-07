@@ -530,7 +530,7 @@ fn action_metadata_preserves_legacy_fallback_and_fire_elf_sleep() {
             (true, &sprites::AWAKENED[id]),
         ] {
             assert_eq!(asset.indices.len(), asset.durations.len());
-            if id < content::KNIGHT && !(id <= 3 && is_awake) {
+            if id < content::KNIGHT && !is_awake {
                 assert!(asset.cast.is_none() && asset.sleep.is_none());
                 assert!(asset.action(true).is_none());
             } else {

@@ -143,8 +143,9 @@ def registry():
         frame.thumbnail((40, 48), Image.Resampling.NEAREST)
         thumbs.alpha_composite(frame.convert("RGBA"), (i * 40 + (40 - frame.width) // 2, 48 - frame.height))
     for name in ("knight", "elf", "wizard", "goblin", "imp", "chort", "zombie"):
-        if name in ('knight', 'elf', 'goblin'):
-            awakened.append(f'    SpriteAsset {{ asset: crate::asset!("roles/{name}-legacy/runtime/atlas.webp"), w: 384., h: 384., durations: &[0.06; 12], indices: &{list(range(12))}, cast: Some(LEGACY_AWAKE_CAST), sleep: None, anchor: Some([192., 336.]) }},')
+        if name in ('knight', 'elf', 'goblin', 'imp', 'chort', 'zombie'):
+            role = name + '-legacy' if name in ('knight', 'elf', 'goblin') else name
+            awakened.append(f'    SpriteAsset {{ asset: crate::asset!("roles/{role}/runtime/atlas.webp"), w: 384., h: 384., durations: &[0.06; 12], indices: &{list(range(12))}, cast: Some(LEGACY_AWAKE_CAST), sleep: None, anchor: Some([192., 336.]) }},')
             continue
         if name == 'wizard':
             awakened.append(f'    SpriteAsset {{ asset: crate::asset!("roles/wizard/runtime/atlas.webp"), w: 384., h: 384., durations: &[0.06; 12], indices: &{list(range(12))}, cast: Some(WIZARD_AWAKE_CAST), sleep: None, anchor: Some([192., 336.]) }},')
