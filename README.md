@@ -13,7 +13,7 @@ python3 tools/build.py
 cargo run --release --locked
 ```
 
-构建脚本会运行测试，并将当前系统的原生包和网页包输出到 `dist/`。系统依赖、单独构建与部署方法见 [构建与验证](docs/BUILDING.md)。
+构建脚本将当前系统的原生包和网页包输出到 `dist/`。验证按改动范围选择，需要完整单测时加 `--test`。系统依赖、单独构建与部署方法见 [构建与验证](docs/BUILDING.md)。
 
 ## 基本操作
 

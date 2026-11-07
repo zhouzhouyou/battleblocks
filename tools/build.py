@@ -1,4 +1,4 @@
-"""Bootstrap cached font tools, then test/build/package the prototype."""
+"""Bootstrap cached font tools, then build/package with optional tests."""
 from pathlib import Path
 import argparse, hashlib, os, shutil, subprocess, sys, urllib.request
 ROOT=Path(__file__).resolve().parents[1]
@@ -7,7 +7,13 @@ FONT_URL='https://raw.githubusercontent.com/google/fonts/main/ofl/notosanssc/Not
 FONT_SHA256='a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da'
 FONTTOOLS='4.67.0'
 PILLOW='13.0.0'
-parser=argparse.ArgumentParser();parser.add_argument('--setup-only',action='store_true');group=parser.add_mutually_exclusive_group();group.add_argument('--native-only',action='store_true');group.add_argument('--web-only',action='store_true');args=parser.parse_args()
+parser = argparse.ArgumentParser()
+parser.add_argument('--setup-only', action='store_true')
+parser.add_argument('--test', action='store_true', help='run the full Rust and tool unit suites before building')
+group = parser.add_mutually_exclusive_group()
+group.add_argument('--native-only', action='store_true')
+group.add_argument('--web-only', action='store_true')
+args = parser.parse_args()
 if sys.version_info<(3,10): raise SystemExit('Font build tools require Python 3.10 or newer.')
 CACHE.mkdir(exist_ok=True)
 source=CACHE/'NotoSansSC.ttf'
@@ -32,9 +38,14 @@ if args.setup_only:raise SystemExit(0)
 cargo=shutil.which('cargo') or str(Path.home()/'.cargo/bin/cargo')
 rustup=shutil.which('rustup') or str(Path.home()/'.cargo/bin/rustup')
 if not args.native_only:subprocess.run([rustup,'target','add','wasm32-unknown-unknown'],check=True)
-commands=[[sys.executable,str(ROOT/'tools/optimize_webp.py'),'--check'], [sys.executable,str(ROOT/'tools/check_repository.py')], [cargo,'test','--locked']]
-commands.insert(1,[sys.executable,str(ROOT/'tools/test_optimize_webp.py')])
-commands.append([sys.executable, str(ROOT/'tools/test_balance.py')])
+commands=[[sys.executable,str(ROOT/'tools/optimize_webp.py'),'--check'], [sys.executable,str(ROOT/'tools/check_repository.py')]]
+if args.test:
+    commands.extend([
+        [sys.executable, str(ROOT/'tools/test_build.py')],
+        [sys.executable, str(ROOT/'tools/test_optimize_webp.py')],
+        [cargo, 'test', '--locked'],
+        [sys.executable, str(ROOT/'tools/test_balance.py')],
+    ])
 if not args.web_only:commands.append([cargo,'build','--release','--locked','--bin','battleblocks'])
 if not args.native_only:commands.append([cargo,'build','--release','--locked','--bin','battleblocks','--target','wasm32-unknown-unknown'])
 package=[sys.executable,str(ROOT/'tools/package.py')]
