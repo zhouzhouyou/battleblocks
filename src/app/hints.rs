@@ -93,7 +93,7 @@ mod tests {
 
 use super::planning::{plan_key, AiPlan};
 #[cfg(test)]
-use super::planning::{PlanAction, PlanStep, PLAN_DEPTH};
+use super::planning::{PlanAction, PlanStep, SearchPolicy};
 
 impl Session {
     pub(super) fn drive_hint_queue(&mut self, frame: &mut Frame) {
@@ -258,7 +258,7 @@ mod plan_tests {
 
     #[test]
     fn every_plan_card_and_step_fits_inside_its_page_and_hits_the_drawn_card() {
-        let plans: Vec<_> = (1..=PLAN_DEPTH)
+        let plans: Vec<_> = (1..=SearchPolicy::hints().depth)
             .map(|n| AiPlan {
                 steps: (0..n)
                     .map(|_| PlanStep {
@@ -274,6 +274,7 @@ mod plan_tests {
                     .collect(),
                 score: 0.,
                 damage: 0,
+                end_state: None,
             })
             .collect();
         for (page, rows) in plan_pages(&plans).iter().enumerate() {

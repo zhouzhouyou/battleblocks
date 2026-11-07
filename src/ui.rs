@@ -18,7 +18,7 @@ const PANEL_LEFT: f32 = PANEL.x + PANEL_PAD;
 const PANEL_INNER: f32 = PANEL.w - 2. * PANEL_PAD;
 /// Tabs of the help panel and the gap between them.
 pub const HELP_TAB_COUNT: usize = 5;
-const SETTINGS_TAB_COUNT: usize = 3;
+const SETTINGS_TAB_COUNT: usize = 4;
 const TAB_GAP: f32 = 10.;
 const TAB_TOP: f32 = 158.;
 const TAB_HEIGHT: f32 = 30.;
@@ -56,6 +56,7 @@ pub struct Ui {
     pub volume: u32,
     channel_volume: [u32; 3],
     channel_enabled: [bool; 3],
+    pub ai_experiment: strategy::AiExperiment,
 }
 impl Default for Ui {
     fn default() -> Self {
@@ -74,6 +75,7 @@ impl Default for Ui {
             volume: 100,
             channel_volume: [100; 3],
             channel_enabled: [true; 3],
+            ai_experiment: strategy::AiExperiment::default(),
         }
     }
 }
@@ -136,6 +138,10 @@ fn sound_toggle_rect(row: usize) -> Rect {
     let r = settings_row(row);
     Rect::new(444., r.y + 7., 42., 32.)
 }
+fn experiment_toggle_rect(row: usize) -> Rect {
+    let r = settings_row(row);
+    Rect::new(r.x + r.w - 54., r.y + 7., 42., 32.)
+}
 pub fn top(i: usize) -> Rect {
     Rect::new(814. + i as f32 * 48., 20., 42., 42.)
 }
@@ -176,6 +182,25 @@ impl Ui {
                                 *muted = !*muted;
                             } else {
                                 self.channel_enabled[row - 1] = !self.channel_enabled[row - 1];
+                            }
+                            return true;
+                        }
+                    }
+                }
+                if self.settings_tab == 3 {
+                    for row in 0..4 {
+                        if settings_row(row).contains(pointer) {
+                            match row {
+                                0 => {
+                                    self.ai_experiment.opponent_skills =
+                                        !self.ai_experiment.opponent_skills
+                                }
+                                1 => {
+                                    self.ai_experiment.opponent_reply =
+                                        !self.ai_experiment.opponent_reply
+                                }
+                                2 => self.ai_experiment.follow_up = !self.ai_experiment.follow_up,
+                                _ => self.ai_experiment.portals = !self.ai_experiment.portals,
                             }
                             return true;
                         }
@@ -416,6 +441,11 @@ impl Ui {
             24.,
             WHITE,
         );
+        let depth_labels = [
+            tr_key(zh, "ui.screen.draw_opponents.depth_beginner"),
+            tr_key(zh, "ui.screen.draw_opponents.depth_standard"),
+            tr_key(zh, "ui.screen.draw_opponents.depth_advanced"),
+        ];
         for (i, name) in [
             tr_key(zh, "ui.shared.beginner"),
             tr_key(zh, "ui.shared.standard"),
@@ -425,10 +455,19 @@ impl Ui {
         .enumerate()
         {
             let r = difficulty_rect(i);
-            button(r, name, pointer);
+            frame(r, r.contains(pointer));
             if i == difficulty {
                 outline(r.x, r.y, r.w, r.h, 2., GOLD);
             }
+            label_centered(name, r.x + r.w / 2., r.y + 23., 19., WHITE);
+            let depth = depth_labels[i];
+            label_centered(
+                depth,
+                r.x + r.w / 2.,
+                r.y + 36.,
+                fit_size(depth, 11., r.w - 16.),
+                LIGHTGRAY,
+            );
         }
         draw_group_tabs(true, self.opponent_group, zh, pointer);
         label(
@@ -661,15 +700,84 @@ impl Ui {
         }
         match panel {
             Panel::Settings => {
-                for (i, key) in ["settings.general", "settings.display", "settings.sound"]
-                    .iter()
-                    .enumerate()
+                for (i, key) in [
+                    "settings.general",
+                    "settings.display",
+                    "settings.sound",
+                    "settings.experiment",
+                ]
+                .iter()
+                .enumerate()
                 {
                     let r = panel_tab_rect(i, SETTINGS_TAB_COUNT);
                     frame(r, self.settings_tab == i);
                     label(tr_key(zh, key), r.x + 10., r.y + 21., 17., WHITE);
                 }
-                if self.settings_tab == 2 {
+                if self.settings_tab == 3 {
+                    for (row, (key, on, note)) in [
+                        (
+                            "settings.experiment.opponent_skills",
+                            self.ai_experiment.opponent_skills,
+                            "settings.experiment.opponent_skills_note",
+                        ),
+                        (
+                            "settings.experiment.opponent_reply",
+                            self.ai_experiment.opponent_reply,
+                            "settings.experiment.opponent_reply_note",
+                        ),
+                        (
+                            "settings.experiment.follow_up",
+                            self.ai_experiment.follow_up,
+                            "settings.experiment.follow_up_note",
+                        ),
+                        (
+                            "settings.experiment.portals",
+                            self.ai_experiment.portals,
+                            "settings.experiment.portals_note",
+                        ),
+                    ]
+                    .iter()
+                    .enumerate()
+                    {
+                        let r = settings_row(row);
+                        frame(r, r.contains(pointer));
+                        let name = tr_key(zh, key);
+                        label(name, r.x + 12., r.y + 20., fit_size(name, 19., 380.), WHITE);
+                        let note = tr_key(zh, note);
+                        label(
+                            note,
+                            r.x + 12.,
+                            r.y + 38.,
+                            fit_size(note, 13., 380.),
+                            LIGHTGRAY,
+                        );
+                        let toggle = experiment_toggle_rect(row);
+                        frame(toggle, *on);
+                        let text = tr_key(
+                            zh,
+                            if *on {
+                                "ui.screen.draw_panel.on"
+                            } else {
+                                "ui.screen.draw_panel.off"
+                            },
+                        );
+                        label_centered(
+                            text,
+                            toggle.x + toggle.w / 2.,
+                            toggle.y + 21.,
+                            14.,
+                            if *on { GOLD } else { GRAY },
+                        );
+                    }
+                    let note = tr_key(zh, "settings.experiment.note");
+                    label(
+                        note,
+                        PANEL_LEFT,
+                        470.,
+                        fit_size(note, 16., PANEL_INNER),
+                        SKYBLUE,
+                    );
+                } else if self.settings_tab == 2 {
                     for (row, key) in [
                         "settings.master_volume",
                         "settings.music",
@@ -950,15 +1058,17 @@ pub fn draw_pause(zh: bool, difficulty: usize, pointer: Vec2) {
         34.,
         GOLD,
     );
-    let difficulty_text = format!(
-        "{}{}",
-        tr_key(zh, "ui.screen.draw_pause.ai_difficulty"),
-        [
-            tr_key(zh, "ui.shared.beginner"),
-            tr_key(zh, "ui.shared.standard"),
-            tr_key(zh, "ui.shared.advanced"),
-        ][difficulty.min(2)]
-    );
+    let level = [
+        tr_key(zh, "ui.shared.beginner"),
+        tr_key(zh, "ui.shared.standard"),
+        tr_key(zh, "ui.shared.advanced"),
+    ][difficulty.min(2)];
+    let depth = [
+        tr_key(zh, "ui.screen.draw_opponents.depth_beginner"),
+        tr_key(zh, "ui.screen.draw_opponents.depth_standard"),
+        tr_key(zh, "ui.screen.draw_opponents.depth_advanced"),
+    ][difficulty.min(2)];
+    let difficulty_text = format_text(zh, "ui.screen.draw_pause.ai_difficulty", &[level, depth]);
     let difficulty_rect = pause_difficulty_rect();
     label(
         &difficulty_text,
@@ -1014,6 +1124,26 @@ mod sound_settings_tests {
         assert!((last.x + last.w - PANEL_LEFT - PANEL_INNER).abs() < 0.001);
         assert!(first.w > help_tab_rect(0).w);
     }
+    #[test]
+    fn experiment_rows_and_toggles_stay_inside_the_settings_panel() {
+        assert_eq!(SETTINGS_TAB_COUNT, 4);
+        let defaults = strategy::AiExperiment::default();
+        assert!(
+            defaults.opponent_skills
+                && defaults.opponent_reply
+                && defaults.follow_up
+                && defaults.portals
+        );
+        for row in 0..4 {
+            let r = settings_row(row);
+            assert!(r.x >= PANEL.x && r.right() <= PANEL.right());
+            assert!(r.y >= PANEL.y && r.bottom() <= PANEL.bottom());
+            let toggle = experiment_toggle_rect(row);
+            assert!(toggle.x >= r.x && toggle.right() <= r.right());
+            assert!(toggle.y >= r.y && toggle.bottom() <= r.bottom());
+        }
+    }
+
     #[test]
     fn category_switches_preserve_slider_values_and_other_channels() {
         let mut ui = Ui::default();
