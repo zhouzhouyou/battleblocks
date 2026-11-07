@@ -22,7 +22,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Build, test and package macOS
-        run: python tools/build.py --native-only
+        run: python tools/build.py --native-only --test
       - name: Verify the canonical headless model
         env:
           BATTLEBLOCKS_BIN: target/release/battleblocks

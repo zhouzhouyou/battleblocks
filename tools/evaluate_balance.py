@@ -28,7 +28,11 @@ def atomic_text(path, text):
 
 
 def evaluate(engine, cache, roster, config, progress=True):
-    pairs = list(itertools.combinations(sorted(roster), 2))
+    focus = config.get("focus", [])
+    if len(set(focus)) != len(focus) or not set(focus) <= set(roster):
+        raise ValueError("focus must contain distinct hero ids from roster")
+    pairs = [p for p in itertools.combinations(sorted(roster), 2)
+             if not focus or set(p).intersection(focus)]
     keys = {p: pair_key(engine.manifest, p, config["seed"], config["level"], config["max_steps"]) for p in pairs}
     records = {p: cache.load(keys[p]) for p in pairs}
     reused = 2 * sum(map(len, records.values()))
@@ -38,7 +42,7 @@ def evaluate(engine, cache, roster, config, progress=True):
     started = time.perf_counter()
     while total < config["budget"]:
         count = min(config["batch_size"], (config["budget"] - total) // 2)
-        chosen = select_pairs(roster, records, config["sampler"], count, round_number, config["seed"])
+        chosen = select_pairs(roster, records, config["sampler"], count, round_number, config["seed"], focus=focus)
         indices = {p: len(records[p]) for p in pairs}
         jobs, samples = [], []
         for pair in chosen:
@@ -65,6 +69,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--binary", type=Path, default=ROOT / "target/release" / ("battleblocks.exe" if os.name == "nt" else "battleblocks"))
     parser.add_argument("--roster", default="8,7,9,10,11", help="comma-separated stable ids, or all")
+    parser.add_argument("--focus", help="comma-separated changed hero ids from roster; only evaluate pairs involving these heroes")
     parser.add_argument("--budget", type=int, default=400, help="maximum total compatible games, including cache hits; must be even")
     parser.add_argument("--seed", type=int, default=1200000, help="experiment seed; derived independent pair seeds are reproducible")
     parser.add_argument("--level", type=int, choices=(0, 1, 2), default=1)
@@ -87,15 +92,23 @@ def main(argv=None):
         parser.error("invalid balance thresholds or interval width")
     engine = Engine(args.binary, args.workers)
     ids = {h["id"] for h in engine.manifest["heroes"]}
-    roster = sorted(ids) if args.roster == "all" else [int(i) for i in args.roster.split(",")]
+    try:
+        roster = sorted(ids) if args.roster == "all" else [int(i) for i in args.roster.split(",")]
+        focus = [int(i) for i in args.focus.split(",")] if args.focus is not None else []
+    except ValueError:
+        parser.error("roster and focus must be comma-separated integer hero ids")
     if len(roster) < 2 or len(set(roster)) != len(roster) or not set(roster) <= ids:
         parser.error("roster must contain at least two distinct valid hero ids")
+    if len(set(focus)) != len(focus) or not set(focus) <= set(roster):
+        parser.error("focus must contain distinct hero ids from roster")
     # Never let an output overwrite the executable or the database.
     outputs = [args.out / name for name in ("report.json", "report.md", "matches.jsonl")]
     protected = {args.binary.resolve(), args.cache.resolve()}
     if len(protected) != 2 or any(p.resolve() in protected for p in outputs):
         parser.error("binary, cache and output files must be distinct")
     config = {k: getattr(args, k) for k in ("budget", "seed", "level", "max_steps", "sampler", "batch_size", "lower", "upper", "extreme", "width")}
+    if focus:
+        config["focus"] = sorted(focus)
     cache = Cache(args.cache)
     try:
         report, records = evaluate(engine, cache, roster, config)

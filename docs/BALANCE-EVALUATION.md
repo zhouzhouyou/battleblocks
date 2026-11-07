@@ -4,7 +4,9 @@
 
 ## 运行
 
-先用 `.build-tools/python-path.txt` 指定的 Python 执行 `tools/build.py`。下文 `python` 均指该解释器。
+仅在角色平衡调整，或 bug 修复导致角色明显强弱变化时运行强度评估。普通 bug 修复按 [验证选择](BUILDING.md#验证选择) 做回归。
+
+游戏规则或配置变化后，先用 `.build-tools/python-path.txt` 指定的 Python 执行 `tools/build.py` 更新评估程序。下文 `python` 均指该解释器。
 
 ```sh
 python tools/evaluate_balance.py --budget 400 --seed 1200000 --level 1
@@ -12,6 +14,15 @@ python tools/evaluate_balance.py --budget 800 --seed 1200000 --level 1
 python tools/evaluate_balance.py --budget 400 --seed 1200000 --level 2 --out .local/analysis/evaluation-advanced
 python tools/evaluate_balance.py --roster all --budget 800 --out .local/analysis/evaluation-all
 ```
+
+单个或多个角色调整时，用 `--roster` 指定对手范围，`--focus` 指定受影响角色。保留完整对手名单也只会模拟至少包含一名受影响角色的配对，双方先手仍等权。
+
+```sh
+python tools/evaluate_balance.py --roster all --focus 8 --budget 400 --out .local/analysis/evaluation-dwarf
+python tools/evaluate_balance.py --roster all --focus 8,7 --budget 400 --out .local/analysis/evaluation-dwarf-knight
+```
+
+`--focus` 必须是 `--roster` 的子集，省略时保留全名单采样行为。预算及缓存命中仅计算选中配对，无关角色之间的历史缓存不计入本次报告，也不追加对局。相同配对在全量和定向评估间复用缓存，仍受版本、种子、难度与步数上限约束。报告记录 focus，未采样配对保留未知区间，综合评分与排名包含模型预测。定向结果主要检查受影响角色及其对手关系，不据此确认其他角色整体平衡。
 
 默认新五人 `8,7,9,10,11`，支持任意至少两个不同角色。对手等权、双方先手等权；标准与进阶数据隔离。`--budget` 是当前条件下的**累计对局上限，包含缓存命中**，必须是正偶数；一个采样单元是同种子交换双方位置的两局。首次执行最多新跑 budget 局，再次使用相同预算不追加模拟，增大预算才追加。缓存已有对局超过预算时拒绝运行，不悄悄筛选历史结果。
 
@@ -73,7 +84,7 @@ python tools/benchmark_balance.py --training .local/analysis/evaluation-runs/tra
 
 比较配对 RMSE、留出得分 Brier、综合表现排名相关性、候选极端克制精确率／召回率、正式确认数与区间覆盖参考均值的比例。报告各预算，不只挑最好一个。实际效果以本地独立种子评估结果为准，不保证所有预算、所有阵容均优于均匀采样。统计测试另用已知概率验证区间，不拿参考均值覆盖率冒充真实概率覆盖率。
 
-验证命令：`cargo test --locked`、`python tools/test_balance.py`、`python tools/check_headless.py`、`python tools/check_balance.py`、指定 Python 执行 `tools/build.py`。本功能不改 GUI，不要求窗口验证。
+验证按 [构建与验证](BUILDING.md#验证选择) 选择。统计、调度与缓存修改运行 `python tools/test_balance.py`；真实进程协议、CLI 集成修改再运行 `python tools/check_balance.py`。Rust 战斗规则变化才增加相关 Rust 与 headless 回归。
 
 ## 参考
 

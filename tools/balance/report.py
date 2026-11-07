@@ -101,6 +101,8 @@ def markdown(report):
     lines = ["# BattleBlocks 角色平衡评估", "", report["policy"], "", report["metric"], "", report["uncertainty"], "",
              f"对局 {report['games']}；新跑 {report['new_games']}；复用 {report['reused_games']}；中断 {report['aborted']}；配对覆盖 {report['coverage']:.1%}。", "",
              "| 角色 | 评分（近似 95% 区间） | 综合预测得分率 | 实测同时置信序列 | 状态 |", "|---|---:|---:|---|---|"]
+    if report["config"].get("focus"):
+        lines[1:1] = ["", f"定向评估角色 {report['config']['focus']}，仅采样至少包含一名指定角色的配对。其余配对保留未知，综合排名包含模型预测。", ""]
     for h in report["heroes"]:
         lo, hi = h["score_cs95"]
         rlo, rhi = h["rating_interval95_approx"]

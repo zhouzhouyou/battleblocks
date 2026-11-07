@@ -7,13 +7,14 @@ from pathlib import Path
 import random
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from balance.engine import Cache, pair_key, scores, seed_for, valid_blocks
 from balance.report import make_report
 from balance.sampling import select_pairs
 from balance.statistics import Model, confidence_sequence, inverse, solve
 from balance_fingerprint import manifest
-from evaluate_balance import evaluate
+from evaluate_balance import evaluate, main
 from benchmark_balance import benchmark, read_run
 
 CONFIG = dict(budget=48, seed=42, level=1, max_steps=20000, sampler="adaptive",
@@ -111,6 +112,81 @@ class StatisticsTests(unittest.TestCase):
 
 
 class PipelineTests(unittest.TestCase):
+    def test_focus_excludes_unrelated_pairs_in_both_samplers(self):
+        for mode in ("adaptive", "uniform"):
+            for focus in ([1], [1, 2]):
+                with self.subTest(mode=mode, focus=focus), tempfile.TemporaryDirectory() as tmp:
+                    cache = Cache(Path(tmp) / "cache.sqlite")
+                    self.addCleanup(cache.close)
+                    engine = FakeEngine()
+                    config = dict(CONFIG, sampler=mode, focus=focus)
+                    report, records = evaluate(engine, cache, [0, 1, 2, 3], config, False)
+                    expected = {p for p in itertools.combinations(range(4), 2) if set(p).intersection(focus)}
+                    self.assertEqual(set(records), expected)
+                    self.assertEqual({pair for pair, *_ in engine.calls}, expected)
+                    self.assertEqual(report["new_games"], CONFIG["budget"])
+                    self.assertEqual(report["config"]["focus"], focus)
+                    for row in report["pairs"]:
+                        if (row["a"], row["b"]) not in expected:
+                            self.assertEqual(row["games"], 0)
+                            self.assertEqual(row["score_cs95"], [0, 1])
+
+    def test_focus_cache_reuse_resume_and_role_invalidation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            cache = Cache(Path(tmp) / "cache.sqlite")
+            self.addCleanup(cache.close)
+            engine = FakeEngine()
+            _, original = evaluate(engine, cache, [0, 1, 2, 3], CONFIG, False)
+            reused = 2 * sum(len(rows) for pair, rows in original.items() if 1 in pair)
+            config = dict(CONFIG, focus=[1], budget=reused + 8)
+            engine.calls.clear()
+            first, _ = evaluate(engine, cache, [0, 1, 2, 3], config, False)
+            self.assertEqual(first["reused_games"], reused)
+            self.assertEqual(first["new_games"], 8)
+            self.assertTrue(all(1 in pair for pair, *_ in engine.calls))
+            engine.calls.clear()
+            replay, _ = evaluate(engine, cache, [0, 1, 2, 3], config, False)
+            self.assertEqual(replay["new_games"], 0)
+            self.assertEqual(engine.calls, [])
+            engine.manifest["heroes"][1]["fingerprint"] = "changed"
+            reset, _ = evaluate(engine, cache, [0, 1, 2, 3], config, False)
+            self.assertEqual(reset["reused_games"], 0)
+            self.assertEqual(reset["new_games"], config["budget"])
+            engine.calls.clear()
+            full, _ = evaluate(engine, cache, [0, 1, 2, 3], dict(CONFIG, budget=96), False)
+            self.assertGreater(full["reused_games"], 0)
+            self.assertEqual(cache.load(pair_key(engine.manifest, (0, 2), 42, 1, 20000)), original[(0, 2)] + [
+                block(*pair, seed, (seed % 2, (seed >> 1) % 2))
+                for pair, seed, _, _ in engine.calls if pair == (0, 2)])
+
+    def test_focus_cli_validation(self):
+        for focus in ("4", "1,1", "", "bad"):
+            with self.subTest(focus=focus), patch("evaluate_balance.Engine", return_value=FakeEngine()), patch("sys.stderr"):
+                with self.assertRaises(SystemExit) as raised:
+                    main(["--roster", "0,1,2", "--focus", focus])
+                self.assertEqual(raised.exception.code, 2)
+
+    def test_focus_cli_reports_and_replays_selected_pairs(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            arguments = ["--roster", "0,1,2,3", "--focus", "1", "--budget", "12",
+                         "--cache", str(directory / "cache.sqlite"), "--out", str(directory / "out")]
+            engine = FakeEngine()
+            with patch("evaluate_balance.Engine", return_value=engine), patch("sys.stdout"), patch("sys.stderr"):
+                self.assertEqual(main(arguments), 0)
+                report = json.loads((directory / "out/report.json").read_text())
+                self.assertEqual(report["config"]["focus"], [1])
+                self.assertEqual(report["new_games"], 12)
+                matches = (directory / "out/matches.jsonl").read_text().splitlines()
+                self.assertEqual(len(matches), 6)
+                self.assertTrue(all(1 in json.loads(row)["pair"] for row in matches))
+                self.assertIn("定向评估角色 [1]", (directory / "out/report.md").read_text())
+                engine.calls.clear()
+                self.assertEqual(main(arguments), 0)
+                self.assertEqual(engine.calls, [])
+                replay = json.loads((directory / "out/report.json").read_text())
+                self.assertEqual(replay["reused_games"], 12)
+
     def test_benchmark_import_checks_provenance_and_compressed_evidence(self):
         pair = (0, 1)
         seed = seed_for(CONFIG["seed"], pair, 0)

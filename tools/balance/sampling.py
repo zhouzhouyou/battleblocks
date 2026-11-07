@@ -6,8 +6,9 @@ from .engine import valid_blocks
 from .statistics import Model
 
 
-def select_pairs(roster, records, mode, batch_size, round_number, seed, caps=None):
-    pairs = list(itertools.combinations(sorted(roster), 2))
+def select_pairs(roster, records, mode, batch_size, round_number, seed, caps=None, focus=None):
+    pairs = [p for p in itertools.combinations(sorted(roster), 2)
+             if not focus or set(p).intersection(focus)]
     counts = {p: len(records.get(p, [])) for p in pairs}
     rng = random.Random(f"schedule-v1:{seed}:{round_number}")
     # Randomized ties prevent identity/order bias; the ring gives a connected

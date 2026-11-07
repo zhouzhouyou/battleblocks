@@ -23,6 +23,6 @@
 ## 交付检查
 
 - 改收益逻辑必须补测试，覆盖实际规则、消耗、上限、目标差异和预览无副作用。
-- 游戏逻辑改动先运行 `cargo test` 和 `tools/check_headless.py`；窗口检查只用于输入、绘制、动画、音频或窗口交互改动。
+- 验证按改动范围选择，统一遵从 [验证选择](docs/BUILDING.md#验证选择)。无关对战的改动不运行对战测试；角色平衡只评估涉及受影响角色的配对；普通 bug 修复只做回归，造成明显强弱变化时才增加平衡评估。窗口检查只用于输入、绘制、动画、音频或窗口交互改动。
 - 游戏构建使用 `.build-tools/python-path.txt` 指定的 Python 运行 `tools/build.py`，完成后更新 macOS 与网页包。具体命令见构建文档。
 - 提交前运行 `python3 tools/check_repository.py`。启用 `git config --local core.hooksPath .githooks`，不得绕过暂存区及完整历史检查。
