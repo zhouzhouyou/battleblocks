@@ -111,12 +111,15 @@ struct Control {
     muted: AtomicBool,
     volume: AtomicU32,
     crush: AtomicBool,
+    portal: AtomicBool,
     underruns: AtomicUsize,
 }
 pub struct Audio {
     stream: Option<cpal::Stream>,
     worker: Option<thread::JoinHandle<()>>,
     control: Arc<Control>,
+    speech: std::cell::RefCell<super::speech::Speech>,
+    effects: bool,
 }
 impl Audio {
     pub fn new(music: bool, effects: bool) -> Result<Self, String> {
@@ -132,6 +135,7 @@ impl Audio {
             muted: AtomicBool::new(false),
             volume: AtomicU32::new(100),
             crush: AtomicBool::new(false),
+            portal: AtomicBool::new(false),
             underruns: AtomicUsize::new(0),
         });
         let ring = Arc::new(Ring::new());
@@ -176,6 +180,17 @@ impl Audio {
                 thread::sleep(Duration::from_millis(1));
             }
         }
+        let portal = if effects {
+            super::portal_samples(rate)
+        } else {
+            Vec::new()
+        };
+        let mut portal_at = usize::MAX;
+        let speech = super::speech::Speech::new(rate);
+        let speech_output = speech.output.clone();
+        let mut spoken = Vec::new();
+        let mut spoken_at = 0;
+        let mut spoken_generation = 0;
         let state = control.clone();
         let mut voices = [usize::MAX; 8];
         let mut next = move || {
@@ -183,15 +198,47 @@ impl Audio {
                 let voice = voices.iter().position(|&p| p == usize::MAX).unwrap_or(0);
                 voices[voice] = 0;
             }
+            if state.portal.swap(false, Ordering::Relaxed) && !portal.is_empty() {
+                portal_at = 0;
+            }
+            if speech_output.ready.load(Ordering::Acquire) {
+                if let Ok(mut slot) = speech_output.samples.try_lock() {
+                    if let Some((generation, samples)) = slot.take() {
+                        spoken = samples;
+                        spoken_at = 0;
+                        spoken_generation = generation;
+                    }
+                    speech_output.ready.store(false, Ordering::Release);
+                }
+            }
             let mut pair = [0., 0.];
+            if spoken_generation != speech_output.generation.load(Ordering::Relaxed) {
+                spoken_at = spoken.len();
+            }
+            if spoken_at < spoken.len() {
+                pair = [spoken[spoken_at]; 2];
+                spoken_at += 1;
+            }
+            if portal_at != usize::MAX {
+                for sample in &mut pair {
+                    *sample += portal[portal_at];
+                }
+                portal_at += 1;
+                if portal_at == portal.len() {
+                    portal_at = usize::MAX;
+                }
+            }
             if music && state.playing.load(Ordering::Relaxed) {
-                pair = ring
+                let music_pair = ring
                     .pop()
                     .unwrap_or_else(|| {
                         state.underruns.fetch_add(1, Ordering::Relaxed);
                         [0., 0.]
                     })
                     .map(|v| v * 0.2);
+                for c in 0..2 {
+                    pair[c] += music_pair[c];
+                }
             }
             for position in &mut voices {
                 if *position != usize::MAX {
@@ -266,6 +313,8 @@ impl Audio {
             stream: None,
             worker,
             control,
+            speech: std::cell::RefCell::new(speech),
+            effects,
         };
         let stream = built.map_err(|e| e.to_string())?;
         stream.play().map_err(|e| e.to_string())?;
@@ -277,9 +326,30 @@ impl Audio {
     }
     pub fn muted(&self, muted: bool) {
         self.control.muted.store(muted, Ordering::Relaxed);
+        if muted {
+            self.stop_speech();
+        }
     }
     pub fn volume(&self, value: u32) {
-        self.control.volume.store(value.min(100), Ordering::Relaxed);
+        if self.control.volume.swap(value.min(100), Ordering::Relaxed) != value.min(100) {
+            self.stop_speech();
+        }
+    }
+    pub fn portal(&self) {
+        if self.effects {
+            self.control.portal.store(true, Ordering::Relaxed);
+        }
+    }
+    pub fn speak(&self, text: &str, zh: bool) {
+        if self.effects
+            && !self.control.muted.load(Ordering::Relaxed)
+            && self.control.volume.load(Ordering::Relaxed) > 0
+        {
+            self.speech.borrow_mut().speak(text, zh);
+        }
+    }
+    pub fn stop_speech(&self) {
+        self.speech.borrow_mut().stop();
     }
     pub fn crush(&self) {
         self.control.crush.store(true, Ordering::Relaxed);
@@ -298,7 +368,7 @@ impl Drop for Audio {
         );
     }
 }
-fn decode_effect(bytes: &[u8], rate: u32) -> Result<Vec<f32>, String> {
+pub(super) fn decode_effect(bytes: &[u8], rate: u32) -> Result<Vec<f32>, String> {
     if bytes.get(..4) != Some(b"RIFF") || bytes.get(8..12) != Some(b"WAVE") {
         return Err("Invalid effect WAV".into());
     }
@@ -353,7 +423,11 @@ mod tests {
     use super::*;
     #[test]
     fn effect_is_finite_and_has_expected_duration() {
-        let data = decode_effect(include_bytes!("../../assets/audio/runtime/crush.wav"), 48000).unwrap();
+        let data = decode_effect(
+            include_bytes!("../../assets/audio/runtime/crush.wav"),
+            48000,
+        )
+        .unwrap();
         assert!((data.len() as f64 / 48000. - 1.708).abs() < 0.002);
         assert!(data.iter().all(|v| v.is_finite() && v.abs() <= 1.));
     }
@@ -396,6 +470,7 @@ mod tests {
         audio.playing(true);
         for _ in 0..8 {
             audio.crush();
+            audio.portal();
             thread::sleep(Duration::from_millis(250));
         }
         thread::sleep(Duration::from_secs(12));
@@ -404,6 +479,15 @@ mod tests {
         audio.playing(true);
         thread::sleep(Duration::from_secs(2));
         assert_eq!(audio.control.underruns.load(Ordering::Relaxed), 0);
+    }
+    #[test]
+    fn transit_sound_is_short_finite_and_non_silent() {
+        for rate in [22050, 44100, 48000] {
+            let samples = super::super::portal_samples(rate);
+            assert!((samples.len() as f32 / rate as f32 - 0.28).abs() < 0.001);
+            assert!(samples.iter().all(|s| s.is_finite() && s.abs() <= 0.26));
+            assert!(samples.iter().any(|s| s.abs() > 0.05));
+        }
     }
     #[test]
     fn malformed_effect_is_rejected() {

@@ -1,10 +1,25 @@
 use super::*;
 impl Session {
+    pub(super) fn speak_role(&self, id: usize, cue: &str) -> bool {
+        let Some(audio) = &self.audio else {
+            return false;
+        };
+        if !self.muted {
+            if let Some(text) = content::role_lore(id).and_then(|lore| lore.voice(cue, self.zh)) {
+                audio.speak(text, self.zh);
+                return true;
+            }
+        }
+        false
+    }
     pub(super) fn tick(&mut self, frame: &mut Frame) {
         if frame.key(KeyCode::Escape) || frame.clicked(MouseButton::Right) {
             self.hint_queue.clear();
         }
         if let Some(audio) = &self.audio {
+            if self.paused || self.console.open || self.interface.panel.is_some() {
+                audio.stop_speech();
+            }
             audio.playing(
                 !self.paused
                     && !self.console.open
@@ -29,7 +44,11 @@ impl Session {
             self.last_cast = None;
         }
         if !self.paused && !self.console.open && self.interface.panel.is_none() {
-            self.presentation.tick(frame.dt);
+            if self.presentation.tick(frame.dt) {
+                if let Some(audio) = &self.audio {
+                    audio.portal();
+                }
+            }
         }
         let active = !self.paused
             && !self.console.open
@@ -69,6 +88,18 @@ impl Session {
                 &self.snapshot(),
             );
             self.game_over_logged = true;
+            if let Some(audio) = &self.audio {
+                audio.stop_speech();
+            }
+            let (winner, loser) = if self.enemy == 0 {
+                (self.hero_id, self.enemy_id)
+            } else {
+                (self.enemy_id, self.hero_id)
+            };
+            // One result cue per battle, including a mirror match.
+            if !self.speak_role(winner, "victory") {
+                self.speak_role(loser, "defeat");
+            }
         }
     }
 }

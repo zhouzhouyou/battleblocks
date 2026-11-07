@@ -1,6 +1,7 @@
 use super::*;
 impl Session {
     pub(super) fn controls(&mut self, frame: &mut Frame) {
+        let old_zh = self.zh;
         frame.ui_consumed = if !frame.was_console_open && !self.console.open {
             self.interface.input(
                 frame.pointer,
@@ -88,6 +89,11 @@ impl Session {
         if frame.key(KeyCode::E) {
             self.choosing = true;
             self.interface.opponent_step = false;
+        }
+        if old_zh != self.zh {
+            if let Some(audio) = &self.audio {
+                audio.stop_speech();
+            }
         }
         self.apply_restart_command(frame);
     }
