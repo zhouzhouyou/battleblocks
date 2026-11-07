@@ -398,3 +398,65 @@ fn portal_mirrors_finish_with_both_sides_using_the_same_two_gate_limit() {
         }
     }
 }
+
+#[test]
+fn gravity_mastery_actual_cast_matches_preview_and_rolls_back_on_both_sides() {
+    for side in [false, true] {
+        for awake in [false, true] {
+            let mut s = session();
+            s.enemy_turn = side;
+            s.awakened[side as usize] = awake;
+            let hp = content::health_cap(content::PORTAL_CUBE, awake);
+            let cost = if awake { 15 } else { 25 };
+            if side {
+                s.enemy = hp;
+                s.enemy_mp = cost - 1;
+            } else {
+                s.hp = hp;
+                s.mp = cost - 1;
+            }
+            let mut frame = Frame::headless(1.);
+            frame.command_skill = Some(content::Skill::GravityShift);
+            frame.command_target = Some((0, 0));
+            assert!(!s.cast_skill(&frame, Some(content::Skill::GravityShift), false));
+            assert_eq!(s.board_mechanics, Default::default());
+            assert_eq!(
+                s.cooldowns
+                    .remaining(side as usize, content::Skill::GravityShift),
+                0
+            );
+            if side {
+                assert_eq!(s.enemy_mp, cost - 1);
+                s.enemy_mp = cost;
+            } else {
+                assert_eq!(s.mp, cost - 1);
+                s.mp = cost;
+            }
+            let before = s.snapshot();
+            let preview = content::preview_rewards_in(
+                content::Skill::GravityShift,
+                &s.b,
+                (0, 0),
+                content::PORTAL_CUBE,
+                hp,
+                cost,
+                500,
+                0,
+                s.rules(side),
+            );
+            assert!(s.cast_skill(&frame, Some(content::Skill::GravityShift), false));
+            assert_eq!(if side { s.enemy_mp } else { s.mp }, preview.mana_after);
+            assert_eq!(s.board_mechanics.gravity(), board::Gravity::Up);
+            assert_eq!(s.board_mechanics.gravity_effect.unwrap().owner, side);
+            assert_eq!(
+                s.cooldowns
+                    .remaining(side as usize, content::Skill::GravityShift),
+                1
+            );
+            assert!(!s.action_done);
+            assert_eq!(s.b, before.board);
+            s.restore(before.clone());
+            assert_eq!(s.snapshot().json(), before.json());
+        }
+    }
+}

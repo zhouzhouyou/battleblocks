@@ -359,3 +359,77 @@ fn portals_can_be_recast_when_the_previous_pair_expires_on_the_next_owner_turn()
         );
     }
 }
+
+#[test]
+fn gravity_mastery_costs_follow_phase_for_payment_preview_and_copied_skills() {
+    let b = board();
+    let seed = crate::rng::state();
+    for awake in [false, true] {
+        let rules = Rules {
+            awake,
+            opponent: Some((DWARF, false)),
+            ..Default::default()
+        };
+        let hp = health_cap(PORTAL_CUBE, awake);
+        let cost = if awake { 15 } else { 25 };
+        assert_eq!(skill_cost_in(PORTAL_CUBE, Skill::GravityShift, rules), cost);
+        assert_eq!(skill_cost_in(PORTAL_CUBE, Skill::PortalPair, rules), 55);
+        assert!(payment_in(PORTAL_CUBE, hp, cost - 1, Skill::GravityShift, rules).is_none());
+        let pay = payment_in(PORTAL_CUBE, hp, cost, Skill::GravityShift, rules).unwrap();
+        assert_eq!((pay.mana, pay.blood), (cost, 0));
+        let p = preview_rewards_in(
+            Skill::GravityShift,
+            &b,
+            (0, 0),
+            PORTAL_CUBE,
+            hp,
+            160,
+            600,
+            0,
+            rules,
+        );
+        assert_eq!(
+            (p.health_after, p.mana_after, p.enemy_health_after),
+            (hp, 160 - cost, 600)
+        );
+        assert_eq!((p.heal, p.damage, p.mana_gain), (0, 0, 0));
+        let rejected = preview_rewards_in(
+            Skill::GravityShift,
+            &b,
+            (7, 7),
+            PORTAL_CUBE,
+            hp,
+            160,
+            600,
+            0,
+            rules,
+        );
+        assert_eq!(rejected.mana_after, 160);
+        assert_eq!(crate::rng::state(), seed);
+        assert_eq!(b, board());
+    }
+    let copied = Rules {
+        awake: true,
+        copied_skill: Some(Skill::GravityShift),
+        ..Default::default()
+    };
+    assert_eq!(skill_cost_in(PRIEST, Skill::Copy, copied), 15);
+    assert!(payment_in(PRIEST, 300, 14, Skill::Copy, copied).is_none());
+    assert_eq!(
+        payment_in(PRIEST, 300, 15, Skill::Copy, copied)
+            .unwrap()
+            .mana,
+        15
+    );
+    assert_eq!(
+        skill_cost_in(
+            PRIEST,
+            Skill::Copy,
+            Rules {
+                copied_skill: Some(Skill::PortalPair),
+                ..copied
+            }
+        ),
+        55
+    );
+}

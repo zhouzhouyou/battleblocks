@@ -53,4 +53,4 @@ Status.sleep.description|Skip your next turn. Sleep recovery is a passive.|跳�
 FireElf.awakening|Sound sleep replaces Sleep recovery. Ember blast can be cast at 80% MP; a full-MP cast deals +15% damage.|安眠替换沉睡回复；炎爆术魔力达到上限80%即可施放，满魔施放伤害+15%
 PortalYield.name|Transit yield|穿门收益
 PortalYield.description|Whenever a tile passes through any portal, gain 1 of each resource its color provides, even during the opponent's turn. No clear multiplier.|每个方块每次穿门，按其颜色对应的收益各获得1点；对手回合也生效，不叠加消除倍率
-PortalCube.awakening|Prototype: abilities unchanged; awakening rules await design.|机制开发版：觉醒保留原技能，额外规则待设计
+PortalCube.awakening|Gravity mastery: Gravity shift costs 15 MP after awakening.|重力掌控：觉醒后重力改向消耗15魔力

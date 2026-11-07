@@ -24,6 +24,6 @@
 | 精灵 | [ELF-LEGACY.md](characters/ELF-LEGACY.md) |
 | 哥布林 | [GOBLIN-LEGACY.md](characters/GOBLIN-LEGACY.md) |
 | 巫师 | [WIZARD-LEGACY.md](characters/WIZARD-LEGACY.md) |
-| 传送方块（友谊方块） | [PORTAL-CUBE.md](characters/PORTAL-CUBE.md)，含觉醒待选方向 |
+| 传送方块（友谊方块） | [PORTAL-CUBE.md](characters/PORTAL-CUBE.md)，含重力掌控觉醒规则 |
 
 未明确授权实现的角色只记录已确认设定，不列开发计划或据候选图推定玩法。

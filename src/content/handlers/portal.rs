@@ -16,6 +16,11 @@ pub fn active(
             value.gravity_change = s == Skill::GravityShift;
             value.zero_ai_threshold = true;
         }
+        RuleEvent::SkillCost { skill, value }
+            if s == Skill::GravityShift && *skill == s && ctx.rules.awake =>
+        {
+            **value = 15;
+        }
         RuleEvent::Targeted { value, .. } => **value = true,
         RuleEvent::LegalTarget {
             target, allowed, ..
