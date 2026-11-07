@@ -69,6 +69,20 @@
 
 `board[y][x]` 和快照 `pending` 采用代码索引0..7；交换和技能目标的日志说明采用与命令一致的1..8坐标。日志会包含补充方块后的棋盘，可按 action 关联一次操作及其全部连锁。
 
+## 无窗口命令与脚本
+
+非 UI 逻辑验证优先使用 headless，由同一 `Session` 模型执行调试命令和战斗结算。
+
+```sh
+cargo run --release -- --headless --log /tmp/battleblocks.jsonl \
+  --command 'pause on' --command 'hero player 0' --command 'pause off' \
+  --command 'move 1 1 2 1'
+```
+
+命令较多时使用 `--script path/to/commands.txt`，或用 `--script -` 从 stdin 读取。默认仅输出命令反馈和最终 `HEADLESS_OK` 摘要，完整事件写入 `--log` 指定的 JSONL；`--verbose` 额外在终端打印逐条事件。`--headless-max-steps N` 限制模拟步数，超限以退出码 2 报错；`BATTLEBLOCKS_HEADLESS_SEED` 固定随机种子。
+
+`tools/check_headless.py` 无窗口验证控制台编辑、移动、施法、回滚、AI 回合、待结算消除和批量对局。验证选择见 [构建与验证](BUILDING.md#验证选择)。
+
 ## 无人值守批量对局
 
 平衡筛查不需要逐条写 `move`／`cast`。`--autoplay` 用同一个 `Session` 模型、同一套 `strategy` 让双方自动打完，并通过较大的固定步长跳过动画等待；规则、冷却、口袋、状态和结算仍是正常游戏代码。
