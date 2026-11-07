@@ -14,12 +14,38 @@ mod wizard_spells;
 mod wizard_timing;
 pub use landing_motion::lift as jump_lift;
 
+/// Skill-effect artwork. The web build fetches these beside the `.wasm`.
+pub(crate) const HAMMER_SMASH: crate::assets::Asset = crate::asset!("effects/hammer-smash.webp");
+pub(crate) const HEAVY_LANDING: crate::assets::Asset = crate::asset!("effects/heavy-landing.webp");
+pub(crate) const EMBER_BLAST: crate::assets::Asset = crate::asset!("effects/ember-blast.webp");
+pub(crate) const SLEEP_ZZZ: crate::assets::Asset = crate::asset!("effects/sleep-zzz.webp");
+pub(crate) const WIZARD_LIGHTNING: crate::assets::Asset = crate::asset!("effects/wizard-lightning.webp");
+pub(crate) const WIZARD_METEOR: crate::assets::Asset = crate::asset!("effects/wizard-meteor.webp");
+pub(crate) const NUN_HEAL_NORMAL: crate::assets::Asset = crate::asset!("effects/nun-heal-normal.webp");
+pub(crate) const NUN_HEAL_DAMAGE: crate::assets::Asset = crate::asset!("effects/nun-heal-damage.webp");
+
+/// Every effect sheet; packaging and units tests use this inventory.
+#[allow(dead_code)]
+pub const SHEET_ASSETS: &[&str] = &[
+    HAMMER_SMASH.path,
+    HEAVY_LANDING.path,
+    EMBER_BLAST.path,
+    SLEEP_ZZZ.path,
+    WIZARD_LIGHTNING.path,
+    WIZARD_METEOR.path,
+    NUN_HEAL_NORMAL.path,
+    NUN_HEAL_DAMAGE.path,
+];
+
 /// GUI-only resources. Headless sessions never decode or upload these textures.
+///
+/// Every sheet is lazy: the selection menu holds the table but no pixels, and a
+/// battle uploads only the effects its two combatants can actually cast.
 pub struct Textures {
-    hammer_smash: Texture2D,
-    heavy_landing: Texture2D,
-    ember_blast: Texture2D,
-    sleep_zzz: Texture2D,
+    hammer_smash: crate::graphics::Sheet,
+    heavy_landing: crate::graphics::Sheet,
+    ember_blast: crate::graphics::Sheet,
+    sleep_zzz: crate::graphics::Sheet,
     blast: Option<ember_blast::Blast>,
     cast_tiles: Vec<(usize, usize, u8)>,
     jumps: [Option<f64>; 2],
@@ -30,27 +56,73 @@ pub struct Textures {
     actors: [Option<legacy_actors::Cast>; 2],
 }
 impl Textures {
+    /// Build the lazy sheet table. This does not decode or upload anything.
     pub fn load() -> Self {
         Self {
-            hammer_smash: crate::graphics::texture(include_bytes!(
-                "../assets/effects/hammer-smash.webp"
-            )),
-            heavy_landing: crate::graphics::texture(include_bytes!(
-                "../assets/effects/heavy-landing.webp"
-            )),
+            hammer_smash: crate::graphics::Sheet::new(HAMMER_SMASH),
+            heavy_landing: crate::graphics::Sheet::new(HEAVY_LANDING),
             cast_tiles: Vec::new(),
-            ember_blast: crate::graphics::texture(include_bytes!(
-                "../assets/effects/ember-blast.webp"
-            )),
-            sleep_zzz: crate::graphics::texture(include_bytes!("../assets/effects/sleep-zzz.webp")),
+            ember_blast: crate::graphics::Sheet::new(EMBER_BLAST),
+            sleep_zzz: crate::graphics::Sheet::new(SLEEP_ZZZ),
             blast: None,
             jumps: [None; 2],
             sleep_clocks: Default::default(),
             idle_clocks: Default::default(),
-            wizard: wizard_spells::Effects::load(),
-            heal: nun_heal::Effects::load(),
+            wizard: wizard_spells::Effects::load(WIZARD_LIGHTNING, WIZARD_METEOR),
+            heal: nun_heal::Effects::load(NUN_HEAL_NORMAL, NUN_HEAL_DAMAGE),
             actors: [None, None],
         }
+    }
+
+    /// Upload the sheets the given skills can draw.
+    ///
+    /// Battle start calls this with both combatants' configured skills, so the
+    /// first cast does not pay the decode inside its animation. Skills that only
+    /// arrive through copying stay lazy and load on first use instead.
+    pub fn prefetch(&self, skills: impl IntoIterator<Item = Skill>) {
+        for skill in skills {
+            match skill {
+                Skill::Hammer => {
+                    self.hammer_smash.get();
+                }
+                Skill::Jump => {
+                    self.heavy_landing.get();
+                }
+                Skill::EmberBlast => {
+                    self.ember_blast.get();
+                    self.sleep_zzz.get();
+                }
+                Skill::Lightning | Skill::Meteor => self.wizard.prefetch(skill),
+                Skill::Healing => self.heal.prefetch(),
+                _ => {}
+            }
+        }
+    }
+
+    #[cfg(test)]
+    pub fn loaded_sheets(&self) -> usize {
+        self.wizard.loaded_sheets()
+            + self.heal.loaded_sheets()
+            + [
+                &self.hammer_smash,
+                &self.heavy_landing,
+                &self.ember_blast,
+                &self.sleep_zzz,
+            ]
+            .iter()
+            .filter(|sheet| sheet.loaded())
+            .count()
+    }
+
+    /// Return to the selection menu without holding battle artwork.
+    pub fn release(&mut self) {
+        self.hammer_smash.release();
+        self.heavy_landing.release();
+        self.ember_blast.release();
+        self.sleep_zzz.release();
+        self.wizard.release();
+        self.heal.release();
+        self.clear();
     }
     /// Capture presentation-only artwork before the model removes or replaces the tiles.
     pub fn capture(
@@ -209,11 +281,11 @@ impl Textures {
     pub fn draw_board_blast(&self, over: bool, tiles: &[Texture2D; 7]) {
         self.wizard.draw(over, tiles);
         if let Some(blast) = &self.blast {
-            blast.draw(&self.ember_blast, over);
+            blast.draw(self.ember_blast.get(), over);
         }
     }
     pub fn draw_sleep(&self, area: Rect, foot: Vec2, lying: bool, enemy: bool) {
-        ember_blast::draw_sleep(&self.sleep_zzz, area, foot, lying, enemy);
+        ember_blast::draw_sleep(self.sleep_zzz.get(), area, foot, lying, enemy);
     }
     /// A subsequent non-turn-ending cast must not cancel a jump already in flight.
     pub fn jump_elapsed(&self, enemy: bool) -> Option<f32> {
@@ -221,7 +293,7 @@ impl Textures {
         (elapsed < landing_motion::LANDING + landing_motion::DUST_DURATION).then_some(elapsed)
     }
     pub fn draw_landing(&self, foot: Vec2, elapsed: f32, front: bool, enemy: bool) {
-        heavy_landing::draw(&self.heavy_landing, foot, elapsed, front, enemy);
+        heavy_landing::draw(self.heavy_landing.get(), foot, elapsed, front, enemy);
     }
     pub fn draw(
         &self,
@@ -234,7 +306,7 @@ impl Textures {
         if skill == Skill::Hammer {
             let elapsed = progress * crate::presentation::CAST_TIME as f32;
             hammer_smash::draw_fragments(tiles, &self.cast_tiles, cells, elapsed);
-            hammer_smash::draw(&self.hammer_smash, cells, elapsed);
+            hammer_smash::draw(self.hammer_smash.get(), cells, elapsed);
         } else if !matches!(
             skill,
             Skill::Jump | Skill::EmberBlast | Skill::Lightning | Skill::Meteor
@@ -468,5 +540,20 @@ fn draw_with_actor_progress(
             }
             _ => {}
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn building_the_sheet_table_uploads_nothing() {
+        let textures = Textures::load();
+        assert_eq!(
+            textures.loaded_sheets(),
+            0,
+            "the selection menu must not decode or upload battle artwork"
+        );
     }
 }

@@ -4,8 +4,8 @@ use super::wizard_timing as timing;
 use crate::content::Skill;
 use macroquad::prelude::*;
 pub(super) struct Effects {
-    lightning: Option<Texture2D>,
-    meteor: Option<Texture2D>,
+    lightning: crate::graphics::Sheet,
+    meteor: crate::graphics::Sheet,
     cast: Option<Cast>,
 }
 struct Cast {
@@ -44,16 +44,41 @@ fn selected(cells: &[(usize, usize)], x: usize, y: usize) -> bool {
     cells.contains(&(x, y))
 }
 impl Effects {
-    pub fn load() -> Self {
+    pub fn load(
+        lightning: crate::assets::Asset,
+        meteor: crate::assets::Asset,
+    ) -> Self {
         Self {
-            lightning: Some(crate::graphics::texture(include_bytes!(
-                "../../assets/effects/wizard-lightning.webp"
-            ))),
-            meteor: Some(crate::graphics::texture(include_bytes!(
-                "../../assets/effects/wizard-meteor.webp"
-            ))),
+            lightning: crate::graphics::Sheet::new(lightning),
+            meteor: crate::graphics::Sheet::new(meteor),
             cast: None,
         }
+    }
+
+    fn sheet(&self, skill: Skill) -> &crate::graphics::Sheet {
+        if skill == Skill::Lightning {
+            &self.lightning
+        } else {
+            &self.meteor
+        }
+    }
+
+    /// Upload the sheet a Lightning or Meteor cast will draw.
+    pub fn prefetch(&self, skill: Skill) {
+        if matches!(skill, Skill::Lightning | Skill::Meteor) {
+            self.sheet(skill).get();
+        }
+    }
+
+    #[cfg(test)]
+    pub fn loaded_sheets(&self) -> usize {
+        usize::from(self.lightning.loaded()) + usize::from(self.meteor.loaded())
+    }
+
+    pub fn release(&mut self) {
+        self.lightning.release();
+        self.meteor.release();
+        self.cast = None;
     }
     pub fn capture(
         &mut self,
@@ -106,10 +131,7 @@ impl Effects {
             return;
         };
         let elapsed = cast.clock.elapsed_at(get_time(), over, timing::IMPACT);
-        let texture = match cast.skill {
-            Skill::Lightning => self.lightning.as_ref(),
-            _ => self.meteor.as_ref(),
-        };
+        let texture = self.sheet(cast.skill).get();
         let age = elapsed - timing::IMPACT;
         // The model has settled once. Paint retained originals until the wave removes them;
         // survivor motion is delayed by Presentation, so incoming tiles do not cover them.
@@ -135,7 +157,7 @@ impl Effects {
                 );
             }
         }
-        if let (Some(source), Some(texture)) = (frame(cast.skill, elapsed), texture) {
+        if let Some(source) = frame(cast.skill, elapsed) {
             super::atlas::draw(texture, vec2(256., 110.), source);
         }
         // Lightning restores mana. Its motes converge on the caster's mana bar, never the opponent.

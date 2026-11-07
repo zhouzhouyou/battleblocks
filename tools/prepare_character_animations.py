@@ -138,26 +138,26 @@ def registry():
     for i, name in enumerate(("knight", "elf", "wizzard", "goblin", "imp", "chort", "big_zombie")):
         meta = json.loads((ROOT / "assets-source/roles" / legacy_role(name) / "animation/normal.json").read_text())
         w, h = meta["frame_size"]
-        normal.append(f'    SpriteAsset {{ bytes: include_bytes!("../../assets/roles/{legacy_role(name)}/runtime/normal.webp"), w: {w}., h: {h}., durations: &{meta["durations"]}, indices: &{meta["indices"]}, cast: None, sleep: None, anchor: None }},')
+        normal.append(f'    SpriteAsset {{ asset: crate::asset!("roles/{legacy_role(name)}/runtime/normal.webp"), w: {w}., h: {h}., durations: &{meta["durations"]}, indices: &{meta["indices"]}, cast: None, sleep: None, anchor: None }},')
         frame = Image.open(ROOT / f"assets/roles/{legacy_role(name)}/runtime/normal.webp").crop((0, 0, w, h))
         frame.thumbnail((40, 48), Image.Resampling.NEAREST)
         thumbs.alpha_composite(frame.convert("RGBA"), (i * 40 + (40 - frame.width) // 2, 48 - frame.height))
     for name in ("knight", "elf", "wizard", "goblin", "imp", "chort", "zombie"):
         if name in ('knight', 'elf', 'goblin'):
-            awakened.append(f'    SpriteAsset {{ bytes: include_bytes!("../../assets/roles/{name}-legacy/runtime/atlas.webp"), w: 384., h: 384., durations: &[0.06; 12], indices: &{list(range(12))}, cast: Some(LEGACY_AWAKE_CAST), sleep: None, anchor: Some([192., 336.]) }},')
+            awakened.append(f'    SpriteAsset {{ asset: crate::asset!("roles/{name}-legacy/runtime/atlas.webp"), w: 384., h: 384., durations: &[0.06; 12], indices: &{list(range(12))}, cast: Some(LEGACY_AWAKE_CAST), sleep: None, anchor: Some([192., 336.]) }},')
             continue
         if name == 'wizard':
-            awakened.append(f'    SpriteAsset {{ bytes: include_bytes!("../../assets/roles/wizard/runtime/atlas.webp"), w: 384., h: 384., durations: &[0.06; 12], indices: &{list(range(12))}, cast: Some(WIZARD_AWAKE_CAST), sleep: None, anchor: Some([192., 336.]) }},')
+            awakened.append(f'    SpriteAsset {{ asset: crate::asset!("roles/wizard/runtime/atlas.webp"), w: 384., h: 384., durations: &[0.06; 12], indices: &{list(range(12))}, cast: Some(WIZARD_AWAKE_CAST), sleep: None, anchor: Some([192., 336.]) }},')
             continue
         path = ROOT / f"assets/roles/{name}/runtime/awake.webp"
         w, h = Image.open(path).size
-        awakened.append(f'    SpriteAsset {{ bytes: include_bytes!("../../assets/roles/{name}/runtime/awake.webp"), w: {w}., h: {h}., durations: &[1.], indices: &[0], cast: None, sleep: None, anchor: None }},')
+        awakened.append(f'    SpriteAsset {{ asset: crate::asset!("roles/{name}/runtime/awake.webp"), w: {w}., h: {h}., durations: &[1.], indices: &[0], cast: None, sleep: None, anchor: None }},')
     for i, role in enumerate(ROLES, 7):
         for awake, entries in ((False, normal), (True, awakened)):
             idle = list(range(12, 24)) if awake else list(range(12))
             cast = "AWAKE_CAST" if awake and role != "fire-elf" else "NORMAL_CAST"
             sleep = "Some(SLEEP)" if role == "fire-elf" else "None"
-            entries.append(f'    SpriteAsset {{ bytes: include_bytes!("../../assets/roles/{role}/runtime/atlas.webp"), w: 384., h: 384., durations: &[0.06; 12], indices: &{idle}, cast: Some({cast}), sleep: {sleep}, anchor: Some([192., 336.]) }},')
+            entries.append(f'    SpriteAsset {{ asset: crate::asset!("roles/{role}/runtime/atlas.webp"), w: 384., h: 384., durations: &[0.06; 12], indices: &{idle}, cast: Some({cast}), sleep: {sleep}, anchor: Some([192., 336.]) }},')
         frame = Image.open(ROOT / f"assets/roles/{role}/runtime/atlas.webp").crop((0, 0, FRAME, FRAME)).resize((48, 48), Image.Resampling.NEAREST)
         thumbs.alpha_composite(frame.convert("RGBA"), (i * 40 - 4, 0))
     cube = Image.open(ROOT / "assets/roles/portal-cube/runtime/atlas.webp").crop((0,0,FRAME,FRAME))

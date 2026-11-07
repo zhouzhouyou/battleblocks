@@ -34,7 +34,7 @@ const AWAKE_GRAVITY: AnimationClip = AnimationClip {
     ..NORMAL_PORTAL
 };
 pub const PORTAL_NORMAL: SpriteAsset = SpriteAsset {
-    bytes: include_bytes!("../../assets/roles/portal-cube/runtime/atlas.webp"),
+    asset: crate::asset!("roles/portal-cube/runtime/atlas.webp"),
     w: 384.,
     h: 384.,
     durations: &IDLE_TIME,
@@ -97,13 +97,13 @@ mod tests {
 
     #[test]
     fn runtime_packing_preserves_every_pixel_of_the_final_rigid_body_artwork() {
-        let runtime = image::load_from_memory(PORTAL_NORMAL.bytes)
+        let runtime = image::load_from_memory(PORTAL_NORMAL.bytes())
             .unwrap()
             .to_rgba8();
         let source=image::load_from_memory(include_bytes!("../../assets-source/roles/portal-cube/animation/atlas.webp")).unwrap().to_rgba8();
         assert_eq!(runtime.dimensions(), (3840, 3840));
         assert!(runtime.width() <= 4096 && runtime.height() <= 4096);
-        assert_ne!(PORTAL_NORMAL.bytes, crate::sprites::SPRITES[3].bytes);
+        assert_ne!(PORTAL_NORMAL.bytes(), crate::sprites::SPRITES[3].bytes());
         assert_eq!(PORTAL_NORMAL.anchor, Some([192., 336.]));
         for n in 0..96 {
             let from =

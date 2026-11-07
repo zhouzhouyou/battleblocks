@@ -42,12 +42,22 @@ if not args.native_only:
     registry=next((Path.home()/'.cargo/registry/src').glob('*/miniquad-0.4.11'))
     (web/'mq_js_bundle.js').write_bytes((registry/'js/gl.js').read_bytes()+b'\n'+(ROOT/'src/audio/web.js').read_bytes())
     shutil.copy2(ROOT/'target/wasm32-unknown-unknown/release/battleblocks.wasm',web/'battleblocks.wasm')
+    # Sprite atlases and effect sheets ship beside the module and are fetched on
+    # demand; the list is exactly what the source registers with `asset!`.
+    import re
+    assets=sorted({match for path in (ROOT/'src').rglob('*.rs')
+                   for match in re.findall(r'crate::asset!\("([^"]+)"\)', path.read_text())})
+    if not assets:raise SystemExit('asset inventory scan found no runtime artwork')
+    for name in assets:
+        source=ROOT/'assets'/name
+        if not source.is_file():raise SystemExit(f'missing runtime asset: {name}')
+        target=web/'assets'/name;target.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,target)
     for file in ['bgm.ogg','crush.wav']:shutil.copy2(ROOT/'assets/audio/runtime'/file,web/file)
     (web/'index.html').write_text('''<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BattleBlocks</title><style>html,body{margin:0;background:#191b26;width:100%;height:100%;overflow:hidden}canvas{width:100%;height:100%;display:block}</style></head><body><canvas id="glcanvas" tabindex="1"></canvas><script src="mq_js_bundle.js"></script><script>load('battleblocks.wasm');</script></body></html>''')
     page=web/'index.html'
     page.write_text(page.read_text().replace('src="mq_js_bundle.js"','src="mq_js_bundle.js?v='+hashlib.sha256((web/'mq_js_bundle.js').read_bytes()).hexdigest()[:12]+'"').replace("load('battleblocks.wasm')","load('battleblocks.wasm?v="+hashlib.sha256((web/'battleblocks.wasm').read_bytes()).hexdigest()[:12]+"')"))
     licenses_for('wasm32-unknown-unknown',web/'licenses');zip_directory('web.zip',web)
-    results.update(wasm_bytes=(web/'battleblocks.wasm').stat().st_size,web_startup_gzip_bytes=sum(len(gzip.compress((web/name).read_bytes(),compresslevel=9,mtime=0)) for name in ['index.html','mq_js_bundle.js','battleblocks.wasm','crush.wav']),web_bgm_bytes=(web/'bgm.ogg').stat().st_size,web_zip_bytes=(DIST/'web.zip').stat().st_size)
+    results.update(wasm_bytes=(web/'battleblocks.wasm').stat().st_size,web_asset_bytes=sum((web/'assets'/name).stat().st_size for name in assets),web_startup_gzip_bytes=sum(len(gzip.compress((web/name).read_bytes(),compresslevel=9,mtime=0)) for name in ['index.html','mq_js_bundle.js','battleblocks.wasm','crush.wav']),web_bgm_bytes=(web/'bgm.ogg').stat().st_size,web_zip_bytes=(DIST/'web.zip').stat().st_size)
 if not args.web_only:
     windows='windows' in native_target
     executable='battleblocks.exe' if windows else 'battleblocks'

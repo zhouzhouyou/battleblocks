@@ -22,22 +22,34 @@ pub(super) fn targets(events: &[RewardEvent], actor_enemy: bool) -> [[bool; 2]; 
     targets
 }
 pub(super) struct Effects {
-    textures: [Texture2D; 2],
+    textures: [crate::graphics::Sheet; 2],
     started: [[Option<f64>; 2]; 2],
 }
 impl Effects {
-    pub fn load() -> Self {
+    pub fn load(normal: crate::assets::Asset, damage: crate::assets::Asset) -> Self {
         Self {
             textures: [
-                crate::graphics::texture(include_bytes!(
-                    "../../assets/effects/nun-heal-normal.webp"
-                )),
-                crate::graphics::texture(include_bytes!(
-                    "../../assets/effects/nun-heal-damage.webp"
-                )),
+                crate::graphics::Sheet::new(normal),
+                crate::graphics::Sheet::new(damage),
             ],
             started: [[None; 2]; 2],
         }
+    }
+    /// Healing is the only source of these overlays; a nun matchup uploads both.
+    pub fn prefetch(&self) {
+        for sheet in &self.textures {
+            sheet.get();
+        }
+    }
+    #[cfg(test)]
+    pub fn loaded_sheets(&self) -> usize {
+        self.textures.iter().filter(|sheet| sheet.loaded()).count()
+    }
+    pub fn release(&mut self) {
+        for sheet in &mut self.textures {
+            sheet.release();
+        }
+        self.started = [[None; 2]; 2];
     }
     pub fn clear(&mut self) {
         self.started = [[None; 2]; 2];
@@ -84,7 +96,7 @@ impl Effects {
                 clip,
                 if front { 5 } else { 0 },
             ) {
-                super::atlas::draw(&self.textures[variant], at, source);
+                super::atlas::draw(self.textures[variant].get(), at, source);
             }
         }
     }

@@ -33,11 +33,8 @@ impl Session {
                     match i {
                         0 => self.paused = false,
                         1 => {
-                            self.choosing = true;
-                            self.interface.opponent_step = false;
+                            self.enter_selection();
                             self.paused = false;
-                            self.targeting = None;
-                            self.selected = None;
                         }
                         2 => frame.restart_command = true,
                         _ => self.interface.panel = Some(ui::Panel::Settings),
@@ -63,10 +60,7 @@ impl Session {
                 frame.restart_command = true;
             } else if ui::game_over_rect(1).contains(frame.pointer) {
                 frame.over_click = true;
-                self.choosing = true;
-                self.interface.opponent_step = false;
-                self.targeting = None;
-                self.selected = None;
+                self.enter_selection();
             }
         }
         frame.block_input = frame.was_console_open
@@ -89,8 +83,7 @@ impl Session {
             }
         }
         if frame.key(KeyCode::E) {
-            self.choosing = true;
-            self.interface.opponent_step = false;
+            self.enter_selection();
         }
         if old_zh != self.zh {
             if let Some(audio) = &self.audio {

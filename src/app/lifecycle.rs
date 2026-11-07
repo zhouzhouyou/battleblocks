@@ -23,6 +23,7 @@ impl Session {
             ids[rng::gen_range(0, ids.len())]
         });
         self.refresh_actor_textures();
+        self.prefetch_battle_effects();
         self.enemy = HEROES[self.enemy_id].hp;
         self.enemy_mp = 0;
         self.enemy_turn = false;

@@ -2,7 +2,7 @@
 use super::*;
 pub const SPRITES: &[SpriteAsset] = &[
     SpriteAsset {
-        bytes: include_bytes!("../../assets/roles/knight-legacy/runtime/normal.webp"),
+        asset: crate::asset!("roles/knight-legacy/runtime/normal.webp"),
         w: 300.,
         h: 400.,
         durations: &[0.1, 0.1, 0.1, 0.13],
@@ -12,7 +12,7 @@ pub const SPRITES: &[SpriteAsset] = &[
         anchor: None,
     },
     SpriteAsset {
-        bytes: include_bytes!("../../assets/roles/elf-legacy/runtime/normal.webp"),
+        asset: crate::asset!("roles/elf-legacy/runtime/normal.webp"),
         w: 320.,
         h: 320.,
         durations: &[0.1, 0.1, 0.1, 0.1],
@@ -22,7 +22,7 @@ pub const SPRITES: &[SpriteAsset] = &[
         anchor: None,
     },
     SpriteAsset {
-        bytes: include_bytes!("../../assets/roles/wizard/runtime/normal.webp"),
+        asset: crate::asset!("roles/wizard/runtime/normal.webp"),
         w: 300.,
         h: 400.,
         durations: &[0.1, 0.1, 0.1, 0.1],
@@ -32,7 +32,7 @@ pub const SPRITES: &[SpriteAsset] = &[
         anchor: None,
     },
     SpriteAsset {
-        bytes: include_bytes!("../../assets/roles/goblin-legacy/runtime/normal.webp"),
+        asset: crate::asset!("roles/goblin-legacy/runtime/normal.webp"),
         w: 200.,
         h: 200.,
         durations: &[0.13, 0.13, 0.13, 0.13],
@@ -42,7 +42,7 @@ pub const SPRITES: &[SpriteAsset] = &[
         anchor: None,
     },
     SpriteAsset {
-        bytes: include_bytes!("../../assets/roles/imp/runtime/normal.webp"),
+        asset: crate::asset!("roles/imp/runtime/normal.webp"),
         w: 201.,
         h: 240.,
         durations: &[0.13, 0.13, 0.13, 0.13],
@@ -52,7 +52,7 @@ pub const SPRITES: &[SpriteAsset] = &[
         anchor: None,
     },
     SpriteAsset {
-        bytes: include_bytes!("../../assets/roles/chort/runtime/normal.webp"),
+        asset: crate::asset!("roles/chort/runtime/normal.webp"),
         w: 220.,
         h: 420.,
         durations: &[0.13, 0.13, 0.13, 0.13, 0.13],
@@ -62,7 +62,7 @@ pub const SPRITES: &[SpriteAsset] = &[
         anchor: None,
     },
     SpriteAsset {
-        bytes: include_bytes!("../../assets/roles/zombie/runtime/normal.webp"),
+        asset: crate::asset!("roles/zombie/runtime/normal.webp"),
         w: 268.,
         h: 360.,
         durations: &[0.13, 0.13, 0.13, 0.13],
@@ -72,7 +72,7 @@ pub const SPRITES: &[SpriteAsset] = &[
         anchor: None,
     },
     SpriteAsset {
-        bytes: include_bytes!("../../assets/roles/knight/runtime/atlas.webp"),
+        asset: crate::asset!("roles/knight/runtime/atlas.webp"),
         w: 384.,
         h: 384.,
         durations: &[0.06; 12],
@@ -82,7 +82,7 @@ pub const SPRITES: &[SpriteAsset] = &[
         anchor: Some([192., 336.]),
     },
     SpriteAsset {
-        bytes: include_bytes!("../../assets/roles/dwarf/runtime/atlas.webp"),
+        asset: crate::asset!("roles/dwarf/runtime/atlas.webp"),
         w: 384.,
         h: 384.,
         durations: &[0.06; 12],
@@ -92,7 +92,7 @@ pub const SPRITES: &[SpriteAsset] = &[
         anchor: Some([192., 336.]),
     },
     SpriteAsset {
-        bytes: include_bytes!("../../assets/roles/priest/runtime/atlas.webp"),
+        asset: crate::asset!("roles/priest/runtime/atlas.webp"),
         w: 384.,
         h: 384.,
         durations: &[0.06; 12],
@@ -102,7 +102,7 @@ pub const SPRITES: &[SpriteAsset] = &[
         anchor: Some([192., 336.]),
     },
     SpriteAsset {
-        bytes: include_bytes!("../../assets/roles/nun/runtime/atlas.webp"),
+        asset: crate::asset!("roles/nun/runtime/atlas.webp"),
         w: 384.,
         h: 384.,
         durations: &[0.06; 12],
@@ -112,7 +112,7 @@ pub const SPRITES: &[SpriteAsset] = &[
         anchor: Some([192., 336.]),
     },
     SpriteAsset {
-        bytes: include_bytes!("../../assets/roles/fire-elf/runtime/atlas.webp"),
+        asset: crate::asset!("roles/fire-elf/runtime/atlas.webp"),
         w: 384.,
         h: 384.,
         durations: &[0.06; 12],
@@ -125,7 +125,7 @@ pub const SPRITES: &[SpriteAsset] = &[
 ];
 pub const AWAKENED: &[SpriteAsset] = &[
     SpriteAsset {
-        bytes: include_bytes!("../../assets/roles/knight-legacy/runtime/atlas.webp"),
+        asset: crate::asset!("roles/knight-legacy/runtime/atlas.webp"),
         w: 384.,
         h: 384.,
         durations: &[0.06; 12],
@@ -135,7 +135,7 @@ pub const AWAKENED: &[SpriteAsset] = &[
         anchor: Some([192., 336.]),
     },
     SpriteAsset {
-        bytes: include_bytes!("../../assets/roles/elf-legacy/runtime/atlas.webp"),
+        asset: crate::asset!("roles/elf-legacy/runtime/atlas.webp"),
         w: 384.,
         h: 384.,
         durations: &[0.06; 12],
@@ -145,7 +145,7 @@ pub const AWAKENED: &[SpriteAsset] = &[
         anchor: Some([192., 336.]),
     },
     SpriteAsset {
-        bytes: include_bytes!("../../assets/roles/wizard/runtime/atlas.webp"),
+        asset: crate::asset!("roles/wizard/runtime/atlas.webp"),
         w: 384.,
         h: 384.,
         durations: &[0.06; 12],
@@ -155,7 +155,7 @@ pub const AWAKENED: &[SpriteAsset] = &[
         anchor: Some([192., 336.]),
     },
     SpriteAsset {
-        bytes: include_bytes!("../../assets/roles/goblin-legacy/runtime/atlas.webp"),
+        asset: crate::asset!("roles/goblin-legacy/runtime/atlas.webp"),
         w: 384.,
         h: 384.,
         durations: &[0.06; 12],
@@ -165,7 +165,7 @@ pub const AWAKENED: &[SpriteAsset] = &[
         anchor: Some([192., 336.]),
     },
     SpriteAsset {
-        bytes: include_bytes!("../../assets/roles/imp/runtime/awake.webp"),
+        asset: crate::asset!("roles/imp/runtime/awake.webp"),
         w: 88.,
         h: 96.,
         durations: &[1.],
@@ -175,7 +175,7 @@ pub const AWAKENED: &[SpriteAsset] = &[
         anchor: None,
     },
     SpriteAsset {
-        bytes: include_bytes!("../../assets/roles/chort/runtime/awake.webp"),
+        asset: crate::asset!("roles/chort/runtime/awake.webp"),
         w: 78.,
         h: 96.,
         durations: &[1.],
@@ -185,7 +185,7 @@ pub const AWAKENED: &[SpriteAsset] = &[
         anchor: None,
     },
     SpriteAsset {
-        bytes: include_bytes!("../../assets/roles/zombie/runtime/awake.webp"),
+        asset: crate::asset!("roles/zombie/runtime/awake.webp"),
         w: 75.,
         h: 96.,
         durations: &[1.],
@@ -195,7 +195,7 @@ pub const AWAKENED: &[SpriteAsset] = &[
         anchor: None,
     },
     SpriteAsset {
-        bytes: include_bytes!("../../assets/roles/knight/runtime/atlas.webp"),
+        asset: crate::asset!("roles/knight/runtime/atlas.webp"),
         w: 384.,
         h: 384.,
         durations: &[0.06; 12],
@@ -205,7 +205,7 @@ pub const AWAKENED: &[SpriteAsset] = &[
         anchor: Some([192., 336.]),
     },
     SpriteAsset {
-        bytes: include_bytes!("../../assets/roles/dwarf/runtime/atlas.webp"),
+        asset: crate::asset!("roles/dwarf/runtime/atlas.webp"),
         w: 384.,
         h: 384.,
         durations: &[0.06; 12],
@@ -215,7 +215,7 @@ pub const AWAKENED: &[SpriteAsset] = &[
         anchor: Some([192., 336.]),
     },
     SpriteAsset {
-        bytes: include_bytes!("../../assets/roles/priest/runtime/atlas.webp"),
+        asset: crate::asset!("roles/priest/runtime/atlas.webp"),
         w: 384.,
         h: 384.,
         durations: &[0.06; 12],
@@ -225,7 +225,7 @@ pub const AWAKENED: &[SpriteAsset] = &[
         anchor: Some([192., 336.]),
     },
     SpriteAsset {
-        bytes: include_bytes!("../../assets/roles/nun/runtime/atlas.webp"),
+        asset: crate::asset!("roles/nun/runtime/atlas.webp"),
         w: 384.,
         h: 384.,
         durations: &[0.06; 12],
@@ -235,7 +235,7 @@ pub const AWAKENED: &[SpriteAsset] = &[
         anchor: Some([192., 336.]),
     },
     SpriteAsset {
-        bytes: include_bytes!("../../assets/roles/fire-elf/runtime/atlas.webp"),
+        asset: crate::asset!("roles/fire-elf/runtime/atlas.webp"),
         w: 384.,
         h: 384.,
         durations: &[0.06; 12],

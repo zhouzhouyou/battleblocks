@@ -23,6 +23,8 @@ pub(crate) struct Session {
     skill_effects: Option<effects::Textures>,
     hero_id: usize,
     player_texture: Option<Texture2D>,
+    /// Transparent stand-in until the web build fetches an actor atlas.
+    blank: Option<Texture2D>,
     thumbs: Option<Texture2D>,
     book_cover: Option<Texture2D>,
     book_pages: Option<Texture2D>,
@@ -213,8 +215,13 @@ impl Session {
         if startup_commands && bench.is_none() {
             hero_id = 0;
         }
-        let player_texture =
-            rendering.then(|| diagnostic_texture(sprites::SPRITES[hero_id].bytes, "no_actors"));
+        // The selection menu needs only its own hero: the opponent and awakening
+        // atlases are battle assets and load when the battle starts.
+        let choosing = rendering && bench.is_none() && !startup_commands;
+        let blank = rendering.then(blank_texture);
+        let player_texture = rendering
+            .then(|| asset_texture(&sprites::SPRITES[hero_id].asset, "no_actors"))
+            .flatten();
         let thumbs =
             rendering.then(|| texture(include_bytes!("../../assets/ui/hero-thumbnails.webp")));
         let book_cover = rendering.then(|| texture(sprites::BOOK_COVER));
@@ -232,9 +239,9 @@ impl Session {
             menu::Preview::new_static(hero_id, 0, character_page == 2)
         };
         let enemy_id = (hero_id + 1) % HEROES.len();
-        let enemy_texture =
-            rendering.then(|| diagnostic_texture(sprites::SPRITES[enemy_id].bytes, "no_actors"));
-        let choosing = rendering && bench.is_none() && !startup_commands;
+        let enemy_texture = (rendering && !choosing)
+            .then(|| asset_texture(&sprites::SPRITES[enemy_id].asset, "no_actors"))
+            .flatten();
         let audio = rendering
             .then(|| {
                 audio::Audio::new(!diagnostic("no_music"), !diagnostic("no_sound"))
@@ -296,14 +303,18 @@ impl Session {
         let game_over_logged = false;
         let awakened = [false; 2];
         let reward_skill = None;
-        let awake_textures = [
-            player_texture
-                .as_ref()
-                .map(|t| Self::load_awake_texture(hero_id, t)),
-            enemy_texture
-                .as_ref()
-                .map(|t| Self::load_awake_texture(enemy_id, t)),
-        ];
+        let awake_textures = if rendering && !choosing {
+            [
+                player_texture
+                    .as_ref()
+                    .and_then(|t| Self::load_awake_texture(hero_id, t)),
+                enemy_texture
+                    .as_ref()
+                    .and_then(|t| Self::load_awake_texture(enemy_id, t)),
+            ]
+        } else {
+            [None, None]
+        };
         let charge_damage: Option<content::PendingImpact> = None;
         let presentation = presentation::Presentation::default();
         let turn_log = turns::Log::new();
@@ -311,7 +322,7 @@ impl Session {
         let nuke_damage = [0; 2];
         let round = 1u32;
 
-        Self {
+        let mut session = Self {
             rendering,
             defeat,
             zh,
@@ -319,6 +330,7 @@ impl Session {
             skill_effects,
             hero_id,
             player_texture,
+            blank,
             thumbs,
             book_cover,
             book_pages,
@@ -383,7 +395,11 @@ impl Session {
             round,
             nuke_casts,
             nuke_damage,
+        };
+        if rendering && !choosing {
+            session.prefetch_battle_effects();
         }
+        session
     }
     fn required_texture(texture: &Option<Texture2D>) -> &Texture2D {
         texture
@@ -395,20 +411,30 @@ impl Session {
             .as_ref()
             .expect("render-only texture used in headless mode")
     }
+    /// A transparent stand-in stands in while the web build fetches the atlas.
+    fn blank(&self) -> &Texture2D {
+        Self::required_texture(&self.blank)
+    }
     fn player_texture(&self) -> &Texture2D {
-        Self::required_texture(&self.player_texture)
+        self.player_texture.as_ref().unwrap_or_else(|| self.blank())
     }
     fn enemy_texture(&self) -> &Texture2D {
-        Self::required_texture(&self.enemy_texture)
+        self.enemy_texture.as_ref().unwrap_or_else(|| self.blank())
     }
     fn awake_texture(&self, enemy: bool) -> &Texture2D {
-        Self::required_texture(&self.awake_textures[enemy as usize])
+        self.awake_textures[enemy as usize].as_ref().unwrap_or_else(|| {
+            if enemy {
+                self.enemy_texture()
+            } else {
+                self.player_texture()
+            }
+        })
     }
-    fn load_awake_texture(id: usize, normal: &Texture2D) -> Texture2D {
-        if sprites::AWAKENED[id].bytes == sprites::SPRITES[id].bytes {
-            normal.clone()
+    fn load_awake_texture(id: usize, normal: &Texture2D) -> Option<Texture2D> {
+        if sprites::AWAKENED[id].asset.path == sprites::SPRITES[id].asset.path {
+            Some(normal.clone())
         } else {
-            diagnostic_texture(sprites::AWAKENED[id].bytes, "no_actors")
+            asset_texture(&sprites::AWAKENED[id].asset, "no_actors")
         }
     }
     fn thumbs(&self) -> &Texture2D {
@@ -427,27 +453,119 @@ impl Session {
         Self::required_texture(&self.defeat)
     }
     fn refresh_actor_textures(&mut self) {
-        if self.rendering {
-            self.player_texture = Some(diagnostic_texture(
-                sprites::SPRITES[self.hero_id].bytes,
-                "no_actors",
-            ));
-            self.enemy_texture = if self.hero_id == self.enemy_id {
-                self.player_texture.clone()
-            } else {
-                Some(diagnostic_texture(
-                    sprites::SPRITES[self.enemy_id].bytes,
-                    "no_actors",
-                ))
-            };
-            let player = Self::load_awake_texture(self.hero_id, self.player_texture());
-            let enemy = if self.hero_id == self.enemy_id {
-                player.clone()
-            } else {
-                Self::load_awake_texture(self.enemy_id, self.enemy_texture())
-            };
-            self.awake_textures = [Some(player), Some(enemy)];
+        if !self.rendering {
+            return;
         }
+        self.player_texture = asset_texture(&sprites::SPRITES[self.hero_id].asset, "no_actors");
+        if self.choosing {
+            // The menu draws one hero; opponent and awakening sheets are battle
+            // resources and stay out of memory until the battle starts.
+            self.enemy_texture = None;
+            self.awake_textures = [None, None];
+            return;
+        }
+        self.enemy_texture = if self.hero_id == self.enemy_id {
+            self.player_texture.clone()
+        } else {
+            asset_texture(&sprites::SPRITES[self.enemy_id].asset, "no_actors")
+        };
+        let player = Self::load_awake_texture(self.hero_id, self.player_texture());
+        let enemy = if self.hero_id == self.enemy_id {
+            player.clone()
+        } else {
+            Self::load_awake_texture(self.enemy_id, self.enemy_texture())
+        };
+        self.awake_textures = [player, enemy];
+    }
+
+    /// The menu only needs the selected hero's awakening sheet on the awakening
+    /// page or when a preview turns the hero dark. Battle loads them eagerly.
+    fn ensure_player_awake_texture(&mut self) {
+        if !self.rendering || self.awake_textures[0].is_some() {
+            return;
+        }
+        self.awake_textures[0] = Self::load_awake_texture(self.hero_id, self.player_texture());
+    }
+
+    /// Whether the menu shows the awakening sheet right now.
+    fn wants_awake_texture(&self) -> bool {
+        self.character_page == 2 || self.preview.dark || self.preview.base_dark
+    }
+
+    /// The web loader finished a file: upload anything that was blank so far.
+    #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
+    pub(crate) fn refresh_textures(&mut self) {
+        if !self.rendering {
+            return;
+        }
+        if self.player_texture.is_none() {
+            self.player_texture = asset_texture(&sprites::SPRITES[self.hero_id].asset, "no_actors");
+        }
+        if self.choosing {
+            if self.wants_awake_texture() && self.awake_textures[0].is_none() {
+                self.awake_textures[0] =
+                    Self::load_awake_texture(self.hero_id, self.player_texture());
+            }
+            return;
+        }
+        if self.enemy_texture.is_none() {
+            self.enemy_texture =
+                asset_texture(&sprites::SPRITES[self.enemy_id].asset, "no_actors");
+        }
+        if self.awake_textures[0].is_none() {
+            self.awake_textures[0] = Self::load_awake_texture(self.hero_id, self.player_texture());
+        }
+        if self.awake_textures[1].is_none() {
+            self.awake_textures[1] = Self::load_awake_texture(self.enemy_id, self.enemy_texture());
+        }
+        self.prefetch_battle_effects();
+    }
+
+    /// Web only: the session is waiting for artwork from the network.
+    #[cfg_attr(not(target_arch = "wasm32"), allow(dead_code))]
+    pub(crate) fn needs_assets(&self) -> bool {
+        self.rendering && crate::assets::pending()
+    }
+
+    /// Return to hero selection and drop the artwork only a battle draws.
+    fn enter_selection(&mut self) {
+        self.choosing = true;
+        self.interface.opponent_step = false;
+        self.targeting = None;
+        self.selected = None;
+        self.enemy_texture = None;
+        self.awake_textures = [None, None];
+        if let Some(effects) = &mut self.skill_effects {
+            effects.release();
+        }
+    }
+
+    /// A battle frame needs both actors and its matchup sheets. Console commands
+    /// can leave the menu without `reset_battle`, so repair that here.
+    fn ensure_battle_resources(&mut self) {
+        if !self.rendering || self.choosing {
+            return;
+        }
+        if self.enemy_texture.is_none() || self.awake_textures.iter().any(Option::is_none) {
+            self.refresh_actor_textures();
+            self.prefetch_battle_effects();
+        }
+    }
+
+    /// Upload this matchup's effect sheets before the first cast, so a cast does
+    /// not stall on decoding mid-animation. Skills that arrive by copying or debug
+    /// commands outside the two loadouts stay lazy and load on first use.
+    fn prefetch_battle_effects(&mut self) {
+        let Some(effects) = &self.skill_effects else {
+            return;
+        };
+        let mut skills = Vec::new();
+        for id in [self.hero_id, self.enemy_id] {
+            for awake in [false, true] {
+                skills.extend_from_slice(content::skills(id, awake));
+            }
+        }
+        effects.prefetch(skills);
     }
     fn refresh_preview(&mut self, skill: usize) {
         let awakened = self.character_page == 2;
@@ -805,6 +923,7 @@ impl Session {
         if self.menu(&frame) {
             return;
         }
+        self.ensure_battle_resources();
         self.tick(&mut frame);
         self.draw(&frame);
     }
