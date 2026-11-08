@@ -24,6 +24,9 @@
 | 精灵 | [ELF-LEGACY.md](characters/ELF-LEGACY.md) |
 | 哥布林 | [GOBLIN-LEGACY.md](characters/GOBLIN-LEGACY.md) |
 | 巫师 | [WIZARD-LEGACY.md](characters/WIZARD-LEGACY.md) |
+| 小恶魔 | [IMP.md](characters/IMP.md) |
+| 角魔 | [CHORT.md](characters/CHORT.md) |
+| 大僵尸 | [ZOMBIE.md](characters/ZOMBIE.md) |
 | 传送方块（友谊方块） | [PORTAL-CUBE.md](characters/PORTAL-CUBE.md)，含重力掌控觉醒规则、GLaDOS 风格性格与两句胜负语音 |
 
 用户已授权矮人、新骑士、牧师完整开发与游戏接入。未明确授权实现的角色只记录已确认设定，不列开发计划或据候选图推定玩法。

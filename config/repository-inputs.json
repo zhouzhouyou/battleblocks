@@ -30,5 +30,11 @@
   "config/normal-art-lock.json": "普通角色不可回归资源与注册的确定性测试基准",
   "experiments/audio-lab/score.json": "音频实验实时合成的音符输入，由程序直接读取",
   "config/repository-inputs.json": "允许入库的结构化输入及其长期用途声明",
-  "config/localization.tsv": "游戏实际读取的本地化文案"
+  "config/localization.tsv": "游戏实际读取的本地化文案",
+  "assets-source/roles/imp/animation/palette.json": "正式资源导出的固定调色板输入",
+  "assets-source/roles/imp/animation/registration.json": "动画源图各姿势的固定脚底配准与缩放输入",
+  "assets-source/roles/chort/animation/palette.json": "正式资源导出的固定调色板输入",
+  "assets-source/roles/chort/animation/registration.json": "动画源图各姿势的固定脚底配准与缩放输入",
+  "assets-source/roles/zombie/animation/palette.json": "正式资源导出的固定调色板输入",
+  "assets-source/roles/zombie/animation/registration.json": "动画源图各姿势的固定脚底配准与缩放输入"
 }

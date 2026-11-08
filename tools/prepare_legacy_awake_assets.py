@@ -1,4 +1,4 @@
-"""Import Issue 28's authored awake-only poses. Never writes normal assets.
+"""Import authored awake-only poses. Never writes normal assets.
 
 Source plates have independent pixel density; registration fixes one scale per
 plate, shared by all twelve poses, and uses soles rather than weapon bounds.
@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / '.build-tools/art-site'))
 from PIL import Image
 
-ROLES = ('knight-legacy', 'elf-legacy', 'goblin-legacy')
+ROLES = ('knight-legacy', 'elf-legacy', 'goblin-legacy', 'imp', 'chort', 'zombie')
 CLIPS = ('awake-idle', 'awake-cast')
 FRAME, ANCHOR = 384, (192, 336)
 
@@ -63,9 +63,10 @@ def import_role(role):
             rgb.putalpha(resized.getchannel('A'))
             b = rgb.getbbox()
             # Exact bottom alignment avoids nearest-neighbour rounding by 1 px.
-            offset = (ANCHOR[0]-round(foot[0]*w/cell.width), ANCHOR[1]-b[3])
+            bottom = round(foot[1]*h/cell.height) if reg.get('explicit_sole') else b[3]
+            offset = (ANCHOR[0]-round(foot[0]*w/cell.width), ANCHOR[1]-bottom)
             placed = [b[0]+offset[0], b[1]+offset[1], b[2]+offset[0], b[3]+offset[1]]
-            if placed[0]<4 or placed[1]<4 or placed[2]>FRAME-4:
+            if placed[0]<4 or placed[1]<4 or placed[2]>FRAME-4 or placed[3]>FRAME-4:
                 raise ValueError(f'{role}/{clip}/{i}: equipment outside safety margin {placed}')
             frame = Image.new('RGBA', (FRAME, FRAME))
             frame.alpha_composite(rgb, offset)
