@@ -128,6 +128,7 @@ const WIN_SCORE: f32 = 10_000.;
 pub(super) enum PlanAction {
     Swap(Move),
     Cast(content::Skill, (usize, usize), Option<(usize, usize)>),
+    Shoot(content::Skill, content::projectile::Aim),
 }
 
 #[derive(Clone)]
@@ -170,6 +171,11 @@ pub(super) fn plan_key(mut state: debug::Snapshot) -> String {
 impl PlanAction {
     pub(super) fn inject(self, session: &mut Session, frame: &mut Frame) {
         match self {
+            Self::Shoot(skill, aim) => {
+                frame.command_skill = Some(skill);
+                frame.command_target = Some((3, 3));
+                frame.command_aim = Some(aim);
+            }
             Self::Swap(m) => frame.command_move = Some(m),
             Self::Cast(skill, target, anchor) => {
                 session.target_anchor = anchor;
@@ -265,6 +271,53 @@ impl Session {
             {
                 continue;
             }
+            if let Some(config) = profile.projectile {
+                use content::projectile::Ammo;
+                let ammunition: &[Ammo] = if config.explosion.is_some() {
+                    &[Ammo::Solid, Ammo::Explosive]
+                } else {
+                    &[Ammo::Solid]
+                };
+                for &ammo in ammunition {
+                    let mut shots = Vec::new();
+                    for y in 0..N {
+                        for x in 0..N {
+                            let aim = content::projectile::Aim {
+                                ammo,
+                                ..config.aim_for_target((x, y))
+                            };
+                            let preview = content::preview_rewards_in(
+                                skill,
+                                &self.b,
+                                (3, 3),
+                                self.hero_id,
+                                self.hp,
+                                self.mp,
+                                self.enemy,
+                                self.extra_bonus,
+                                content::Rules {
+                                    projectile_aim: Some(aim),
+                                    ..rules
+                                },
+                            );
+                            let value = strategy::reward_value(
+                                preview.damage - preview.opponent_heal,
+                                preview.heal,
+                                preview.mana_after - self.mp,
+                            );
+                            shots.push((value, PlanAction::Shoot(skill, aim)));
+                        }
+                    }
+                    shots.sort_by(|a, b| b.0.total_cmp(&a.0));
+                    actions.extend(
+                        shots
+                            .into_iter()
+                            .take(policy.targets)
+                            .map(|(_, action)| action),
+                    );
+                }
+                continue;
+            }
             let paired = profile.paired_target;
             let anchors: Vec<_> = if paired {
                 (0..N)
@@ -335,20 +388,30 @@ impl Session {
         }
         let before = self.snapshot();
         let payment = match action {
-            PlanAction::Cast(s, _, _) => {
+            PlanAction::Cast(s, _, _) | PlanAction::Shoot(s, _) => {
                 content::payment_in(self.hero_id, self.hp, self.mp, s, self.rules(false))
             }
             _ => None,
         };
         let name = match action {
+            PlanAction::Shoot(s, aim) => crate::format_text(
+                self.zh,
+                "projectile.shot_name",
+                &[
+                    &content::skill_name_in(s, self.rules(false), self.zh),
+                    aim.ammo.name(self.zh),
+                ],
+            ),
             PlanAction::Cast(s, _, _) => content::skill_name_in(s, self.rules(false), self.zh),
             _ => String::new(),
         };
         let mut frame = Frame::headless(1.);
         action.inject(self, &mut frame);
-        frame.command_aim = self.projectile_aim;
+        frame.command_aim = frame.command_aim.or(self.projectile_aim);
         let accepted = match action {
-            PlanAction::Cast(s, _, _) => self.cast_skill(&frame, Some(s), false),
+            PlanAction::Cast(s, _, _) | PlanAction::Shoot(s, _) => {
+                self.cast_skill(&frame, Some(s), false)
+            }
             PlanAction::Swap(_) => {
                 let count = self.turn_log.current.actions.len();
                 self.player_swap(&frame, None, false);
@@ -602,6 +665,7 @@ impl Session {
     fn ai_snapshot(&self, side: bool) -> debug::Snapshot {
         let mut state = self.snapshot();
         if side {
+            state.perspective_reversed = !state.perspective_reversed;
             std::mem::swap(&mut state.hero, &mut state.enemy);
             std::mem::swap(&mut state.hp, &mut state.enemy_hp);
             std::mem::swap(&mut state.mp, &mut state.enemy_mp);

@@ -15,6 +15,7 @@ pub use status::*;
 pub struct Rules {
     pub projectile_aim: Option<projectile::Aim>,
     pub actor_enemy: bool,
+    pub launch_from_right: bool,
     pub board_mechanics: crate::board::BoardMechanics,
     pub target_anchor: Option<(usize, usize)>,
     pub awake: bool,

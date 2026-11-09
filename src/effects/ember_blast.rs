@@ -5,6 +5,15 @@ use super::impact_clock::IMPACT;
 use macroquad::prelude::*;
 pub const DURATION: f32 = 1.4;
 
+pub(super) fn projectile_frame(age: f32) -> Option<Rect> {
+    if !age.is_finite() || !(0.0..super::PROJECTILE_BLAST_DURATION).contains(&age) {
+        return None;
+    }
+    // Skip the board-wide anticipation and white flash, keep impact and dissipation.
+    let index = 7 + (age / super::PROJECTILE_BLAST_DURATION * 14.).floor() as usize;
+    Some(super::atlas::frame(index, 6, vec2(512., 512.)))
+}
+
 impl Blast {
     pub fn draw(&self, texture: &Texture2D, over: bool) {
         if let Some(source) = board_frame(self.elapsed(get_time(), over)) {
@@ -42,6 +51,20 @@ pub(super) fn draw_sleep(texture: &Texture2D, area: Rect, foot: Vec2, lying: boo
 mod tests {
     use super::*;
     use image::GenericImageView;
+    #[test]
+    fn projectile_reuses_only_aftermath_and_finishes_at_its_hold_boundary() {
+        assert_eq!(
+            projectile_frame(0.).unwrap(),
+            super::super::atlas::frame(7, 6, vec2(512., 512.))
+        );
+        assert_eq!(
+            projectile_frame(0.999).unwrap(),
+            super::super::atlas::frame(20, 6, vec2(512., 512.))
+        );
+        for age in [-0.01, 1., f32::NAN, f32::INFINITY] {
+            assert!(projectile_frame(age).is_none());
+        }
+    }
     #[test]
     fn blast_waits_for_real_clear_and_can_finish_after_a_lethal_hit() {
         let mut blast = Blast::new(10.);

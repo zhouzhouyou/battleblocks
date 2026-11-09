@@ -1,6 +1,7 @@
 use super::*;
 fn state(enemy_turn: bool, hp: i32) -> Snapshot {
     Snapshot {
+        perspective_reversed: false,
         cooldowns: Default::default(),
         new_role_states: Default::default(),
         awakened: [false; 2],

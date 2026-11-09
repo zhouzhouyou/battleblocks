@@ -93,6 +93,12 @@ impl Session {
                     .collect();
                 cast = if let Some(action) = planned {
                     match action {
+                        planning::PlanAction::Shoot(skill, aim) => {
+                            frame.command_skill = Some(skill);
+                            frame.command_target = Some((3, 3));
+                            frame.command_aim = Some(aim);
+                            Some(skill)
+                        }
                         planning::PlanAction::Cast(skill, target, anchor) => {
                             frame.command_skill = Some(skill);
                             frame.command_target = Some(target);
@@ -420,7 +426,8 @@ impl Session {
                         &before,
                         &self.snapshot(),
                     );
-                    self.presentation.hold(flight.duration + 0.3);
+                    self.presentation
+                        .hold(flight.duration + projectile::aftermath(&flight));
                     self.charge_damage = Some(content::PendingImpact {
                         rewards: std::mem::take(&mut batch),
                         actor_enemy: self.enemy_turn,

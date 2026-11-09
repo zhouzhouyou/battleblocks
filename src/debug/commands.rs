@@ -29,6 +29,7 @@ pub enum Command {
 }
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum ParseError {
+    Ammunition,
     MissingArgument,
     ExpectedInteger,
     Coordinate,
@@ -45,6 +46,10 @@ pub enum ParseError {
 impl ParseError {
     pub fn message(self, zh: bool) -> &'static str {
         let (en, cn) = match self {
+            Self::Ammunition => (
+                crate::tr_key(false, "projectile.ammo.error"),
+                crate::tr_key(true, "projectile.ammo.error"),
+            ),
             Self::MissingArgument => ("Missing argument", "缺少参数"),
             Self::ExpectedInteger => ("Expected an integer", "参数应为整数"),
             Self::Coordinate => ("Coordinates must be 1–8 (x y)", "坐标必须是 1～8（x y）"),
@@ -161,7 +166,7 @@ pub fn parse(input: &str) -> Result<Command, ParseError> {
             (coord(1)?, coord(2)?),
             (coord(3)?, coord(4)?),
         )),
-        "shoot" if words.len() == 4 => {
+        "shoot" if (4..=5).contains(&words.len()) => {
             let slot = n(1)?;
             if !(1..=3).contains(&slot) {
                 return Err(ParseError::SkillSlot);
@@ -179,11 +184,18 @@ pub fn parse(input: &str) -> Result<Command, ParseError> {
             {
                 return Err(ParseError::Coordinate);
             }
+            let ammo = match words.get(4).copied().unwrap_or("solid") {
+                "solid" => crate::content::projectile::Ammo::Solid,
+                "explosive" | "blast" => crate::content::projectile::Ammo::Explosive,
+                _ => return Err(ParseError::Ammunition),
+            };
             Ok(Command::Shoot(
                 (slot - 1) as usize,
                 crate::content::projectile::Aim {
+                    ammo,
                     angle_mdeg: (angle * 1000.).round() as i32,
                     power_permille: (power * 10.).round() as u16,
+                    ..Default::default()
                 },
             ))
         }

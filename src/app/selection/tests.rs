@@ -140,7 +140,7 @@ fn console_edits_and_rollback_reveal_the_actual_hero_on_return() {
 }
 
 #[test]
-fn slingshot_is_a_new_role_and_only_shares_the_legacy_goblin_artwork() {
+fn slingshot_has_independent_identity_and_an_optional_awakened_explosive_round() {
     use content::{Passive, Skill, SLINGSHOT_USER};
     assert_eq!(content::skills(3, false), &[Skill::Greedy, Skill::Blood]);
     assert_eq!(content::skills(3, true), &[Skill::Greedy, Skill::Blood]);
@@ -152,10 +152,8 @@ fn slingshot_is_a_new_role_and_only_shares_the_legacy_goblin_artwork() {
     assert_eq!(content::HeroGroup::for_hero(3), Some(Legacy));
     assert_eq!(content::HeroGroup::for_hero(SLINGSHOT_USER), Some(New));
     for awake in [false, true] {
-        assert_eq!(
-            content::skills(SLINGSHOT_USER, awake),
-            &[Skill::LightSlingshot, Skill::HeavySlingshot]
-        );
+        let expected = vec![Skill::LightSlingshot, Skill::HeavySlingshot];
+        assert_eq!(content::skills(SLINGSHOT_USER, awake), expected);
         assert!(content::passives(SLINGSHOT_USER, awake).is_empty());
         for skill in content::skills(3, awake) {
             assert!(content::skill_profile(
@@ -170,17 +168,11 @@ fn slingshot_is_a_new_role_and_only_shares_the_legacy_goblin_artwork() {
         }
     }
     let original = &sprites::SPRITES[3];
-    let shared = &sprites::SPRITES[SLINGSHOT_USER];
-    assert_eq!(original.bytes(), shared.bytes());
-    assert_eq!(original.indices, shared.indices);
-    assert_eq!(original.durations, shared.durations);
-    assert_eq!(
-        sprites::AWAKENED[3].bytes(),
-        sprites::AWAKENED[SLINGSHOT_USER].bytes()
-    );
-    assert_eq!(
-        sprites::thumbnail_index(SLINGSHOT_USER),
-        sprites::thumbnail_index(3)
-    );
+    let body = &sprites::SPRITES[SLINGSHOT_USER];
+    assert_ne!(original.bytes(), body.bytes());
+    assert_eq!(body.indices.len(), 12);
+    assert_eq!(body.cast.unwrap().indices.len(), 12);
+    assert_eq!(body.bytes(), sprites::AWAKENED[SLINGSHOT_USER].bytes());
+    assert_eq!(sprites::thumbnail_index(SLINGSHOT_USER), SLINGSHOT_USER);
     assert_ne!(HEROES[3].zh, HEROES[SLINGSHOT_USER].zh);
 }

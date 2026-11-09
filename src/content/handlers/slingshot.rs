@@ -1,6 +1,6 @@
 use super::*;
 use projectile::*;
-fn config(skill: Skill, awake: bool) -> ProjectileConfig {
+fn config(skill: Skill, rules: Rules) -> ProjectileConfig {
     static CONFIG: std::sync::OnceLock<Vec<(Skill, bool, ProjectileConfig)>> =
         std::sync::OnceLock::new();
     let entries = CONFIG.get_or_init(|| {
@@ -9,7 +9,7 @@ fn config(skill: Skill, awake: bool) -> ProjectileConfig {
             .filter(|s| !s.is_empty() && !s.starts_with('#'))
             .map(|line| {
                 let f: Vec<_> = line.split('|').collect();
-                assert_eq!(f.len(), 16);
+                assert_eq!(f.len(), 17);
                 let skill = *Skill::ALL
                     .iter()
                     .find(|s| format!("{s:?}") == f[0])
@@ -29,7 +29,7 @@ fn config(skill: Skill, awake: bool) -> ProjectileConfig {
                         .try_into()
                         .unwrap(),
                 };
-                for index in [2, 3, 6, 7, 10, 12, 13] {
+                for index in [2, 3, 6, 7, 10, 12, 13, 16] {
                     assert!(
                         number(index).is_finite() && number(index) >= 0.,
                         "finite nonnegative projectile parameter"
@@ -42,6 +42,7 @@ fn config(skill: Skill, awake: bool) -> ProjectileConfig {
                     "light slingshot cannot explode"
                 );
                 let config = ProjectileConfig {
+                    from_right: false,
                     min_speed: number(2),
                     max_speed: number(3),
                     min_angle: f[4].parse().unwrap(),
@@ -51,6 +52,7 @@ fn config(skill: Skill, awake: bool) -> ProjectileConfig {
                     direct_reward: rule(8),
                     explosion: (radius > 0.).then(|| Explosion {
                         radius,
+                        mass: number(16),
                         landing: f[11].parse().unwrap(),
                         fuse: (number(12) > 0.).then(|| number(12)),
                         penetrations: (number(13) > 0.).then(|| f[13].parse().unwrap()),
@@ -58,7 +60,8 @@ fn config(skill: Skill, awake: bool) -> ProjectileConfig {
                     }),
                 };
                 assert!(
-                    config.min_speed > 0.
+                    number(16) >= 1.
+                        && config.min_speed > 0.
                         && config.max_speed >= config.min_speed
                         && config.gravity > 0.
                         && config.radius > 0.
@@ -85,11 +88,15 @@ fn config(skill: Skill, awake: bool) -> ProjectileConfig {
             })
             .collect()
     });
-    entries
+    let config = entries
         .iter()
-        .find(|(s, a, _)| *s == skill && *a == awake)
+        .find(|(s, a, _)| *s == skill && *a == rules.awake)
         .expect("projectile phase configuration")
-        .2
+        .2;
+    ProjectileConfig {
+        from_right: rules.launch_from_right,
+        ..config
+    }
 }
 fn rewards(
     board: &Board,
@@ -145,10 +152,14 @@ pub fn handle(
     };
     match event {
         RuleEvent::Profile { value } => {
-            value.projectile = Some(config(skill, ctx.rules.awake));
+            value.projectile = Some(config(skill, ctx.rules));
         }
         RuleEvent::Targeted { value, .. } => **value = true,
-        RuleEvent::LegalTarget { allowed, .. } => **allowed = true,
+        RuleEvent::LegalTarget { allowed, .. } => {
+            **allowed = ctx.rules.projectile_aim.is_none_or(|aim| {
+                aim.ammo != Ammo::Explosive || config(skill, ctx.rules).explosion.is_some()
+            });
+        }
         RuleEvent::NoSwapUsable { value, .. } => **value = Some(true),
         RuleEvent::Cast {
             board,
@@ -156,7 +167,7 @@ pub fn handle(
             effect,
             ..
         } => {
-            let config = config(skill, ctx.rules.awake);
+            let config = config(skill, ctx.rules);
             let flight = config.solve(
                 board,
                 ctx.rules

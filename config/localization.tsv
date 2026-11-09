@@ -372,4 +372,10 @@ projectile.launch	{0} · Projectile in flight	{0} · 弹珠飞行中
 projectile.flying	Projectile in flight	弹珠飞行中
 projectile.result	{0} · HP {1} · DMG {2} · MP {3}	{0} · 治疗 {1} · 伤害 {2} · 魔力 {3}
 projectile.lane	Sling area	弹弓操作区
-hero.awakening.slingshot	Light shot effects improve; heavy shot unlocks explosions	轻型弹弓收益提高；重型弹弓解锁爆炸
+hero.awakening.slingshot	Pulley overdrive: launch speed +15%. Heavy slingshot unlocks alchemical rounds with 75% more mass, exploding after 0.8 s or on earlier landing. Tile-effect percentages stay the same.	滑轮增压：弹丸初速提高15%；重型解锁重75%、飞行0.8秒或提前落地引爆的炼金爆弹；方块收益比例不变
+projectile.ammo.solid	Solid	实心弹
+projectile.ammo.explosive	Alchemical	炼金爆弹
+projectile.shot_name	{0} · {1}	{0} · {1}
+projectile.ammo.error	Choose solid or explosive ammunition	弹丸类型应为 solid 或 explosive
+projectile.controls.ammo	Drag sling · Arrows adjust · Tab switches rounds	拖动弹弓 · 方向键微调 · Tab切换弹丸
+projectile.plan_shot	{0} · {1}° · {2}%	{0} · {1}° · {2}%

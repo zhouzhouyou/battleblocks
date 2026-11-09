@@ -516,21 +516,10 @@ impl Ui {
                 } else {
                     let id = roster[i - 1];
                     let h = &HEROES[id];
-                    draw_texture_ex(
+                    crate::graphics::hero_thumbnail(
                         thumbs,
-                        r.x + 8.,
-                        r.y + 12.,
-                        WHITE,
-                        DrawTextureParams {
-                            dest_size: Some(vec2(40., 48.)),
-                            source: Some(Rect::new(
-                                crate::sprites::thumbnail_index(id) as f32 * 40.,
-                                0.,
-                                40.,
-                                48.,
-                            )),
-                            ..Default::default()
-                        },
+                        id,
+                        Rect::new(r.x + 8., r.y + 12., 40., 48.),
                     );
                     label(
                         if zh { h.zh } else { h.en },

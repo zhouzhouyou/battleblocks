@@ -2,9 +2,13 @@ use crate::content::Skill;
 use crate::outline;
 use macroquad::prelude::*;
 pub fn draw(skill: Skill, x: f32, y: f32, size: f32) {
+    if matches!(skill, Skill::LightSlingshot | Skill::HeavySlingshot) {
+        draw_rectangle(x, y, size, size, Color::from_rgba(25, 39, 54, 255));
+        outline(x, y, size, size, 1., GOLD);
+        crate::slingshot_art::draw(skill, Rect::new(x, y, size, size), Vec2::ZERO);
+        return;
+    }
     let skill = match skill {
-        Skill::LightSlingshot => Skill::Greedy,
-        Skill::HeavySlingshot => Skill::Meteor,
         Skill::Rush => Skill::Charge,
         Skill::Miracle | Skill::Jump | Skill::Copy => Skill::Landslide,
         Skill::Hammer => Skill::Meteor,

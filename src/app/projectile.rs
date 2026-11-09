@@ -1,5 +1,5 @@
 use super::*;
-use content::projectile::{Aim, Flight, Point, ProjectileConfig, ORIGIN};
+use content::projectile::{Aim, Ammo, Flight, Point, ProjectileConfig, ORIGIN};
 const SAMPLES: usize = 12;
 pub(super) struct PreviewCache {
     key: String,
@@ -12,8 +12,21 @@ fn screen(point: Point) -> Vec2 {
 pub(super) fn origin_screen() -> Vec2 {
     screen(ORIGIN)
 }
-fn draw_sling(pull: Vec2, zh: bool) {
-    let area = Rect::new(side_panel_rect(false).right() + 8., 490., 84., 202.);
+fn ammo_rect(index: usize) -> Rect {
+    Rect::new(sidebar_x(true, 800. + index as f32 * 102.), 246., 98., 36.)
+}
+fn draw_sling(
+    skill: content::Skill,
+    pull: Vec2,
+    zh: bool,
+    explosive: bool,
+    loaded: bool,
+    origin: Point,
+) {
+    let mut area = Rect::new(side_panel_rect(false).right() + 8., 490., 84., 202.);
+    if origin.x > N as f64 / 2. {
+        area.x = 1024. - area.right();
+    }
     draw_rectangle(
         area.x,
         area.y,
@@ -37,31 +50,70 @@ fn draw_sling(pull: Vec2, zh: bool) {
         fit_size(text, 14., area.w - 12.),
         GRAY,
     );
-    let origin = screen(ORIGIN);
-    let pouch = origin - pull;
-    draw_line(origin.x, origin.y + 30., origin.x, origin.y + 6., 7., BROWN);
-    for sign in [-1., 1.] {
-        let fork = origin + vec2(sign * 13., -10.);
-        draw_line(origin.x, origin.y + 8., fork.x, fork.y, 5., BROWN);
-        draw_line(fork.x, fork.y, pouch.x, pouch.y, 2., GOLD);
+    let origin = screen(origin);
+    crate::slingshot_art::draw(
+        skill,
+        Rect::new(origin.x - 26., origin.y - 9.36, 52., 52.),
+        pull,
+    );
+    if loaded {
+        crate::slingshot_art::draw_ammo(origin - pull, 4., explosive);
     }
-    draw_circle(pouch.x, pouch.y, 6., GRAY);
 }
 
 fn draw_path(flight: &Flight, time: f64, color: Color) {
-    let steps = 100;
-    for i in 0..steps {
-        if i % 2 == 0 {
-            let a = screen(flight.position(time * i as f64 / steps as f64));
-            let b = screen(flight.position(time * (i + 1) as f64 / steps as f64));
-            draw_line(a.x, a.y, b.x, b.y, 2., color);
+    // Sample the analytical flight at subpixel spacing, then place dots by arc length.
+    let steps = (time * 600.).ceil().max(1.) as usize;
+    let mut previous = screen(flight.position(0.));
+    let mut distance = 0.;
+    let mut next_dot = 0.;
+    for i in 1..=steps {
+        let at = screen(flight.position(time * i as f64 / steps as f64));
+        let segment = previous.distance(at);
+        while next_dot <= distance + segment && segment > 0. {
+            let dot = previous.lerp(at, (next_dot - distance) / segment).round();
+            draw_rectangle(
+                dot.x - 2.,
+                dot.y - 2.,
+                5.,
+                5.,
+                Color::new(0.04, 0.07, 0.1, 0.8),
+            );
+            draw_rectangle(dot.x - 1., dot.y - 1., 3., 3., color);
+            next_dot += 12.;
         }
+        distance += segment;
+        previous = at;
     }
 }
+
+pub(super) fn aftermath(flight: &Flight) -> f64 {
+    if flight.explosion_radius.is_some() {
+        effects::PROJECTILE_BLAST_DURATION as f64
+    } else {
+        0.3
+    }
+}
+
 impl Session {
     pub(super) fn aim_projectile(&mut self, frame: &Frame, config: ProjectileConfig) {
         if !frame.interactive || frame.block_input {
             return;
+        }
+        if config.explosion.is_some() {
+            let mut aim = self.projectile_aim.unwrap_or_default();
+            for (index, ammo) in [Ammo::Solid, Ammo::Explosive].into_iter().enumerate() {
+                if frame.clicked(MouseButton::Left) && ammo_rect(index).contains(frame.pointer) {
+                    aim.ammo = ammo;
+                }
+            }
+            if frame.key(KeyCode::Tab) {
+                aim.ammo = match aim.ammo {
+                    Ammo::Solid => Ammo::Explosive,
+                    Ammo::Explosive => Ammo::Solid,
+                };
+            }
+            self.projectile_aim = Some(aim);
         }
         let origin = screen(ORIGIN);
         if frame.clicked(MouseButton::Left) && frame.pointer.distance(origin) < 42. {
@@ -71,8 +123,10 @@ impl Session {
             let pull = origin - frame.pointer;
             let angle = (-pull.y).atan2(pull.x).to_degrees();
             self.projectile_aim = Some(config.clamp_aim(Aim {
+                ammo: self.projectile_aim.unwrap_or_default().ammo,
                 angle_mdeg: (angle * 1000.).round() as i32,
                 power_permille: (pull.length() / 70. * 1000.).round().clamp(0., 1000.) as u16,
+                ..Default::default()
             }));
             if !is_mouse_button_down(MouseButton::Left) {
                 self.projectile_drag = false;
@@ -147,39 +201,40 @@ impl Session {
     pub(super) fn draw_projectile(&mut self, _frame: &Frame) {
         if let Some(impact) = &self.charge_damage {
             if let Some(flight) = &impact.projectile {
-                let elapsed = (flight.duration + 0.3 - self.presentation.remaining()).max(0.);
+                let elapsed =
+                    (flight.duration + aftermath(flight) - self.presentation.remaining()).max(0.);
                 let recoil = (elapsed as f32 * 35.).cos() * (-elapsed as f32 * 12.).exp() * 20.;
                 draw_sling(
+                    impact.skill,
                     vec2(flight.velocity.x as f32, flight.velocity.y as f32).normalize() * recoil,
                     self.zh,
+                    flight.ammo == Ammo::Explosive,
+                    false,
+                    flight.origin,
                 );
                 draw_path(flight, elapsed.min(flight.duration), ORANGE);
-                let p = screen(flight.position(elapsed));
-                for i in 1..=8 {
-                    let tail = screen(flight.position((elapsed - i as f64 * 0.015).max(0.)));
-                    draw_circle(
-                        tail.x,
-                        tail.y,
-                        (9 - i) as f32 * 0.6,
-                        Color::new(1., 0.65, 0.15, (9 - i) as f32 / 12.),
-                    );
+                let p = screen(flight.position(elapsed.min(flight.duration)));
+                if elapsed < flight.duration {
+                    for i in 1..=8 {
+                        let tail =
+                            screen(flight.position((elapsed - i as f64 * 0.015).max(0.))).round();
+                        let size = (9 - i) as f32 * 0.8;
+                        draw_rectangle(
+                            tail.x - size / 2.,
+                            tail.y - size / 2.,
+                            size,
+                            size,
+                            Color::new(1., 0.65, 0.15, (9 - i) as f32 / 12.),
+                        );
+                    }
                 }
                 if elapsed < flight.duration {
-                    let nearing = (elapsed / flight.duration).clamp(0., 1.) as f32;
-                    let color = if flight.explosion_radius.is_some()
-                        && nearing > 0.7
-                        && (elapsed * 16.) as i32 % 2 == 0
-                    {
-                        RED
-                    } else {
-                        GOLD
-                    };
                     let radius =
                         content::skill_profile(impact.skill, self.rules(impact.actor_enemy))
                             .projectile
                             .map(|c| c.radius as f32 * 64.)
                             .unwrap_or(7.);
-                    draw_circle(p.x, p.y, radius, color);
+                    crate::slingshot_art::draw_ammo(p, radius, flight.ammo == Ammo::Explosive);
                 }
                 let count = flight.hits.iter().filter(|h| h.time <= elapsed).count();
                 let text =
@@ -194,13 +249,13 @@ impl Session {
                 }
                 if elapsed >= flight.duration {
                     if let Some(radius) = flight.explosion_radius {
-                        draw_circle(
-                            p.x,
-                            p.y,
-                            radius as f32 * 64.,
-                            Color::new(1., 0.45, 0.05, 0.2),
-                        );
-                        draw_circle_lines(p.x, p.y, radius as f32 * 64., 3., ORANGE);
+                        if let Some(effects) = &self.skill_effects {
+                            effects.draw_projectile_blast(
+                                p,
+                                radius as f32 * 64.,
+                                (elapsed - flight.duration) as f32,
+                            );
+                        }
                     }
                 }
                 return;
@@ -244,7 +299,14 @@ impl Session {
         }
         let angle = (aim.angle_mdeg as f32 / 1000.).to_radians();
         let pull = vec2(angle.cos(), -angle.sin()) * aim.power_permille as f32 / 1000. * 35.;
-        draw_sling(pull, self.zh);
+        draw_sling(
+            skill,
+            pull,
+            self.zh,
+            flight.ammo == Ammo::Explosive,
+            true,
+            flight.origin,
+        );
         let exact = content::preview_rewards_in(
             skill,
             &self.b,
@@ -279,6 +341,27 @@ impl Session {
             fit_size(&name, 21., 200.),
             GOLD,
         );
+        if config.explosion.is_some() {
+            for (index, ammo) in [Ammo::Solid, Ammo::Explosive].into_iter().enumerate() {
+                let r = ammo_rect(index);
+                draw_rectangle(r.x, r.y, r.w, r.h, Color::from_rgba(35, 45, 57, 255));
+                outline(
+                    r.x,
+                    r.y,
+                    r.w,
+                    r.h,
+                    2.,
+                    if ammo == aim.ammo { GOLD } else { GRAY },
+                );
+                label_centered(
+                    ammo.name(self.zh),
+                    r.center().x,
+                    r.y + 24.,
+                    fit_size(ammo.name(self.zh), 16., r.w - 8.),
+                    WHITE,
+                );
+            }
+        }
         let random = config.direct_reward.probability.iter().any(|p| *p < 100)
             || config
                 .explosion
@@ -342,7 +425,14 @@ impl Session {
                     format!("{:+.1}", totals[2]),
                 ],
             ),
-            ("projectile.controls", vec![]),
+            (
+                if config.explosion.is_some() {
+                    "projectile.controls.ammo"
+                } else {
+                    "projectile.controls"
+                },
+                vec![],
+            ),
             ("projectile.confirm", vec![]),
         ];
         for (i, (key, args)) in rows.iter().enumerate() {
@@ -351,7 +441,11 @@ impl Session {
             label(
                 &text,
                 sidebar_x(true, 800.),
-                270. + i as f32 * 33.,
+                if config.explosion.is_some() {
+                    309. + i as f32 * 31.
+                } else {
+                    270. + i as f32 * 33.
+                },
                 fit_size(&text, 16., 200.),
                 if i < 5 { WHITE } else { SKYBLUE },
             );
@@ -370,26 +464,28 @@ impl Session {
         let _guard = RestoreRng(rng::state());
         let mut model = Session::new_simulation();
         model.prepare_headless_batch();
-        let mut csv=String::from("awake,skill,sample,angle,power,cost,direct,blast,cleared,heal,damage,mana,net_mana,distance,duration\n");
-        let mut summary=String::from("awake,skill,shots,mean_direct,mean_blast,mean_cleared,mean_heal,mean_damage,damage_stddev,mean_mana,mean_net_mana,net_mana_stddev,damage_per_cost,mean_distance,selection_rate\n");
+        let mut csv=String::from("awake,skill,ammo,sample,angle,power,cost,direct,blast,cleared,heal,damage,mana,net_mana,distance,duration\n");
+        let mut summary=String::from("awake,skill,ammo,shots,mean_direct,mean_blast,mean_cleared,mean_heal,mean_damage,damage_stddev,mean_mana,mean_net_mana,net_mana_stddev,damage_per_cost,mean_distance,selection_rate\n");
         for awake in [false, true] {
-            let skills: Vec<_> = content::skills(content::SLINGSHOT_USER, awake)
-                .iter()
-                .copied()
-                .filter(|s| {
-                    content::skill_profile(
-                        *s,
-                        content::Rules {
-                            awake,
-                            ..Default::default()
-                        },
-                    )
-                    .projectile
-                    .is_some()
-                })
-                .collect();
-            let mut sums = vec![[0.; 12]; skills.len()];
-            let mut selections = vec![0; skills.len()];
+            let mut modes = Vec::new();
+            for &skill in content::skills(content::SLINGSHOT_USER, awake) {
+                if let Some(config) = content::skill_profile(
+                    skill,
+                    content::Rules {
+                        awake,
+                        ..Default::default()
+                    },
+                )
+                .projectile
+                {
+                    modes.push((skill, Ammo::Solid));
+                    if config.explosion.is_some() {
+                        modes.push((skill, Ammo::Explosive));
+                    }
+                }
+            }
+            let mut sums = vec![[0.; 12]; modes.len()];
+            let mut selections = vec![0; modes.len()];
             for sample in 0..samples {
                 model.hero_id = content::SLINGSHOT_USER;
                 model.enemy_id = content::DWARF;
@@ -401,13 +497,15 @@ impl Session {
                 model.new_role_states[0].turn_start_done = true;
                 let initial = model.snapshot();
                 let mut best = (f32::NEG_INFINITY, 0);
-                for (index, &skill) in skills.iter().enumerate() {
+                for (index, &(skill, ammo)) in modes.iter().enumerate() {
                     for angle in [15000, 30000, 45000, 60000] {
                         for power in [250, 500, 750, 1000] {
                             model.restore(initial.clone());
                             let aim = Aim {
+                                ammo,
                                 angle_mdeg: angle,
                                 power_permille: power,
+                                ..Default::default()
                             };
                             let config = content::skill_profile(skill, model.rules(false))
                                 .projectile
@@ -428,7 +526,7 @@ impl Session {
                                 let net = result.mp - initial.mp;
                                 let mana = net + cost;
                                 let distance = flight.position(flight.duration).x - flight.origin.x;
-                                csv.push_str(&format!("{awake},{skill:?},{sample},{},{},{cost},{},{},{},{heal},{damage},{mana},{net},{distance},{}\n",angle as f64/1000.,power as f64/10.,flight.hits.len(),flight.explosion_cells.len(),flight.cells().len(),flight.duration));
+                                csv.push_str(&format!("{awake},{skill:?},{ammo:?},{sample},{},{},{cost},{},{},{},{heal},{damage},{mana},{net},{distance},{}\n",angle as f64/1000.,power as f64/10.,flight.hits.len(),flight.explosion_cells.len(),flight.cells().len(),flight.duration));
                                 let values = [
                                     flight.hits.len() as f64,
                                     flight.explosion_cells.len() as f64,
@@ -458,12 +556,12 @@ impl Session {
                     selections[best.1] += 1;
                 }
             }
-            for (index, skill) in skills.iter().enumerate() {
+            for (index, (skill, ammo)) in modes.iter().enumerate() {
                 let n = sums[index][11];
                 let mean = |i: usize| if n > 0. { sums[index][i] / n } else { 0. };
                 let sd = |i: usize| (mean(i + 1) - mean(i).powi(2)).max(0.).sqrt();
                 summary.push_str(&format!(
-                    "{awake},{skill:?},{n},{},{},{},{},{},{},{},{},{},{},{},{}\n",
+                    "{awake},{skill:?},{ammo:?},{n},{},{},{},{},{},{},{},{},{},{},{},{}\n",
                     mean(0),
                     mean(1),
                     mean(2),

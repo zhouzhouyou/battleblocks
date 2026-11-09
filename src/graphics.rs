@@ -686,6 +686,28 @@ pub(crate) fn flush_labels() {
 pub(crate) fn role_scale(area: Rect) -> f32 {
     (area.w / 84.).min(area.h / 83.).min(3.)
 }
+pub(crate) fn hero_thumbnail(texture: &Texture2D, hero: usize, area: Rect) {
+    if hero == content::SLINGSHOT_USER {
+        crate::slingshot_art::thumbnail(area);
+    } else {
+        draw_texture_ex(
+            texture,
+            area.x,
+            area.y,
+            WHITE,
+            DrawTextureParams {
+                dest_size: Some(vec2(area.w, area.h)),
+                source: Some(Rect::new(
+                    sprites::thumbnail_index(hero) as f32 * 40.,
+                    0.,
+                    40.,
+                    48.,
+                )),
+                ..Default::default()
+            },
+        );
+    }
+}
 pub(crate) fn actor(
     t: &Texture2D,
     asset: &SpriteAsset,

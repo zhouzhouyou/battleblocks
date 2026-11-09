@@ -1,5 +1,5 @@
-# skill|awake|min speed|max speed|min angle mdeg|max angle mdeg|gravity|radius|direct percentages H,D,M|direct probabilities H,D,M|blast radius|landing|fuse seconds (0 disables)|penetrations (0 disables)|blast percentages|blast probabilities
-LightSlingshot|false|2|6.5|5000|80000|10|0.12|75,75,75|100,100,100|0|false|0|0|0,0,0|100,100,100
-LightSlingshot|true|2|7|5000|80000|10|0.12|90,90,90|100,100,100|0|false|0|0|0,0,0|100,100,100
-HeavySlingshot|false|3|10|5000|80000|10|0.16|60,60,60|100,100,100|0|false|0|0|0,0,0|100,100,100
-HeavySlingshot|true|3|10|5000|80000|10|0.16|60,60,60|100,100,100|1.25|true|1.5|7|40,40,40|100,100,100
+# skill|awake|min speed|max speed|min angle mdeg|max angle mdeg|gravity|radius|direct percentages H,D,M|direct probabilities H,D,M|blast radius|landing|fuse seconds (0 disables)|penetrations (0 disables)|blast percentages|blast probabilities|explosive mass relative to solid
+LightSlingshot|false|2|6.5|5000|80000|10|0.12|75,75,75|100,100,100|0|false|0|0|0,0,0|100,100,100|1
+LightSlingshot|true|2.3|7.475|5000|80000|10|0.12|75,75,75|100,100,100|0|false|0|0|0,0,0|100,100,100|1
+HeavySlingshot|false|3|10|5000|80000|10|0.16|60,60,60|100,100,100|0|false|0|0|0,0,0|100,100,100|1
+HeavySlingshot|true|3.45|11.5|5000|80000|10|0.16|60,60,60|100,100,100|1.75|true|0.8|0|60,60,60|100,100,100|1.75

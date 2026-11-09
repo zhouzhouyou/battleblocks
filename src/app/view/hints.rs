@@ -411,6 +411,15 @@ impl Session {
             line(&title, rect.x + 7., rect.y + 19., 15., GOLD);
             for (n, step) in plan.steps.iter().enumerate() {
                 let action = match step.action {
+                    crate::app::planning::PlanAction::Shoot(_, aim) => format_text(
+                        self.zh,
+                        "projectile.plan_shot",
+                        &[
+                            &step.name,
+                            &format!("{:.1}", aim.angle_mdeg as f64 / 1000.),
+                            &format!("{:.0}", aim.power_permille as f64 / 10.),
+                        ],
+                    ),
                     crate::app::planning::PlanAction::Swap((a, b)) => turns::swap_text(
                         self.zh,
                         a,

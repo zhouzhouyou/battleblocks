@@ -280,6 +280,7 @@ impl Session {
             if let Some(effects) = &self.skill_effects {
                 effects.draw_heal(foot, false, enemy_side);
             }
+            // TODO: Revisit hand/aim synchronization after the character proportions pass visual review.
             if self.battle_sprite_ready(enemy_side, show_shadow) {
                 actor(
                     if show_shadow {

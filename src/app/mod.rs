@@ -68,6 +68,7 @@ pub(crate) struct Session {
     move_flash: Option<Move>,
     targeting: Option<content::Skill>,
     projectile_aim: Option<content::projectile::Aim>,
+    perspective_reversed: bool,
     projectile_drag: bool,
     projectile_preview: Option<projectile::PreviewCache>,
     skill_flash: Vec<(usize, usize)>,
@@ -380,6 +381,7 @@ impl Session {
             move_flash,
             targeting,
             projectile_aim: None,
+            perspective_reversed: false,
             projectile_drag: false,
             projectile_preview: None,
             skill_flash,
@@ -446,13 +448,15 @@ impl Session {
         self.enemy_texture.as_ref().unwrap_or_else(|| self.blank())
     }
     fn awake_texture(&self, enemy: bool) -> &Texture2D {
-        self.awake_textures[enemy as usize].as_ref().unwrap_or_else(|| {
-            if enemy {
-                self.enemy_texture()
-            } else {
-                self.player_texture()
-            }
-        })
+        self.awake_textures[enemy as usize]
+            .as_ref()
+            .unwrap_or_else(|| {
+                if enemy {
+                    self.enemy_texture()
+                } else {
+                    self.player_texture()
+                }
+            })
     }
     fn load_awake_texture(id: usize, normal: &Texture2D) -> Option<Texture2D> {
         if sprites::AWAKENED[id].asset.path == sprites::SPRITES[id].asset.path {
@@ -533,8 +537,7 @@ impl Session {
             return;
         }
         if self.enemy_texture.is_none() {
-            self.enemy_texture =
-                asset_texture(&sprites::SPRITES[self.enemy_id].asset, "no_actors");
+            self.enemy_texture = asset_texture(&sprites::SPRITES[self.enemy_id].asset, "no_actors");
         }
         if self.awake_textures[0].is_none() {
             self.awake_textures[0] = Self::load_awake_texture(self.hero_id, self.player_texture());
@@ -547,6 +550,9 @@ impl Session {
 
     /// Return to hero selection and drop the artwork only a battle draws.
     fn enter_selection(&mut self) {
+        if self.rendering {
+            crate::slingshot_art::release();
+        }
         self.choosing = true;
         self.interface.opponent_step = false;
         self.targeting = None;
@@ -598,6 +604,7 @@ impl Session {
             projectile_aim: if side { None } else { self.projectile_aim },
             board_mechanics: self.board_mechanics,
             actor_enemy: side,
+            launch_from_right: side ^ self.perspective_reversed,
             target_anchor: if side { None } else { self.target_anchor },
             horizontal: self.new_role_states[side as usize].horizontal,
             swap_clear: self.new_role_states[side as usize].swap_clear,
@@ -820,6 +827,7 @@ impl Session {
             awakened: self.awakened,
             reward_skill: self.reward_skill,
             board: self.b,
+            perspective_reversed: self.perspective_reversed,
             board_mechanics: self.board_mechanics,
             hero: self.hero_id,
             enemy: self.enemy_id,
@@ -871,6 +879,7 @@ impl Session {
         self.book_levels = [0.; 2];
         self.reward_skill = state.reward_skill;
         self.b = state.board;
+        self.perspective_reversed = state.perspective_reversed;
         self.board_mechanics = state.board_mechanics;
         self.target_anchor = None;
         self.hero_id = state.hero;

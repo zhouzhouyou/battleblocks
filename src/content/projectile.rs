@@ -2,14 +2,33 @@
 //! Equal-time events use a 1 ns tolerance and row-major order inside each hit batch.
 use super::*;
 const EPS: f64 = 1e-9;
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum Ammo {
+    #[default]
+    Solid,
+    Explosive,
+}
+impl Ammo {
+    pub fn name(self, zh: bool) -> &'static str {
+        crate::tr_key(
+            zh,
+            match self {
+                Self::Solid => "projectile.ammo.solid",
+                Self::Explosive => "projectile.ammo.explosive",
+            },
+        )
+    }
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Aim {
+    pub ammo: Ammo,
     pub angle_mdeg: i32,
     pub power_permille: u16,
 }
 impl Default for Aim {
     fn default() -> Self {
         Self {
+            ammo: Ammo::Solid,
             angle_mdeg: 35000,
             power_permille: 1000,
         }
@@ -22,6 +41,7 @@ pub struct RewardRule {
 }
 #[derive(Clone, Copy, Debug)]
 pub struct Explosion {
+    pub mass: f64,
     pub radius: f64,
     pub landing: bool,
     pub fuse: Option<f64>,
@@ -30,6 +50,7 @@ pub struct Explosion {
 }
 #[derive(Clone, Copy, Debug)]
 pub struct ProjectileConfig {
+    pub from_right: bool,
     pub min_speed: f64,
     pub max_speed: f64,
     pub min_angle: i32,
@@ -60,6 +81,7 @@ pub struct Hit {
 }
 #[derive(Clone, Debug, PartialEq)]
 pub struct Flight {
+    pub ammo: Ammo,
     pub origin: Point,
     pub velocity: Point,
     pub gravity: f64,
@@ -91,19 +113,56 @@ impl ProjectileConfig {
             angle_mdeg: self.min_angle
                 + (self.max_angle - self.min_angle) * target.1.min(N - 1) as i32 / (N - 1) as i32,
             power_permille: (target.0.min(N - 1) * 1000 / (N - 1)) as u16,
+            ..Default::default()
         }
     }
     pub fn clamp_aim(&self, aim: Aim) -> Aim {
         Aim {
+            ammo: if self.explosion.is_some() {
+                aim.ammo
+            } else {
+                Ammo::Solid
+            },
             angle_mdeg: aim.angle_mdeg.clamp(self.min_angle, self.max_angle),
             power_permille: aim.power_permille.min(1000),
+            ..Default::default()
         }
     }
     pub fn solve(&self, board: &Board, aim: Aim) -> Flight {
+        if self.from_right {
+            let mut mirrored = *board;
+            for row in &mut mirrored {
+                row.reverse();
+            }
+            let mut flight = Self {
+                from_right: false,
+                ..*self
+            }
+            .solve(&mirrored, aim);
+            flight.origin.x = N as f64 - flight.origin.x;
+            flight.velocity.x = -flight.velocity.x;
+            for hit in &mut flight.hits {
+                hit.cell.0 = N - 1 - hit.cell.0;
+                hit.position.x = N as f64 - hit.position.x;
+            }
+            flight.hits.sort_by(|a, b| {
+                a.time
+                    .total_cmp(&b.time)
+                    .then(a.cell.1.cmp(&b.cell.1))
+                    .then(a.cell.0.cmp(&b.cell.0))
+            });
+            for cell in &mut flight.explosion_cells {
+                cell.0 = N - 1 - cell.0;
+            }
+            flight.explosion_cells.sort_by_key(|&(x, y)| (y, x));
+            return flight;
+        }
         let aim = self.clamp_aim(aim);
+        let explosion = self.explosion.filter(|_| aim.ammo == Ammo::Explosive);
         let angle = (aim.angle_mdeg as f64 / 1000.).to_radians();
         let speed =
             self.min_speed + (self.max_speed - self.min_speed) * aim.power_permille as f64 / 1000.;
+        let speed = speed / explosion.map_or(1., |ammo| ammo.mass.sqrt());
         let velocity = Point {
             x: speed * angle.cos(),
             y: -speed * angle.sin(),
@@ -114,6 +173,7 @@ impl ProjectileConfig {
             / self.gravity;
         let boundary = (N as f64 + self.radius - ORIGIN.x) / velocity.x;
         let mut flight = Flight {
+            ammo: aim.ammo,
             origin: ORIGIN,
             velocity,
             gravity: self.gravity,
@@ -127,7 +187,7 @@ impl ProjectileConfig {
             explosion_cells: vec![],
             explosion_radius: None,
         };
-        if let Some(explosion) = self.explosion {
+        if let Some(explosion) = explosion {
             if let Some(fuse) = explosion.fuse.filter(|t| *t <= flight.duration + EPS) {
                 flight.duration = fuse.min(flight.duration);
                 flight.end = End::Fuse;
@@ -152,7 +212,7 @@ impl ProjectileConfig {
                 .then(a.cell.1.cmp(&b.cell.1))
                 .then(a.cell.0.cmp(&b.cell.0))
         });
-        if let Some(explosion) = self.explosion {
+        if let Some(explosion) = explosion {
             if let Some(limit) = explosion.penetrations.filter(|n| *n <= flight.hits.len()) {
                 let time = flight.hits[limit - 1].time;
                 // Include the complete simultaneous contact batch before checking the threshold.
@@ -283,7 +343,7 @@ impl Flight {
             })
             .collect::<Vec<_>>()
             .join(",");
-        format!("{{\"origin\":[{},{}],\"velocity\":[{},{}],\"gravity\":{},\"duration\":{},\"end\":\"{:?}\",\"hits\":[{}],\"explosion_cells\":[{}],\"explosion_radius\":{}}}", self.origin.x,self.origin.y,self.velocity.x,self.velocity.y,self.gravity,self.duration,self.end,hits,
+        format!("{{\"ammo\":\"{:?}\",\"origin\":[{},{}],\"velocity\":[{},{}],\"gravity\":{},\"duration\":{},\"end\":\"{:?}\",\"hits\":[{}],\"explosion_cells\":[{}],\"explosion_radius\":{}}}", self.ammo,self.origin.x,self.origin.y,self.velocity.x,self.velocity.y,self.gravity,self.duration,self.end,hits,
             self.explosion_cells.iter().map(|(x,y)| format!("[{x},{y}]")).collect::<Vec<_>>().join(","), self.explosion_radius.map(|r| r.to_string()).unwrap_or("null".into()))
     }
 }
@@ -302,6 +362,49 @@ mod tests {
         .unwrap()
     }
     #[test]
+    fn mirrored_launch_hits_the_reflected_board_and_keeps_the_same_timing() {
+        let mut board = [[0; N]; N];
+        board[7][0] = 255;
+        board[6][4] = 255;
+        let mut reflected = board;
+        for row in &mut reflected {
+            row.reverse();
+        }
+        for skill in [Skill::LightSlingshot, Skill::HeavySlingshot] {
+            for ammo in [Ammo::Solid, Ammo::Explosive] {
+                let left = config(skill, true);
+                let right = ProjectileConfig {
+                    from_right: true,
+                    ..left
+                };
+                let aim = Aim {
+                    ammo,
+                    ..Default::default()
+                };
+                let a = left.solve(&board, aim);
+                let b = right.solve(&reflected, aim);
+                assert_eq!(a.duration, b.duration);
+                assert_eq!(a.end, b.end);
+                assert_eq!(a.explosion_radius, b.explosion_radius);
+                for time in [0., a.duration / 2., a.duration] {
+                    assert!((a.position(time).x + b.position(time).x - N as f64).abs() < 1e-9);
+                    assert!((a.position(time).y - b.position(time).y).abs() < 1e-9);
+                }
+                let expected: std::collections::HashSet<_> =
+                    a.cells().into_iter().map(|(x, y)| (N - 1 - x, y)).collect();
+                assert_eq!(expected, b.cells().into_iter().collect());
+                for hit in &a.hits {
+                    let mirrored = b
+                        .hits
+                        .iter()
+                        .find(|h| h.cell == (N - 1 - hit.cell.0, hit.cell.1))
+                        .unwrap();
+                    assert_eq!(hit.time, mirrored.time);
+                }
+            }
+        }
+    }
+    #[test]
     fn analytic_motion_range_and_phase_constraints() {
         let board = [[0; N]; N];
         for awake in [false, true] {
@@ -315,6 +418,7 @@ mod tests {
                 let aim = Aim {
                     angle_mdeg: angle,
                     power_permille: 1000,
+                    ..Default::default()
                 };
                 let short = light.solve(&board, aim);
                 assert!(short.position(short.duration).x < 6.);
@@ -334,6 +438,7 @@ mod tests {
             assert!(far_angles >= 15, "reachable, operable angle interval");
         }
         assert!(config(Skill::HeavySlingshot, true).explosion.is_some());
+        assert!(config(Skill::HeavySlingshot, true).explosion.is_some());
     }
     #[test]
     fn light_full_power_reaches_fourth_column_across_practical_angles() {
@@ -346,6 +451,7 @@ mod tests {
                     Aim {
                         angle_mdeg: angle,
                         power_permille: 1000,
+                        ..Default::default()
                     },
                 );
                 assert!(
@@ -363,6 +469,7 @@ mod tests {
     #[test]
     fn continuous_contacts_radius_tangent_and_simultaneous_batch() {
         let flight = Flight {
+            ammo: Ammo::Solid,
             origin: Point { x: -1., y: 1. },
             velocity: Point { x: 1000., y: 0. },
             gravity: 0.,
@@ -392,6 +499,7 @@ mod tests {
         let time = (0.3 - c.radius) / (c.max_speed * radians.cos());
         c.gravity = 2. * (7. - ORIGIN.y + c.max_speed * radians.sin() * time) / (time * time);
         let mut explosion = c.explosion.unwrap();
+        explosion.mass = 1.;
         explosion.penetrations = Some(1);
         explosion.fuse = None;
         c.explosion = Some(explosion);
@@ -401,8 +509,10 @@ mod tests {
         let flight = c.solve(
             &board,
             Aim {
+                ammo: Ammo::Explosive,
                 angle_mdeg: angle,
                 power_permille: 1000,
+                ..Default::default()
             },
         );
         assert_eq!(flight.end, End::Penetrations);
@@ -427,8 +537,10 @@ mod tests {
             let flight = c.solve(
                 &board,
                 Aim {
+                    ammo: Ammo::Explosive,
                     angle_mdeg: 45000,
                     power_permille: 500,
+                    ..Default::default()
                 },
             );
             assert_eq!(flight.end, expected);
@@ -442,11 +554,14 @@ mod tests {
         explosion.penetrations = None;
         explosion.landing = true;
         c.explosion = Some(explosion);
+        c.max_speed = 14.;
         let outside = c.solve(
             &board,
             Aim {
+                ammo: Ammo::Explosive,
                 angle_mdeg: 35000,
                 power_permille: 1000,
+                ..Default::default()
             },
         );
         assert_eq!(outside.end, End::OutOfBounds);
@@ -469,7 +584,7 @@ mod tests {
             &mut copy,
             (3, 3),
             SLINGSHOT_USER,
-            700,
+            625,
             100,
             rules,
         );
@@ -483,20 +598,20 @@ mod tests {
             }
         )));
         let values = trigger_tiles(&board, &effect.cells, 75, 75, 75);
-        assert_eq!(batch.totals(), values);
+        assert_eq!(batch.totals(), (values.0, values.1, values.2));
         let preview = preview_rewards_in(
             Skill::LightSlingshot,
             &board,
             (3, 3),
             SLINGSHOT_USER,
-            700,
+            625,
             100,
             500,
             0,
             rules,
         );
         assert_eq!(preview.damage, values.1);
-        assert_eq!(preview.mana_after, 100 - 20 + values.2);
+        assert_eq!(preview.mana_after, 100 - 30 + values.2);
         assert_eq!(preview.heal, values.0.min(25));
         assert_eq!(copy, board);
         assert_eq!(crate::rng::state(), rng_before);
@@ -505,7 +620,7 @@ mod tests {
             &board,
             (3, 3),
             SLINGSHOT_USER,
-            725,
+            650,
             160,
             500,
             0,
@@ -522,10 +637,10 @@ mod tests {
             event.probability = 50;
         }
         let before = crate::rng::state();
-        let result = settle_batch_in(SLINGSHOT_USER, 700, 50, 500, batch, Rules::default());
+        let result = settle_batch_in(SLINGSHOT_USER, 600, 50, 500, batch, Rules::default());
         assert_eq!(
             (result.actor_hp, result.damage, result.actor_mp),
-            (705, 10, 65)
+            (605, 10, 65)
         );
         assert_eq!(crate::rng::state(), before);
     }
