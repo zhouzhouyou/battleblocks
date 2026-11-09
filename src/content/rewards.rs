@@ -220,6 +220,10 @@ pub fn settle_batch_in(
     mut batch: RewardBatch,
     rules: Rules,
 ) -> RewardSettlement {
+    for reward in &mut batch.events {
+        reward.amount = reward.amount * reward.probability as i32 / 100;
+        reward.probability = 100;
+    }
     let ctx = EventContext::new(hero, hp, mp, rules);
     let mut triggers = std::mem::take(&mut batch.triggers);
     let mut queue: std::collections::VecDeque<_> = std::mem::take(&mut batch.events).into();

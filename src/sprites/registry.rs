@@ -122,6 +122,7 @@ pub const SPRITES: &[SpriteAsset] = &[
         anchor: Some([192., 336.]),
     },
     PORTAL_NORMAL,
+    SLINGSHOT_NORMAL,
 ];
 pub const AWAKENED: &[SpriteAsset] = &[
     SpriteAsset {
@@ -245,4 +246,5 @@ pub const AWAKENED: &[SpriteAsset] = &[
         anchor: Some([192., 336.]),
     },
     PORTAL_AWAKE,
+    SLINGSHOT_AWAKE,
 ];

@@ -332,22 +332,7 @@ pub fn draw(
         if i == hero {
             draw_rectangle(r.x, r.y, 4., r.h, GOLD);
         }
-        draw_texture_ex(
-            thumbs,
-            r.x + 12.,
-            r.y + 8.,
-            WHITE,
-            DrawTextureParams {
-                dest_size: Some(vec2(32., 38.)),
-                source: Some(Rect::new(
-                    crate::sprites::thumbnail_index(i) as f32 * 40.,
-                    0.,
-                    40.,
-                    48.,
-                )),
-                ..Default::default()
-            },
-        );
+        crate::graphics::hero_thumbnail(thumbs, i, Rect::new(r.x + 12., r.y + 8., 32., 38.), WHITE);
         label(
             if zh { h.zh } else { h.en },
             r.x + 67.,
@@ -411,11 +396,7 @@ pub fn draw(
     } else {
         &sprites::SPRITES[hero]
     };
-    let portrait_texture = if page == 2 {
-        awakened_texture
-    } else {
-        texture
-    };
+    let portrait_texture = if page == 2 { awakened_texture } else { texture };
     let portrait_area = Rect::new(291., 198., 230., portrait_height);
     match portrait_texture {
         // The atlas is still downloading: summon the hero instead of a blank card.
@@ -517,7 +498,16 @@ pub fn draw(
             .copied()
             .filter(|p| !content::passives(hero, false).contains(p))
             .collect::<Vec<_>>();
-        draw_passive_entries(&changes, zh, true);
+        if changes.is_empty() {
+            for (i, text) in wrap_label_text(content::awakening_effect(hero, zh), 16., 208.)
+                .iter()
+                .enumerate()
+            {
+                label(text, 304., 403. + i as f32 * 22., 16., LIGHTGRAY);
+            }
+        } else {
+            draw_passive_entries(&changes, zh, true);
+        }
     } else {
         label(tr_key(zh, "ui.menu.draw.lore_intro"), 304., 373., 22., GOLD);
         if let Some(lore) = content::role_lore(hero) {

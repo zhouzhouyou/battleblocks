@@ -40,6 +40,9 @@ impl Session {
         self.targeting = None;
         self.presentation.clear();
         self.charge_damage = None;
+        self.projectile_aim = None;
+        self.projectile_drag = false;
+        self.projectile_preview = None;
         self.skill_flash.clear();
         if let Some(effects) = &mut self.skill_effects {
             effects.clear();

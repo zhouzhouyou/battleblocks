@@ -106,3 +106,14 @@
 12|trait|Every mishap is useful data. Every objection is filed and ignored.|意外都是有用的数据，异议都会得到妥善归档。
 12|voice.victory|Victory · I wanted you gone. Thank you for cooperating.|胜利 · 我希望您离开。感谢您的配合。
 12|voice.defeat|Defeat · This result will be filed as your mistake.|失败 · 本次结果将归档为您的失误。
+13|title|The Brassbutton Tinkerer|铜扣老匠
+13|intro|Orin Brassbutton kept a mountain town's mine hoists running for forty years. In retirement he put his pulley craft into two slingshots. He carries stones and alchemical rounds, measures every shot and insists a duel should prove good workmanship. He grumbles at careless hands, then spends his evenings repairing the village children's toys.|奥林·铜扣替山间矿镇修了四十年升降机。退休后，他把滑轮与弹性机构的本事缩进掌心，做成一轻一重两把弹弓。出门总带石弹和炼金弹丸，先量误差，再亮手艺。嘴上嫌人糟蹋工具，夜里却还点灯，替村里的孩子修玩具。
+13|trait|Meticulous, stubborn, and quietly generous.|严谨、好胜，嘴硬心软。
+13|trait|Every part earns its place. Every scrap may be useful.|每个零件都有用处，边角料也舍不得浪费。
+13|line|Entrance · Stand there. I still need to measure the distance.|登场 · 站那儿别动，我还没量完距离。
+13|line|Light shot · Small tools reward a steady hand.|轻弓 · 小家伙，靠的是手稳。
+13|line|Heavy shot · Mind the brasswork. I polished it myself.|重弓 · 留神这套铜件，我亲手磨的。
+13|line|Awakening · That was the demonstration. Here is the finished piece.|觉醒 · 刚才算演示。现在，看看成品。
+13|line|Alchemical round · The fuse is measured too.|爆弹 · 引信，也是量过的。
+13|line|Victory · Good workmanship speaks for itself.|胜利 · 好手艺，自有分晓。
+13|line|Defeat · Bring it here. I know where to improve it.|失败 · 拿过来，我知道该改哪儿了。

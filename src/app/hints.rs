@@ -142,7 +142,7 @@ pub(super) fn plan_pages(plans: &[AiPlan]) -> Vec<Vec<(usize, Rect)>> {
         pages
             .last_mut()
             .unwrap()
-            .push((i, Rect::new(584., y, 416., height)));
+            .push((i, Rect::new(sidebar_x(true, 584.), y, 416., height)));
         y += height + 8.;
     }
     pages
@@ -280,7 +280,7 @@ mod plan_tests {
         for (page, rows) in plan_pages(&plans).iter().enumerate() {
             for &(i, r) in rows {
                 assert!(r.y >= 266. && r.y + r.h <= 660.);
-                assert!(r.x >= 574. && r.x + r.w <= 1010.);
+                assert!(r.x >= sidebar_x(true, 574.) && r.x + r.w <= sidebar_x(true, 1010.));
                 assert_eq!(plan_row_at(&plans, page, vec2(r.x + 1., r.y + 1.)), Some(i));
                 let final_detail_y = r.y + 40. + (plans[i].steps.len() - 1) as f32 * 42. + 17.;
                 assert!(final_detail_y < r.y + r.h - 20.);

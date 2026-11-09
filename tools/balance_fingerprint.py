@@ -14,7 +14,7 @@ def manifest(root, target):
     # definitions. Only hero/loadout rows are proven local to the two combatants.
     paths = sorted((root / "src").rglob("*.rs"))
     paths += [root / p for p in ("Cargo.toml", "Cargo.lock", "build.rs",
-                                "tools/balance_fingerprint.py", "config/skills.txt")]
+                                "tools/balance_fingerprint.py", "config/skills.txt", "config/projectiles.txt")]
     shared = hashlib.sha256(target.encode())
     for path in paths:
         shared.update(path.relative_to(root).as_posix().encode() + b"\0")

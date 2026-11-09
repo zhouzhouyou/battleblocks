@@ -414,5 +414,41 @@
   "assets/roles/zombie/runtime/atlas.webp": {
     "sha256": "839e35730d8af88eb7e7c7bb6fd05dc48f6244af4a65f141b3517d48acd6bd80",
     "bytes": 279154
+  },
+  "assets-source/roles/slingshot/equipment/light.webp": {
+    "sha256": "e677ecd41af1e4b3abbe76df3a56c36879e02318b23ed334f3d5a9ebeaa71465",
+    "bytes": 309866
+  },
+  "assets-source/roles/slingshot/equipment/heavy.webp": {
+    "sha256": "3122fb949f637ee470c5c848c180a8295e5f05c337f22cf4b0a97fc09e454547",
+    "bytes": 424090
+  },
+  "assets/roles/slingshot/runtime/light.webp": {
+    "sha256": "d88d034321fba0d5da191d016ffb1c4147c0afabe8ccdf8e6491b52d74965b51",
+    "bytes": 2148
+  },
+  "assets/roles/slingshot/runtime/heavy.webp": {
+    "sha256": "e76284b6b7845b9c4ac9e5fce6c821366f8afdbf46304dc9cf98e0fb251a6b05",
+    "bytes": 2750
+  },
+  "assets/roles/slingshot/runtime/atlas.webp": {
+    "sha256": "bfba3567e88ebb90a0223afdd0d9990a8ad029bfd20cb7822d2845ac2e5eba5a",
+    "bytes": 1280594
+  },
+  "assets-source/roles/slingshot/animation/normal-idle-source.webp": {
+    "sha256": "a6d73913b3c42e7308e7e4a449da9fc422952d355354fcad11283eea1715feef",
+    "bytes": 1144804
+  },
+  "assets-source/roles/slingshot/animation/awake-idle-source.webp": {
+    "sha256": "531bf1fd569d2e61b537368611248fad903a5f8c5bdd3131c826de590f781ef9",
+    "bytes": 1251082
+  },
+  "assets-source/roles/slingshot/animation/normal-cast-source.webp": {
+    "sha256": "c26a03c997cd820859aec95e396295869479e7d925af85f7d9c6978411b01d90",
+    "bytes": 1187560
+  },
+  "assets-source/roles/slingshot/animation/awake-cast-source.webp": {
+    "sha256": "cfd877fd027beb8a2a8e6151a04785061a6fd85c7b8a937f31b1629848b7e8a9",
+    "bytes": 1310316
   }
 }

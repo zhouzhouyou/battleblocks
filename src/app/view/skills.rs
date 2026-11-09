@@ -225,8 +225,16 @@ impl Session {
             } else {
                 (self.hero_id, self.hp, self.mp, self.enemy, self.extra_bonus)
             };
+            if !is_enemy
+                && self.targeting == Some(skill)
+                && content::skill_profile(skill, self.rules(false))
+                    .projectile
+                    .is_some()
+            {
+                return;
+            }
             // Show details in the opposite sidebar, keeping the highlighted board visible.
-            let x = if is_enemy { 14. } else { 790. };
+            let x = sidebar_x(!is_enemy, if is_enemy { 14. } else { 790. });
             flush_labels();
             draw_rectangle(x, 208., 220., 438., Color::new(0.04, 0.07, 0.12, 0.98));
             outline(

@@ -526,8 +526,21 @@ impl Console {
         // Labels are batched: flush the underlying scene before painting this overlay.
         crate::flush_labels();
         // An opaque full-screen sheet, so no battle text shows through or around it.
-        draw_rectangle(0., 0., 1024., 720., Color::new(0.02, 0.03, 0.06, 1.));
-        outline(8., 8., 1008., 704., 2., Color::new(0.25, 0.4, 0.55, 1.));
+        draw_rectangle(
+            crate::ui::CANVAS.x,
+            0.,
+            crate::ui::CANVAS.w,
+            crate::ui::CANVAS.h,
+            Color::new(0.02, 0.03, 0.06, 1.),
+        );
+        outline(
+            crate::ui::CANVAS.x + 8.,
+            8.,
+            crate::ui::CANVAS.w - 16.,
+            704.,
+            2.,
+            Color::new(0.25, 0.4, 0.55, 1.),
+        );
         label(
             self.tr(
                 "DEBUG CONSOLE · ~ / F1 toggle · Esc close · wheel / PgUp PgDn scroll",

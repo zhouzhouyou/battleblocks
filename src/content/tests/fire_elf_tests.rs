@@ -172,6 +172,7 @@ fn sleep_recovers_at_turn_end_and_sound_sleep_improves_it() {
 fn sound_sleep_reduces_incoming_damage_while_asleep() {
     let statuses = StatusSet::single(StatusId::Sleep, Skill::EmberBlast, StatusDuration::SkipTurn);
     let mut reward = RewardEvent {
+        probability: 100,
         resource: Resource::Damage,
         recipient: EventSide::Actor,
         amount: 100,

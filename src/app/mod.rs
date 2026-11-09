@@ -8,6 +8,7 @@ mod exchange;
 mod headless;
 mod hints;
 mod planning;
+mod projectile;
 pub(crate) use headless::BatchOutcome;
 mod lifecycle;
 mod resolution;
@@ -66,6 +67,10 @@ pub(crate) struct Session {
     reactions: [Option<(String, f64)>; 2],
     move_flash: Option<Move>,
     targeting: Option<content::Skill>,
+    projectile_aim: Option<content::projectile::Aim>,
+    perspective_reversed: bool,
+    projectile_drag: bool,
+    projectile_preview: Option<projectile::PreviewCache>,
     skill_flash: Vec<(usize, usize)>,
     last_cast: Option<content::Skill>,
     last_cast_enemy: bool,
@@ -108,6 +113,7 @@ struct Frame {
     command_move: Option<Move>,
     command_skill: Option<content::Skill>,
     command_target: Option<(usize, usize)>,
+    command_aim: Option<content::projectile::Aim>,
     restart_command: bool,
     ui_consumed: bool,
     pause_click: bool,
@@ -116,7 +122,7 @@ struct Frame {
 }
 impl Frame {
     fn new() -> Self {
-        let scale = (screen_width() / 1024.).min(screen_height() / 720.);
+        let scale = (screen_width() / ui::CANVAS.w).min(screen_height() / ui::CANVAS.h);
         let cam = Camera2D {
             target: vec2(512., 360.),
             zoom: vec2(2. * scale / screen_width(), 2. * scale / screen_height()),
@@ -133,6 +139,7 @@ impl Frame {
             command_move: None,
             command_skill: None,
             command_target: None,
+            command_aim: None,
             restart_command: false,
             ui_consumed: false,
             pause_click: false,
@@ -146,7 +153,7 @@ impl Frame {
             interactive: false,
             cam: Camera2D {
                 target: vec2(512., 360.),
-                zoom: vec2(2. / 1024., 2. / 720.),
+                zoom: vec2(2. / ui::CANVAS.w, 2. / ui::CANVAS.h),
                 ..Default::default()
             },
             pointer: vec2(-1., -1.),
@@ -154,6 +161,7 @@ impl Frame {
             command_move: None,
             command_skill: None,
             command_target: None,
+            command_aim: None,
             restart_command: false,
             ui_consumed: false,
             pause_click: false,
@@ -372,6 +380,10 @@ impl Session {
             reactions: [None, None],
             move_flash,
             targeting,
+            projectile_aim: None,
+            perspective_reversed: false,
+            projectile_drag: false,
+            projectile_preview: None,
             skill_flash,
             last_cast,
             last_cast_enemy,
@@ -436,13 +448,15 @@ impl Session {
         self.enemy_texture.as_ref().unwrap_or_else(|| self.blank())
     }
     fn awake_texture(&self, enemy: bool) -> &Texture2D {
-        self.awake_textures[enemy as usize].as_ref().unwrap_or_else(|| {
-            if enemy {
-                self.enemy_texture()
-            } else {
-                self.player_texture()
-            }
-        })
+        self.awake_textures[enemy as usize]
+            .as_ref()
+            .unwrap_or_else(|| {
+                if enemy {
+                    self.enemy_texture()
+                } else {
+                    self.player_texture()
+                }
+            })
     }
     fn load_awake_texture(id: usize, normal: &Texture2D) -> Option<Texture2D> {
         if sprites::AWAKENED[id].asset.path == sprites::SPRITES[id].asset.path {
@@ -523,8 +537,7 @@ impl Session {
             return;
         }
         if self.enemy_texture.is_none() {
-            self.enemy_texture =
-                asset_texture(&sprites::SPRITES[self.enemy_id].asset, "no_actors");
+            self.enemy_texture = asset_texture(&sprites::SPRITES[self.enemy_id].asset, "no_actors");
         }
         if self.awake_textures[0].is_none() {
             self.awake_textures[0] = Self::load_awake_texture(self.hero_id, self.player_texture());
@@ -537,6 +550,9 @@ impl Session {
 
     /// Return to hero selection and drop the artwork only a battle draws.
     fn enter_selection(&mut self) {
+        if self.rendering {
+            crate::slingshot_art::release();
+        }
         self.choosing = true;
         self.interface.opponent_step = false;
         self.targeting = None;
@@ -585,8 +601,10 @@ impl Session {
     }
     fn rules(&self, side: bool) -> content::Rules {
         content::Rules {
+            projectile_aim: if side { None } else { self.projectile_aim },
             board_mechanics: self.board_mechanics,
             actor_enemy: side,
+            launch_from_right: side ^ self.perspective_reversed,
             target_anchor: if side { None } else { self.target_anchor },
             horizontal: self.new_role_states[side as usize].horizontal,
             swap_clear: self.new_role_states[side as usize].swap_clear,
@@ -722,9 +740,15 @@ impl Session {
     }
     fn apply_batch_rewards_for(
         &mut self,
-        batch: content::RewardBatch,
+        mut batch: content::RewardBatch,
         side: bool,
     ) -> AppliedRewards {
+        for reward in &mut batch.events {
+            if reward.probability < 100 && rng::gen_range(0, 100) >= reward.probability as i32 {
+                reward.amount = 0;
+            }
+            reward.probability = 100;
+        }
         let before_rewards = self.snapshot();
         let (id, hp, mp) = if side {
             (self.enemy_id, self.enemy, self.enemy_mp)
@@ -803,6 +827,7 @@ impl Session {
             awakened: self.awakened,
             reward_skill: self.reward_skill,
             board: self.b,
+            perspective_reversed: self.perspective_reversed,
             board_mechanics: self.board_mechanics,
             hero: self.hero_id,
             enemy: self.enemy_id,
@@ -825,7 +850,15 @@ impl Session {
             paused: self.paused,
             rng_state: rng::state(),
             charge_damage: self.charge_damage.clone(),
-            charge_remaining: self.presentation.charge_remaining(),
+            charge_remaining: if self
+                .charge_damage
+                .as_ref()
+                .is_some_and(|p| p.projectile.is_some())
+            {
+                self.presentation.remaining()
+            } else {
+                self.presentation.charge_remaining()
+            },
             turns: self.turn_log.clone(),
             round: self.round,
         }
@@ -834,6 +867,9 @@ impl Session {
         if let Some(audio) = &self.audio {
             audio.stop_speech();
         }
+        self.projectile_aim = None;
+        self.projectile_drag = false;
+        self.projectile_preview = None;
         self.hint_cache = None;
         self.plan_cache = None;
         self.hint_queue.clear();
@@ -843,6 +879,7 @@ impl Session {
         self.book_levels = [0.; 2];
         self.reward_skill = state.reward_skill;
         self.b = state.board;
+        self.perspective_reversed = state.perspective_reversed;
         self.board_mechanics = state.board_mechanics;
         self.target_anchor = None;
         self.hero_id = state.hero;
@@ -876,7 +913,13 @@ impl Session {
             .as_ref()
             .map(|impact| impact.actor_enemy)
             .unwrap_or(false);
-        if self.charge_damage.is_some() {
+        if self
+            .charge_damage
+            .as_ref()
+            .is_some_and(|p| p.projectile.is_some())
+        {
+            self.presentation.hold(state.charge_remaining.max(0.001));
+        } else if self.charge_damage.is_some() {
             let column = self.pending.first().map(|c| c.0).unwrap_or(0);
             self.presentation
                 .charge(column, state.charge_remaining.max(0.001));
@@ -938,3 +981,6 @@ impl Session {
 }
 #[cfg(test)]
 mod portal_tests;
+
+#[cfg(test)]
+mod projectile_tests;

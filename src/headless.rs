@@ -14,6 +14,26 @@ fn option_value(args: &[String], name: &str) -> Option<String> {
 
 pub fn run() {
     let args: Vec<String> = std::env::args().collect();
+    if args.iter().any(|arg| arg == "--projectile-sweep") {
+        let samples = option_value(&args, "--samples")
+            .and_then(|v| v.parse::<usize>().ok())
+            .unwrap_or(8);
+        if samples == 0 {
+            eprintln!("PROJECTILE_ERROR samples must be positive");
+            std::process::exit(2);
+        }
+        let seed = option_value(&args, "--seed")
+            .and_then(|v| v.parse().ok())
+            .unwrap_or(49000);
+        let (csv, summary) = crate::app::Session::projectile_sweep(samples, seed);
+        if let Some(path) = option_value(&args, "--out") {
+            std::fs::write(path, csv).expect("write projectile sweep");
+        } else {
+            print!("{csv}");
+        }
+        eprint!("{summary}");
+        return;
+    }
     if evaluation::requested(&args) {
         if let Err(error) = evaluation::run(&args) {
             eprintln!("EVALUATION_ERROR {error}");

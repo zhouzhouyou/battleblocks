@@ -2,6 +2,7 @@ use std::{env, path::PathBuf, process::Command};
 fn main() {
     println!("cargo:rerun-if-changed=src");
     println!("cargo:rerun-if-changed=config/skills.txt");
+    println!("cargo:rerun-if-changed=config/projectiles.txt");
     println!("cargo:rerun-if-changed=config/ability-loadouts.txt");
     println!("cargo:rerun-if-changed=Cargo.lock");
     println!("cargo:rerun-if-changed=tools/balance_fingerprint.py");

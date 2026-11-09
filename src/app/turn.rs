@@ -18,7 +18,15 @@ impl Session {
                 );
             }
             let actual = applied.hit.damage;
-            self.turn_log.current.add(0, actual, 0);
+            let (heal, mana) = if impact.actor_enemy {
+                (
+                    self.enemy - before.enemy_hp,
+                    self.enemy_mp - before.enemy_mp,
+                )
+            } else {
+                (self.hp - before.hp, self.mp - before.mp)
+            };
+            self.turn_log.current.add(heal, actual, mana);
             let actor_source = applied
                 .actor_health_source
                 .map(|source| source.name(self.zh))
@@ -38,6 +46,18 @@ impl Session {
                 tr_key(self.zh, "ui.turn.advance_turn.damage"),
                 actual
             );
+            if impact.projectile.is_some() {
+                self.feedback = crate::format_text(
+                    self.zh,
+                    "projectile.result",
+                    &[
+                        skill.name(self.zh),
+                        &heal.to_string(),
+                        &actual.to_string(),
+                        &mana.to_string(),
+                    ],
+                );
+            }
             self.feedback_time = 2.5;
             self.deadline = 0.;
             self.console.event(

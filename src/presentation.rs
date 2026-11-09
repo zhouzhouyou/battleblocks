@@ -110,6 +110,9 @@ impl Presentation {
     pub fn charging(&self) -> bool {
         self.charge_column.is_some() && self.busy()
     }
+    pub fn remaining(&self) -> f64 {
+        self.time.max(self.hold)
+    }
     pub fn charge_remaining(&self) -> f64 {
         if self.charging() {
             self.time
@@ -463,7 +466,7 @@ impl Presentation {
                 .take(3)
                 .enumerate()
             {
-                let x = if side { 802. } else { 22. };
+                let x = crate::sidebar_x(side, if side { 802. } else { 22. });
                 let y = 246. + i as f32 * 58. - (2.4 - p.time) * 8.;
                 let delta = p.after - p.before;
                 let color = if delta < 0 { ORANGE } else { GREEN };

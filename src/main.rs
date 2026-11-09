@@ -14,6 +14,7 @@ mod menu;
 mod presentation;
 #[allow(dead_code)]
 mod role_state;
+mod slingshot_art;
 mod ui;
 use presentation::{CLEAR_TIME, TURN_HOLD};
 mod rng;

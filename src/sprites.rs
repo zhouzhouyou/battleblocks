@@ -8,6 +8,8 @@ mod portal_cube;
 pub use portal_cube::{PORTAL_AWAKE, PORTAL_NORMAL};
 mod registry;
 pub use registry::{AWAKENED, SPRITES};
+mod slingshot;
+pub use slingshot::{SLINGSHOT_AWAKE, SLINGSHOT_NORMAL};
 pub fn shadow_form(hero: usize, awake_visible: bool, statuses: StatusSet) -> bool {
     let mut dark = awake_visible;
     content::dispatch_rules(
@@ -57,7 +59,7 @@ pub const BOOK_COVER: &[u8] = include_bytes!("../assets/roles/dwarf/runtime/book
 pub const BOOK_PAGES: &[u8] = include_bytes!("../assets/roles/dwarf/runtime/book-pages.webp");
 pub const BOOK_BOTTOM: &[u8] = include_bytes!("../assets/roles/dwarf/runtime/book-bottom.webp");
 
-/// Every registered hero has its own slot in the thumbnail atlas.
+/// Stable character slot in the shared thumbnail atlas.
 pub fn thumbnail_index(hero: usize) -> usize {
     hero
 }

@@ -42,6 +42,12 @@ pub enum EventSource {
         position: (usize, usize),
         tile: u8,
     },
+    Projectile {
+        skill: Skill,
+        position: (usize, usize),
+        tile: u8,
+        explosion: bool,
+    },
     Unspecified,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -51,6 +57,7 @@ pub struct EventCause {
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct RewardEvent {
+    pub probability: u8,
     pub resource: Resource,
     pub recipient: EventSide,
     pub amount: i32,
@@ -91,6 +98,7 @@ impl RewardBatch {
     ) {
         if amount > 0 {
             self.events.push(RewardEvent {
+                probability: 100,
                 resource,
                 recipient,
                 amount,
@@ -216,6 +224,7 @@ pub struct MovementProfile {
 }
 #[derive(Clone, Copy, Debug, Default)]
 pub struct SkillProfile {
+    pub projectile: Option<projectile::ProjectileConfig>,
     pub paired_target: bool,
     pub force_move: bool,
     pub random_target: bool,
@@ -473,6 +482,7 @@ impl EventSource {
     /// Human-readable current source for feedback. Logs retain the structured chain.
     pub fn name(self, zh: bool) -> &'static str {
         match self {
+            Self::Projectile { skill, .. } => skill.name(zh),
             Self::Portal { .. } => super::role_text("PortalYield.name", zh),
             Self::Tile { .. } => crate::tr_key(zh, "ui.resolution.resolve_pending.clear"),
             Self::Skill(skill) => skill.name(zh),
@@ -490,6 +500,7 @@ impl EventSource {
             Self::Status(s)=>format!("{{\"kind\":\"status\",\"id\":\"{s:?}\"}}"),
             Self::Cost(s)=>format!("{{\"kind\":\"health_cost\",\"id\":\"{s:?}\"}}"),
             Self::Portal{position:(x,y),tile}=>format!("{{\"kind\":\"portal_transit\",\"position\":[{x},{y}],\"tile\":{tile}}}"),
+            Self::Projectile { skill, position: (x,y), tile, explosion } => format!("{{\"kind\":\"projectile_clear\",\"skill\":\"{skill:?}\",\"position\":[{x},{y}],\"tile\":{tile},\"explosion\":{explosion}}}"),
             Self::Unspecified=>"{\"kind\":\"unspecified\"}".into(),
         }
     }
@@ -502,12 +513,13 @@ impl RewardEvent {
             .map(|c| format!("{{\"by\":\"{:?}\",\"source\":{}}}", c.by, c.source.json()))
             .collect::<Vec<_>>()
             .join(",");
-        format!("{{\"resource\":\"{:?}\",\"recipient\":\"{:?}\",\"amount\":{},\"source\":{},\"source_chain\":[{}]}}",self.resource,self.recipient,self.amount,self.current_source().json(),chain)
+        format!("{{\"resource\":\"{:?}\",\"recipient\":\"{:?}\",\"amount\":{},\"probability\":{},\"source\":{},\"source_chain\":[{}]}}",self.resource,self.recipient,self.amount,self.probability,self.current_source().json(),chain)
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct PendingImpact {
+    pub projectile: Option<projectile::Flight>,
     pub rewards: RewardBatch,
     pub actor_enemy: bool,
     pub skill: Skill,
@@ -531,7 +543,7 @@ impl PendingImpact {
             .collect::<Vec<_>>()
             .join(",");
         format!(
-            "{{\"actor_enemy\":{},\"skill\":\"{:?}\",\"events\":[{}],\"triggers\":[{}]}}",
+            "{{\"actor_enemy\":{},\"skill\":\"{:?}\",\"events\":[{}],\"triggers\":[{}],\"projectile\":{}}}",
             self.actor_enemy,
             self.skill,
             self.rewards
@@ -540,7 +552,8 @@ impl PendingImpact {
                 .map(|e| e.json())
                 .collect::<Vec<_>>()
                 .join(","),
-            triggers
+            triggers,
+            self.projectile.as_ref().map(|f| f.json()).unwrap_or("null".into())
         )
     }
 }

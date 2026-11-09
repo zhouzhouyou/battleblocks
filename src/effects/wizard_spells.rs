@@ -162,7 +162,10 @@ impl Effects {
         }
         // Lightning restores mana. Its motes converge on the caster's mana bar, never the opponent.
         if cast.skill == Skill::Lightning && (1.5..2.6).contains(&elapsed) {
-            let target = vec2(if cast.enemy { 900. } else { 124. }, 180.);
+            let target = vec2(
+                crate::sidebar_x(cast.enemy, if cast.enemy { 900. } else { 124. }),
+                180.,
+            );
             for (i, &(x, y)) in cast.cells.iter().enumerate() {
                 let t = ((elapsed - 1.5 - i as f32 * 0.008) / 0.9).clamp(0., 1.);
                 if t <= 0. || t >= 1. {

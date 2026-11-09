@@ -29,8 +29,8 @@ impl Session {
             .map(|(m, preview)| (*m, preview.as_ref()))
             .unzip();
         let pages = legal_hints.len().div_ceil(7).max(1);
-        let previous_page_rect = Rect::new(798., 590., 52., 24.);
-        let next_page_rect = Rect::new(950., 590., 52., 24.);
+        let previous_page_rect = Rect::new(sidebar_x(true, 798.), 590., 52., 24.);
+        let next_page_rect = Rect::new(sidebar_x(true, 950.), 590., 52., 24.);
         if show_moves {
             let wheel = mouse_wheel().1;
             if wheel < 0.
@@ -151,11 +151,17 @@ impl Session {
 
         if show_moves {
             flush_labels();
-            draw_rectangle(790., 208., 220., 454., Color::new(0.04, 0.07, 0.12, 0.98));
-            outline(790., 208., 220., 454., 2., SKYBLUE);
+            draw_rectangle(
+                sidebar_x(true, 790.),
+                208.,
+                220.,
+                454.,
+                Color::new(0.04, 0.07, 0.12, 0.98),
+            );
+            outline(sidebar_x(true, 790.), 208., 220., 454., 2., SKYBLUE);
             label(
                 tr_key(self.zh, "ui.hints.draw_hints.move_rewards"),
-                800.,
+                sidebar_x(true, 800.),
                 232.,
                 20.,
                 GOLD,
@@ -166,14 +172,14 @@ impl Session {
                 } else {
                     HEROES[hint_actor].en
                 },
-                800.,
+                sidebar_x(true, 800.),
                 252.,
                 15.,
                 WHITE,
             );
             label(
                 tr_key(self.zh, "ui.hints.draw_hints.first_clear_no_refill_chains"),
-                800.,
+                sidebar_x(true, 800.),
                 270.,
                 13.,
                 GRAY,
@@ -182,12 +188,18 @@ impl Session {
             {
                 let row_y = 278. + (i % 7) as f32 * 44.;
                 if focused_hint == Some(i) {
-                    draw_rectangle(798., row_y, 204., 43., Color::new(0.16, 0.25, 0.30, 1.));
+                    draw_rectangle(
+                        sidebar_x(true, 798.),
+                        row_y,
+                        204.,
+                        43.,
+                        Color::new(0.16, 0.25, 0.30, 1.),
+                    );
                     if hints_playable {
-                        outline(798., row_y, 204., 43., 1., GOLD);
+                        outline(sidebar_x(true, 798.), row_y, 204., 43., 1., GOLD);
                         label(
                             tr_key(self.zh, "ui.hints.draw_hints.click"),
-                            950.,
+                            sidebar_x(true, 950.),
                             row_y + 35.,
                             12.,
                             GOLD,
@@ -198,7 +210,7 @@ impl Session {
                 let column = hint_actor == 0 && !self.armed && a.1 == c.1;
                 label(
                     &format!("#{} {}", i + 1, turns::swap_text(self.zh, a, c, column)),
-                    800.,
+                    sidebar_x(true, 800.),
                     row_y + 16.,
                     13.,
                     if column { GOLD } else { SKYBLUE },
@@ -214,7 +226,7 @@ impl Session {
                             tr_key(self.zh, "ui.hints.draw_hints.mp"),
                             p.mana_gain
                         ),
-                        800.,
+                        sidebar_x(true, 800.),
                         row_y + 35.,
                         14.,
                         WHITE,
@@ -224,7 +236,7 @@ impl Session {
             if legal_hints.is_empty() {
                 label(
                     tr_key(self.zh, "ui.hints.draw_hints.no_legal_exchanges"),
-                    800.,
+                    sidebar_x(true, 800.),
                     305.,
                     17.,
                     GOLD,
@@ -267,7 +279,7 @@ impl Session {
             }
             label(
                 &format!("{} / {}", self.move_hint_page + 1, pages),
-                867.,
+                sidebar_x(true, 867.),
                 607.,
                 14.,
                 GOLD,
@@ -291,7 +303,7 @@ impl Session {
                     }
                     .to_string()
                 });
-            label(&footer, 800., 628., 13., LIGHTGRAY);
+            label(&footer, sidebar_x(true, 800.), 628., 13., LIGHTGRAY);
             if let Some(p) = focused_preview {
                 let health = p.enemy_health_after.to_string();
                 let awakening = if p.awakens_enemy {
@@ -301,7 +313,7 @@ impl Session {
                 };
                 let text =
                     crate::format_text(self.zh, "battle.enemy_hp_preview", &[&health, awakening]);
-                label(&text, 800., 646., 12., GOLD);
+                label(&text, sidebar_x(true, 800.), 646., 12., GOLD);
             }
         }
     }
@@ -317,8 +329,8 @@ impl Session {
             .last()
             .map_or(340., |(_, r)| r.y + r.h)
             .max(340.);
-        let prev = Rect::new(584., current_bottom + 10., 70., 24.);
-        let next = Rect::new(930., current_bottom + 10., 70., 24.);
+        let prev = Rect::new(sidebar_x(true, 584.), current_bottom + 10., 70., 24.);
+        let next = Rect::new(sidebar_x(true, 930.), current_bottom + 10., 70., 24.);
         if frame.key(KeyCode::Right)
             || mouse_wheel().1 < 0.
             || (frame.clicked(MouseButton::Left) && next.contains(frame.pointer))
@@ -336,7 +348,7 @@ impl Session {
         let bottom = rows.last().map_or(340., |(_, r)| r.y + r.h).max(340.);
         // Border, rows and hit testing share geometry. Height follows the actual
         // step count; pagination bounds even the longest supported sequence.
-        let panel = Rect::new(574., 208., 436., bottom - 208. + 46.);
+        let panel = Rect::new(sidebar_x(true, 574.), 208., 436., bottom - 208. + 46.);
         let footer_y = bottom + 14.;
         flush_labels();
         draw_rectangle(
@@ -352,14 +364,14 @@ impl Session {
         };
         line(
             tr_key(self.zh, "ui.hints.plans.title"),
-            584.,
+            sidebar_x(true, 584.),
             232.,
             19.,
             GOLD,
         );
         line(
             tr_key(self.zh, "ui.hints.plans.description"),
-            584.,
+            sidebar_x(true, 584.),
             253.,
             13.,
             GRAY,
@@ -399,6 +411,15 @@ impl Session {
             line(&title, rect.x + 7., rect.y + 19., 15., GOLD);
             for (n, step) in plan.steps.iter().enumerate() {
                 let action = match step.action {
+                    crate::app::planning::PlanAction::Shoot(_, aim) => format_text(
+                        self.zh,
+                        "projectile.plan_shot",
+                        &[
+                            &step.name,
+                            &format!("{:.1}", aim.angle_mdeg as f64 / 1000.),
+                            &format!("{:.0}", aim.power_permille as f64 / 10.),
+                        ],
+                    ),
                     crate::app::planning::PlanAction::Swap((a, b)) => turns::swap_text(
                         self.zh,
                         a,
@@ -477,7 +498,7 @@ impl Session {
         if plans.is_empty() {
             line(
                 tr_key(self.zh, "ui.hints.plans.none"),
-                584.,
+                sidebar_x(true, 584.),
                 300.,
                 17.,
                 GOLD,
@@ -493,10 +514,10 @@ impl Session {
                 &plans.len().to_string(),
             ],
         );
-        line(&footer, 664., footer_y + 12., 13., GOLD);
+        line(&footer, sidebar_x(true, 664.), footer_y + 12., 13., GOLD);
         for (x, text) in [
-            (584., tr_key(self.zh, "ui.shared.prev")),
-            (930., tr_key(self.zh, "ui.shared.next")),
+            (sidebar_x(true, 584.), tr_key(self.zh, "ui.shared.prev")),
+            (sidebar_x(true, 930.), tr_key(self.zh, "ui.shared.next")),
         ] {
             let r = Rect::new(x, footer_y - 4., 70., 24.);
             outline(r.x, r.y, r.w, r.h, 1., SKYBLUE);

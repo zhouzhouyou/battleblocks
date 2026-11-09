@@ -23,6 +23,7 @@
 | 旧骑士 | [KNIGHT-LEGACY.md](characters/KNIGHT-LEGACY.md) |
 | 精灵 | [ELF-LEGACY.md](characters/ELF-LEGACY.md) |
 | 哥布林 | [GOBLIN-LEGACY.md](characters/GOBLIN-LEGACY.md) |
+| 弹弓手 | [SLINGSHOT.md](characters/SLINGSHOT.md)，侏儒老工匠奥林·铜扣，完整持弓动画，实时手臂联动暂缓 |
 | 巫师 | [WIZARD-LEGACY.md](characters/WIZARD-LEGACY.md) |
 | 小恶魔 | [IMP.md](characters/IMP.md) |
 | 角魔 | [CHORT.md](characters/CHORT.md) |

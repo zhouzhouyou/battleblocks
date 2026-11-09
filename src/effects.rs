@@ -13,16 +13,20 @@ mod nun_heal;
 mod wizard_spells;
 mod wizard_timing;
 pub use landing_motion::lift as jump_lift;
+pub(crate) const PROJECTILE_BLAST_DURATION: f32 = 1.;
 
 /// Skill-effect artwork. The web build fetches these beside the `.wasm`.
 pub(crate) const HAMMER_SMASH: crate::assets::Asset = crate::asset!("effects/hammer-smash.webp");
 pub(crate) const HEAVY_LANDING: crate::assets::Asset = crate::asset!("effects/heavy-landing.webp");
 pub(crate) const EMBER_BLAST: crate::assets::Asset = crate::asset!("effects/ember-blast.webp");
 pub(crate) const SLEEP_ZZZ: crate::assets::Asset = crate::asset!("effects/sleep-zzz.webp");
-pub(crate) const WIZARD_LIGHTNING: crate::assets::Asset = crate::asset!("effects/wizard-lightning.webp");
+pub(crate) const WIZARD_LIGHTNING: crate::assets::Asset =
+    crate::asset!("effects/wizard-lightning.webp");
 pub(crate) const WIZARD_METEOR: crate::assets::Asset = crate::asset!("effects/wizard-meteor.webp");
-pub(crate) const NUN_HEAL_NORMAL: crate::assets::Asset = crate::asset!("effects/nun-heal-normal.webp");
-pub(crate) const NUN_HEAL_DAMAGE: crate::assets::Asset = crate::asset!("effects/nun-heal-damage.webp");
+pub(crate) const NUN_HEAL_NORMAL: crate::assets::Asset =
+    crate::asset!("effects/nun-heal-normal.webp");
+pub(crate) const NUN_HEAL_DAMAGE: crate::assets::Asset =
+    crate::asset!("effects/nun-heal-damage.webp");
 
 /// Every effect sheet; packaging and units tests use this inventory.
 #[allow(dead_code)]
@@ -56,6 +60,46 @@ pub struct Textures {
     actors: [Option<legacy_actors::Cast>; 2],
 }
 impl Textures {
+    /// Reuse EmberBlast's aftermath frames with a circular UV mask at the impact.
+    /// The mask fits the visual footprint to the model's actual blast radius.
+    pub fn draw_projectile_blast(&self, center: Vec2, radius: f32, age: f32) {
+        if let Some(source) = ember_blast::projectile_frame(age) {
+            let texture = self.ember_blast.get();
+            let mut mesh = Mesh {
+                vertices: Vec::with_capacity(66),
+                indices: Vec::with_capacity(192),
+                texture: Some(texture.clone()),
+            };
+            let color = Color::new(
+                1.,
+                1.,
+                1.,
+                ((PROJECTILE_BLAST_DURATION - age) / 0.3).clamp(0., 1.),
+            );
+            let uv = |p: Vec2| {
+                vec2(
+                    (source.x + p.x * source.w) / texture.width(),
+                    (source.y + p.y * source.h) / texture.height(),
+                )
+            };
+            let middle = uv(vec2(0.5, 0.5));
+            mesh.vertices.push(Vertex::new(
+                center.x, center.y, 0., middle.x, middle.y, color,
+            ));
+            for i in 0..=64 {
+                let angle = i as f32 * std::f32::consts::TAU / 64.;
+                let direction = vec2(angle.cos(), angle.sin());
+                let at = center + direction * radius;
+                let uv = uv(vec2(0.5, 0.5) + direction * 0.5);
+                mesh.vertices
+                    .push(Vertex::new(at.x, at.y, 0., uv.x, uv.y, color));
+                if i > 0 {
+                    mesh.indices.extend_from_slice(&[0, i, i + 1]);
+                }
+            }
+            draw_mesh(&mesh);
+        }
+    }
     /// Build the lazy sheet table. This does not decode or upload anything.
     pub fn load() -> Self {
         Self {
@@ -91,6 +135,9 @@ impl Textures {
                 Skill::EmberBlast => {
                     self.ember_blast.get();
                     self.sleep_zzz.get();
+                }
+                Skill::HeavySlingshot => {
+                    self.ember_blast.get();
                 }
                 Skill::Lightning | Skill::Meteor => self.wizard.prefetch(skill),
                 Skill::Healing => self.heal.prefetch(),

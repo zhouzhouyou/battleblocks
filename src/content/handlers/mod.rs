@@ -9,6 +9,7 @@ mod legacy;
 mod nun;
 mod portal;
 mod priest;
+mod slingshot;
 // Registration binds identities to implementations; rule behavior belongs to handlers.
 pub fn passive_handler(p: Passive) -> RuleHandler {
     match p {
@@ -48,6 +49,7 @@ pub fn passive_handler(p: Passive) -> RuleHandler {
 pub fn active_handler(skill: Skill) -> RuleHandler {
     match skill {
         Skill::PortalPair | Skill::GravityShift => portal::active,
+        Skill::LightSlingshot | Skill::HeavySlingshot => slingshot::handle,
         Skill::Charge
         | Skill::Guard
         | Skill::Landslide

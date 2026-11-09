@@ -155,14 +155,20 @@ fn global_skills_cast_directly_even_when_paid_with_health() {
 #[test]
 fn hint_clicks_hit_rows_on_the_shown_page_and_board_badges() {
     // Rows are 44 units tall from y=278, seven per page.
-    assert_eq!(hint_row_at(vec2(800., 280.), 0, 3), Some(0));
     assert_eq!(
-        hint_row_at(vec2(1000., 278. + 44. * 2. + 1.), 1, 20),
+        hint_row_at(vec2(sidebar_x(true, 800.), 280.), 0, 3),
+        Some(0)
+    );
+    assert_eq!(
+        hint_row_at(vec2(sidebar_x(true, 1000.), 278. + 44. * 2. + 1.), 1, 20),
         Some(9)
     );
-    assert_eq!(hint_row_at(vec2(800., 278. + 44. * 2. + 1.), 0, 2), None);
-    assert_eq!(hint_row_at(vec2(797., 280.), 0, 3), None);
-    assert_eq!(hint_row_at(vec2(800., 586.), 0, 20), None);
+    assert_eq!(
+        hint_row_at(vec2(sidebar_x(true, 800.), 278. + 44. * 2. + 1.), 0, 2),
+        None
+    );
+    assert_eq!(hint_row_at(vec2(sidebar_x(true, 797.), 280.), 0, 3), None);
+    assert_eq!(hint_row_at(vec2(sidebar_x(true, 800.), 586.), 0, 20), None);
     let hints = [((0, 0), (1, 0)), ((3, 4), (3, 5)), ((3, 5), (3, 6))];
     let badge = presentation::move_hint_anchor((3, 4), (3, 5));
     assert_eq!(hint_badge_at(badge, &hints), Some(1));
@@ -634,4 +640,29 @@ fn ability_descriptions_leave_line_breaks_to_the_layout() {
             }
         }
     }
+}
+
+#[test]
+fn widened_battle_canvas_reserves_a_full_sling_pull_lane() {
+    let left = side_panel_rect(false);
+    let right = side_panel_rect(true);
+    assert!(left.x >= ui::CANVAS.x);
+    assert!(right.right() <= ui::CANVAS.right());
+    let origin = content::projectile::ORIGIN;
+    let launch_x = 256. + origin.x as f32 * 64.;
+    assert!(launch_x - 70. > left.right() + 8.);
+    assert!(launch_x + 13. < 256.);
+    for side in [false, true] {
+        let panel = side_panel_rect(side);
+        for area in [
+            sprite_rect(side),
+            passive_rect(side),
+            status_strip_rect(side),
+            pocket_rect(side, 0),
+        ] {
+            assert!(area.x >= panel.x && area.right() <= panel.right());
+        }
+    }
+    assert!(move_hints_rect().right() <= right.right());
+    assert_eq!(ui::WINDOW_SIZES[1], (1480, 900));
 }
