@@ -520,6 +520,7 @@ impl Ui {
                         thumbs,
                         id,
                         Rect::new(r.x + 8., r.y + 12., 40., 48.),
+                        WHITE,
                     );
                     label(
                         if zh { h.zh } else { h.en },

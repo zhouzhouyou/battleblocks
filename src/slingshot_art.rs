@@ -10,14 +10,14 @@ thread_local! {
     };
 }
 
-pub fn thumbnail(area: Rect) {
+pub fn thumbnail(area: Rect, tint: Color) {
     SHEETS.with(|sheets| {
         let sheets = sheets.borrow();
         draw_texture_ex(
             sheets[2].get(),
             area.x + (area.w - area.h) / 2.,
             area.y,
-            WHITE,
+            tint,
             DrawTextureParams {
                 source: Some(Rect::new(0., 0., 384., 384.)),
                 dest_size: Some(vec2(area.h, area.h)),

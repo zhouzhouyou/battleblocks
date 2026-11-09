@@ -379,16 +379,11 @@ pub(crate) fn loading_portal(area: Rect, thumbs: &Texture2D, hero: usize, time: 
     let height = width * 48. / 40.;
     // Faint roster thumbnail so the hero stays recognisable while loading.
     let pulse = 0.42 + 0.12 * (t * 2.4).sin();
-    draw_texture_ex(
+    hero_thumbnail(
         thumbs,
-        feet.x - width / 2.,
-        area.y + area.h - height,
+        hero,
+        Rect::new(feet.x - width / 2., area.y + area.h - height, width, height),
         Color::new(1., 1., 1., pulse),
-        DrawTextureParams {
-            dest_size: Some(vec2(width, height)),
-            source: Some(Rect::new(hero as f32 * 40., 0., 40., 48.)),
-            ..Default::default()
-        },
     );
     // Summoning circle: a rotating dashed ellipse at the hero's feet.
     let (rx, ry) = (area.w * 0.30, area.w * 0.075);
@@ -686,15 +681,15 @@ pub(crate) fn flush_labels() {
 pub(crate) fn role_scale(area: Rect) -> f32 {
     (area.w / 84.).min(area.h / 83.).min(3.)
 }
-pub(crate) fn hero_thumbnail(texture: &Texture2D, hero: usize, area: Rect) {
+pub(crate) fn hero_thumbnail(texture: &Texture2D, hero: usize, area: Rect, tint: Color) {
     if hero == content::SLINGSHOT_USER {
-        crate::slingshot_art::thumbnail(area);
+        crate::slingshot_art::thumbnail(area, tint);
     } else {
         draw_texture_ex(
             texture,
             area.x,
             area.y,
-            WHITE,
+            tint,
             DrawTextureParams {
                 dest_size: Some(vec2(area.w, area.h)),
                 source: Some(Rect::new(
