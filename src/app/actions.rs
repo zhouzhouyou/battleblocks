@@ -281,7 +281,9 @@ impl Session {
             if let Some(skill) = self.targeting {
                 if let Some(config) = content::skill_profile(skill, self.rules(false)).projectile {
                     self.aim_projectile(frame, config);
-                    if frame.key(KeyCode::Enter) && !self.projectile_drag {
+                    if (frame.key(KeyCode::Enter) || frame.key(KeyCode::KpEnter))
+                        && !self.projectile_drag
+                    {
                         cast = Some(skill);
                     }
                 } else if !content::skill_profile(skill, self.rules(false)).force_move
