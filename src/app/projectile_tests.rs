@@ -643,3 +643,82 @@ fn projectile_fixed_airburst_ends_flight_early_and_matches_preview_after_rollbac
     assert_eq!(s.mp, preview.mana_after);
     assert_eq!(s.enemy, preview.enemy_health_after);
 }
+
+#[test]
+fn projectile_gravity_shift_matches_preview_payment_and_rollback_for_both_sides() {
+    use content::projectile::Ammo;
+    for direction in [
+        board::Gravity::Down,
+        board::Gravity::Up,
+        board::Gravity::Left,
+        board::Gravity::Right,
+    ] {
+        for enemy in [false, true] {
+            for ammo in [Ammo::Solid, Ammo::Explosive] {
+                let mut s = session();
+                s.enemy_id = content::SLINGSHOT_USER;
+                s.enemy_turn = enemy;
+                s.enemy_mp = 160;
+                s.awakened = [true; 2];
+                s.hp = content::health_cap(s.hero_id, true);
+                s.enemy = content::health_cap(s.enemy_id, true);
+                s.b = [[2; N]; N];
+                s.board_mechanics.set_gravity(direction, !enemy);
+                let aim = Aim {
+                    ammo,
+                    ..Default::default()
+                };
+                let rules = content::Rules {
+                    projectile_aim: Some(aim),
+                    ..s.rules(enemy)
+                };
+                let config = content::skill_profile(Skill::HeavySlingshot, rules)
+                    .projectile
+                    .unwrap();
+                assert_eq!(config.gravity_direction, direction);
+                let expected = config.solve(&s.b, aim);
+                let before = s.snapshot();
+                let preview = content::preview_rewards_in(
+                    Skill::HeavySlingshot,
+                    &s.b,
+                    (3, 3),
+                    content::SLINGSHOT_USER,
+                    s.hp,
+                    160,
+                    s.enemy,
+                    0,
+                    rules,
+                );
+                assert_eq!(s.snapshot().json(), before.json());
+                assert_eq!(rng::state(), before.rng_state);
+                let mut frame = Frame::headless(0.01);
+                frame.command_skill = Some(Skill::HeavySlingshot);
+                frame.command_aim = Some(aim);
+                assert!(s.cast_skill(&frame, Some(Skill::HeavySlingshot), false));
+                assert_eq!(if enemy { s.enemy_mp } else { s.mp }, 90);
+                assert_eq!(
+                    s.charge_damage
+                        .as_ref()
+                        .unwrap()
+                        .projectile
+                        .as_ref()
+                        .unwrap(),
+                    &expected
+                );
+                let flying = s.snapshot();
+                s.restore(flying.clone());
+                assert_eq!(s.snapshot().json(), flying.json());
+                s.presentation.tick(10.);
+                s.advance_turn(&frame);
+                assert_eq!(
+                    if enemy { s.hp } else { s.enemy },
+                    preview.enemy_health_after
+                );
+                assert_eq!(if enemy { s.enemy_mp } else { s.mp }, preview.mana_after);
+                s.restore(before.clone());
+                assert_eq!(s.snapshot().json(), before.json());
+                assert_eq!(rng::state(), before.rng_state);
+            }
+        }
+    }
+}

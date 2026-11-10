@@ -1,6 +1,7 @@
 //! Board-cell units, f64 analytic trajectories and continuous circle/rectangle contacts.
 //! Equal-time events use a 1 ns tolerance and row-major order inside each hit batch.
 use super::*;
+use crate::board;
 const EPS: f64 = 1e-9;
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum Ammo {
@@ -56,6 +57,7 @@ pub struct ProjectileConfig {
     pub min_angle: i32,
     pub max_angle: i32,
     pub gravity: f64,
+    pub gravity_direction: board::Gravity,
     pub radius: f64,
     pub direct_reward: RewardRule,
     pub explosion: Option<Explosion>,
@@ -85,6 +87,7 @@ pub struct Flight {
     pub origin: Point,
     pub velocity: Point,
     pub gravity: f64,
+    pub gravity_direction: board::Gravity,
     pub duration: f64,
     pub end: End,
     pub hits: Vec<Hit>,
@@ -94,9 +97,17 @@ pub struct Flight {
 impl Flight {
     pub fn position(&self, time: f64) -> Point {
         let t = time.clamp(0., self.duration);
+        let acceleration = self.acceleration();
         Point {
-            x: self.origin.x + self.velocity.x * t,
-            y: self.origin.y + self.velocity.y * t + 0.5 * self.gravity * t * t,
+            x: self.origin.x + self.velocity.x * t + 0.5 * acceleration.x * t * t,
+            y: self.origin.y + self.velocity.y * t + 0.5 * acceleration.y * t * t,
+        }
+    }
+    fn acceleration(&self) -> Point {
+        let (x, y) = self.gravity_direction.vector();
+        Point {
+            x: x as f64 * self.gravity,
+            y: y as f64 * self.gravity,
         }
     }
     pub fn cells(&self) -> Vec<(usize, usize)> {
@@ -136,9 +147,15 @@ impl ProjectileConfig {
             }
             let mut flight = Self {
                 from_right: false,
+                gravity_direction: match self.gravity_direction {
+                    board::Gravity::Left => board::Gravity::Right,
+                    board::Gravity::Right => board::Gravity::Left,
+                    direction => direction,
+                },
                 ..*self
             }
             .solve(&mirrored, aim);
+            flight.gravity_direction = self.gravity_direction;
             flight.origin.x = N as f64 - flight.origin.x;
             flight.velocity.x = -flight.velocity.x;
             for hit in &mut flight.hits {
@@ -167,25 +184,64 @@ impl ProjectileConfig {
             x: speed * angle.cos(),
             y: -speed * angle.sin(),
         };
-        let landing = (-velocity.y
-            + (velocity.y * velocity.y + 2. * self.gravity * (N as f64 - self.radius - ORIGIN.y))
-                .sqrt())
-            / self.gravity;
-        let boundary = (N as f64 + self.radius - ORIGIN.x) / velocity.x;
         let mut flight = Flight {
             ammo: aim.ammo,
             origin: ORIGIN,
             velocity,
             gravity: self.gravity,
-            duration: landing.min(boundary),
-            end: if landing <= boundary {
-                End::Landing
-            } else {
-                End::OutOfBounds
-            },
+            gravity_direction: self.gravity_direction,
+            duration: 0.,
+            end: End::OutOfBounds,
             hits: vec![],
             explosion_cells: vec![],
             explosion_radius: None,
+        };
+        let acceleration = flight.acceleration();
+        // A finite bound on horizontal exit, including a shot that reverses before
+        // entering the board. The launch lane remains outside the board edge.
+        let horizon = if acceleration.x.abs() > EPS {
+            (2. * velocity.x.abs() + (2. * acceleration.x.abs() * (N as f64 + 2.)).sqrt())
+                / acceleration.x.abs()
+        } else {
+            (N as f64 + self.radius - ORIGIN.x) / velocity.x
+        };
+        let (gx, gy) = self.gravity_direction.vector();
+        let landing_origin = ORIGIN.x * gx as f64 + ORIGIN.y * gy as f64;
+        let landing_velocity = velocity.x * gx as f64 + velocity.y * gy as f64;
+        let landing_edge = if gx + gy > 0 {
+            N as f64 - self.radius
+        } else {
+            -self.radius
+        };
+        let landing = roots(
+            &[
+                landing_origin - landing_edge,
+                landing_velocity,
+                self.gravity * 0.5,
+            ],
+            0.,
+            horizon,
+        )
+        .into_iter()
+        .find(|t| landing_velocity + self.gravity * t > EPS);
+        let boundary = [(ORIGIN.x - self.radius, -1.), (N as f64 + self.radius, 1.)]
+            .into_iter()
+            .flat_map(|(edge, sign)| {
+                roots(
+                    &[ORIGIN.x - edge, velocity.x, acceleration.x * 0.5],
+                    0.,
+                    horizon,
+                )
+                .into_iter()
+                .filter(move |t| (velocity.x + acceleration.x * t) * sign > EPS)
+            })
+            .min_by(f64::total_cmp)
+            .unwrap_or(horizon);
+        flight.duration = landing.unwrap_or(f64::INFINITY).min(boundary);
+        flight.end = if landing.is_some_and(|t| t <= boundary) {
+            End::Landing
+        } else {
+            End::OutOfBounds
         };
         if let Some(explosion) = explosion {
             if let Some(fuse) = explosion.fuse.filter(|t| *t <= flight.duration + EPS) {
@@ -301,13 +357,23 @@ fn roots(coefficients: &[f64], lo: f64, hi: f64) -> Vec<f64> {
 }
 fn contact(flight: &Flight, cell: (usize, usize), radius: f64) -> Option<f64> {
     let (x, y) = (cell.0 as f64, cell.1 as f64);
-    let (vx, vy, g) = (flight.velocity.x, flight.velocity.y, flight.gravity * 0.5);
+    let acceleration = flight.acceleration();
+    let (vx, vy) = (flight.velocity.x, flight.velocity.y);
+    let (gx, gy) = (acceleration.x * 0.5, acceleration.y * 0.5);
     let mut candidates = vec![0.];
     for edge in [x - radius, x + 1. + radius] {
-        candidates.extend(roots(&[flight.origin.x - edge, vx], 0., flight.duration));
+        candidates.extend(roots(
+            &[flight.origin.x - edge, vx, gx],
+            0.,
+            flight.duration,
+        ));
     }
     for edge in [y - radius, y + 1. + radius] {
-        candidates.extend(roots(&[flight.origin.y - edge, vy, g], 0., flight.duration));
+        candidates.extend(roots(
+            &[flight.origin.y - edge, vy, gy],
+            0.,
+            flight.duration,
+        ));
     }
     for cx in [x, x + 1.] {
         for cy in [y, y + 1.] {
@@ -316,9 +382,9 @@ fn contact(flight: &Flight, cell: (usize, usize), radius: f64) -> Option<f64> {
                 &[
                     dx * dx + dy * dy - radius * radius,
                     2. * (dx * vx + dy * vy),
-                    vx * vx + vy * vy + 2. * dy * g,
-                    2. * vy * g,
-                    g * g,
+                    vx * vx + vy * vy + 2. * (dx * gx + dy * gy),
+                    2. * (vx * gx + vy * gy),
+                    gx * gx + gy * gy,
                 ],
                 0.,
                 flight.duration,
@@ -343,7 +409,7 @@ impl Flight {
             })
             .collect::<Vec<_>>()
             .join(",");
-        format!("{{\"ammo\":\"{:?}\",\"origin\":[{},{}],\"velocity\":[{},{}],\"gravity\":{},\"duration\":{},\"end\":\"{:?}\",\"hits\":[{}],\"explosion_cells\":[{}],\"explosion_radius\":{}}}", self.ammo,self.origin.x,self.origin.y,self.velocity.x,self.velocity.y,self.gravity,self.duration,self.end,hits,
+        format!("{{\"ammo\":\"{:?}\",\"origin\":[{},{}],\"velocity\":[{},{}],\"gravity\":{},\"gravity_direction\":\"{:?}\",\"duration\":{},\"end\":\"{:?}\",\"hits\":[{}],\"explosion_cells\":[{}],\"explosion_radius\":{}}}", self.ammo,self.origin.x,self.origin.y,self.velocity.x,self.velocity.y,self.gravity,self.gravity_direction,self.duration,self.end,hits,
             self.explosion_cells.iter().map(|(x,y)| format!("[{x},{y}]")).collect::<Vec<_>>().join(","), self.explosion_radius.map(|r| r.to_string()).unwrap_or("null".into()))
     }
 }
@@ -362,6 +428,64 @@ mod tests {
         .unwrap()
     }
     #[test]
+    fn gravity_changes_acceleration_contacts_and_downstream_landing() {
+        for direction in [
+            board::Gravity::Down,
+            board::Gravity::Up,
+            board::Gravity::Left,
+            board::Gravity::Right,
+        ] {
+            let mut c = config(Skill::HeavySlingshot, true);
+            c.gravity_direction = direction;
+            let flight = c.solve(&[[0; N]; N], Aim::default());
+            let (gx, gy) = direction.vector();
+            let t = flight.duration * 0.5;
+            let p = flight.position(t);
+            assert!(
+                (p.x - ORIGIN.x - flight.velocity.x * t - 0.5 * c.gravity * gx as f64 * t * t)
+                    .abs()
+                    < EPS
+            );
+            assert!(
+                (p.y - ORIGIN.y - flight.velocity.y * t - 0.5 * c.gravity * gy as f64 * t * t)
+                    .abs()
+                    < EPS
+            );
+            assert!(flight.duration.is_finite() && flight.duration > 0.);
+            assert!(!flight.hits.is_empty());
+            for hit in &flight.hits {
+                assert_eq!(hit.position, flight.position(hit.time));
+                assert!((distance_squared(hit.position, hit.cell) - c.radius.powi(2)).abs() < EPS);
+                let before = (hit.time - 1e-6).max(0.);
+                assert!(distance_squared(flight.position(before), hit.cell) > c.radius.powi(2));
+            }
+            if flight.end == End::Landing {
+                let end = flight.position(flight.duration);
+                let depth = match direction {
+                    board::Gravity::Down => N as f64 - end.y,
+                    board::Gravity::Up => end.y,
+                    board::Gravity::Left => end.x,
+                    board::Gravity::Right => N as f64 - end.x,
+                };
+                assert!((depth - c.radius).abs() < EPS);
+            }
+        }
+        // Leftward gravity can reverse a weak shot before it enters the board.
+        let mut c = config(Skill::LightSlingshot, false);
+        c.gravity_direction = board::Gravity::Left;
+        let flight = c.solve(
+            &[[0; N]; N],
+            Aim {
+                angle_mdeg: c.max_angle,
+                power_permille: 0,
+                ..Default::default()
+            },
+        );
+        assert_eq!(flight.end, End::OutOfBounds);
+        assert!(flight.duration.is_finite() && flight.duration > 0.);
+    }
+
+    #[test]
     fn mirrored_launch_hits_the_reflected_board_and_keeps_the_same_timing() {
         let mut board = [[0; N]; N];
         board[7][0] = 255;
@@ -370,36 +494,51 @@ mod tests {
         for row in &mut reflected {
             row.reverse();
         }
-        for skill in [Skill::LightSlingshot, Skill::HeavySlingshot] {
-            for ammo in [Ammo::Solid, Ammo::Explosive] {
-                let left = config(skill, true);
-                let right = ProjectileConfig {
-                    from_right: true,
-                    ..left
-                };
-                let aim = Aim {
-                    ammo,
-                    ..Default::default()
-                };
-                let a = left.solve(&board, aim);
-                let b = right.solve(&reflected, aim);
-                assert_eq!(a.duration, b.duration);
-                assert_eq!(a.end, b.end);
-                assert_eq!(a.explosion_radius, b.explosion_radius);
-                for time in [0., a.duration / 2., a.duration] {
-                    assert!((a.position(time).x + b.position(time).x - N as f64).abs() < 1e-9);
-                    assert!((a.position(time).y - b.position(time).y).abs() < 1e-9);
-                }
-                let expected: std::collections::HashSet<_> =
-                    a.cells().into_iter().map(|(x, y)| (N - 1 - x, y)).collect();
-                assert_eq!(expected, b.cells().into_iter().collect());
-                for hit in &a.hits {
-                    let mirrored = b
-                        .hits
-                        .iter()
-                        .find(|h| h.cell == (N - 1 - hit.cell.0, hit.cell.1))
-                        .unwrap();
-                    assert_eq!(hit.time, mirrored.time);
+        for direction in [
+            board::Gravity::Down,
+            board::Gravity::Up,
+            board::Gravity::Left,
+            board::Gravity::Right,
+        ] {
+            for skill in [Skill::LightSlingshot, Skill::HeavySlingshot] {
+                for ammo in [Ammo::Solid, Ammo::Explosive] {
+                    let left = ProjectileConfig {
+                        gravity_direction: direction,
+                        ..config(skill, true)
+                    };
+                    let right = ProjectileConfig {
+                        from_right: true,
+                        gravity_direction: match direction {
+                            board::Gravity::Left => board::Gravity::Right,
+                            board::Gravity::Right => board::Gravity::Left,
+                            other => other,
+                        },
+                        ..left
+                    };
+                    let aim = Aim {
+                        ammo,
+                        ..Default::default()
+                    };
+                    let a = left.solve(&board, aim);
+                    let b = right.solve(&reflected, aim);
+                    assert_eq!(a.duration, b.duration);
+                    assert_eq!(a.end, b.end);
+                    assert_eq!(a.explosion_radius, b.explosion_radius);
+                    for time in [0., a.duration / 2., a.duration] {
+                        assert!((a.position(time).x + b.position(time).x - N as f64).abs() < 1e-9);
+                        assert!((a.position(time).y - b.position(time).y).abs() < 1e-9);
+                    }
+                    let expected: std::collections::HashSet<_> =
+                        a.cells().into_iter().map(|(x, y)| (N - 1 - x, y)).collect();
+                    assert_eq!(expected, b.cells().into_iter().collect());
+                    for hit in &a.hits {
+                        let mirrored = b
+                            .hits
+                            .iter()
+                            .find(|h| h.cell == (N - 1 - hit.cell.0, hit.cell.1))
+                            .unwrap();
+                        assert_eq!(hit.time, mirrored.time);
+                    }
                 }
             }
         }
@@ -473,6 +612,7 @@ mod tests {
             origin: Point { x: -1., y: 1. },
             velocity: Point { x: 1000., y: 0. },
             gravity: 0.,
+            gravity_direction: board::Gravity::Down,
             duration: 0.02,
             end: End::OutOfBounds,
             hits: vec![],
