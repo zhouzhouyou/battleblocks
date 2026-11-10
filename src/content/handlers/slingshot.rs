@@ -1,4 +1,5 @@
 use super::*;
+use crate::board;
 use projectile::*;
 fn config(skill: Skill, rules: Rules) -> ProjectileConfig {
     static CONFIG: std::sync::OnceLock<Vec<(Skill, bool, ProjectileConfig)>> =
@@ -48,6 +49,7 @@ fn config(skill: Skill, rules: Rules) -> ProjectileConfig {
                     min_angle: f[4].parse().unwrap(),
                     max_angle: f[5].parse().unwrap(),
                     gravity: number(6),
+                    gravity_direction: board::Gravity::Down,
                     radius: number(7),
                     direct_reward: rule(8),
                     explosion: (radius > 0.).then(|| Explosion {
@@ -95,6 +97,7 @@ fn config(skill: Skill, rules: Rules) -> ProjectileConfig {
         .2;
     ProjectileConfig {
         from_right: rules.launch_from_right,
+        gravity_direction: rules.board_mechanics.gravity(),
         ..config
     }
 }
