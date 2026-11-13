@@ -5,12 +5,12 @@ use std::rc::Rc;
 // the canonical Session actions and settlement, including repeat costs and RNG.
 //
 // Difficulty is expressed as search depth, not a different set of rules:
-// Beginner makes a random legal move, Standard evaluates one action, and
-// Advanced continues the plan across the opponent's best reply and the owner's
+// Beginner makes a random legal move. Standard evaluates one action plus its
+// finishing exchange. Advanced continues across the opponent's best reply and the owner's
 // following turn.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(super) struct SearchPolicy {
-    /// Maximum actions inside the acting side's own turn.
+    /// Maximum actions before an optional finishing exchange in the same turn.
     pub depth: usize,
     /// Plans kept per depth layer.
     pub beam: usize,
@@ -332,6 +332,7 @@ impl Session {
                 vec![None]
             };
             let mut targets = Vec::new();
+            let mut gravity_changes = Vec::new();
             for anchor in anchors {
                 let rules = content::Rules {
                     target_anchor: anchor,
@@ -349,6 +350,25 @@ impl Session {
                             rules,
                         ) {
                             continue;
+                        }
+                        // A quadrant contains sixteen coordinates for one gravity
+                        // edit. Keep each distinct edit before target pruning.
+                        if profile.gravity_change {
+                            let mut board = self.b;
+                            let change = content::effect_at_in(
+                                skill,
+                                &mut board,
+                                target,
+                                self.hero_id,
+                                self.hp,
+                                self.mp,
+                                rules,
+                            )
+                            .board_change;
+                            if gravity_changes.contains(&change) {
+                                continue;
+                            }
+                            gravity_changes.push(change);
                         }
                         let p = content::preview_rewards_in(
                             skill,
@@ -372,7 +392,9 @@ impl Session {
             }
             targets.sort_by(|a, b| b.0.total_cmp(&a.0));
             // Non-targeted skills have identical target choices.
-            let count = if content::targeted_in(skill, rules) {
+            let count = if profile.gravity_change {
+                gravity_changes.len()
+            } else if content::targeted_in(skill, rules) {
                 policy.targets
             } else {
                 1
@@ -502,19 +524,29 @@ impl Session {
             },
         )];
         let mut finished = Vec::new();
-        for depth in 0..policy.depth {
+        for depth in 0..=policy.depth {
+            // A preparation at the depth boundary still needs an exchange to
+            // realise its value. This last layer cannot add another skill.
+            let finishing_exchange = depth == policy.depth;
             let mut next = Vec::new();
             for (state, plan) in frontier {
                 model.restore(state.clone());
                 let mut swaps = 0;
-                for action in model.plan_candidates(policy).into_iter().filter(|a| {
-                    if matches!(a, PlanAction::Swap(_)) {
-                        swaps += 1;
-                        depth == 0 || swaps <= 5
-                    } else {
-                        true
-                    }
-                }) {
+                for action in model
+                    .plan_candidates(SearchPolicy {
+                        include_skills: policy.include_skills && !finishing_exchange,
+                        ..policy
+                    })
+                    .into_iter()
+                    .filter(|a| {
+                        if matches!(a, PlanAction::Swap(_)) {
+                            swaps += 1;
+                            depth == 0 || swaps <= 5
+                        } else {
+                            true
+                        }
+                    })
+                {
                     model.restore(state.clone());
                     if let Some(step) = model.simulate_plan_step(action) {
                         let mut candidate = plan.clone();
@@ -543,7 +575,10 @@ impl Session {
                 }
             }
             next.sort_by(|a, b| b.1.score.total_cmp(&a.1.score));
-            next.truncate(policy.beam);
+            // Complete every boundary preparation before comparing its payoff.
+            if depth + 1 < policy.depth {
+                next.truncate(policy.beam);
+            }
             frontier = next;
         }
         sort_plans(&mut finished);
@@ -743,7 +778,7 @@ mod tests {
     }
 
     #[test]
-    fn difficulty_tiers_increase_search_depth_and_standard_evaluates_one_action() {
+    fn difficulty_tiers_increase_search_depth_and_standard_finishes_preparations() {
         assert_eq!(SearchPolicy::for_level(0).depth, 0);
         assert_eq!(SearchPolicy::for_level(1).depth, 1);
         assert!(SearchPolicy::for_level(2).depth > 2);
@@ -760,9 +795,163 @@ mod tests {
         assert!(s.best_ai_action(false).is_some());
         let standard = s.ranked_ai_plans_with(false, SearchPolicy::for_level(1));
         assert!(!standard.is_empty());
-        assert!(standard.iter().all(|p| p.steps.len() == 1));
+        assert!(standard.iter().all(|p| p.steps.len() <= 2));
+        assert!(standard
+            .iter()
+            .filter(|p| p.steps.len() == 2)
+            .all(|p| matches!(p.steps[1].action, PlanAction::Swap(_))));
         s.difficulty = 0;
         assert!(s.best_ai_action(false).is_none());
+    }
+
+    #[test]
+    fn standard_ai_prices_preparation_and_exchange_with_actual_costs_and_caps() {
+        for awake in [false, true] {
+            for opponent in [content::KNIGHT, content::DWARF] {
+                let mut s = Session::new_simulation();
+                s.prepare_headless_batch();
+                s.hero_id = content::PORTAL_CUBE;
+                s.enemy_id = opponent;
+                s.awakened[0] = awake;
+                s.hp = content::health_cap(s.hero_id, awake);
+                s.enemy = content::health_cap(opponent, false);
+                s.mp = content::mana_cap(s.hero_id, awake);
+                s.cooldowns.cast(0, content::Skill::PortalPair);
+                s.new_role_states[0].turn_start_done = true;
+                rng::srand(4);
+                s.b = board::fresh_for(s.hero_id);
+                let before = s.snapshot();
+                let policy = SearchPolicy::for_level(1);
+                let plans = s.ranked_ai_plans_with(false, policy);
+                assert_eq!(plan_key(s.snapshot()), plan_key(before.clone()));
+                let best = &plans[0];
+                assert!(matches!(
+                    best.steps[0].action,
+                    PlanAction::Cast(content::Skill::GravityShift, (0, 4), None)
+                ));
+                assert_eq!(best.steps.len(), 2);
+                assert!(matches!(best.steps[1].action, PlanAction::Swap(_)));
+                let swap_score = plans
+                    .iter()
+                    .filter(|p| p.steps.len() == 1)
+                    .map(|p| p.score)
+                    .max_by(f32::total_cmp)
+                    .unwrap();
+                assert!(best.score > swap_score);
+                assert_eq!(best.steps[0].mana_cost, if awake { 15 } else { 25 });
+                for step in &best.steps {
+                    assert!(s.simulate_plan_step(step.action).is_some());
+                    assert_eq!((s.hp, s.mp, s.enemy), (step.hp, step.mp, step.enemy_hp));
+                }
+                assert_eq!(
+                    best.score,
+                    strategy::reward_value(
+                        before.enemy_hp - s.enemy,
+                        s.hp - before.hp,
+                        s.mp - before.mp
+                    )
+                );
+                assert!(s.mp <= content::mana_cap(s.hero_id, awake));
+                // Build an equivalent enemy-side position via the perspective helper.
+                s.restore(before.clone());
+                let mut enemy_state = s.ai_snapshot(true);
+                enemy_state.enemy_turn = true;
+                s.restore(enemy_state);
+                assert_eq!(s.best_ai_action(true), Some(best.steps[0].action));
+                s.restore(before);
+                s.mp = if awake { 14 } else { 24 };
+                let unaffordable = s.ranked_ai_plans_with(false, policy);
+                assert!(unaffordable
+                    .iter()
+                    .all(|p| matches!(p.steps[0].action, PlanAction::Swap(_))));
+            }
+        }
+    }
+
+    #[test]
+    fn standard_ai_completes_both_portal_preparations_without_changing_live_state() {
+        let mut s = Session::new_simulation();
+        s.prepare_headless_batch();
+        s.hero_id = content::PORTAL_CUBE;
+        s.enemy_id = content::KNIGHT;
+        s.hp = 500;
+        s.enemy = 500;
+        s.mp = content::mana_cap(s.hero_id, false);
+        s.new_role_states[0].turn_start_done = true;
+        rng::srand(4);
+        s.b = board::fresh_for(s.hero_id);
+        let before = s.snapshot();
+        let plans = s.ranked_ai_plans_with(false, SearchPolicy::for_level(1));
+        assert_eq!(plan_key(s.snapshot()), plan_key(before.clone()));
+        for skill in [content::Skill::PortalPair, content::Skill::GravityShift] {
+            let plan = plans
+                .iter()
+                .find(|plan| {
+                    matches!(
+                        plan.steps[0].action, PlanAction::Cast(found, _, _) if found == skill
+                    )
+                })
+                .expect("preparation must survive the depth boundary");
+            assert_eq!(plan.steps.len(), 2);
+            assert!(matches!(plan.steps[1].action, PlanAction::Swap(_)));
+            s.restore(before.clone());
+            for step in &plan.steps {
+                assert!(s.simulate_plan_step(step.action).is_some());
+                assert_eq!((s.hp, s.mp, s.enemy), (step.hp, step.mp, step.enemy_hp));
+            }
+            assert!(s.action_done);
+        }
+    }
+
+    #[test]
+    fn gravity_candidates_keep_each_distinct_direction_at_every_search_level() {
+        for gravity in [
+            board::Gravity::Down,
+            board::Gravity::Up,
+            board::Gravity::Left,
+            board::Gravity::Right,
+        ] {
+            for level in [1, 2] {
+                let mut s = Session::new_simulation();
+                s.prepare_headless_batch();
+                s.hero_id = content::PORTAL_CUBE;
+                s.mp = content::mana_cap(s.hero_id, false);
+                s.board_mechanics.set_gravity(gravity, false);
+                let rules = s.rules(false);
+                let changes: Vec<_> = s
+                    .plan_candidates(SearchPolicy::for_level(level))
+                    .into_iter()
+                    .filter_map(|a| match a {
+                        PlanAction::Cast(content::Skill::GravityShift, target, _) => {
+                            let mut board = s.b;
+                            content::effect_at_in(
+                                content::Skill::GravityShift,
+                                &mut board,
+                                target,
+                                s.hero_id,
+                                s.hp,
+                                s.mp,
+                                rules,
+                            )
+                            .board_change
+                        }
+                        _ => None,
+                    })
+                    .collect();
+                assert_eq!(changes.len(), 3);
+                for direction in [
+                    board::Gravity::Down,
+                    board::Gravity::Up,
+                    board::Gravity::Left,
+                    board::Gravity::Right,
+                ] {
+                    assert_eq!(
+                        changes.contains(&content::BoardChange::Gravity(direction)),
+                        direction != gravity
+                    );
+                }
+            }
+        }
     }
 
     #[test]
