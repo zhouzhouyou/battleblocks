@@ -1,4 +1,5 @@
 use super::*;
+use std::hash::{DefaultHasher, Hash, Hasher};
 use std::rc::Rc;
 
 // Search is bounded to keep the interactive hint responsive. Every branch uses
@@ -495,7 +496,7 @@ impl Session {
         side: bool,
         policy: SearchPolicy,
     ) -> Rc<Vec<AiPlan>> {
-        let initial = self.ai_snapshot(side);
+        let initial = self.search_snapshot(side);
         let key = plan_key(initial.clone());
         if let Some(cache) = self
             .plan_cache
@@ -697,6 +698,20 @@ impl Session {
             .map(|s| s.action)
     }
 
+    /// Preserve exact futures for the physical player across perspective swaps.
+    /// Enemy search gets a reproducible hypothetical future based only on the
+    /// visible position, so changing the live random stream cannot change its plan.
+    fn search_snapshot(&self, side: bool) -> debug::Snapshot {
+        let mut state = self.ai_snapshot(side);
+        if state.perspective_reversed {
+            state.rng_state = 0;
+            let mut hasher = DefaultHasher::new();
+            plan_key(state.clone()).hash(&mut hasher);
+            state.rng_state = hasher.finish().max(1);
+        }
+        state
+    }
+
     fn ai_snapshot(&self, side: bool) -> debug::Snapshot {
         let mut state = self.snapshot();
         if side {
@@ -774,6 +789,71 @@ mod tests {
                 (first.hp, first.mp, first.enemy_hp),
                 "hero {hero}"
             );
+        }
+    }
+
+    #[test]
+    fn enemy_planning_is_independent_of_the_live_random_stream() {
+        for level in [1, 2] {
+            let mut s = Session::new_simulation();
+            s.prepare_headless_batch();
+            s.hero_id = content::KNIGHT;
+            s.enemy_id = content::PORTAL_CUBE;
+            s.enemy_turn = true;
+            s.difficulty = level;
+            s.enemy_mp = content::mana_cap(s.enemy_id, false);
+            s.new_role_states[1].turn_start_done = true;
+            let position = s.snapshot();
+            let mut expected = None;
+            for seed in [1, 42, 987654321] {
+                s.restore(position.clone());
+                rng::srand(seed);
+                let before = plan_key(s.snapshot());
+                let plans = s.ranked_ai_plans_with(true, SearchPolicy::for_level(level));
+                let choices: Vec<_> = plans
+                    .iter()
+                    .map(|plan| {
+                        (
+                            plan.score,
+                            plan.steps
+                                .iter()
+                                .map(|step| step.action)
+                                .collect::<Vec<_>>(),
+                        )
+                    })
+                    .collect();
+                assert!(!choices.is_empty());
+                assert_eq!(s.best_ai_action(true), Some(plans[0].steps[0].action));
+                if let Some(expected) = &expected {
+                    assert_eq!(&choices, expected);
+                } else {
+                    expected = Some(choices);
+                }
+                assert_eq!(plan_key(s.snapshot()), before);
+                assert_eq!(rng::state(), seed);
+                let mut model = Session::new_simulation();
+                model.prepare_headless_batch();
+                model.restore(s.ai_snapshot(true));
+                assert!(model.simulate_plan_step(plans[0].steps[0].action).is_some());
+            }
+        }
+    }
+
+    #[test]
+    fn player_forecast_keeps_the_real_stream_after_perspective_swaps() {
+        let mut s = Session::new_simulation();
+        s.prepare_headless_batch();
+        for seed in [1, 42, 987654321] {
+            rng::srand(seed);
+            let real = s.snapshot();
+            assert_eq!(s.search_snapshot(false).rng_state, seed);
+            let enemy = s.search_snapshot(true);
+            s.restore(s.ai_snapshot(true));
+            // The physical player is now the opposite side in the simulation.
+            assert_eq!(s.search_snapshot(true).rng_state, seed);
+            assert_eq!(s.search_snapshot(false).rng_state, enemy.rng_state);
+            s.restore(real);
+            assert_eq!(rng::state(), seed);
         }
     }
 
